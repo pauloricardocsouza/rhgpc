@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Configurações da Empresa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 90px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+/* Botões */
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary:disabled{background:var(--gray3); cursor:not-allowed;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-danger{background:#fff; color:var(--danger); border:1px solid var(--danger2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-danger:hover{background:var(--danger2);}
+
+/* Settings layout */
+.settings-layout{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:18px;
+}
+
+/* Sidebar de abas */
+.settings-nav{
+  position:sticky; top:0;
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:6px;
+  height:fit-content;
+}
+.sn-item{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  border-radius:8px;
+  font-size:12.5px;
+  color:var(--txt2);
+  cursor:pointer;
+  transition:all .15s;
+  border:none;
+  background:transparent;
+  width:100%;
+  text-align:left;
+  font-family:inherit;
+}
+.sn-item:hover{background:var(--off); color:var(--txt);}
+.sn-item.active{background:var(--navy); color:#fff;}
+.sn-item.active .sn-icon{color:#fff;}
+.sn-icon{
+  width:24px; height:24px; border-radius:6px;
+  background:transparent; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.sn-icon svg{width:14px; height:14px;}
+.sn-text{flex:1; min-width:0;}
+.sn-text strong{display:block; font-weight:500;}
+.sn-text span{font-size:10.5px; opacity:.75; margin-top:1px; display:block;}
+
+/* Settings content */
+.settings-content{min-width:0;}
+.settings-panel{display:none;}
+.settings-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* Card de configuração */
+.config-card{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:18px 20px;
+  margin-bottom:14px;
+}
+.config-head{
+  margin-bottom:14px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--gray1);
+}
+.config-head h3{font-size:14px; font-weight:600; letter-spacing:-.2px;}
+.config-head p{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+
+/* Linha de configuração */
+.config-row{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:18px;
+  align-items:flex-start;
+  padding:13px 0;
+  border-bottom:1px solid var(--gray1);
+}
+.config-row:last-child{border-bottom:none; padding-bottom:0;}
+.config-row:first-child{padding-top:0;}
+
+.cr-info{}
+.cr-info h4{font-size:12.5px; font-weight:600; margin-bottom:3px;}
+.cr-info p{font-size:11px; color:var(--txt2); line-height:1.5;}
+.cr-info .schema-tag{
+  display:inline-block; margin-top:6px;
+  padding:2px 7px; border-radius:6px;
+  background:var(--off); color:var(--txt3);
+  font-size:9.5px; font-family:'JetBrains Mono',monospace;
+  font-weight:500;
+}
+
+.cr-control{display:flex; flex-direction:column; gap:6px;}
+
+/* Switch */
+.switch{
+  display:inline-flex; align-items:center; gap:9px;
+  cursor:pointer;
+  user-select:none;
+}
+.switch-track{
+  width:38px; height:22px; background:var(--gray2); border-radius:12px;
+  position:relative; transition:background .2s;
+  flex-shrink:0;
+}
+.switch-track::after{
+  content:''; position:absolute;
+  top:2px; left:2px;
+  width:18px; height:18px;
+  background:#fff; border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.switch input{display:none;}
+.switch input:checked + .switch-track{background:var(--green);}
+.switch input:checked + .switch-track::after{transform:translateX(16px);}
+.switch-label{font-size:12.5px; color:var(--txt);}
+.switch-state{
+  font-size:10.5px; color:var(--txt2);
+  font-weight:500;
+  margin-left:auto;
+  font-family:'JetBrains Mono',monospace;
+}
+.switch-state.on{color:var(--green);}
+.switch-state.off{color:var(--txt3);}
+
+/* Inputs */
+.cr-input{
+  width:100%; padding:8px 12px;
+  border:1px solid var(--gray2); border-radius:7px;
+  font-size:12.5px; font-family:inherit; color:var(--txt); background:#fff;
+}
+.cr-input:focus{outline:none; border-color:var(--navy);}
+.cr-input.short{max-width:140px;}
+
+/* Select */
+.cr-select{
+  width:100%; padding:8px 12px;
+  border:1px solid var(--gray2); border-radius:7px;
+  font-size:12.5px; font-family:inherit; color:var(--txt); background:#fff;
+  cursor:pointer;
+}
+.cr-select:focus{outline:none; border-color:var(--navy);}
+
+/* Radio group horizontal */
+.radio-group{
+  display:flex; gap:6px;
+  flex-wrap:wrap;
+}
+.radio-group label{
+  flex:1; min-width:80px;
+  padding:8px 12px;
+  border:1.5px solid var(--gray2); border-radius:7px;
+  font-size:11.5px;
+  cursor:pointer;
+  background:#fff;
+  text-align:center;
+  transition:all .12s;
+}
+.radio-group label:hover{border-color:var(--navy3);}
+.radio-group input[type=radio]{display:none;}
+.radio-group input[type=radio]:checked + label, .radio-group label.selected{
+  border-color:var(--navy);
+  background:#E8EFF8;
+  color:var(--navy);
+  font-weight:600;
+}
+
+/* Color picker (já usado em outras telas) */
+.color-picker{display:flex; gap:6px; flex-wrap:wrap;}
+.color-swatch{
+  width:32px; height:32px; border-radius:8px;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:transform .12s;
+}
+.color-swatch:hover{transform:scale(1.1);}
+.color-swatch.selected{border-color:var(--txt); box-shadow:0 0 0 2px #fff inset;}
+
+/* Helper text */
+.cr-help{
+  font-size:10.5px; color:var(--txt3);
+  display:flex; align-items:center; gap:5px;
+}
+.cr-help svg{flex-shrink:0;}
+
+/* Avatar / logo upload */
+.logo-upload{
+  display:flex; align-items:center; gap:14px;
+}
+.logo-preview{
+  width:80px; height:80px; border-radius:14px;
+  background:linear-gradient(135deg, var(--navy), var(--orange));
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:24px;
+  flex-shrink:0;
+  position:relative;
+}
+.logo-preview-actions{flex:1;}
+.logo-preview-actions h5{font-size:12px; font-weight:600; margin-bottom:6px;}
+.logo-preview-actions .btns{display:flex; gap:7px; flex-wrap:wrap;}
+.logo-preview-actions .btns .btn-secondary{padding:6px 11px; font-size:11.5px;}
+
+/* Banner de tier (para mostrar quais features são pro/enterprise) */
+.tier-banner{
+  background:linear-gradient(135deg, #FCE6CD 0%, #F4F7FC 100%);
+  border-left:3px solid var(--orange);
+  padding:10px 13px; border-radius:8px;
+  font-size:11.5px;
+  display:flex; align-items:center; gap:9px;
+  margin-bottom:12px;
+}
+.tier-banner svg{color:var(--orange); flex-shrink:0;}
+.tier-banner strong{color:var(--txt); font-weight:600;}
+
+.tier-tag{
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 7px; border-radius:8px;
+  font-size:9.5px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.4px;
+  margin-left:6px;
+}
+.tier-tag.pro{background:#FCE6CD; color:var(--amber);}
+.tier-tag.ent{background:#F0E6FA; color:var(--purple);}
+
+/* Preview ao vivo */
+.preview-frame{
+  background:#fff; border-radius:10px;
+  border:1px solid var(--gray2);
+  margin-top:12px;
+  overflow:hidden;
+}
+.preview-frame .pf-bar{
+  background:var(--off);
+  padding:6px 11px;
+  font-size:10.5px; color:var(--txt2);
+  border-bottom:1px solid var(--gray2);
+  font-family:'JetBrains Mono',monospace;
+  display:flex; align-items:center; gap:7px;
+}
+.preview-frame .pf-bar::before{
+  content:''; width:9px; height:9px; border-radius:50%; background:var(--gray3);
+}
+.preview-frame .pf-content{
+  padding:11px 14px;
+}
+.preview-mini-topbar{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 12px;
+  border-radius:7px;
+  color:#fff;
+  background:var(--navy);
+  font-size:12px;
+  margin-bottom:9px;
+}
+.preview-mini-topbar .pmt-logo{
+  width:22px; height:22px; border-radius:5px;
+  background:rgba(255,255,255,.15);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:10px;
+}
+.preview-btn-orange{
+  background:var(--orange); color:#fff;
+  padding:5px 11px; border-radius:6px;
+  font-size:11px; font-weight:500;
+  display:inline-flex; align-items:center; gap:5px;
+  margin-left:auto;
+}
+
+/* Tabela de integrações */
+.integration-card{
+  background:#fff; border-radius:10px;
+  border:1px solid var(--gray2);
+  padding:14px 16px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:13px;
+  align-items:center;
+  margin-bottom:9px;
+}
+.ic-logo{
+  width:42px; height:42px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  font-weight:700; font-size:14px;
+}
+.ic-logo.totvs{background:#3D5F95; color:#fff;}
+.ic-logo.dom{background:#1E7B4B; color:#fff;}
+.ic-logo.gmail{background:#E82227; color:#fff;}
+.ic-logo.slack{background:#6D28D9; color:#fff;}
+.ic-logo.gcal{background:#F5831F; color:#fff;}
+.ic-logo.zap{background:var(--gray2); color:var(--txt2);}
+.ic-info h4{font-size:12.5px; font-weight:600; margin-bottom:1px;}
+.ic-info p{font-size:11px; color:var(--txt2); line-height:1.4;}
+.ic-status{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 9px; border-radius:11px;
+  font-size:10.5px; font-weight:600;
+  white-space:nowrap;
+}
+.ic-status.connected{background:var(--green2); color:var(--green);}
+.ic-status.disconnected{background:var(--gray1); color:var(--txt2);}
+.ic-status.error{background:var(--danger2); color:var(--danger);}
+
+/* Sticky save bar */
+.save-bar{
+  position:fixed; bottom:0; left:var(--sidebar-w); right:0;
+  background:#fff;
+  border-top:1px solid var(--gray2);
+  padding:13px 22px;
+  display:flex; justify-content:space-between; align-items:center;
+  box-shadow:0 -2px 12px rgba(26,45,79,.06);
+  z-index:15;
+  transform:translateY(100%);
+  transition:transform .25s;
+}
+.save-bar.show{transform:translateY(0);}
+.save-bar-info{
+  display:flex; align-items:center; gap:9px;
+  font-size:12px; color:var(--txt2);
+}
+.save-bar-info .dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--orange);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.4;}
+}
+.save-bar-info strong{color:var(--txt); font-weight:600;}
+.save-bar-actions{display:flex; gap:9px;}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .config-row{grid-template-columns:1fr;}
+  .cr-control{margin-top:5px;}
+}
+@media (max-width: 900px){
+  .settings-layout{grid-template-columns:1fr;}
+  .settings-nav{position:relative; padding:5px; display:flex; gap:3px; overflow-x:auto;}
+  .sn-item{flex-shrink:0; padding:8px 11px;}
+  .sn-text span{display:none;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .company-name, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 90px;}
+  .page-header h1{font-size:18px;}
+  .save-bar{left:0;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <div class="sidebar-section">RH</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <div class="sidebar-section">Estrutura</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18"/></svg>Filiais e cargos</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Importação</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configurações</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Configurações <strong>da Empresa</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar">RS</div>
+      <div class="user-info">
+        <span class="user-name">Ricardo Silva</span>
+        <span class="user-role">Super Admin</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Configurações da Empresa</h1>
+        <p>Tenant <strong style="color:var(--txt); font-family:'JetBrains Mono',monospace;">gpc</strong> · Última alteração há 12 dias por Patrícia Mello</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Exportar configurações
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-layout">
+
+      <!-- Sidebar de abas -->
+      <aside class="settings-nav">
+        <button class="sn-item active" data-pane="geral">
+          <div class="sn-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div class="sn-text">
+            <strong>Geral</strong>
+            <span>Identificação e fuso</span>
+          </div>
+        </button>
+
+        <button class="sn-item" data-pane="visual">
+          <div class="sn-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.5-.7 1.5-1.5 0-.39-.15-.74-.4-1.01-.24-.27-.39-.62-.39-1 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/></svg>
+          </div>
+          <div class="sn-text">
+            <strong>Identidade visual</strong>
+            <span>Logo, cores, marca</span>
+          </div>
+        </button>
+
+        <button class="sn-item" data-pane="aval">
+          <div class="sn-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="sn-text">
+            <strong>Avaliações</strong>
+            <span>Escala, anonimato, ciclos</span>
+          </div>
+        </button>
+
+        <button class="sn-item" data-pane="notif">
+          <div class="sn-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          </div>
+          <div class="sn-text">
+            <strong>Notificações</strong>
+            <span>E-mail, in-app, frequência</span>
+          </div>
+        </button>
+
+        <button class="sn-item" data-pane="seg">
+          <div class="sn-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="sn-text">
+            <strong>Segurança</strong>
+            <span>Senhas, 2FA, sessão</span>
+          </div>
+        </button>
+
+        <button class="sn-item" data-pane="int">
+          <div class="sn-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          </div>
+          <div class="sn-text">
+            <strong>Integrações</strong>
+            <span>ERP, e-mail, calendário</span>
+          </div>
+        </button>
+      </aside>
+
+      <!-- Content -->
+      <div class="settings-content">
+
+        <!-- ============= ABA: GERAL ============= -->
+        <div class="settings-panel active" data-pane="geral">
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Identificação da empresa</h3>
+              <p>Dados básicos do tenant. Usados em e-mails, documentos exportados e cabeçalhos do sistema.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Nome de exibição</h4>
+                <p>Aparece no topo do sistema e nos e-mails enviados aos colaboradores.</p>
+                <span class="schema-tag">companies.name</span>
+              </div>
+              <div class="cr-control">
+                <input type="text" class="cr-input" value="Grupo Pinto Cerqueira" oninput="markDirty()">
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Razão social</h4>
+                <p>Nome completo do grupo, conforme registro na Receita Federal.</p>
+                <span class="schema-tag">companies.legal_name</span>
+              </div>
+              <div class="cr-control">
+                <input type="text" class="cr-input" value="Grupo Pinto Cerqueira Comércio LTDA" oninput="markDirty()">
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>CNPJ raiz</h4>
+                <p>Os 8 primeiros dígitos. Útil para conciliar múltiplos CNPJs do mesmo grupo nos relatórios.</p>
+                <span class="schema-tag">companies.cnpj_root</span>
+              </div>
+              <div class="cr-control">
+                <input type="text" class="cr-input short" value="12.345.678" oninput="markDirty()">
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Slug do tenant</h4>
+                <p>Identificador curto usado em URLs e nos e-mails sintéticos de login (ex: <code style="background:var(--off); padding:1px 5px; border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10.5px;">fernanda.lima@gpc.r2.local</code>). Não pode ser alterado depois.</p>
+                <span class="schema-tag">companies.slug</span>
+              </div>
+              <div class="cr-control">
+                <input type="text" class="cr-input short" value="gpc" disabled>
+                <div class="cr-help">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Bloqueado para edição
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Localização e idioma</h3>
+              <p>Como datas, números e textos são apresentados.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Fuso horário</h4>
+                <p>Datas exibidas no sistema usam este fuso. Notificações são entregues respeitando-o.</p>
+                <span class="schema-tag">settings.timezone</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select" onchange="markDirty()">
+                  <option selected>America/Bahia (UTC-3)</option>
+                  <option>America/Sao_Paulo (UTC-3)</option>
+                  <option>America/Manaus (UTC-4)</option>
+                  <option>America/Recife (UTC-3)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Idioma da interface</h4>
+                <p>O R2 People por enquanto opera apenas em português brasileiro.</p>
+                <span class="schema-tag">settings.locale</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select" disabled>
+                  <option>Português (Brasil)</option>
+                </select>
+                <div class="cr-help">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+                  Inglês e espanhol em roadmap
+                </div>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Formato de data</h4>
+                <p>Usado em todas as exibições do sistema.</p>
+                <span class="schema-tag">settings.date_format</span>
+              </div>
+              <div class="cr-control">
+                <div class="radio-group">
+                  <label class="selected">DD/MM/AAAA</label>
+                  <label>AAAA-MM-DD</label>
+                  <label>DD-MM-AAAA</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Moeda padrão</h4>
+                <p>Para salários, faixas e relatórios financeiros.</p>
+                <span class="schema-tag">settings.currency</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option selected>BRL (R$)</option>
+                  <option>USD ($)</option>
+                  <option>EUR (€)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Política de exclusão e arquivamento</h3>
+              <p>Como o sistema lida com dados de colaboradores desligados.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Anonimização após desligamento</h4>
+                <p>Após o período definido, dados pessoais (CPF, RG, endereço, telefone) são removidos. Histórico de avaliações é preservado em forma agregada.</p>
+                <span class="schema-tag">settings.anonymize_after_termination_days</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option>30 dias</option>
+                  <option>90 dias</option>
+                  <option>180 dias</option>
+                  <option selected>1 ano</option>
+                  <option>2 anos</option>
+                  <option>5 anos (regra LGPD máxima)</option>
+                  <option>Nunca anonimizar</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Reter histórico de avaliações</h4>
+                <p>Notas, feedbacks e movimentações ficam disponíveis em forma agregada para análises históricas (turnover, evolução salarial).</p>
+                <span class="schema-tag">settings.retain_evaluation_history</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= ABA: IDENTIDADE VISUAL ============= -->
+        <div class="settings-panel" data-pane="visual">
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Logo e marca</h3>
+              <p>Personalize a aparência do sistema com a identidade visual da sua empresa.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Logotipo principal</h4>
+                <p>Aparece no canto superior esquerdo da sidebar e nos e-mails. Recomendado: PNG com fundo transparente, mínimo 200×200px.</p>
+                <span class="schema-tag">companies.logo_url</span>
+              </div>
+              <div class="cr-control">
+                <div class="logo-upload">
+                  <div class="logo-preview" id="logoPreview" style="background:linear-gradient(135deg, var(--navy), var(--orange));">GPC</div>
+                  <div class="logo-preview-actions">
+                    <h5>logo_gpc.png</h5>
+                    <div class="btns">
+                      <button class="btn-secondary">Substituir</button>
+                      <button class="btn-danger" style="padding:6px 11px; font-size:11.5px;">Remover</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Cor primária</h4>
+                <p>Usada em botões principais, links e elementos ativos da interface.</p>
+                <span class="schema-tag">companies.primary_color</span>
+              </div>
+              <div class="cr-control">
+                <div class="color-picker">
+                  <div class="color-swatch selected" style="background:#2B4A7A" data-color="#2B4A7A" onclick="pickColor(this)"></div>
+                  <div class="color-swatch" style="background:#1E7B4B" data-color="#1E7B4B" onclick="pickColor(this)"></div>
+                  <div class="color-swatch" style="background:#6D28D9" data-color="#6D28D9" onclick="pickColor(this)"></div>
+                  <div class="color-swatch" style="background:#854F0B" data-color="#854F0B" onclick="pickColor(this)"></div>
+                  <div class="color-swatch" style="background:#E82227" data-color="#E82227" onclick="pickColor(this)"></div>
+                  <div class="color-swatch" style="background:#1A2D4F" data-color="#1A2D4F" onclick="pickColor(this)"></div>
+                </div>
+                <div class="cr-help">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Esta é a cor da marca GPC. Mude para personalizar.
+                </div>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Cor de destaque (CTA)</h4>
+                <p>Para botões de chamada à ação importantes (criar, aprovar, importar).</p>
+                <span class="schema-tag">settings.accent_color</span>
+              </div>
+              <div class="cr-control">
+                <div class="color-picker">
+                  <div class="color-swatch selected" style="background:#F5831F" data-color="#F5831F" onclick="pickColor(this, 'accent')"></div>
+                  <div class="color-swatch" style="background:#1E7B4B" data-color="#1E7B4B" onclick="pickColor(this, 'accent')"></div>
+                  <div class="color-swatch" style="background:#6D28D9" data-color="#6D28D9" onclick="pickColor(this, 'accent')"></div>
+                  <div class="color-swatch" style="background:#E82227" data-color="#E82227" onclick="pickColor(this, 'accent')"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Preview ao vivo</h3>
+              <p>Como a sua marca aparece no sistema com as configurações atuais.</p>
+            </div>
+
+            <div class="preview-frame">
+              <div class="pf-bar">https://gpc.r2people.com.br</div>
+              <div class="pf-content">
+                <div class="preview-mini-topbar" id="previewTopbar">
+                  <div class="pmt-logo">GPC</div>
+                  <span style="font-weight:600;">Dashboard RH</span>
+                  <button class="preview-btn-orange" id="previewCta">Nova ação</button>
+                </div>
+                <div style="font-size:11px; color:var(--txt2);">
+                  Esta é uma prévia simplificada. As cores escolhidas se aplicam em todos os botões primários, links, headers e ícones ativos do sistema.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Branding em e-mails e exports</h3>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Cabeçalho de e-mails</h4>
+                <p>Logo aparece no topo dos e-mails enviados pelo sistema (boas-vindas, lembretes, notificações).</p>
+                <span class="schema-tag">settings.email_branding</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Marca-d'água em PDFs exportados</h4>
+                <p>Adiciona logo no rodapé de relatórios exportados em PDF.</p>
+                <span class="schema-tag">settings.pdf_watermark</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= ABA: AVALIAÇÕES ============= -->
+        <div class="settings-panel" data-pane="aval">
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Configuração padrão dos ciclos</h3>
+              <p>Define o comportamento padrão de novos ciclos. Cada ciclo individual pode sobrescrever estas regras.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Escala de avaliação</h4>
+                <p>Range de notas usado em cada competência. Aplica para self e gestor.</p>
+                <span class="schema-tag">settings.evaluation_scale</span>
+              </div>
+              <div class="cr-control">
+                <div class="radio-group">
+                  <label class="selected">1 a 5</label>
+                  <label>1 a 7</label>
+                  <label>1 a 10</label>
+                  <label>0 a 100</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Tipos de avaliação habilitados</h4>
+                <p>Quem avalia quem. No MVP, a auto-avaliação e a do gestor são obrigatórias.</p>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="margin-bottom:7px;">
+                  <input type="checkbox" checked disabled>
+                  <div class="switch-track"></div>
+                  <span class="switch-label">Auto-avaliação <span style="color:var(--txt3); font-size:10.5px;">(obrigatória)</span></span>
+                </label>
+                <label class="switch" style="margin-bottom:7px;">
+                  <input type="checkbox" checked disabled>
+                  <div class="switch-track"></div>
+                  <span class="switch-label">Avaliação do gestor <span style="color:var(--txt3); font-size:10.5px;">(obrigatória)</span></span>
+                </label>
+                <label class="switch" style="margin-bottom:7px;">
+                  <input type="checkbox">
+                  <div class="switch-track"></div>
+                  <span class="switch-label">Avaliação 360° (pares) <span class="tier-tag pro">PRO</span></span>
+                </label>
+                <label class="switch" style="margin-bottom:7px;">
+                  <input type="checkbox">
+                  <div class="switch-track"></div>
+                  <span class="switch-label">Avaliação ascendente (subordinados) <span class="tier-tag pro">PRO</span></span>
+                </label>
+                <label class="switch">
+                  <input type="checkbox">
+                  <div class="switch-track"></div>
+                  <span class="switch-label">Calibração entre líderes <span class="tier-tag ent">ENTERPRISE</span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Anonimato em feedbacks de pares</h4>
+                <p>Quando 360° está ativo, o avaliado pode ver quem deu cada nota?</p>
+                <span class="schema-tag">settings.allow_anonymous_peer</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option>Sempre identificado</option>
+                  <option selected>Anônimo por padrão (avaliador escolhe)</option>
+                  <option>Sempre anônimo</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Janela de auto-avaliação</h4>
+                <p>Quantos dias antes do prazo do gestor o colaborador tem para se autoavaliar.</p>
+                <span class="schema-tag">settings.self_eval_window_days</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option>3 dias</option>
+                  <option>5 dias</option>
+                  <option selected>7 dias</option>
+                  <option>10 dias</option>
+                  <option>14 dias</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Reabertura após submissão</h4>
+                <p>Permite que o colaborador edite a auto-avaliação antes do prazo final, mesmo após enviar.</p>
+                <span class="schema-tag">settings.allow_eval_reopen</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>9-Box e talent review</h3>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Habilitar matriz 9-Box</h4>
+                <p>Posicionamento desempenho × potencial após cada ciclo. Necessário para sucessão e PDI.</p>
+                <span class="schema-tag">settings.nine_box_enabled</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Visibilidade do 9-Box para o avaliado</h4>
+                <p>O próprio colaborador pode ver onde foi posicionado?</p>
+                <span class="schema-tag">settings.nine_box_visible_to_employee</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option selected>Não (somente líderes e RH)</option>
+                  <option>Sim, posição completa</option>
+                  <option>Sim, mas só dimensão de desempenho</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= ABA: NOTIFICAÇÕES ============= -->
+        <div class="settings-panel" data-pane="notif">
+
+          <div class="tier-banner">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <div>
+              <strong>No MVP, apenas notificações in-app estão ativas.</strong>
+              E-mails para colaboradores sem caixa cadastrada são impossíveis. Considere ativar e-mail apenas para perfis administrativos.
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Canais habilitados</h3>
+              <p>Define onde as notificações chegam.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>In-app (sino na topbar)</h4>
+                <p>Sempre ativa. Mostra notificações na campainha do topbar.</p>
+                <span class="schema-tag">settings.channels.in_app</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked disabled>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">SEMPRE</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>E-mail</h4>
+                <p>Envio para o e-mail cadastrado em <code style="background:var(--off); padding:1px 5px; border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10.5px;">users.email</code>. Colaboradores sem e-mail simplesmente não recebem.</p>
+                <span class="schema-tag">settings.channels.email</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox">
+                  <div class="switch-track"></div>
+                  <span class="switch-state off">DESLIGADO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>WhatsApp <span class="tier-tag pro">PRO</span></h4>
+                <p>Notificações importantes via WhatsApp Business API. Requer integração com fornecedor (Twilio, Z-API).</p>
+                <span class="schema-tag">settings.channels.whatsapp</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" disabled>
+                  <div class="switch-track"></div>
+                  <span class="switch-state off">PRO</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Quais eventos disparam notificação</h3>
+              <p>Você pode desligar tipos específicos. Cada usuário também pode customizar individualmente.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Movimentação aguardando minha decisão</h4>
+                <p>Para líderes e RH. Crítico, recomendado manter ativo.</p>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Avaliação pendente</h4>
+                <p>Lembrete diário 3 dias antes do prazo, depois 1× por dia.</p>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Feedback recebido</h4>
+                <p>Avisa quando alguém envia feedback contínuo ao colaborador.</p>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Aniversário de colaborador da minha equipe</h4>
+                <p>Avisa o gestor 1 dia antes para preparar reconhecimento.</p>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Aniversário de empresa (work anniversary)</h4>
+                <p>Marco de tempo de casa. Avisa colaborador, gestor e RH.</p>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Resumo semanal do RH</h4>
+                <p>E-mail toda segunda 8h com headcount, movimentações pendentes e ciclos abertos.</p>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox">
+                  <div class="switch-track"></div>
+                  <span class="switch-state off">DESLIGADO</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= ABA: SEGURANÇA ============= -->
+        <div class="settings-panel" data-pane="seg">
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Política de senhas</h3>
+              <p>Regras aplicadas no momento de definir/redefinir senha.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Comprimento mínimo</h4>
+                <p>Recomendado: 8+ caracteres. Para perfis administrativos, considere 12+.</p>
+                <span class="schema-tag">settings.password_policy.min_length</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select short">
+                  <option>6 caracteres</option>
+                  <option selected>8 caracteres</option>
+                  <option>10 caracteres</option>
+                  <option>12 caracteres</option>
+                  <option>16 caracteres</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Exigir caractere especial</h4>
+                <p>Pelo menos um <code style="background:var(--off); padding:1px 5px; border-radius:3px; font-family:'JetBrains Mono',monospace; font-size:10.5px;">!@#$%&*()</code>.</p>
+                <span class="schema-tag">settings.password_policy.require_special</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Exigir número</h4>
+                <p>Pelo menos um dígito 0-9.</p>
+                <span class="schema-tag">settings.password_policy.require_number</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Trocar senha periodicamente</h4>
+                <p>Força redefinição após o período. Cuidado: pode incomodar colaboradores operacionais.</p>
+                <span class="schema-tag">settings.password_policy.expiration_days</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option selected>Nunca expira</option>
+                  <option>30 dias</option>
+                  <option>60 dias</option>
+                  <option>90 dias</option>
+                  <option>180 dias</option>
+                  <option>1 ano</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Bloqueio após tentativas falhas</h4>
+                <p>Quantas tentativas erradas antes de bloquear o login por 15 minutos.</p>
+                <span class="schema-tag">settings.password_policy.lockout_attempts</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select short">
+                  <option>3 tentativas</option>
+                  <option selected>5 tentativas</option>
+                  <option>10 tentativas</option>
+                  <option>Nunca bloquear</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Autenticação de dois fatores (2FA)</h3>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Exigir 2FA para perfis administrativos</h4>
+                <p>Super Admin, Admin RH e Gerentes precisam configurar 2FA via app autenticador.</p>
+                <span class="schema-tag">settings.require_2fa_admins</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox" checked>
+                  <div class="switch-track"></div>
+                  <span class="switch-state on">ATIVO</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Exigir 2FA para todos</h4>
+                <p>Inclui colaboradores comuns. Cuidado: requer smartphone ou e-mail.</p>
+                <span class="schema-tag">settings.require_2fa_all</span>
+              </div>
+              <div class="cr-control">
+                <label class="switch" style="justify-content:flex-end; width:100%;">
+                  <input type="checkbox">
+                  <div class="switch-track"></div>
+                  <span class="switch-state off">DESLIGADO</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Sessão</h3>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Expiração de sessão por inatividade</h4>
+                <p>Após este tempo sem atividade, força novo login.</p>
+                <span class="schema-tag">settings.session_idle_timeout_minutes</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option>15 minutos</option>
+                  <option>30 minutos</option>
+                  <option selected>1 hora</option>
+                  <option>4 horas</option>
+                  <option>8 horas</option>
+                  <option>Nunca expirar</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Logout automático ao final do expediente</h4>
+                <p>Para colaboradores em turno fixo. Define horário de corte automático.</p>
+                <span class="schema-tag">settings.auto_logout_at</span>
+              </div>
+              <div class="cr-control">
+                <select class="cr-select">
+                  <option selected>Não usar</option>
+                  <option>22:00</option>
+                  <option>00:00</option>
+                  <option>Personalizado por filial</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= ABA: INTEGRAÇÕES ============= -->
+        <div class="settings-panel" data-pane="int">
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>ERP de folha de pagamento</h3>
+              <p>Sincroniza colaboradores e folha do seu ERP com o R2 People.</p>
+            </div>
+
+            <div class="integration-card">
+              <div class="ic-logo totvs">T</div>
+              <div class="ic-info">
+                <h4>TOTVS WinThor</h4>
+                <p>ETL para Faturamento, Estoque, Despesas e Folha. Sincronia incremental a cada 15 minutos.</p>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
+                <span class="ic-status connected">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+                  Conectado
+                </span>
+                <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Configurar</button>
+              </div>
+            </div>
+
+            <div class="integration-card">
+              <div class="ic-logo dom">D</div>
+              <div class="ic-info">
+                <h4>Domínio Sistemas (Thomson Reuters)</h4>
+                <p>Importação de folha mensal e dependentes via API REST.</p>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
+                <span class="ic-status disconnected">Desconectado</span>
+                <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Conectar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>E-mail e calendário</h3>
+              <p>Necessário para envio de notificações por e-mail e agendamento de 1:1.</p>
+            </div>
+
+            <div class="integration-card">
+              <div class="ic-logo gmail">M</div>
+              <div class="ic-info">
+                <h4>Google Workspace</h4>
+                <p>SMTP relay para e-mails do sistema e sincronização do Google Calendar para 1:1s.</p>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
+                <span class="ic-status connected">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>
+                  Conectado
+                </span>
+                <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Reconectar</button>
+              </div>
+            </div>
+
+            <div class="integration-card">
+              <div class="ic-logo gcal">O</div>
+              <div class="ic-info">
+                <h4>Microsoft 365 / Outlook</h4>
+                <p>Alternativa ao Google Workspace. Mesmas funcionalidades para tenants Microsoft.</p>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:5px; align-items:flex-end;">
+                <span class="ic-status disconnected">Desconectado</span>
+                <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Conectar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Comunicação interna</h3>
+            </div>
+
+            <div class="integration-card">
+              <div class="ic-logo slack">S</div>
+              <div class="ic-info">
+                <h4>Slack <span class="tier-tag pro">PRO</span></h4>
+                <p>Notificações no canal #rh, comandos slash para feedback rápido, mural de elogios automático.</p>
+              </div>
+              <div>
+                <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Conectar</button>
+              </div>
+            </div>
+
+            <div class="integration-card">
+              <div class="ic-logo zap" style="background:var(--green); color:#fff;">W</div>
+              <div class="ic-info">
+                <h4>WhatsApp Business <span class="tier-tag pro">PRO</span></h4>
+                <p>Notificações via Twilio ou Z-API. Útil para colaboradores operacionais sem e-mail.</p>
+              </div>
+              <div>
+                <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Conectar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-card">
+            <div class="config-head">
+              <h3>Webhooks e API</h3>
+              <p>Para integrações customizadas com seus sistemas internos.</p>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Webhook de eventos</h4>
+                <p>Envia POST para sua URL toda vez que uma movimentação é aprovada, ciclo encerra, ou colaborador é admitido.</p>
+                <span class="schema-tag">settings.webhook_url</span>
+              </div>
+              <div class="cr-control">
+                <input type="text" class="cr-input" placeholder="https://seu-sistema.com/webhooks/r2people" value="">
+                <div class="cr-help">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                  Não configurado
+                </div>
+              </div>
+            </div>
+
+            <div class="config-row">
+              <div class="cr-info">
+                <h4>Chave de API</h4>
+                <p>Para acessar o R2 People via API REST. Use em integrações customizadas.</p>
+                <span class="schema-tag">settings.api_key (criptografada)</span>
+              </div>
+              <div class="cr-control">
+                <input type="text" class="cr-input" value="r2_live_••••••••••••6f8a" readonly style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">
+                <div style="display:flex; gap:6px; margin-top:5px;">
+                  <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Copiar</button>
+                  <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Regenerar</button>
+                  <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Ver docs</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Sticky save bar -->
+<div class="save-bar" id="saveBar">
+  <div class="save-bar-info">
+    <span class="dot"></span>
+    <span>Você tem <strong>3 alterações</strong> não salvas</span>
+  </div>
+  <div class="save-bar-actions">
+    <button class="btn-secondary" onclick="discardChanges()">Descartar</button>
+    <button class="btn-primary" onclick="saveChanges()">Salvar alterações</button>
+  </div>
+</div>
+
+<script>
+/* ============= NAV ============= */
+document.querySelectorAll('.sn-item').forEach(b=>{
+  b.addEventListener('click', ()=>{
+    document.querySelectorAll('.sn-item').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.settings-panel').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelector(`.settings-panel[data-pane="${b.dataset.pane}"]`).classList.add('active');
+  });
+});
+
+/* ============= COLOR PICKER ============= */
+function pickColor(el, type){
+  const group = el.parentElement;
+  group.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+  el.classList.add('selected');
+  const color = el.dataset.color;
+
+  if(type === 'accent'){
+    document.getElementById('previewCta').style.background = color;
+  } else {
+    document.getElementById('previewTopbar').style.background = color;
+    document.getElementById('logoPreview').style.background = `linear-gradient(135deg, ${color}, var(--orange))`;
+  }
+  markDirty();
+}
+
+/* ============= RADIO GROUP ============= */
+document.querySelectorAll('.radio-group label').forEach(lab=>{
+  lab.addEventListener('click', (e)=>{
+    e.preventDefault();
+    lab.parentElement.querySelectorAll('label').forEach(l=>l.classList.remove('selected'));
+    lab.classList.add('selected');
+    markDirty();
+  });
+});
+
+/* ============= SAVE BAR ============= */
+function markDirty(){
+  document.getElementById('saveBar').classList.add('show');
+}
+function saveChanges(){
+  document.getElementById('saveBar').classList.remove('show');
+  alert('Em produção, isto enviaria PATCH para companies.settings via Supabase RPC.');
+}
+function discardChanges(){
+  if(confirm('Descartar alterações não salvas?')){
+    document.getElementById('saveBar').classList.remove('show');
+  }
+}
+
+/* ============= SWITCHES (atualizar texto on/off) ============= */
+document.querySelectorAll('.switch input[type=checkbox]').forEach(input=>{
+  if(input.disabled) return;
+  input.addEventListener('change', ()=>{
+    const state = input.parentElement.querySelector('.switch-state');
+    if(state){
+      const isOn = input.checked;
+      state.textContent = isOn ? 'ATIVO' : 'DESLIGADO';
+      state.className = `switch-state ${isOn?'on':'off'}`;
+    }
+    markDirty();
+  });
+});
+
+/* Inputs e selects também marcam dirty */
+document.querySelectorAll('.cr-input:not(:disabled), .cr-select:not(:disabled)').forEach(el=>{
+  el.addEventListener('input', markDirty);
+  el.addEventListener('change', markDirty);
+});
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Feedback e Mural</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar (mesmo padrão das outras telas) */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#3D5F95,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary.orange{background:var(--orange);}
+.btn-primary.orange:hover{background:#D87013;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+
+/* Tabs grandes (alternar entre Feedback e Mural) */
+.big-tabs{
+  display:flex; gap:0;
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:6px;
+  margin-bottom:14px;
+  position:relative;
+  overflow:hidden;
+}
+.big-tab{
+  flex:1;
+  padding:13px 18px;
+  font-size:13px; font-weight:500;
+  color:var(--txt2);
+  background:transparent;
+  border:none; cursor:pointer;
+  border-radius:8px;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:10px;
+  justify-content:center;
+  transition:all .2s;
+  position:relative;
+}
+.big-tab:hover{background:var(--off); color:var(--txt);}
+.big-tab.active.feedback{
+  background:linear-gradient(135deg, var(--navy), var(--navy2));
+  color:#fff;
+  box-shadow:0 3px 12px rgba(43,74,122,.25);
+}
+.big-tab.active.mural{
+  background:linear-gradient(135deg, var(--orange), #D87013);
+  color:#fff;
+  box-shadow:0 3px 12px rgba(245,131,31,.25);
+}
+.big-tab svg{width:17px; height:17px;}
+.big-tab .desc{
+  font-size:10.5px; font-weight:400;
+  opacity:.78; margin-left:5px;
+  display:block;
+}
+.big-tab.active .desc{opacity:.85;}
+.big-tab .badge{
+  background:rgba(255,255,255,.2); padding:1px 8px; border-radius:9px;
+  font-size:10.5px; font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+  margin-left:6px;
+}
+.big-tab:not(.active) .badge{background:var(--gray1); color:var(--txt2);}
+
+.tab-panel{display:none;}
+.tab-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* ============= FEEDBACK CONTÍNUO ============= */
+.fb-layout{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:14px;
+}
+
+/* Sub-tabs de feedback (recebidos / enviados / solicitados) */
+.fb-subtabs{
+  display:flex; gap:4px;
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:4px; margin-bottom:11px;
+}
+.fb-subtab{
+  padding:9px 14px;
+  font-size:12px; font-weight:500;
+  color:var(--txt2);
+  background:transparent; border:none; cursor:pointer;
+  border-radius:7px;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.fb-subtab:hover{background:var(--off); color:var(--txt);}
+.fb-subtab.active{background:var(--navy); color:#fff;}
+.fb-subtab .count{
+  background:rgba(255,255,255,.2); padding:1px 6px; border-radius:8px;
+  font-size:10px; font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+}
+.fb-subtab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+
+/* Quick give feedback card (sempre no topo) */
+.fb-quick-give{
+  background:linear-gradient(135deg, #2B4A7A 0%, #1F3A6B 100%);
+  color:#fff;
+  border-radius:var(--radius-lg);
+  padding:18px 20px;
+  margin-bottom:14px;
+  position:relative; overflow:hidden;
+}
+.fb-quick-give::before{
+  content:''; position:absolute;
+  right:-30px; top:-30px;
+  width:160px; height:160px;
+  background:radial-gradient(circle, rgba(245,131,31,.2), transparent 65%);
+  border-radius:50%;
+}
+.fbq-head{display:flex; align-items:center; gap:11px; margin-bottom:13px; position:relative; z-index:1;}
+.fbq-head .icon{
+  width:36px; height:36px; border-radius:9px;
+  background:rgba(255,255,255,.12);
+  display:flex; align-items:center; justify-content:center;
+}
+.fbq-head h3{font-size:15px; font-weight:600;}
+.fbq-head p{font-size:11.5px; color:rgba(255,255,255,.78); margin-top:1px;}
+
+.fbq-form{position:relative; z-index:1;}
+.fbq-row1{display:flex; gap:9px; margin-bottom:9px; flex-wrap:wrap;}
+.fbq-input-target{
+  flex:1; min-width:200px;
+  padding:9px 12px 9px 38px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:8px;
+  font-size:12.5px; color:#fff; font-family:inherit;
+  position:relative;
+}
+.fbq-input-target::placeholder{color:rgba(255,255,255,.5);}
+.fbq-input-wrap{position:relative; flex:1; min-width:200px;}
+.fbq-input-wrap > svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,.6);}
+
+/* Tipos de feedback (chips coloridos) */
+.fbq-types{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:9px;}
+.fbq-type-chip{
+  padding:6px 12px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:11px;
+  font-size:11px; font-weight:500;
+  color:#fff;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:inherit;
+  transition:all .12s;
+}
+.fbq-type-chip:hover{background:rgba(255,255,255,.18);}
+.fbq-type-chip.selected.positive{background:var(--green); border-color:var(--green);}
+.fbq-type-chip.selected.constructive{background:var(--amber); border-color:var(--amber);}
+.fbq-type-chip.selected.recognition{background:var(--orange); border-color:var(--orange);}
+.fbq-type-chip.selected.request{background:var(--purple); border-color:var(--purple);}
+
+.fbq-textarea{
+  width:100%; padding:11px 13px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:8px;
+  font-size:12.5px; color:#fff; font-family:inherit;
+  resize:vertical; min-height:75px;
+}
+.fbq-textarea::placeholder{color:rgba(255,255,255,.5);}
+
+.fbq-foot{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:9px;
+  flex-wrap:wrap; gap:9px;
+}
+.fbq-options{display:flex; gap:14px; flex-wrap:wrap;}
+.fbq-toggle{
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:11.5px; cursor:pointer;
+  color:rgba(255,255,255,.85);
+}
+.fbq-toggle input{display:none;}
+.fbq-toggle .fbt-track{
+  width:30px; height:18px; background:rgba(255,255,255,.18); border-radius:10px;
+  position:relative;
+}
+.fbq-toggle .fbt-track::after{
+  content:''; position:absolute; top:2px; left:2px;
+  width:14px; height:14px; background:#fff; border-radius:50%;
+  transition:transform .2s;
+}
+.fbq-toggle input:checked + .fbt-track{background:var(--orange);}
+.fbq-toggle input:checked + .fbt-track::after{transform:translateX(12px);}
+.fbq-send-btn{
+  background:var(--orange);
+  color:#fff;
+  padding:9px 16px; border-radius:8px;
+  border:none; cursor:pointer;
+  font-size:12.5px; font-weight:600;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.fbq-send-btn:hover{background:#D87013;}
+
+/* Banner KPIs */
+.fb-kpis{
+  display:grid; grid-template-columns:repeat(4, 1fr);
+  gap:12px; margin-bottom:14px;
+}
+.fb-kpi{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:13px 14px;
+  border-left:3px solid var(--navy);
+}
+.fb-kpi.green{border-left-color:var(--green);}
+.fb-kpi.amber{border-left-color:var(--amber);}
+.fb-kpi.purple{border-left-color:var(--purple);}
+.fb-kpi-label{
+  font-size:10.5px; color:var(--txt2);
+  text-transform:uppercase; letter-spacing:.4px; font-weight:500;
+}
+.fb-kpi-value{
+  font-size:24px; font-weight:600;
+  margin-top:5px; letter-spacing:-.5px;
+  display:flex; align-items:baseline; gap:6px;
+}
+.fb-kpi-value .delta{font-size:11px; color:var(--green); font-weight:500;}
+.fb-kpi-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+/* Lista de feedbacks */
+.fb-feed{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+}
+.fb-card{
+  padding:14px 16px;
+  border-bottom:1px solid var(--gray1);
+  display:grid; grid-template-columns:auto 1fr; gap:12px;
+}
+.fb-card:last-child{border-bottom:none;}
+.fb-card:hover{background:var(--off);}
+.fb-card.unread{background:linear-gradient(90deg, #FFF8EB 0%, #fff 30%); border-left:3px solid var(--orange);}
+
+.fb-avatar{
+  width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:600; font-size:13px;
+  flex-shrink:0;
+}
+.fb-avatar.anon{background:var(--dark); color:#fff;}
+
+.fb-body{min-width:0;}
+.fb-meta{
+  display:flex; align-items:center; gap:9px;
+  font-size:11.5px; color:var(--txt2);
+  margin-bottom:5px;
+  flex-wrap:wrap;
+}
+.fb-meta .author{color:var(--txt); font-weight:600;}
+.fb-meta .role{font-size:10.5px;}
+.fb-type-tag{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9.5px; padding:2px 8px; border-radius:8px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.3px;
+}
+.fb-type-tag.positive{background:var(--green2); color:var(--green);}
+.fb-type-tag.constructive{background:var(--amber2); color:var(--amber);}
+.fb-type-tag.recognition{background:#FCE6CD; color:var(--orange);}
+.fb-type-tag.request{background:#F0E6FA; color:var(--purple);}
+.fb-time{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--txt3);
+  margin-left:auto;
+}
+.fb-private-tag{
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:9.5px; padding:2px 7px; border-radius:7px;
+  background:var(--gray1); color:var(--txt2);
+  font-weight:600; text-transform:uppercase; letter-spacing:.3px;
+}
+.fb-content{
+  font-size:13px; color:var(--txt);
+  line-height:1.55;
+}
+.fb-content .ref-comp{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10.5px; padding:1px 7px; border-radius:6px;
+  background:var(--off); color:var(--txt2);
+  font-weight:500;
+}
+.fb-actions{
+  display:flex; gap:13px; margin-top:9px;
+  font-size:11px;
+}
+.fb-actions button{
+  background:transparent; border:none; cursor:pointer;
+  color:var(--txt2); font-family:inherit; font-size:11px;
+  display:inline-flex; align-items:center; gap:4px;
+  padding:0;
+}
+.fb-actions button:hover{color:var(--navy);}
+.fb-actions button.thanked{color:var(--green); font-weight:500;}
+
+/* Sidebar à direita do feedback */
+.fb-side{
+  display:flex; flex-direction:column; gap:11px;
+}
+.fb-side-card{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:14px 16px;
+}
+.fb-side-card h4{
+  font-size:12.5px; font-weight:600;
+  margin-bottom:9px; padding-bottom:8px;
+  border-bottom:1px solid var(--gray1);
+  display:flex; align-items:center; gap:7px;
+}
+
+.fb-suggest-list{display:flex; flex-direction:column; gap:6px;}
+.fb-suggest-row{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 10px;
+  background:var(--off); border-radius:7px;
+  cursor:pointer;
+}
+.fb-suggest-row:hover{background:#E8EFF8;}
+.fb-suggest-avatar{
+  width:28px; height:28px; border-radius:50%;
+  color:#fff; font-weight:600; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.fb-suggest-info{flex:1; min-width:0;}
+.fb-suggest-name{font-size:11.5px; font-weight:500;}
+.fb-suggest-reason{font-size:10px; color:var(--txt2);}
+.fb-suggest-arrow{color:var(--txt3);}
+
+.fb-stats-row{
+  display:flex; justify-content:space-between;
+  padding:6px 0; font-size:11.5px;
+  border-bottom:1px solid var(--gray1);
+}
+.fb-stats-row:last-child{border-bottom:none;}
+.fb-stats-row .lbl{color:var(--txt2);}
+.fb-stats-row .val{font-weight:600; font-family:'JetBrains Mono',monospace;}
+
+/* ============= MURAL DE ELOGIOS ============= */
+.mural-hero{
+  background:linear-gradient(135deg, #F5831F 0%, #D87013 50%, #6D28D9 100%);
+  color:#fff;
+  border-radius:var(--radius-lg);
+  padding:18px 22px;
+  margin-bottom:14px;
+  position:relative; overflow:hidden;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:18px;
+  align-items:center;
+}
+.mural-hero::before{
+  content:''; position:absolute;
+  right:-40px; top:-40px;
+  width:200px; height:200px;
+  background:radial-gradient(circle, rgba(255,255,255,.18), transparent 65%);
+  border-radius:50%;
+}
+.mural-hero h2{font-size:18px; font-weight:600; position:relative; z-index:1;}
+.mural-hero p{font-size:12.5px; color:rgba(255,255,255,.85); margin-top:3px; position:relative; z-index:1;}
+.mural-hero-action{position:relative; z-index:1; display:flex; gap:8px;}
+.mural-hero-action button{
+  padding:9px 16px; border-radius:8px; border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.15); color:#fff;
+  font-size:12.5px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.mural-hero-action button:hover{background:rgba(255,255,255,.25);}
+.mural-hero-action button.primary{background:#fff; color:var(--orange);}
+.mural-hero-action button.primary:hover{background:#FFF4E6;}
+
+/* KPIs do mural com ranking */
+.mural-stats{
+  display:grid; grid-template-columns:1fr 1fr; gap:14px;
+  margin-bottom:14px;
+}
+.mural-stat-card{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:14px 16px;
+}
+.msc-head{display:flex; align-items:center; gap:8px; margin-bottom:11px;}
+.msc-icon{
+  width:30px; height:30px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+}
+.msc-icon.give{background:#FCE6CD; color:var(--orange);}
+.msc-icon.recv{background:#F0E6FA; color:var(--purple);}
+.msc-head h4{font-size:12.5px; font-weight:600;}
+.msc-head p{font-size:10.5px; color:var(--txt2);}
+.msc-row{
+  display:grid; grid-template-columns:24px auto 1fr auto; gap:10px;
+  align-items:center;
+  padding:7px 0;
+  font-size:12px;
+  border-bottom:1px solid var(--gray1);
+}
+.msc-row:last-child{border-bottom:none;}
+.msc-rank{
+  width:22px; height:22px; border-radius:50%;
+  background:var(--gray1); color:var(--txt2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10.5px; font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+}
+.msc-rank.gold{background:#FFF4D6; color:#854F0B;}
+.msc-rank.silver{background:#E8EFF8; color:var(--navy);}
+.msc-rank.bronze{background:#FCE6CD; color:var(--orange);}
+.msc-row .av{
+  width:28px; height:28px; border-radius:50%;
+  color:#fff; font-weight:600; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+}
+.msc-row .nm{font-weight:500;}
+.msc-row .qt{font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--orange);}
+
+/* Filtros do mural */
+.mural-filters{
+  display:flex; gap:7px; margin-bottom:11px;
+  background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card);
+  padding:9px 11px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.mf-label{font-size:11px; color:var(--txt2); font-weight:600; text-transform:uppercase; letter-spacing:.4px;}
+.mf-chip{
+  padding:5px 11px; border-radius:11px;
+  font-size:11px; font-weight:500; cursor:pointer;
+  background:var(--gray1); color:var(--txt2);
+  border:none; font-family:inherit;
+}
+.mf-chip:hover{background:var(--gray2);}
+.mf-chip.active{background:var(--orange); color:#fff;}
+
+/* Grid de elogios (Pinterest-like masonry simulado com flex) */
+.praises-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
+  gap:13px;
+}
+
+.praise-card{
+  background:#fff; border-radius:var(--radius-lg);
+  padding:15px 17px;
+  box-shadow:var(--shadow-card);
+  position:relative;
+  display:flex; flex-direction:column;
+  transition:all .15s;
+}
+.praise-card:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(26,45,79,.1);}
+
+/* Cores das bordas do mural - rotação alegre */
+.praise-card.c1{border-top:4px solid var(--orange);}
+.praise-card.c2{border-top:4px solid var(--purple);}
+.praise-card.c3{border-top:4px solid var(--green);}
+.praise-card.c4{border-top:4px solid var(--navy);}
+.praise-card.c5{border-top:4px solid var(--red);}
+.praise-card.c6{border-top:4px solid var(--amber);}
+
+.pc-avatars{
+  display:flex; align-items:center; gap:9px;
+  margin-bottom:11px;
+}
+.pc-from{
+  width:32px; height:32px; border-radius:50%;
+  color:#fff; font-weight:600; font-size:11.5px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.pc-arrow{color:var(--txt3);}
+.pc-to{
+  width:36px; height:36px; border-radius:50%;
+  color:#fff; font-weight:600; font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  border:2px solid #fff;
+  box-shadow:0 0 0 2px var(--orange);
+}
+.praise-card.c2 .pc-to{box-shadow:0 0 0 2px var(--purple);}
+.praise-card.c3 .pc-to{box-shadow:0 0 0 2px var(--green);}
+.praise-card.c4 .pc-to{box-shadow:0 0 0 2px var(--navy);}
+.praise-card.c5 .pc-to{box-shadow:0 0 0 2px var(--red);}
+.praise-card.c6 .pc-to{box-shadow:0 0 0 2px var(--amber);}
+.pc-info{flex:1; min-width:0;}
+.pc-from-name{font-size:11px; color:var(--txt2); font-weight:500;}
+.pc-to-name{font-size:13px; font-weight:600; color:var(--txt);}
+
+.pc-message{
+  font-size:13px; color:var(--txt);
+  line-height:1.6;
+  flex:1;
+  margin-bottom:11px;
+}
+.pc-tag{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; padding:2px 8px; border-radius:8px;
+  background:var(--off); color:var(--txt2);
+  font-weight:600; text-transform:uppercase; letter-spacing:.3px;
+  margin-right:5px;
+}
+.pc-tag.value{background:#FCE6CD; color:var(--orange);}
+
+.pc-foot{
+  display:flex; align-items:center; justify-content:space-between;
+  padding-top:11px; border-top:1px solid var(--gray1);
+  font-size:11px; color:var(--txt2);
+}
+.pc-time{font-family:'JetBrains Mono',monospace;}
+.pc-reactions{
+  display:flex; align-items:center; gap:5px;
+}
+.pc-reaction{
+  display:inline-flex; align-items:center; gap:3px;
+  padding:3px 9px; border-radius:13px;
+  background:var(--gray1);
+  font-size:11px; cursor:pointer;
+  border:1px solid transparent;
+  transition:all .12s;
+}
+.pc-reaction:hover{background:var(--gray2); transform:scale(1.05);}
+.pc-reaction.active{background:#FFF4D6; border-color:var(--amber);}
+.pc-reaction-add{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%;
+  background:var(--gray1); color:var(--txt2); cursor:pointer;
+  border:none; font-family:inherit;
+}
+.pc-reaction-add:hover{background:var(--gray2);}
+
+/* ============= MODAL "NOVO ELOGIO" ============= */
+.modal-overlay{display:none; position:fixed; inset:0; background:rgba(26,45,79,.55); z-index:100; align-items:center; justify-content:center; padding:20px; -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);}
+.modal-overlay.show{display:flex; animation:fadeIn .2s;}
+.modal{background:#fff; border-radius:var(--radius-lg); width:100%; max-width:560px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(26,45,79,.3); overflow:hidden;}
+.modal-head{padding:18px 22px; border-bottom:1px solid var(--gray1); display:flex; align-items:center; justify-content:space-between;}
+.modal-title{font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px;}
+.modal-close{width:32px; height:32px; border-radius:7px; background:var(--gray1); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.modal-close:hover{background:var(--gray2);}
+.modal-body{flex:1; overflow-y:auto; padding:18px 22px;}
+.modal-foot{padding:14px 22px; border-top:1px solid var(--gray1); display:flex; justify-content:space-between; align-items:center; gap:10px; background:var(--off);}
+
+.field{margin-bottom:13px;}
+.field label{display:block; font-size:11.5px; color:var(--txt2); margin-bottom:5px; font-weight:500;}
+.field input, .field select, .field textarea{width:100%; padding:10px 12px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit; color:var(--txt); background:#fff;}
+.field textarea{resize:vertical; min-height:90px;}
+
+.value-tags{display:flex; gap:6px; flex-wrap:wrap;}
+.value-chip{
+  padding:6px 12px; border-radius:11px;
+  background:var(--gray1); color:var(--txt2);
+  border:none; cursor:pointer;
+  font-size:11.5px; font-weight:500;
+  font-family:inherit;
+}
+.value-chip:hover{background:var(--gray2);}
+.value-chip.selected{background:var(--orange); color:#fff;}
+
+.preview-card{
+  background:linear-gradient(135deg, #FCE6CD 0%, #FFF8EB 100%);
+  border-radius:9px;
+  padding:11px 13px;
+  margin-top:8px;
+  border:1px dashed var(--orange);
+}
+.preview-card .pv-title{font-size:10.5px; color:var(--orange); font-weight:600; text-transform:uppercase; letter-spacing:.4px; margin-bottom:5px;}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .fb-layout{grid-template-columns:1fr;}
+  .fb-kpis{grid-template-columns:repeat(2, 1fr);}
+  .mural-stats{grid-template-columns:1fr;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .company-name, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 40px;}
+  .page-header h1{font-size:18px;}
+  .big-tab .desc{display:none;}
+  .praises-grid{grid-template-columns:1fr;}
+  .mural-hero{grid-template-columns:1fr;}
+  .mural-hero-action{justify-content:flex-start;}
+  .modal{max-height:100vh; height:100vh; max-width:100%; border-radius:0;}
+}
+@media (max-width: 420px){
+  .fb-subtab span:not(.count){display:none;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Meu perfil</a>
+      <div class="sidebar-section">Avaliação</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Minhas avaliações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        Minhas 1:1s
+      </a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Ciclo 2026.1</a>
+      <div class="sidebar-section">Desenvolvimento</div>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedback e mural</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>Movimentações</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Feedback & <strong>Mural</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar">FL</div>
+      <div class="user-info">
+        <span class="user-name">Fernanda Lima</span>
+        <span class="user-role">Analista Pleno</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Feedback e Mural</h1>
+        <p>Cultivar conversa entre ciclos · feedback contínuo é privado · elogios são públicos</p>
+      </div>
+    </div>
+
+    <!-- ============= TABS GRANDES ============= -->
+    <div class="big-tabs">
+      <button class="big-tab active feedback" data-tab="fb">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <div>
+          <div>Feedback Contínuo</div>
+          <span class="desc">Privado · 1:1 · Pode ser anônimo</span>
+        </div>
+        <span class="badge">7</span>
+      </button>
+      <button class="big-tab mural" data-tab="mural">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L19 22l-3.5-2L12 22l-3.5-2L5 22l3.5-8.5"/></svg>
+        <div>
+          <div>Mural de Elogios</div>
+          <span class="desc">Público · Reconhecimento aberto</span>
+        </div>
+        <span class="badge">42</span>
+      </button>
+    </div>
+
+    <!-- ============= TAB: FEEDBACK CONTÍNUO ============= -->
+    <div class="tab-panel active" data-panel="fb">
+
+      <!-- Quick give feedback -->
+      <div class="fb-quick-give">
+        <div class="fbq-head">
+          <div class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div>
+            <h3>Dar feedback agora</h3>
+            <p>Reconhecimento ou observação construtiva. O destinatário recebe na hora.</p>
+          </div>
+        </div>
+
+        <div class="fbq-form">
+          <div class="fbq-row1">
+            <div class="fbq-input-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+              <input class="fbq-input-target" placeholder="Para quem? Digite o nome do colega...">
+            </div>
+          </div>
+
+          <div class="fbq-types">
+            <button class="fbq-type-chip selected positive">👍 Positivo / Reconhecimento</button>
+            <button class="fbq-type-chip">💡 Construtivo</button>
+            <button class="fbq-type-chip">🎯 Sugestão / Pedido</button>
+          </div>
+
+          <textarea class="fbq-textarea" placeholder="Seja específico. Cite a situação concreta, o impacto que causou e o que você quer reforçar ou ajustar. Exemplo: 'Na reunião de fechamento de ontem, sua apresentação dos números foi muito clara. Os diretores entenderam de primeira porque você começou pelo principal.'"></textarea>
+
+          <div class="fbq-foot">
+            <div class="fbq-options">
+              <label class="fbq-toggle">
+                <input type="checkbox">
+                <span class="fbt-track"></span>
+                <span>Anônimo</span>
+              </label>
+              <label class="fbq-toggle">
+                <input type="checkbox" checked>
+                <span class="fbt-track"></span>
+                <span>Privado (só destinatário vê)</span>
+              </label>
+            </div>
+            <button class="fbq-send-btn">
+              Enviar feedback
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="fb-kpis">
+        <div class="fb-kpi green">
+          <div class="fb-kpi-label">Recebidos · 2026.1</div>
+          <div class="fb-kpi-value">12 <span class="delta">+4 vs ciclo anterior</span></div>
+          <div class="fb-kpi-sub">3 não lidos</div>
+        </div>
+        <div class="fb-kpi">
+          <div class="fb-kpi-label">Enviados · 2026.1</div>
+          <div class="fb-kpi-value">8</div>
+          <div class="fb-kpi-sub">Meta sugerida: 10 por ciclo</div>
+        </div>
+        <div class="fb-kpi amber">
+          <div class="fb-kpi-label">Solicitados</div>
+          <div class="fb-kpi-value">2</div>
+          <div class="fb-kpi-sub">Aguardando resposta dos colegas</div>
+        </div>
+        <div class="fb-kpi purple">
+          <div class="fb-kpi-label">Sequência ativa</div>
+          <div class="fb-kpi-value">3 sem</div>
+          <div class="fb-kpi-sub">Trocas semanais com seu líder</div>
+        </div>
+      </div>
+
+      <!-- Layout 2 colunas -->
+      <div class="fb-layout">
+
+        <div>
+          <!-- Sub-tabs -->
+          <div class="fb-subtabs">
+            <button class="fb-subtab active">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 4h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+              <span>Recebidos</span>
+              <span class="count">12</span>
+            </button>
+            <button class="fb-subtab">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+              <span>Enviados</span>
+              <span class="count">8</span>
+            </button>
+            <button class="fb-subtab">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <span>Solicitados</span>
+              <span class="count">2</span>
+            </button>
+          </div>
+
+          <!-- Feed de feedbacks -->
+          <div class="fb-feed">
+
+            <div class="fb-card unread">
+              <div class="fb-avatar" style="background:#3D5F95;">JC</div>
+              <div class="fb-body">
+                <div class="fb-meta">
+                  <span class="author">João Carvalho</span>
+                  <span class="role">· Líder Financeiro</span>
+                  <span class="fb-type-tag positive">👍 Positivo</span>
+                  <span class="fb-private-tag">🔒 Privado</span>
+                  <span class="fb-time">há 2 horas</span>
+                </div>
+                <div class="fb-content">
+                  Fer, parabéns pelo controle do recebível esta semana. As 4 lojas estavam descasando os relatórios e você cruzou tudo até quinta sem precisar pedir ajuda. <span class="ref-comp">📌 Proatividade</span> O Cestão L1 finalmente fechou batido. Esse é o tipo de iniciativa que vamos discutir no 1:1.
+                </div>
+                <div class="fb-actions">
+                  <button>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3z"/></svg>
+                    Agradecer
+                  </button>
+                  <button>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                    Responder
+                  </button>
+                  <button>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                    Salvar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="fb-card">
+              <div class="fb-avatar anon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 9h.01M15 9h.01M9.5 15.5a3.5 3.5 0 015 0"/></svg>
+              </div>
+              <div class="fb-body">
+                <div class="fb-meta">
+                  <span class="author" style="color:var(--txt2); font-style:italic;">Anônimo</span>
+                  <span class="fb-type-tag constructive">💡 Construtivo</span>
+                  <span class="fb-private-tag">🔒 Privado</span>
+                  <span class="fb-time">ontem</span>
+                </div>
+                <div class="fb-content">
+                  Quando você responde por e-mail muitas vezes só com "ok" ou "feito", a gente fica na dúvida se realmente avaliou ou só viu. <span class="ref-comp">📌 Comunicação</span> Acrescentar mesmo que uma frase com o que foi feito ou o status real ajudaria muito quem depende da sua resposta pra tocar o trabalho.
+                </div>
+                <div class="fb-actions">
+                  <button class="thanked">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3z"/></svg>
+                    Agradecido
+                  </button>
+                  <button>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                    Salvar
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="fb-card">
+              <div class="fb-avatar" style="background:#1E7B4B;">SG</div>
+              <div class="fb-body">
+                <div class="fb-meta">
+                  <span class="author">Sandra Gomes</span>
+                  <span class="role">· Gerente Cestão L1</span>
+                  <span class="fb-type-tag positive">👍 Positivo</span>
+                  <span class="fb-private-tag">🔒 Privado</span>
+                  <span class="fb-time">há 3 dias</span>
+                </div>
+                <div class="fb-content">
+                  Fernanda, mesmo você sendo da Labuta, sinto que faz parte do time daqui. <span class="ref-comp">📌 Trabalho em equipe</span> Quando peço algo, você responde como se a loja fosse sua. Isso faz diferença pra mim e pro pessoal aqui da L1. Obrigada.
+                </div>
+                <div class="fb-actions">
+                  <button class="thanked">👏 Agradecido</button>
+                  <button>↩ Responder</button>
+                  <button>🔖 Salvar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="fb-card">
+              <div class="fb-avatar" style="background:#854F0B;">CE</div>
+              <div class="fb-body">
+                <div class="fb-meta">
+                  <span class="author">Carlos Eduardo</span>
+                  <span class="role">· Analista Comercial · Labuta</span>
+                  <span class="fb-type-tag request">🎯 Sugestão</span>
+                  <span class="fb-private-tag">🔒 Privado</span>
+                  <span class="fb-time">há 5 dias</span>
+                </div>
+                <div class="fb-content">
+                  Fer, lembra que você falou que tava tentando montar uma macro pra cruzar recebível com NF? Tô precisando fazer algo parecido pro acompanhamento de fornecedor. Topa a gente trocar uma figura na sexta? <span class="ref-comp">📌 Domínio técnico</span>
+                </div>
+                <div class="fb-actions">
+                  <button>↩ Responder</button>
+                  <button>🔖 Salvar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="fb-card">
+              <div class="fb-avatar" style="background:#6D28D9;">PM</div>
+              <div class="fb-body">
+                <div class="fb-meta">
+                  <span class="author">Patrícia Mello</span>
+                  <span class="role">· Coord. RH</span>
+                  <span class="fb-type-tag recognition">✨ Reconhecimento</span>
+                  <span class="fb-private-tag">🔒 Privado</span>
+                  <span class="fb-time">há 1 semana</span>
+                </div>
+                <div class="fb-content">
+                  Fernanda, soube pelo João que você foi a primeira pessoa a concluir o curso de Excel intermediário do programa do RH. Isso conta muito no PDI. Continue assim · você está construindo um trajeto de carreira sólido. 👏
+                </div>
+                <div class="fb-actions">
+                  <button class="thanked">👏 Agradecido</button>
+                  <button>🔖 Salvar</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="fb-side">
+          <div class="fb-side-card">
+            <h4>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L19 22l-3.5-2L12 22l-3.5-2L5 22l3.5-8.5"/></svg>
+              Sugestões para dar feedback
+            </h4>
+            <div class="fb-suggest-list">
+              <div class="fb-suggest-row">
+                <div class="fb-suggest-avatar" style="background:#3D5F95;">DV</div>
+                <div class="fb-suggest-info">
+                  <div class="fb-suggest-name">Daniela Vieira</div>
+                  <div class="fb-suggest-reason">Trabalha com você no Cestão L1 · sem feedback há 3 meses</div>
+                </div>
+                <svg class="fb-suggest-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+              <div class="fb-suggest-row">
+                <div class="fb-suggest-avatar" style="background:#854F0B;">GP</div>
+                <div class="fb-suggest-info">
+                  <div class="fb-suggest-name">Gabriel Pinto (estagiário)</div>
+                  <div class="fb-suggest-reason">No primeiro ciclo · você é referência dele</div>
+                </div>
+                <svg class="fb-suggest-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+              <div class="fb-suggest-row">
+                <div class="fb-suggest-avatar" style="background:#1E7B4B;">JC</div>
+                <div class="fb-suggest-info">
+                  <div class="fb-suggest-name">João Carvalho</div>
+                  <div class="fb-suggest-reason">Seu líder · feedback ascendente</div>
+                </div>
+                <svg class="fb-suggest-arrow" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="fb-side-card">
+            <h4>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+              Saúde do feedback
+            </h4>
+            <div class="fb-stats-row"><span class="lbl">Frequência</span><span class="val">2,5/sem</span></div>
+            <div class="fb-stats-row"><span class="lbl">% positivo</span><span class="val">68%</span></div>
+            <div class="fb-stats-row"><span class="lbl">% construtivo</span><span class="val">22%</span></div>
+            <div class="fb-stats-row"><span class="lbl">Diversidade de remetentes</span><span class="val">7 pessoas</span></div>
+            <div class="fb-stats-row"><span class="lbl">Equilíbrio dado/recebido</span><span class="val">0,67</span></div>
+            <div style="margin-top:9px; padding:8px 10px; background:var(--amber2); border-radius:6px; font-size:10.5px; color:var(--amber); line-height:1.5;">
+              💡 Dica: você está recebendo mais do que dando. Considere reconhecer alguém esta semana.
+            </div>
+          </div>
+
+          <div class="fb-side-card">
+            <h4>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              Pedir feedback
+            </h4>
+            <p style="font-size:11px; color:var(--txt2); margin-bottom:9px; line-height:1.5;">
+              Solicite que alguém te avalie em uma situação específica. Útil para se preparar pra reuniões importantes.
+            </p>
+            <button class="btn-primary" style="width:100%; justify-content:center; font-size:12px; padding:9px;">
+              + Solicitar feedback
+            </button>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: MURAL DE ELOGIOS ============= -->
+    <div class="tab-panel" data-panel="mural">
+
+      <div class="mural-hero">
+        <div>
+          <h2>🎉 Mural de Elogios do GPC</h2>
+          <p>Reconhecimento público. Tudo que aparece aqui é visível para todos os colaboradores.</p>
+        </div>
+        <div class="mural-hero-action">
+          <button class="primary" onclick="openPraiseModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            Reconhecer alguém
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats com ranking -->
+      <div class="mural-stats">
+        <div class="mural-stat-card">
+          <div class="msc-head">
+            <div class="msc-icon give">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div>
+              <h4>Quem mais reconhece (30 dias)</h4>
+              <p>Top 5 colaboradores que mais elogiaram outros</p>
+            </div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank gold">1</div>
+            <div class="av" style="background:#1E7B4B;">SG</div>
+            <div class="nm">Sandra Gomes <span style="color:var(--txt2); font-size:10.5px;">· Gerente Cestão L1</span></div>
+            <div class="qt">14</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank silver">2</div>
+            <div class="av" style="background:#6D28D9;">PM</div>
+            <div class="nm">Patrícia Mello <span style="color:var(--txt2); font-size:10.5px;">· Coord. RH</span></div>
+            <div class="qt">11</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank bronze">3</div>
+            <div class="av" style="background:#3D5F95;">JC</div>
+            <div class="nm">João Carvalho <span style="color:var(--txt2); font-size:10.5px;">· Líder Financeiro</span></div>
+            <div class="qt">9</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank">4</div>
+            <div class="av" style="background:#1E7B4B;">CR</div>
+            <div class="nm">Carla Reis <span style="color:var(--txt2); font-size:10.5px;">· Coord. Logística</span></div>
+            <div class="qt">7</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank">5</div>
+            <div class="av" style="background:#F5831F;">TC</div>
+            <div class="nm">Talita Comercial <span style="color:var(--txt2); font-size:10.5px;">· Diretora Comercial</span></div>
+            <div class="qt">6</div>
+          </div>
+        </div>
+
+        <div class="mural-stat-card">
+          <div class="msc-head">
+            <div class="msc-icon recv">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L19 22l-3.5-2L12 22l-3.5-2L5 22l3.5-8.5"/></svg>
+            </div>
+            <div>
+              <h4>Mais reconhecidos (30 dias)</h4>
+              <p>Top 5 colaboradores que mais receberam elogios</p>
+            </div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank gold">1</div>
+            <div class="av" style="background:#1E7B4B;">CR</div>
+            <div class="nm">Carla Reis <span style="color:var(--txt2); font-size:10.5px;">· Coord. Logística</span></div>
+            <div class="qt">17</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank silver">2</div>
+            <div class="av" style="background:#E82227;">FL</div>
+            <div class="nm">Fernanda Lima <span style="color:var(--txt2); font-size:10.5px;">· Analista Pleno · Labuta</span></div>
+            <div class="qt">12</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank bronze">3</div>
+            <div class="av" style="background:#2B4A7A;">IV</div>
+            <div class="nm">Igor Vasconcelos <span style="color:var(--txt2); font-size:10.5px;">· Açougueiro · Labuta</span></div>
+            <div class="qt">10</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank">4</div>
+            <div class="av" style="background:#3D5F95;">SR</div>
+            <div class="nm">Sérgio Rodrigues <span style="color:var(--txt2); font-size:10.5px;">· Vigilante · Segure</span></div>
+            <div class="qt">8</div>
+          </div>
+          <div class="msc-row">
+            <div class="msc-rank">5</div>
+            <div class="av" style="background:#854F0B;">JS</div>
+            <div class="nm">José da Silva <span style="color:var(--txt2); font-size:10.5px;">· Aux. Limpeza · Limpactiva</span></div>
+            <div class="qt">7</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="mural-filters">
+        <span class="mf-label">Filtrar:</span>
+        <button class="mf-chip active">Todos</button>
+        <button class="mf-chip">Recebidos por mim</button>
+        <button class="mf-chip">Da minha filial</button>
+        <button class="mf-chip">Da minha equipe</button>
+        <button class="mf-chip">Mais curtidos</button>
+        <button class="mf-chip">Última semana</button>
+      </div>
+
+      <!-- Grid de elogios -->
+      <div class="praises-grid">
+
+        <div class="praise-card c1">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#1E7B4B;">SG</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#E82227;">FL</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Sandra Gomes</div>
+              <div class="pc-to-name">para Fernanda Lima</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            Mesmo você sendo terceirizada, é parte do time da L1. Quando peço algo, você responde como se a loja fosse sua. Obrigada por isso! 💪
+          </div>
+          <div>
+            <span class="pc-tag value">🤝 Trabalho em equipe</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 2 dias</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction active">❤️ <span>14</span></button>
+              <button class="pc-reaction">👏 <span>8</span></button>
+              <button class="pc-reaction">🙌 <span>3</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c2">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#3D5F95;">JC</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#1E7B4B;">CR</div>
+            <div class="pc-info">
+              <div class="pc-from-name">João Carvalho</div>
+              <div class="pc-to-name">para Carla Reis</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            Carla, o turnaround que você fez no CD esse trimestre foi incrível. Reduziu 28% o tempo médio de expedição mantendo 100% de acuracidade. Você merece todos os reconhecimentos. 🚀
+          </div>
+          <div>
+            <span class="pc-tag value">🎯 Resultado</span>
+            <span class="pc-tag value">⚡ Excelência</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 4 dias</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction">❤️ <span>21</span></button>
+              <button class="pc-reaction active">👏 <span>17</span></button>
+              <button class="pc-reaction">🚀 <span>9</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c3">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#6D28D9;">PM</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#3D5F95;">SR</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Patrícia Mello</div>
+              <div class="pc-to-name">para Sérgio Rodrigues</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            Sérgio, há 6 anos cuidando da segurança do Cestão L1. Sua dedicação e o cuidado com nosso time não passa despercebido. Obrigada por estar sempre lá. 🙏
+          </div>
+          <div>
+            <span class="pc-tag value">💎 Tempo de casa</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 5 dias</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction">❤️ <span>32</span></button>
+              <button class="pc-reaction">👏 <span>14</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c4">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#1E7B4B;">CR</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#854F0B;">EM</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Carla Reis</div>
+              <div class="pc-to-name">para Eduardo Mendes</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            Eduardo, sua organização do recebimento do feriadão da Páscoa foi nota 10. 3 caminhões de uma vez, ninguém estressado, tudo conferido. Mostra muito sobre como você prepara o time. 👨‍🏫
+          </div>
+          <div>
+            <span class="pc-tag value">🧭 Liderança</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 6 dias</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction">❤️ <span>11</span></button>
+              <button class="pc-reaction">🙌 <span>5</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c5">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#2B4A7A;">RS</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#E82227;">FL</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Ricardo Silva</div>
+              <div class="pc-to-name">para Fernanda Lima</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            Salvou a virada do mês com aquela conferência de NF×folha da Labuta na sexta de noite. O auditor agradeceu, eu agradeço, e provavelmente ninguém vai saber. Por isso registro aqui: muito obrigado, Fer! 🦸‍♀️
+          </div>
+          <div>
+            <span class="pc-tag value">🎯 Resultado</span>
+            <span class="pc-tag value">🔥 Comprometimento</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 1 semana</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction active">❤️ <span>18</span></button>
+              <button class="pc-reaction">👏 <span>9</span></button>
+              <button class="pc-reaction">🦸‍♀️ <span>4</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c6">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#1E7B4B;">SG</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#854F0B;">JS</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Sandra Gomes</div>
+              <div class="pc-to-name">para José da Silva</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            Sr. José, todo dia chego cedo no Cestão e tudo está impecável. 5 anos de dedicação silenciosa que fazem toda a diferença pra nossos clientes. Obrigada de coração. 🌟
+          </div>
+          <div>
+            <span class="pc-tag value">💎 Tempo de casa</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 1 semana</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction">❤️ <span>27</span></button>
+              <button class="pc-reaction">🌟 <span>11</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c1">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#F5831F;">TC</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#6D28D9;">AB</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Talita Comercial</div>
+              <div class="pc-to-name">para Ana Beatriz</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            A campanha de Páscoa que você desenhou trouxe 23% mais tráfego que a do ano passado. Criatividade vira número, e o número virou bonificação pra equipe. ✨
+          </div>
+          <div>
+            <span class="pc-tag value">💡 Inovação</span>
+            <span class="pc-tag value">🎯 Resultado</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 2 semanas</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction">❤️ <span>15</span></button>
+              <button class="pc-reaction">🚀 <span>7</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c2">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#3D5F95;">PL</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#2B4A7A;">IV</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Pedro Lima</div>
+              <div class="pc-to-name">para Igor Vasconcelos</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            Igor, açougueiro do ano. Cliente VIP do bairro fez questão de comentar comigo: "esse rapaz do açougue conhece corte bovino igual professor". Você é o que torna o Cestão L1 diferente. 🥩
+          </div>
+          <div>
+            <span class="pc-tag value">🎓 Domínio técnico</span>
+            <span class="pc-tag value">🤝 Foco no cliente</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 2 semanas</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction">❤️ <span>23</span></button>
+              <button class="pc-reaction">👏 <span>11</span></button>
+              <button class="pc-reaction">🥩 <span>6</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="praise-card c3">
+          <div class="pc-avatars">
+            <div class="pc-from" style="background:#2B4A7A;">MS</div>
+            <svg class="pc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            <div class="pc-to" style="background:#3D5F95;">JC</div>
+            <div class="pc-info">
+              <div class="pc-from-name">Maria Santos</div>
+              <div class="pc-to-name">para João Carvalho</div>
+            </div>
+          </div>
+          <div class="pc-message">
+            João, sua liderança no fechamento trimestral foi decisiva. Você manteve o time motivado mesmo com o aperto de prazo. Tem gente que vê liderança como cargo, você vê como serviço. 🙌
+          </div>
+          <div>
+            <span class="pc-tag value">🧭 Liderança</span>
+          </div>
+          <div class="pc-foot">
+            <span class="pc-time">há 3 semanas</span>
+            <div class="pc-reactions">
+              <button class="pc-reaction">❤️ <span>19</span></button>
+              <button class="pc-reaction">🙌 <span>13</span></button>
+              <button class="pc-reaction-add">+</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ============= MODAL: NOVO ELOGIO ============= -->
+<div class="modal-overlay" id="praiseModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">🎉 Reconhecer um colega</div>
+      <button class="modal-close" onclick="closePraiseModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#FFF8EB; border-left:3px solid var(--orange); padding:11px 13px; border-radius:7px; margin-bottom:14px; font-size:11.5px; color:var(--txt2); line-height:1.5;">
+        <strong style="color:var(--txt);">Reconhecimento público:</strong> seu elogio aparecerá no mural visível para todos os 367 colaboradores do GPC. Use linguagem concreta e específica: quanto mais real, melhor.
+      </div>
+
+      <div class="field">
+        <label>Para quem? <span style="color:var(--danger);">*</span></label>
+        <input type="text" placeholder="Nome do colega...">
+      </div>
+
+      <div class="field">
+        <label>Mensagem <span style="color:var(--danger);">*</span></label>
+        <textarea placeholder="Conte o que essa pessoa fez de especial. Cite a situação concreta. Exemplo: 'No fechamento de março, X salvou a operação ao identificar que...'"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Valor reconhecido (opcional, até 2)</label>
+        <div class="value-tags">
+          <button class="value-chip selected">🎯 Resultado</button>
+          <button class="value-chip">🤝 Trabalho em equipe</button>
+          <button class="value-chip selected">🧭 Liderança</button>
+          <button class="value-chip">💡 Inovação</button>
+          <button class="value-chip">⚡ Excelência</button>
+          <button class="value-chip">🔥 Comprometimento</button>
+          <button class="value-chip">🎓 Domínio técnico</button>
+          <button class="value-chip">💎 Tempo de casa</button>
+        </div>
+      </div>
+
+      <div class="preview-card">
+        <div class="pv-title">PRÉVIA</div>
+        <div style="font-size:12px; color:var(--txt); line-height:1.5;">
+          Seu elogio aparecerá no topo do mural com sua foto e do destinatário, junto com os valores escolhidos. Outros colaboradores poderão reagir com emojis (❤️ 👏 🙌).
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span style="font-size:11px; color:var(--txt2);">Será visível para todos os colaboradores do GPC</span>
+      <div style="display:flex; gap:9px;">
+        <button class="btn-secondary" onclick="closePraiseModal()">Cancelar</button>
+        <button class="btn-primary orange" onclick="alert('Em produção: INSERT em praises via Supabase RPC, broadcast via Realtime'); closePraiseModal();">
+          Publicar no mural
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.big-tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.big-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+document.querySelectorAll('.fb-subtab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.fb-subtab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.fbq-type-chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('.fbq-type-chip').forEach(x=>{
+      x.classList.remove('selected','positive','constructive','recognition','request');
+    });
+    c.classList.add('selected');
+    if(c.textContent.includes('Positivo')) c.classList.add('positive');
+    else if(c.textContent.includes('Construtivo')) c.classList.add('constructive');
+    else if(c.textContent.includes('Sugestão')) c.classList.add('request');
+  });
+});
+
+document.querySelectorAll('.mf-chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    document.querySelectorAll('.mf-chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.value-chip').forEach(c=>{
+  c.addEventListener('click', ()=>{
+    c.classList.toggle('selected');
+    const selected = document.querySelectorAll('.value-chip.selected').length;
+    if(selected > 2){
+      c.classList.remove('selected');
+    }
+  });
+});
+
+document.querySelectorAll('.pc-reaction').forEach(r=>{
+  r.addEventListener('click', ()=>{
+    r.classList.toggle('active');
+    const span = r.querySelector('span');
+    if(span){
+      const n = parseInt(span.textContent);
+      span.textContent = r.classList.contains('active') ? n+1 : n-1;
+    }
+  });
+});
+
+function openPraiseModal(){document.getElementById('praiseModal').classList.add('show');}
+function closePraiseModal(){document.getElementById('praiseModal').classList.remove('show');}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

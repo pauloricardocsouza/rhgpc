@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Simulador de folha por filial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#854F0B,#6E3F08); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1400px; margin:0 auto; padding:18px 22px 50px;}
+
+/* ============= HEADER ============= */
+.page-header{margin-bottom:14px;}
+.page-header-row{
+  display:flex; justify-content:space-between; align-items:flex-end;
+  gap:14px; flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:3px; max-width:680px;}
+
+.persona-pill{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 12px;
+  background:linear-gradient(135deg, #FFF8EB, #fff);
+  border:1px solid var(--orange);
+  border-radius:8px;
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--orange);
+}
+.persona-pill svg{width:13px; height:13px;}
+
+/* ============= KPIs CONSOLIDADOS ============= */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:11px;
+  margin-bottom:14px;
+}
+.kpi-card{
+  background:#fff;
+  border-radius:12px;
+  padding:13px 16px;
+  box-shadow:var(--shadow-card);
+  border-bottom:3px solid var(--navy);
+  position:relative;
+}
+.kpi-card.green{border-bottom-color:var(--green);}
+.kpi-card.purple{border-bottom-color:var(--purple);}
+.kpi-card.orange{border-bottom-color:var(--orange);}
+
+.kpi-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:5px;
+}
+.kpi-icon{
+  width:28px; height:28px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+}
+.kpi-icon svg{width:13px; height:13px;}
+.kpi-card .kpi-icon{background:#E8EFF8; color:var(--navy);}
+.kpi-card.green .kpi-icon{background:var(--green2); color:var(--green);}
+.kpi-card.purple .kpi-icon{background:var(--purple2); color:var(--purple);}
+.kpi-card.orange .kpi-icon{background:var(--orange2); color:var(--orange);}
+
+.kpi-trend{
+  font-size:10px;
+  padding:2px 7px;
+  border-radius:5px;
+  font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+}
+.kpi-trend.up{background:var(--red2); color:var(--red);}
+.kpi-trend.down{background:var(--green2); color:var(--green);}
+
+.kpi-value{
+  font-family:'JetBrains Mono',monospace;
+  font-size:22px;
+  font-weight:700;
+  color:var(--txt);
+  letter-spacing:-.4px;
+  line-height:1;
+}
+.kpi-value .k-currency{
+  font-size:11px;
+  font-weight:500;
+  color:var(--txt2);
+  font-family:'Sora',sans-serif;
+}
+.kpi-label{
+  font-size:11px; color:var(--txt2);
+  margin-top:4px;
+}
+.kpi-label strong{color:var(--txt); font-weight:600;}
+
+/* ============= CONTROLS BAR ============= */
+.controls{
+  background:#fff;
+  border-radius:12px;
+  padding:13px 16px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+  display:flex; gap:11px; align-items:center;
+  flex-wrap:wrap;
+}
+.controls-label{
+  font-size:11px;
+  color:var(--txt2);
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+}
+.cf-chips{
+  display:flex; gap:6px; flex-wrap:wrap;
+}
+.cf-chip{
+  padding:6px 11px;
+  border-radius:7px;
+  font-size:11.5px;
+  font-weight:500;
+  background:var(--off);
+  color:var(--txt);
+  border:1px solid var(--gray2);
+  cursor:pointer;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.cf-chip:hover{background:var(--gray1);}
+.cf-chip.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+.cf-chip .cf-dot{width:7px; height:7px; border-radius:50%;}
+.cf-chip .cf-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  background:#fff;
+  color:var(--txt);
+  padding:0 5px;
+  border-radius:4px;
+  font-weight:700;
+}
+.cf-chip.active .cf-count{background:rgba(255,255,255,.25); color:#fff;}
+
+.spacer{flex:1;}
+
+.cf-action{
+  padding:7px 12px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  font-size:11.5px;
+  color:var(--txt);
+  cursor:pointer;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.cf-action:hover{background:var(--off); border-color:var(--navy);}
+.cf-action svg{width:13px; height:13px;}
+
+/* ============= CENÁRIOS ============= */
+.scenarios{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+}
+
+.section-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:13px;
+  flex-wrap:wrap; gap:8px;
+}
+.section-head h2{
+  font-size:14px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.section-head h2 svg{width:14px; height:14px; color:var(--orange);}
+
+.section-helper{
+  font-size:11px; color:var(--txt2);
+}
+
+.scenario-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:11px;
+}
+.scenario-card{
+  background:linear-gradient(180deg, var(--off), #fff);
+  border:1px solid var(--gray1);
+  border-radius:11px;
+  padding:11px 13px;
+}
+.scn-title{
+  font-size:11px; font-weight:600;
+  color:var(--txt);
+  margin-bottom:5px;
+  display:flex; align-items:center; gap:5px;
+}
+.scn-title svg{width:11px; height:11px; color:var(--orange);}
+.scn-input-row{
+  display:flex; gap:7px; align-items:center;
+}
+.scn-input{
+  flex:1;
+  padding:6px 9px;
+  border:1.5px solid var(--gray2);
+  border-radius:7px;
+  font-size:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+  color:var(--txt);
+  background:#fff;
+}
+.scn-input:focus{
+  outline:none;
+  border-color:var(--navy);
+}
+.scn-suffix{
+  font-size:10.5px;
+  color:var(--txt2);
+  font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+}
+.scn-impact{
+  margin-top:6px;
+  font-size:10.5px;
+  color:var(--txt2);
+}
+.scn-impact strong{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+}
+.scn-impact.up strong{color:var(--red);}
+.scn-impact.down strong{color:var(--green);}
+
+/* ============= MAIN GRID 2 cols ============= */
+.main-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+.viz-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+}
+
+/* ============= BAR CHART HORIZONTAL ============= */
+.bar-chart{
+  display:flex; flex-direction:column;
+  gap:9px;
+  margin-top:5px;
+}
+.bar-row{
+  display:grid;
+  grid-template-columns:140px 1fr 110px;
+  gap:11px;
+  align-items:center;
+}
+.bar-label{
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--txt);
+  display:flex; align-items:center; gap:6px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.bar-label .bar-dot{
+  width:8px; height:8px; border-radius:50%;
+  flex-shrink:0;
+}
+.bar-track{
+  position:relative;
+  height:22px;
+  background:var(--gray1);
+  border-radius:5px;
+  overflow:hidden;
+}
+.bar-fill{
+  position:absolute;
+  top:0; left:0; bottom:0;
+  background:linear-gradient(90deg, var(--navy), var(--navy3));
+  border-radius:5px;
+  display:flex; align-items:center;
+  padding-left:9px;
+  font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  color:#fff;
+  transition:width .3s ease;
+}
+.bar-fill.purple{background:linear-gradient(90deg, var(--purple), #8E4FE3);}
+.bar-fill.green{background:linear-gradient(90deg, var(--green), #2BA567);}
+.bar-fill.orange{background:linear-gradient(90deg, var(--orange), #FF9F47);}
+.bar-fill.teal{background:linear-gradient(90deg, var(--teal), #13B0A2);}
+.bar-fill.amber{background:linear-gradient(90deg, var(--amber), var(--orange));}
+
+.bar-value{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:12px;
+  color:var(--txt);
+  text-align:right;
+}
+.bar-value-sub{
+  font-size:9.5px;
+  color:var(--txt2);
+  font-weight:500;
+  margin-top:1px;
+  font-family:'Sora',sans-serif;
+}
+
+/* ============= HEATMAP MENSAL ============= */
+.heatmap-wrap{
+  display:grid;
+  grid-template-columns:38px repeat(12, 1fr);
+  gap:3px;
+  margin-top:9px;
+}
+.hm-month-label{
+  font-size:9px;
+  color:var(--txt3);
+  font-weight:600;
+  text-align:center;
+  padding:4px 0;
+  font-family:'JetBrains Mono',monospace;
+}
+.hm-row-label{
+  font-size:10px;
+  color:var(--txt);
+  font-weight:600;
+  display:flex; align-items:center;
+  justify-content:flex-end;
+  padding-right:6px;
+}
+.hm-cell{
+  aspect-ratio:1;
+  min-height:30px;
+  border-radius:5px;
+  background:var(--off);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9.5px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .12s, box-shadow .12s;
+  position:relative;
+}
+.hm-cell:hover{
+  transform:scale(1.05);
+  box-shadow:var(--shadow-card);
+  z-index:5;
+}
+.hm-cell.l1{background:#E8EFF8; color:var(--navy);}
+.hm-cell.l2{background:#C7DAE8; color:var(--navy);}
+.hm-cell.l3{background:var(--navy3); color:#fff;}
+.hm-cell.l4{background:var(--navy); color:#fff;}
+.hm-cell.l5{background:var(--orange); color:#fff;}
+
+.hm-legend{
+  display:flex; align-items:center; gap:7px;
+  margin-top:9px;
+  font-size:10px;
+  color:var(--txt2);
+  flex-wrap:wrap;
+}
+.hm-legend-item{
+  display:flex; align-items:center; gap:4px;
+}
+.hm-legend-dot{
+  width:14px; height:11px; border-radius:3px;
+}
+
+/* ============= TABELA AGREGADA ============= */
+.tbl-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+  overflow-x:auto;
+}
+
+.tbl-folha{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11.5px;
+  min-width:850px;
+}
+.tbl-folha thead{
+  position:sticky; top:0;
+  background:#fff;
+  z-index:5;
+}
+.tbl-folha th{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--txt2);
+  font-weight:700;
+  padding:9px 11px;
+  text-align:left;
+  border-bottom:2px solid var(--gray1);
+  white-space:nowrap;
+}
+.tbl-folha th.right{text-align:right;}
+.tbl-folha td{
+  padding:11px 11px;
+  border-bottom:1px solid var(--gray1);
+  vertical-align:middle;
+}
+.tbl-folha td.right{text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600;}
+.tbl-folha tr.expandable{cursor:pointer; transition:background .12s;}
+.tbl-folha tr.expandable:hover{background:var(--off);}
+.tbl-folha tr.dept-row{background:#FBFCFE;}
+.tbl-folha tr.dept-row td{
+  padding:7px 11px 7px 32px;
+  font-size:11px;
+  color:var(--txt2);
+}
+
+.tbl-filial-name{
+  display:flex; align-items:center; gap:9px;
+}
+.tbl-expand-icon{
+  width:18px; height:18px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt3);
+  flex-shrink:0;
+  transition:transform .15s;
+}
+.tbl-expand-icon.open{transform:rotate(90deg); color:var(--navy);}
+.tbl-expand-icon svg{width:11px; height:11px;}
+.tbl-filial-info{display:flex; flex-direction:column;}
+.tbl-filial-strong{font-weight:600; color:var(--txt); font-size:12.5px;}
+.tbl-filial-sub{font-size:10.5px; color:var(--txt2);}
+
+.tag{
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:9px;
+  padding:2px 6px;
+  border-radius:4px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  white-space:nowrap;
+}
+.tag.gpc{background:#E8EFF8; color:var(--navy);}
+.tag.lab{background:var(--purple2); color:var(--purple);}
+.tag.lim{background:var(--teal2); color:var(--teal);}
+.tag.seg{background:var(--amber2); color:var(--amber);}
+.tag.lr{background:var(--red2); color:var(--red);}
+.tag.sn{background:var(--green2); color:var(--green);}
+
+.tbl-folha tfoot tr{background:var(--off);}
+.tbl-folha tfoot td{
+  font-weight:700;
+  padding:11px;
+  border-top:2px solid var(--navy);
+  border-bottom:none;
+  font-size:12.5px;
+  color:var(--txt);
+}
+.tbl-folha tfoot td.right{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--orange);
+  font-size:14px;
+}
+
+.dept-name{
+  display:flex; align-items:center; gap:6px;
+}
+.dept-name svg{width:11px; height:11px; color:var(--gray3);}
+
+/* ============= IMPACT BANNER ============= */
+.impact-banner{
+  background:linear-gradient(135deg, var(--orange2), #fff);
+  border:1px solid var(--orange);
+  border-radius:11px;
+  padding:14px 17px;
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:14px;
+}
+.impact-icon{
+  width:42px; height:42px;
+  background:var(--orange);
+  color:#fff;
+  border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.impact-info{flex:1; min-width:0;}
+.impact-lbl{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--orange);
+  font-weight:700;
+}
+.impact-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:22px;
+  font-weight:700;
+  color:var(--txt);
+  letter-spacing:-.4px;
+  margin-top:1px;
+  line-height:1;
+}
+.impact-detail{
+  font-size:11.5px;
+  color:var(--txt2);
+  margin-top:4px;
+}
+.impact-detail strong{color:var(--txt); font-weight:600;}
+
+/* ============= ACTIONS ============= */
+.actions-row{
+  display:flex; gap:9px;
+  flex-wrap:wrap;
+  margin-top:5px;
+}
+.btn-primary{
+  padding:11px 18px;
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  border-radius:9px;
+  font-size:12.5px; font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px;
+  box-shadow:0 3px 8px rgba(43,74,122,.2);
+}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary svg{width:14px; height:14px;}
+.btn-secondary{
+  padding:11px 18px;
+  background:#fff;
+  color:var(--txt);
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  font-size:12.5px; font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.btn-secondary:hover{border-color:var(--navy); color:var(--navy);}
+.btn-secondary svg{width:14px; height:14px;}
+
+/* ============= LEGAL BANNER ============= */
+.legal-banner{
+  background:linear-gradient(135deg, #E8EFF8, var(--off));
+  border-radius:9px;
+  padding:9px 13px;
+  display:flex; align-items:center; gap:10px;
+  border-left:3px solid var(--navy);
+  font-size:11.5px;
+  color:var(--txt2);
+  line-height:1.55;
+  margin-bottom:14px;
+}
+.legal-banner svg{color:var(--navy); flex-shrink:0;}
+.legal-banner strong{color:var(--txt); font-weight:600;}
+.legal-banner code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  background:#fff;
+  padding:1px 5px;
+  border-radius:4px;
+  border:1px solid var(--gray2);
+}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 1100px){
+  .kpi-row{grid-template-columns:repeat(2, 1fr);}
+  .scenario-grid{grid-template-columns:repeat(2, 1fr);}
+  .main-grid{grid-template-columns:1fr;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:13px 14px 30px;}
+  .page-header h1{font-size:18px;}
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  .scenario-grid{grid-template-columns:1fr;}
+  .scenarios, .viz-card, .tbl-card{padding:14px 15px;}
+  .bar-row{grid-template-columns:1fr; gap:5px;}
+  .bar-label{justify-content:flex-start;}
+  .bar-value{text-align:left;}
+  .heatmap-wrap{grid-template-columns:32px repeat(12, 1fr); gap:2px;}
+  .hm-cell{font-size:8px; min-height:24px;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <div class="sidebar-section">Folha &amp; custo</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/></svg>Calc. de custo</a>
+      <a class="nav-item active"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Folha por filial</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Variáveis &amp; metas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Folha &amp; custo · <strong>Simulador por filial</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">RP</div>
+      <div class="user-info">
+        <span class="user-name">Renato Pinto</span>
+        <span class="user-role">Diretor Operações</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h1>Simulador de folha por filial</h1>
+            <p>Visão consolidada do custo de pessoal de todas as filiais GPC e prestadoras. Aplique cenários (dissídio, headcount, mérito) e veja o impacto agregado.</p>
+          </div>
+          <span class="persona-pill">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+            Visão executiva
+          </span>
+        </div>
+      </div>
+
+      <!-- KPIs Consolidados -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <span class="kpi-trend up">↑ +2,8%</span>
+          </div>
+          <div class="kpi-value" id="kpiHeadcount">367</div>
+          <div class="kpi-label"><strong>colaboradores ativos</strong> · 4 empregadores · 14 unidades</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <span class="kpi-trend up">↑ +4,5%</span>
+          </div>
+          <div class="kpi-value"><span class="k-currency">R$</span> <span id="kpiCustoMensal">1.847.230</span></div>
+          <div class="kpi-label"><strong>custo mensal total</strong> · folha + encargos + benefícios</div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            </div>
+            <span class="kpi-trend up">↑ +4,5%</span>
+          </div>
+          <div class="kpi-value"><span class="k-currency">R$</span> <span id="kpiCustoAnual">22.166.760</span></div>
+          <div class="kpi-label"><strong>custo anual projetado</strong> · com 13º e férias</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="kpi-trend down">↓ -1,3%</span>
+          </div>
+          <div class="kpi-value"><span class="k-currency">R$</span> <span id="kpiCustoMedio">5.034</span></div>
+          <div class="kpi-label"><strong>custo médio por colaborador</strong> · /mês</div>
+        </div>
+      </div>
+
+      <!-- Banner legal -->
+      <div class="legal-banner">
+        <svg aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+        <div>
+          Encargos calculados conforme <strong>Portaria MPS/MF nº 13/2026</strong> · empresas <code>SIMPLES</code> ~30% sobre folha · empresas <code>LUCRO REAL</code> ~67%. Provisões mensais incluem férias <code>11,11%</code> e 13º <code>8,33%</code>.
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="controls">
+        <span class="controls-label">Empregador:</span>
+        <div class="cf-chips">
+          <button class="cf-chip active">Todos <span class="cf-count">4</span></button>
+          <button class="cf-chip"><span class="cf-dot" style="background:var(--navy);"></span>GPC <span class="cf-count">60</span></button>
+          <button class="cf-chip"><span class="cf-dot" style="background:var(--purple);"></span>Labuta <span class="cf-count">247</span></button>
+          <button class="cf-chip"><span class="cf-dot" style="background:var(--teal);"></span>Limpactiva <span class="cf-count">38</span></button>
+          <button class="cf-chip"><span class="cf-dot" style="background:var(--amber);"></span>Segure <span class="cf-count">22</span></button>
+        </div>
+        <div class="spacer"></div>
+        <button class="cf-action">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+          Mais filtros
+        </button>
+        <button class="cf-action">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Exportar
+        </button>
+      </div>
+
+      <!-- ============= CENÁRIOS DE SIMULAÇÃO ============= -->
+      <div class="scenarios">
+        <div class="section-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Cenários de simulação
+          </h2>
+          <span class="section-helper">Ajuste os parâmetros e veja o impacto agregado</span>
+        </div>
+
+        <div class="scenario-grid">
+          <div class="scenario-card">
+            <div class="scn-title">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+              Dissídio coletivo
+            </div>
+            <div class="scn-input-row">
+              <input type="number" class="scn-input" id="scnDissidio" value="4.5" min="0" step="0.1" oninput="recalculate()">
+              <span class="scn-suffix">% sobre folha</span>
+            </div>
+            <div class="scn-impact up" id="impactDissidio">
+              Impacto mensal <strong>+R$ 83.125</strong>
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="scn-title">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>
+              Aumento por mérito
+            </div>
+            <div class="scn-input-row">
+              <input type="number" class="scn-input" id="scnMerito" value="0" min="0" max="100" step="1" oninput="recalculate()">
+              <span class="scn-suffix">% colab. promovidos</span>
+            </div>
+            <div class="scn-impact" id="impactMerito">
+              Impacto mensal <strong>R$ 0</strong> · 0 promoções
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="scn-title">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Redução headcount
+            </div>
+            <div class="scn-input-row">
+              <input type="number" class="scn-input" id="scnReducao" value="0" min="0" max="100" step="1" oninput="recalculate()">
+              <span class="scn-suffix">% desligamento</span>
+            </div>
+            <div class="scn-impact down" id="impactReducao">
+              Economia mensal <strong>R$ 0</strong> · 0 desligamentos
+            </div>
+          </div>
+
+          <div class="scenario-card">
+            <div class="scn-title">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Novas contratações
+            </div>
+            <div class="scn-input-row">
+              <input type="number" class="scn-input" id="scnContratacao" value="0" min="0" step="1" oninput="recalculate()">
+              <span class="scn-suffix">colab. novos</span>
+            </div>
+            <div class="scn-impact up" id="impactContratacao">
+              Impacto mensal <strong>R$ 0</strong> · salário médio
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============= IMPACT BANNER ============= -->
+      <div class="impact-banner" id="impactBanner">
+        <div class="impact-icon">
+          <svg aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+        </div>
+        <div class="impact-info">
+          <div class="impact-lbl">Impacto consolidado dos cenários aplicados</div>
+          <div class="impact-val" id="impactVal">+R$ 83.125 / mês · +R$ 1.080.625 / ano</div>
+          <div class="impact-detail" id="impactDetail">
+            Calculando impacto consolidado...
+          </div>
+        </div>
+      </div>
+
+      <!-- ============= MAIN GRID 2 cols ============= -->
+      <div class="main-grid">
+
+        <!-- Bar Chart por filial -->
+        <div class="viz-card">
+          <div class="section-head">
+            <h2>
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+              Custo por filial
+            </h2>
+            <span class="section-helper">mensal projetado</span>
+          </div>
+
+          <div class="bar-chart" id="barChart">
+            <!-- populado via JS -->
+          </div>
+        </div>
+
+        <!-- Heatmap mensal -->
+        <div class="viz-card">
+          <div class="section-head">
+            <h2>
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+              Sazonalidade anual
+            </h2>
+            <span class="section-helper">incl. 13º e férias</span>
+          </div>
+
+          <div class="heatmap-wrap" id="heatmap">
+            <!-- populado via JS -->
+          </div>
+
+          <div class="hm-legend">
+            <span>Menor custo</span>
+            <span class="hm-legend-item"><span class="hm-legend-dot" style="background:#E8EFF8;"></span></span>
+            <span class="hm-legend-item"><span class="hm-legend-dot" style="background:#C7DAE8;"></span></span>
+            <span class="hm-legend-item"><span class="hm-legend-dot" style="background:#3D5F95;"></span></span>
+            <span class="hm-legend-item"><span class="hm-legend-dot" style="background:#2B4A7A;"></span></span>
+            <span class="hm-legend-item"><span class="hm-legend-dot" style="background:#F5831F;"></span></span>
+            <span>Maior custo</span>
+            <span style="margin-left:auto; font-size:9.5px; color:var(--txt3);">Pico em <strong>dez</strong> (13º + férias coletivas)</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============= TABELA DETALHADA ============= -->
+      <div class="tbl-card">
+        <div class="section-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18M3 9h18M3 15h18M3 21h18"/></svg>
+            Detalhamento por filial
+          </h2>
+          <span class="section-helper">clique numa linha para ver departamentos</span>
+        </div>
+
+        <table class="tbl-folha" id="tblFolha">
+          <thead>
+            <tr>
+              <th style="width:280px;">Filial / Tomador</th>
+              <th>Empregador</th>
+              <th>Regime</th>
+              <th class="right">Headcount</th>
+              <th class="right">Salário base</th>
+              <th class="right">Encargos</th>
+              <th class="right">Provisões</th>
+              <th class="right">Benefícios</th>
+              <th class="right">Custo mensal</th>
+            </tr>
+          </thead>
+          <tbody id="tblBody">
+            <!-- populado via JS -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">Total consolidado</td>
+              <td class="right" id="totHeadcount">367</td>
+              <td class="right" id="totSalario">R$ 0</td>
+              <td class="right" id="totEncargos">R$ 0</td>
+              <td class="right" id="totProvisoes">R$ 0</td>
+              <td class="right" id="totBeneficios">R$ 0</td>
+              <td class="right" id="totMensal">R$ 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions-row">
+        <button class="btn-primary">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Exportar simulação completa
+        </button>
+        <button class="btn-secondary">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+          Salvar cenário
+        </button>
+        <button class="btn-secondary">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Comparar 2 cenários
+        </button>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ============= MOCK DATA: 14 unidades GPC =============
+const FILIAIS = [
+  // ATP · Lucro Real
+  { id:'atp-varejo',     name:'ATP Varejo',           tomador:'GPC', employer:'GPC',        emptag:'gpc', regime:'lucro',   headcount:13, salarioMedio:3200, depts:[
+    { name:'Frente de Loja',  hc:8,  sal:2800 },
+    { name:'Estoque',         hc:3,  sal:2950 },
+    { name:'Administrativo',  hc:2,  sal:5200 }
+  ]},
+  { id:'atp-atacado',    name:'ATP Atacado',          tomador:'GPC', employer:'GPC',        emptag:'gpc', regime:'lucro',   headcount:10, salarioMedio:3450, depts:[
+    { name:'Vendas B2B',      hc:4,  sal:4200 },
+    { name:'Logística',       hc:4,  sal:2850 },
+    { name:'Administrativo',  hc:2,  sal:5400 }
+  ]},
+  { id:'cestao-l1',      name:'Cestão Loja 1',        tomador:'GPC', employer:'GPC',        emptag:'gpc', regime:'lucro',   headcount:17, salarioMedio:2950, depts:[
+    { name:'Frente de Loja',  hc:10, sal:2650 },
+    { name:'Açougue',         hc:2,  sal:3100 },
+    { name:'Padaria',         hc:2,  sal:2900 },
+    { name:'Estoque',         hc:2,  sal:2850 },
+    { name:'Administrativo',  hc:1,  sal:5800 }
+  ]},
+  { id:'cestao-inh',     name:'Cestão Inhambupe',     tomador:'GPC', employer:'GPC',        emptag:'gpc', regime:'lucro',   headcount:14, salarioMedio:2750, depts:[
+    { name:'Frente de Loja',  hc:8,  sal:2500 },
+    { name:'Açougue',         hc:2,  sal:2950 },
+    { name:'Padaria',         hc:1,  sal:2750 },
+    { name:'Estoque',         hc:2,  sal:2700 },
+    { name:'Administrativo',  hc:1,  sal:5200 }
+  ]},
+  { id:'sede-atp',       name:'Sede Administrativa',  tomador:'GPC', employer:'GPC',        emptag:'gpc', regime:'lucro',   headcount:6, salarioMedio:6800, depts:[
+    { name:'Diretoria',       hc:1,  sal:18000 },
+    { name:'Financeiro',      hc:2,  sal:7200 },
+    { name:'RH',              hc:1,  sal:5800 },
+    { name:'TI',              hc:1,  sal:6500 },
+    { name:'Compras',         hc:1,  sal:5200 }
+  ]},
+  // Labuta - Simples (prestadora terceirizada)
+  { id:'lab-atp-varejo', name:'Labuta @ ATP Varejo',  tomador:'ATP Varejo',     employer:'Labuta', emptag:'lab', regime:'simples', headcount:32, salarioMedio:2100, depts:[
+    { name:'Reposição',       hc:24, sal:1980 },
+    { name:'Limpeza',         hc:8,  sal:1750 }
+  ]},
+  { id:'lab-atp-atacado',name:'Labuta @ ATP Atacado', tomador:'ATP Atacado',    employer:'Labuta', emptag:'lab', regime:'simples', headcount:42, salarioMedio:2050, depts:[
+    { name:'Conferência',     hc:18, sal:2150 },
+    { name:'Carga e descarga',hc:24, sal:1950 }
+  ]},
+  { id:'lab-cestao-l1',  name:'Labuta @ Cestão L1',   tomador:'Cestão Loja 1',  employer:'Labuta', emptag:'lab', regime:'simples', headcount:78, salarioMedio:1980, depts:[
+    { name:'Reposição',       hc:48, sal:1900 },
+    { name:'Empacotamento',   hc:18, sal:1700 },
+    { name:'Limpeza',         hc:12, sal:1750 }
+  ]},
+  { id:'lab-cestao-inh', name:'Labuta @ Cestão Inh.', tomador:'Cestão Inhambupe',employer:'Labuta',emptag:'lab', regime:'simples', headcount:65, salarioMedio:1920, depts:[
+    { name:'Reposição',       hc:38, sal:1850 },
+    { name:'Empacotamento',   hc:16, sal:1700 },
+    { name:'Limpeza',         hc:11, sal:1750 }
+  ]},
+  { id:'lab-sede',       name:'Labuta @ Sede',        tomador:'Sede',           employer:'Labuta', emptag:'lab', regime:'simples', headcount:30, salarioMedio:2350, depts:[
+    { name:'Recepção',        hc:8,  sal:1950 },
+    { name:'Apoio adm.',      hc:14, sal:2400 },
+    { name:'Mensageria',      hc:8,  sal:1850 }
+  ]},
+  // Limpactiva - Simples
+  { id:'lim-stores',     name:'Limpactiva @ Lojas',   tomador:'4 lojas',        employer:'Limpactiva',emptag:'lim', regime:'simples', headcount:28, salarioMedio:1750, depts:[
+    { name:'Faxina diurna',   hc:18, sal:1700 },
+    { name:'Faxina noturna',  hc:10, sal:1850 }
+  ]},
+  { id:'lim-sede',       name:'Limpactiva @ Sede',    tomador:'Sede',           employer:'Limpactiva',emptag:'lim', regime:'simples', headcount:10, salarioMedio:1800, depts:[
+    { name:'Faxina',          hc:8,  sal:1750 },
+    { name:'Jardinagem',      hc:2,  sal:2100 }
+  ]},
+  // Segure - Simples (segurança)
+  { id:'seg-stores',     name:'Segure @ Lojas',       tomador:'4 lojas',        employer:'Segure',    emptag:'seg', regime:'simples', headcount:18, salarioMedio:2400, depts:[
+    { name:'Vigilância',      hc:14, sal:2350 },
+    { name:'Supervisão',      hc:4,  sal:2900 }
+  ]},
+  { id:'seg-sede',       name:'Segure @ Sede',        tomador:'Sede',           employer:'Segure',    emptag:'seg', regime:'simples', headcount:4,  salarioMedio:2500, depts:[
+    { name:'Portaria',        hc:4,  sal:2500 }
+  ]}
+];
+
+// ============= LEGISLAÇÃO 2026 =============
+const ENC_LUCRO = 0.20 + 0.02 + 0.058 + 0.08; // 35,8%
+const ENC_SIMPLES = 0.08; // só FGTS
+const PROV_FERIAS = 11.11/100;
+const PROV_13O = 8.33/100;
+const PROV_RESC = 0.04;
+const BENEFICIOS_MEDIOS = 950; // VR + VA médio por colaborador
+const BENEFICIOS_MEDIOS_OPER = 700; // operacional ganha menos benefícios
+const BENEFICIOS_MEDIOS_ADM = 1200; // adm tem plano de saúde
+
+// ============= STATE DOS CENÁRIOS =============
+let scenarios = {
+  dissidio: 4.5,
+  merito: 0,
+  reducao: 0,
+  contratacao: 0
+};
+
+// ============= CÁLCULOS =============
+function calcFilial(f, scn = scenarios){
+  // Aplica dissídio sobre o salário base (todas as filiais recebem)
+  const dissFactor = 1 + (scn.dissidio / 100);
+
+  // Aplica mérito como % de promovidos com 15% de aumento
+  const meritoFactor = 1 + ((scn.merito / 100) * 0.15);
+
+  // Headcount ajustado por redução
+  const hcAjustado = Math.round(f.headcount * (1 - scn.reducao / 100));
+
+  // Salário base ajustado
+  const salarioBase = f.salarioMedio * dissFactor * meritoFactor;
+
+  // Folha total
+  const folhaBruta = salarioBase * hcAjustado;
+
+  // Encargos conforme regime
+  const encRate = f.regime === 'lucro' ? ENC_LUCRO : ENC_SIMPLES;
+  const encargos = folhaBruta * encRate;
+
+  // Provisões (mesma fórmula em ambos os regimes, mas fgts adicional muda)
+  const provisoes = folhaBruta * (PROV_FERIAS + PROV_13O + PROV_RESC);
+  // Encargos sobre provisões (Lucro Real só)
+  const encOverProv = f.regime === 'lucro' ? folhaBruta * (PROV_FERIAS + PROV_13O) * ENC_LUCRO : folhaBruta * (PROV_FERIAS + PROV_13O) * ENC_SIMPLES;
+
+  // Benefícios estimados (média por colaborador, varia por tipo)
+  const beneficiosUnitario = f.id.includes('sede') || f.id.includes('atp-atacado') ? BENEFICIOS_MEDIOS_ADM :
+                             f.regime === 'simples' ? BENEFICIOS_MEDIOS_OPER : BENEFICIOS_MEDIOS;
+  const beneficios = beneficiosUnitario * hcAjustado;
+
+  const custoTotal = folhaBruta + encargos + provisoes + encOverProv + beneficios;
+
+  return {
+    headcount: hcAjustado,
+    folhaBruta,
+    encargos,
+    provisoes: provisoes + encOverProv,
+    beneficios,
+    custoTotal,
+    custoMedio: hcAjustado > 0 ? custoTotal / hcAjustado : 0
+  };
+}
+
+function calcConsolidated(scn = scenarios){
+  let totalHC = 0, totalFolha = 0, totalEnc = 0, totalProv = 0, totalBen = 0, totalCusto = 0;
+
+  FILIAIS.forEach(f => {
+    const r = calcFilial(f, scn);
+    totalHC += r.headcount;
+    totalFolha += r.folhaBruta;
+    totalEnc += r.encargos;
+    totalProv += r.provisoes;
+    totalBen += r.beneficios;
+    totalCusto += r.custoTotal;
+  });
+
+  // Adiciona contratações novas com salário médio do tenant
+  if(scn.contratacao > 0){
+    const salMedio = totalHC > 0 ? totalFolha / totalHC : 0;
+    const novoFolha = scn.contratacao * salMedio;
+    const novoEnc = novoFolha * ENC_LUCRO * 0.7; // mistura de regimes
+    const novoProv = novoFolha * (PROV_FERIAS + PROV_13O + PROV_RESC);
+    const novoBen = scn.contratacao * 850;
+    totalHC += scn.contratacao;
+    totalFolha += novoFolha;
+    totalEnc += novoEnc;
+    totalProv += novoProv;
+    totalBen += novoBen;
+    totalCusto += novoFolha + novoEnc + novoProv + novoBen;
+  }
+
+  return {
+    headcount: totalHC,
+    folhaBruta: totalFolha,
+    encargos: totalEnc,
+    provisoes: totalProv,
+    beneficios: totalBen,
+    custoTotal: totalCusto,
+    custoMedio: totalHC > 0 ? totalCusto / totalHC : 0,
+    custoAnual: totalCusto * 12
+  };
+}
+
+// ============= UI =============
+function fmt(n){
+  return n.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+}
+function fmtBRL(n){
+  return 'R$ ' + fmt(n);
+}
+function fmtBRLShort(n){
+  if(n >= 1000000) return 'R$ ' + (n/1000000).toFixed(2).replace('.',',') + 'M';
+  if(n >= 1000) return 'R$ ' + (n/1000).toFixed(0) + 'k';
+  return 'R$ ' + fmt(n);
+}
+
+function recalculate(){
+  scenarios.dissidio = parseFloat(document.getElementById('scnDissidio').value) || 0;
+  scenarios.merito = parseFloat(document.getElementById('scnMerito').value) || 0;
+  scenarios.reducao = parseFloat(document.getElementById('scnReducao').value) || 0;
+  scenarios.contratacao = parseInt(document.getElementById('scnContratacao').value) || 0;
+
+  // Calcula consolidado base (sem cenários) e com cenários
+  const baseScn = { dissidio: 0, merito: 0, reducao: 0, contratacao: 0 };
+  const base = calcConsolidated(baseScn);
+  const cur = calcConsolidated(scenarios);
+
+  // KPIs principais (com cenários)
+  document.getElementById('kpiHeadcount').textContent = fmt(cur.headcount);
+  document.getElementById('kpiCustoMensal').textContent = fmt(cur.custoTotal);
+  document.getElementById('kpiCustoAnual').textContent = fmt(cur.custoAnual);
+  document.getElementById('kpiCustoMedio').textContent = fmt(cur.custoMedio);
+
+  // Cenários impacto individual
+  const baseCusto = base.custoTotal;
+
+  // Dissídio impacto
+  const dissOnly = calcConsolidated({ ...baseScn, dissidio: scenarios.dissidio });
+  const dissImpact = dissOnly.custoTotal - baseCusto;
+  document.getElementById('impactDissidio').innerHTML = `Impacto mensal <strong>${dissImpact >= 0 ? '+' : ''}${fmtBRL(dissImpact)}</strong>`;
+  document.getElementById('impactDissidio').className = 'scn-impact ' + (dissImpact > 0 ? 'up' : (dissImpact < 0 ? 'down' : ''));
+
+  // Mérito impacto
+  const meritoOnly = calcConsolidated({ ...baseScn, merito: scenarios.merito });
+  const meritoImpact = meritoOnly.custoTotal - baseCusto;
+  const meritoCount = Math.round(base.headcount * scenarios.merito / 100);
+  document.getElementById('impactMerito').innerHTML = `Impacto mensal <strong>${meritoImpact >= 0 ? '+' : ''}${fmtBRL(meritoImpact)}</strong> · ${meritoCount} promoções`;
+  document.getElementById('impactMerito').className = 'scn-impact ' + (meritoImpact > 0 ? 'up' : '');
+
+  // Redução impacto
+  const reducOnly = calcConsolidated({ ...baseScn, reducao: scenarios.reducao });
+  const reducImpact = reducOnly.custoTotal - baseCusto;
+  const reducCount = Math.round(base.headcount * scenarios.reducao / 100);
+  document.getElementById('impactReducao').innerHTML = `Economia mensal <strong>${fmtBRL(Math.abs(reducImpact))}</strong> · ${reducCount} desligamentos`;
+  document.getElementById('impactReducao').className = 'scn-impact ' + (reducImpact < 0 ? 'down' : '');
+
+  // Contratação impacto
+  const contrOnly = calcConsolidated({ ...baseScn, contratacao: scenarios.contratacao });
+  const contrImpact = contrOnly.custoTotal - baseCusto;
+  document.getElementById('impactContratacao').innerHTML = `Impacto mensal <strong>+${fmtBRL(contrImpact)}</strong> · ${scenarios.contratacao} colab.`;
+  document.getElementById('impactContratacao').className = 'scn-impact ' + (contrImpact > 0 ? 'up' : '');
+
+  // Banner consolidado
+  const totalImpact = cur.custoTotal - baseCusto;
+  document.getElementById('impactVal').textContent = `${totalImpact >= 0 ? '+' : ''}${fmtBRL(totalImpact)} / mês · ${totalImpact >= 0 ? '+' : ''}${fmtBRL(totalImpact * 12)} / ano`;
+  let detail = [];
+  if(scenarios.dissidio !== 0) detail.push(`dissídio ${scenarios.dissidio}%`);
+  if(scenarios.merito > 0) detail.push(`${meritoCount} mérito`);
+  if(scenarios.reducao > 0) detail.push(`-${reducCount} headcount`);
+  if(scenarios.contratacao > 0) detail.push(`+${scenarios.contratacao} contratações`);
+  const detailText = detail.length > 0
+    ? `Considerando ${detail.join(', ')}. <strong>Custo anual projetado: ${fmtBRL(cur.custoAnual)}</strong>`
+    : `Sem cenários aplicados. <strong>Custo anual base: ${fmtBRL(base.custoAnual)}</strong>`;
+  document.getElementById('impactDetail').innerHTML = detailText;
+
+  // Bar chart
+  renderBarChart();
+
+  // Heatmap
+  renderHeatmap(cur);
+
+  // Tabela
+  renderTable();
+}
+
+function renderBarChart(){
+  // Ordena por custo decrescente
+  const data = FILIAIS.map(f => {
+    const r = calcFilial(f);
+    return { ...f, ...r };
+  }).sort((a,b) => b.custoTotal - a.custoTotal).slice(0, 8);
+
+  const max = Math.max(...data.map(d => d.custoTotal));
+
+  const colors = ['orange', 'purple', 'navy', 'navy', 'green', 'amber', 'teal', 'navy3'];
+  const dotColors = {
+    'gpc':'var(--navy)', 'lab':'var(--purple)', 'lim':'var(--teal)', 'seg':'var(--amber)'
+  };
+
+  let html = '';
+  data.forEach((f, i) => {
+    const widthPerc = (f.custoTotal / max * 100).toFixed(1);
+    const colorClass = f.emptag === 'gpc' ? 'navy' : f.emptag === 'lab' ? 'purple' : f.emptag === 'lim' ? 'teal' : 'amber';
+
+    html += `
+      <div class="bar-row">
+        <span class="bar-label">
+          <span class="bar-dot" style="background:${dotColors[f.emptag]};"></span>
+          ${f.name}
+        </span>
+        <div class="bar-track">
+          <div class="bar-fill ${colorClass}" style="width:${widthPerc}%;">
+            ${f.headcount} colab.
+          </div>
+        </div>
+        <div>
+          <div class="bar-value">${fmtBRLShort(f.custoTotal)}</div>
+          <div class="bar-value-sub">${fmtBRL(f.custoMedio)}/colab</div>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('barChart').innerHTML = html;
+}
+
+function renderHeatmap(cur){
+  const months = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+  // Multiplicadores mensais (sazonalidade da folha)
+  // Janeiro: férias coletivas + dissídio (alto)
+  // Dezembro: 13º (muito alto) + férias
+  // Julho: 1ª parcela do 13º + férias programadas
+  // Resto: regular
+  const mult = {
+    0: 1.18, // jan: férias coletivas + dissídio
+    1: 1.00, // fev
+    2: 1.00, // mar
+    3: 1.00, // abr
+    4: 1.00, // mai
+    5: 1.00, // jun
+    6: 1.12, // jul: 1ª parc 13º
+    7: 1.00, // ago
+    8: 1.00, // set
+    9: 1.00, // out
+    10:1.00, // nov
+    11:1.42  // dez: 13º completo + férias
+  };
+
+  const monthlyValues = months.map((_, i) => cur.custoTotal * mult[i]);
+  const min = Math.min(...monthlyValues);
+  const max = Math.max(...monthlyValues);
+  const range = max - min;
+
+  function level(v){
+    const n = (v - min) / range;
+    if(n > 0.85) return 'l5';
+    if(n > 0.55) return 'l4';
+    if(n > 0.30) return 'l3';
+    if(n > 0.10) return 'l2';
+    return 'l1';
+  }
+
+  // Layout: linha de header com meses, depois 1 linha "Folha mensal"
+  let html = '<div class="hm-row-label">2026</div>';
+  months.forEach(m => {
+    html += `<div class="hm-month-label">${m}</div>`;
+  });
+  html += '<div class="hm-row-label">Custo</div>';
+  monthlyValues.forEach((v, i) => {
+    html += `<div class="hm-cell ${level(v)}" title="${months[i]}/2026: ${fmtBRL(v)}">${fmtBRLShort(v).replace('R$ ', '')}</div>`;
+  });
+
+  document.getElementById('heatmap').innerHTML = html;
+}
+
+function renderTable(){
+  let html = '';
+  let totHC = 0, totSal = 0, totEnc = 0, totProv = 0, totBen = 0, totMen = 0;
+
+  FILIAIS.forEach((f, idx) => {
+    const r = calcFilial(f);
+    totHC += r.headcount;
+    totSal += r.folhaBruta;
+    totEnc += r.encargos;
+    totProv += r.provisoes;
+    totBen += r.beneficios;
+    totMen += r.custoTotal;
+
+    const empTags = {
+      'GPC':'gpc', 'Labuta':'lab', 'Limpactiva':'lim', 'Segure':'seg'
+    };
+
+    // Linha principal
+    html += `
+      <tr class="expandable" onclick="toggleDept('${f.id}')">
+        <td>
+          <div class="tbl-filial-name">
+            <span class="tbl-expand-icon" id="exp-${f.id}">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+            </span>
+            <div class="tbl-filial-info">
+              <span class="tbl-filial-strong">${f.name}</span>
+              <span class="tbl-filial-sub">${f.depts.length} departamento${f.depts.length > 1 ? 's' : ''}</span>
+            </div>
+          </div>
+        </td>
+        <td><span class="tag ${f.emptag}">${f.employer}</span></td>
+        <td><span class="tag ${f.regime === 'lucro' ? 'lr' : 'sn'}">${f.regime === 'lucro' ? 'Lucro Real' : 'Simples'}</span></td>
+        <td class="right">${r.headcount}</td>
+        <td class="right">${fmtBRLShort(r.folhaBruta)}</td>
+        <td class="right">${fmtBRLShort(r.encargos)}</td>
+        <td class="right">${fmtBRLShort(r.provisoes)}</td>
+        <td class="right">${fmtBRLShort(r.beneficios)}</td>
+        <td class="right" style="color:var(--orange);">${fmtBRLShort(r.custoTotal)}</td>
+      </tr>
+    `;
+
+    // Depts expandidos (escondidos por default)
+    f.depts.forEach(d => {
+      const dFolha = d.sal * d.hc;
+      const dEnc = dFolha * (f.regime === 'lucro' ? ENC_LUCRO : ENC_SIMPLES);
+      const dProv = dFolha * (PROV_FERIAS + PROV_13O + PROV_RESC);
+      const dCusto = dFolha + dEnc + dProv;
+
+      html += `
+        <tr class="dept-row" id="dept-${f.id}-${d.name.replace(/\s+/g, '-')}" style="display:none;">
+          <td>
+            <div class="dept-name">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+              ${d.name}
+            </div>
+          </td>
+          <td colspan="2"></td>
+          <td class="right">${d.hc}</td>
+          <td class="right">${fmtBRLShort(dFolha)}</td>
+          <td class="right">${fmtBRLShort(dEnc)}</td>
+          <td class="right">${fmtBRLShort(dProv)}</td>
+          <td class="right" style="color:var(--txt3);">-</td>
+          <td class="right">${fmtBRLShort(dCusto)}</td>
+        </tr>
+      `;
+    });
+  });
+
+  document.getElementById('tblBody').innerHTML = html;
+
+  // Totals
+  document.getElementById('totHeadcount').textContent = totHC;
+  document.getElementById('totSalario').textContent = fmtBRLShort(totSal);
+  document.getElementById('totEncargos').textContent = fmtBRLShort(totEnc);
+  document.getElementById('totProvisoes').textContent = fmtBRLShort(totProv);
+  document.getElementById('totBeneficios').textContent = fmtBRLShort(totBen);
+  document.getElementById('totMensal').textContent = fmtBRLShort(totMen);
+}
+
+let openFiliais = new Set();
+function toggleDept(filialId){
+  const filial = FILIAIS.find(f => f.id === filialId);
+  if(!filial) return;
+  const expandIcon = document.getElementById('exp-' + filialId);
+
+  if(openFiliais.has(filialId)){
+    openFiliais.delete(filialId);
+    expandIcon.classList.remove('open');
+    filial.depts.forEach(d => {
+      const row = document.getElementById('dept-' + filialId + '-' + d.name.replace(/\s+/g, '-'));
+      if(row) row.style.display = 'none';
+    });
+  } else {
+    openFiliais.add(filialId);
+    expandIcon.classList.add('open');
+    filial.depts.forEach(d => {
+      const row = document.getElementById('dept-' + filialId + '-' + d.name.replace(/\s+/g, '-'));
+      if(row) row.style.display = '';
+    });
+  }
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// Init
+recalculate();
+</script>
+</body>
+</html>

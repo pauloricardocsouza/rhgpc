@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Bem-vindo!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{
+  font-family:'Sora',sans-serif;
+  background:linear-gradient(135deg, #2B4A7A 0%, #1F3A6B 35%, #6D28D9 100%);
+  color:var(--txt);
+  font-size:13px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* Decorações de fundo */
+body::before{
+  content:''; position:fixed;
+  top:-100px; right:-100px;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(245,131,31,.18), transparent 65%);
+  border-radius:50%;
+  pointer-events:none;
+}
+body::after{
+  content:''; position:fixed;
+  bottom:-150px; left:-100px;
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(109,40,217,.22), transparent 60%);
+  border-radius:50%;
+  pointer-events:none;
+}
+
+/* ============= CARD CENTRAL ============= */
+.onboarding-card{
+  width:100%;
+  max-width:540px;
+  background:#fff;
+  border-radius:18px;
+  box-shadow:0 25px 60px rgba(26,45,79,.4), 0 10px 30px rgba(26,45,79,.25);
+  overflow:hidden;
+  position:relative;
+  z-index:1;
+}
+
+/* Header com brand + progresso */
+.ob-header{
+  padding:20px 24px 16px;
+  border-bottom:1px solid var(--gray1);
+  background:#fff;
+  position:sticky; top:0;
+  z-index:10;
+}
+.ob-brand{
+  display:flex; align-items:center; gap:11px;
+  margin-bottom:12px;
+}
+.ob-brand-logo{
+  width:38px; height:38px; border-radius:9px;
+  background:linear-gradient(135deg, var(--navy3), var(--orange));
+  color:#fff; font-weight:700; font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ob-brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.ob-brand-name{font-weight:600; font-size:14px;}
+.ob-brand-sub{font-size:10.5px; color:var(--txt2);}
+.ob-progress{
+  display:flex; gap:5px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.ob-step{
+  height:5px;
+  flex:1;
+  background:var(--gray1);
+  border-radius:3px;
+  overflow:hidden;
+  position:relative;
+  transition:all .3s;
+}
+.ob-step.done{background:var(--green);}
+.ob-step.current{background:var(--orange);}
+.ob-step.current::after{
+  content:''; position:absolute;
+  inset:0; background:rgba(255,255,255,.3);
+  animation:shimmer 1.8s infinite;
+}
+@keyframes shimmer{0%{transform:translateX(-100%);} 100%{transform:translateX(100%);}}
+.ob-progress-meta{
+  display:flex; justify-content:space-between;
+  font-size:11px; color:var(--txt2);
+}
+.ob-progress-meta strong{color:var(--orange); font-weight:600; font-family:'JetBrains Mono',monospace;}
+
+/* Body de cada passo */
+.ob-body{
+  padding:26px 28px 18px;
+  min-height:380px;
+}
+
+/* Step animation */
+.ob-step-content{
+  display:none;
+  animation:slideIn .3s ease-out;
+}
+.ob-step-content.active{display:block;}
+@keyframes slideIn{
+  from{opacity:0; transform:translateY(8px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* Welcome / step 1 styles */
+.welcome-emoji{
+  font-size:54px;
+  text-align:center;
+  margin:5px 0 13px;
+  display:block;
+  filter:drop-shadow(0 4px 8px rgba(245,131,31,.3));
+}
+.welcome-greeting{
+  font-size:11px; color:var(--orange); font-weight:600;
+  text-transform:uppercase; letter-spacing:1px;
+  text-align:center;
+  margin-bottom:6px;
+}
+.welcome-title{
+  font-size:24px; font-weight:600;
+  text-align:center;
+  letter-spacing:-.4px;
+  margin-bottom:8px;
+}
+.welcome-title strong{color:var(--orange);}
+.welcome-subtitle{
+  font-size:13px; color:var(--txt2);
+  text-align:center;
+  line-height:1.6;
+  margin-bottom:20px;
+  padding:0 6px;
+}
+
+/* Card de identificação no welcome */
+.welcome-id-card{
+  background:linear-gradient(135deg, var(--off), #E8EFF8);
+  border-radius:11px;
+  padding:14px 16px;
+  margin-bottom:18px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:12px;
+  align-items:center;
+  border:1px solid var(--gray2);
+}
+.welcome-avatar{
+  width:48px; height:48px; border-radius:12px;
+  background:linear-gradient(135deg, var(--orange), #D87013);
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:18px;
+  box-shadow:0 4px 8px rgba(245,131,31,.25);
+}
+.welcome-id-info{min-width:0;}
+.welcome-id-name{font-size:13.5px; font-weight:600;}
+.welcome-id-tag{
+  font-size:11px; color:var(--txt2);
+  margin-top:1px;
+  display:flex; gap:6px; flex-wrap:wrap; align-items:center;
+}
+.welcome-id-pill{
+  display:inline-flex; align-items:center;
+  font-size:9.5px; padding:1px 7px; border-radius:7px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.3px;
+}
+.welcome-id-pill.emp{background:#F0E6FA; color:var(--purple);}
+.welcome-id-pill.tom{background:var(--green2); color:var(--green);}
+
+/* Lista de tópicos */
+.welcome-topics{
+  background:#FFF8EB;
+  border-radius:10px;
+  padding:14px 16px;
+  border-left:3px solid var(--orange);
+}
+.welcome-topics .head{
+  font-size:11px; color:var(--orange); font-weight:700;
+  text-transform:uppercase; letter-spacing:.5px;
+  margin-bottom:9px;
+}
+.welcome-topics ul{list-style:none; padding:0;}
+.welcome-topics li{
+  display:flex; align-items:flex-start; gap:9px;
+  font-size:12.5px; color:var(--txt);
+  padding:5px 0;
+}
+.welcome-topics li svg{
+  width:13px; height:13px; flex-shrink:0;
+  color:var(--orange); margin-top:3px;
+}
+.welcome-topics li strong{font-weight:600;}
+
+/* ============= STEP 2: Trocar senha ============= */
+.section-icon{
+  width:46px; height:46px; border-radius:12px;
+  margin:0 auto 11px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff;
+  background:linear-gradient(135deg, var(--orange), #D87013);
+  box-shadow:0 6px 14px rgba(245,131,31,.3);
+}
+.section-icon svg{width:22px; height:22px;}
+.section-icon.purple{background:linear-gradient(135deg, var(--purple), #5523A8); box-shadow:0 6px 14px rgba(109,40,217,.3);}
+.section-icon.green{background:linear-gradient(135deg, var(--green), #15643A); box-shadow:0 6px 14px rgba(30,123,75,.3);}
+.section-icon.navy{background:linear-gradient(135deg, var(--navy), var(--navy2)); box-shadow:0 6px 14px rgba(43,74,122,.3);}
+
+.step-title{
+  font-size:19px; font-weight:600;
+  text-align:center;
+  letter-spacing:-.3px;
+  margin-bottom:6px;
+}
+.step-subtitle{
+  font-size:12.5px; color:var(--txt2);
+  text-align:center;
+  margin-bottom:18px;
+  line-height:1.55;
+  padding:0 12px;
+}
+
+/* Form fields */
+.field-group{margin-bottom:14px;}
+.field-label{
+  display:block;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt);
+  margin-bottom:6px;
+}
+.field-label .required{color:var(--danger); margin-left:2px;}
+.field-input-wrap{position:relative;}
+.field-input{
+  width:100%;
+  padding:11px 14px;
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  font-size:13.5px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field-input:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+.field-input.has-icon{padding-left:38px;}
+.field-input.has-suffix{padding-right:42px;}
+.field-icon-left{
+  position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  color:var(--txt3);
+}
+.field-suffix{
+  position:absolute; right:13px; top:50%; transform:translateY(-50%);
+  background:transparent; border:none;
+  color:var(--txt3); cursor:pointer;
+  padding:5px;
+  display:flex;
+}
+.field-suffix:hover{color:var(--txt);}
+
+.field-help{
+  font-size:11px;
+  color:var(--txt2);
+  margin-top:4px;
+  display:flex; align-items:flex-start; gap:5px;
+  line-height:1.4;
+}
+.field-help svg{flex-shrink:0; margin-top:1px;}
+
+/* Strength meter */
+.strength-meter{
+  margin-top:7px;
+  display:flex; flex-direction:column; gap:6px;
+}
+.strength-bar-wrap{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:4px;
+}
+.strength-bar{
+  height:4px; background:var(--gray1);
+  border-radius:2px;
+  transition:background .2s;
+}
+.strength-bar.active.weak{background:var(--danger);}
+.strength-bar.active.medium{background:var(--amber);}
+.strength-bar.active.good{background:var(--green);}
+.strength-bar.active.strong{background:var(--green);}
+.strength-label{
+  font-size:11px;
+  color:var(--txt2);
+  display:flex; justify-content:space-between;
+}
+.strength-label .strength-tag{font-weight:600;}
+.strength-label .strength-tag.weak{color:var(--danger);}
+.strength-label .strength-tag.medium{color:var(--amber);}
+.strength-label .strength-tag.good{color:var(--green);}
+.strength-label .strength-tag.strong{color:var(--green);}
+
+.password-rules{
+  background:var(--off);
+  border-radius:8px;
+  padding:11px 13px;
+  margin-top:9px;
+}
+.pr-title{
+  font-size:10.5px; color:var(--txt2);
+  font-weight:600;
+  text-transform:uppercase; letter-spacing:.4px;
+  margin-bottom:6px;
+}
+.pr-list{list-style:none; padding:0;}
+.pr-item{
+  display:flex; align-items:center; gap:7px;
+  font-size:11.5px; color:var(--txt2);
+  padding:2px 0;
+}
+.pr-item.met{color:var(--green); font-weight:500;}
+.pr-icon{
+  width:14px; height:14px; border-radius:50%;
+  background:var(--gray1);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.pr-item.met .pr-icon{background:var(--green); color:#fff;}
+.pr-icon svg{width:8px; height:8px;}
+
+/* ============= STEP 3: Foto e dados pessoais ============= */
+.photo-area{
+  display:flex; flex-direction:column;
+  align-items:center;
+  margin-bottom:18px;
+}
+.photo-circle{
+  width:110px; height:110px; border-radius:50%;
+  background:linear-gradient(135deg, var(--gray2), var(--gray1));
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  cursor:pointer;
+  border:3px dashed var(--gray3);
+  transition:all .15s;
+  margin-bottom:11px;
+}
+.photo-circle:hover{
+  border-color:var(--orange);
+  transform:scale(1.02);
+}
+.photo-initials{
+  font-size:38px; font-weight:600; color:var(--txt2);
+  letter-spacing:-.5px;
+}
+.photo-camera{
+  position:absolute; bottom:0; right:0;
+  width:32px; height:32px; border-radius:50%;
+  background:var(--orange); color:#fff;
+  border:3px solid #fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.photo-actions{
+  display:flex; gap:8px;
+  margin-bottom:5px;
+}
+.photo-btn{
+  padding:7px 13px;
+  border-radius:7px;
+  font-size:11.5px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+  border:1.5px solid var(--gray2);
+  background:#fff; color:var(--txt);
+  display:inline-flex; align-items:center; gap:5px;
+}
+.photo-btn:hover{background:var(--off);}
+.photo-btn.primary{background:var(--navy); color:#fff; border-color:var(--navy);}
+.photo-btn.primary:hover{background:var(--navy2);}
+.photo-help{
+  font-size:11px; color:var(--txt3);
+  text-align:center;
+}
+
+.field-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+/* ============= STEP 4: Tour das features ============= */
+.tour-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:11px;
+}
+.tour-card{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:13px;
+  padding:13px 15px;
+  background:var(--off);
+  border-radius:10px;
+  border-left:3px solid var(--navy);
+  align-items:center;
+}
+.tour-card.orange{border-left-color:var(--orange);}
+.tour-card.green{border-left-color:var(--green);}
+.tour-card.purple{border-left-color:var(--purple);}
+
+.tour-icon{
+  width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.tour-icon.navy{background:#E8EFF8; color:var(--navy);}
+.tour-icon.orange{background:#FCE6CD; color:var(--orange);}
+.tour-icon.green{background:var(--green2); color:var(--green);}
+.tour-icon.purple{background:#F0E6FA; color:var(--purple);}
+.tour-content{min-width:0;}
+.tour-title{font-size:13px; font-weight:600; margin-bottom:1px;}
+.tour-desc{font-size:11.5px; color:var(--txt2); line-height:1.4;}
+
+/* ============= STEP 5: Celebração ============= */
+.celebrate-emoji{
+  font-size:80px;
+  text-align:center;
+  margin-bottom:11px;
+  display:block;
+  animation:bounce 0.8s ease-out;
+}
+@keyframes bounce{
+  0%{transform:scale(0); opacity:0;}
+  60%{transform:scale(1.15); opacity:1;}
+  100%{transform:scale(1);}
+}
+.celebrate-title{
+  font-size:24px; font-weight:600;
+  text-align:center;
+  margin-bottom:8px;
+  letter-spacing:-.4px;
+}
+.celebrate-subtitle{
+  font-size:13px; color:var(--txt2);
+  text-align:center;
+  margin-bottom:21px;
+  line-height:1.6;
+  padding:0 8px;
+}
+
+.next-step-card{
+  background:linear-gradient(135deg, #FCE6CD, #FFF8EB);
+  border-radius:11px;
+  padding:14px 16px;
+  margin-bottom:13px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:13px;
+  align-items:center;
+  border-left:3px solid var(--orange);
+}
+.nsc-icon{
+  width:38px; height:38px; border-radius:10px;
+  background:var(--orange); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.nsc-content{min-width:0;}
+.nsc-title{font-size:12.5px; font-weight:600; margin-bottom:1px;}
+.nsc-desc{font-size:11px; color:var(--txt2);}
+.nsc-time{
+  font-size:10.5px; color:var(--orange); font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+}
+
+.help-card{
+  background:var(--off);
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:7px;
+  display:flex; align-items:flex-start; gap:11px;
+}
+.help-card .icon{
+  width:30px; height:30px; border-radius:8px;
+  background:#E8EFF8; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.help-card .text{font-size:11.5px; color:var(--txt2); line-height:1.5;}
+.help-card .text strong{color:var(--txt); font-weight:600;}
+
+/* ============= FOOTER COM BOTÕES ============= */
+.ob-footer{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:14px 24px 18px;
+  border-top:1px solid var(--gray1);
+  background:#fff;
+  gap:10px;
+}
+.btn-back{
+  background:transparent;
+  border:none;
+  color:var(--txt2);
+  font-size:12.5px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+  padding:8px 12px;
+  display:inline-flex; align-items:center; gap:5px;
+  border-radius:7px;
+}
+.btn-back:hover{background:var(--off); color:var(--txt);}
+.btn-back:disabled{opacity:.4; cursor:not-allowed;}
+
+.btn-next{
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  padding:11px 22px;
+  border-radius:9px;
+  font-size:12.5px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px;
+  box-shadow:0 4px 10px rgba(43,74,122,.25);
+  transition:all .15s;
+}
+.btn-next:hover{background:var(--navy2); transform:translateY(-1px); box-shadow:0 6px 14px rgba(43,74,122,.35);}
+.btn-next.orange{background:var(--orange); box-shadow:0 4px 10px rgba(245,131,31,.3);}
+.btn-next.orange:hover{background:#D87013; box-shadow:0 6px 14px rgba(245,131,31,.4);}
+.btn-next.green{background:var(--green); box-shadow:0 4px 10px rgba(30,123,75,.3);}
+.btn-next.green:hover{background:#15643A;}
+.btn-next:disabled{opacity:.5; cursor:not-allowed; transform:none; box-shadow:none;}
+
+.btn-skip{
+  font-size:11px; color:var(--txt3);
+  background:transparent; border:none;
+  cursor:pointer; font-family:inherit;
+  padding:6px 10px;
+  text-decoration:underline;
+}
+.btn-skip:hover{color:var(--txt2);}
+
+/* Responsive */
+@media (max-width: 540px){
+  body{padding:0;}
+  .onboarding-card{
+    border-radius:0;
+    min-height:100vh;
+    max-width:100%;
+    box-shadow:none;
+    display:flex;
+    flex-direction:column;
+  }
+  .ob-body{flex:1; padding:22px 18px 14px;}
+  .ob-header{padding:14px 18px 12px;}
+  .ob-footer{padding:12px 18px 16px;}
+  .welcome-emoji{font-size:46px;}
+  .welcome-title{font-size:20px;}
+  .step-title{font-size:17px;}
+  .celebrate-emoji{font-size:62px;}
+  .celebrate-title{font-size:20px;}
+  .field-row{grid-template-columns:1fr; gap:12px;}
+}
+
+/* Dots de cor para steps no mobile (alternativo ao bar) */
+@media (max-width: 360px){
+  .ob-progress{gap:4px;}
+  .ob-step{height:4px;}
+}
+</style>
+</head>
+<body>
+
+<div class="onboarding-card">
+
+  <!-- ============= HEADER ============= -->
+  <div class="ob-header">
+    <div class="ob-brand">
+      <div class="ob-brand-logo">R2</div>
+      <div class="ob-brand-text">
+        <span class="ob-brand-name">R2 People</span>
+        <span class="ob-brand-sub">Grupo Pinto Cerqueira</span>
+      </div>
+    </div>
+    <div class="ob-progress">
+      <div class="ob-step current" id="bar1"></div>
+      <div class="ob-step" id="bar2"></div>
+      <div class="ob-step" id="bar3"></div>
+      <div class="ob-step" id="bar4"></div>
+      <div class="ob-step" id="bar5"></div>
+    </div>
+    <div class="ob-progress-meta">
+      <span>Primeiro acesso</span>
+      <span>Passo <strong id="stepNum">1</strong> de 5 · ~3 min</span>
+    </div>
+  </div>
+
+  <!-- ============= BODY (5 STEPS) ============= -->
+  <div class="ob-body">
+
+    <!-- ============= STEP 1: WELCOME ============= -->
+    <div class="ob-step-content active" data-step="1">
+      <span class="welcome-emoji">👋</span>
+      <div class="welcome-greeting">SEJA BEM-VINDO</div>
+      <h1 class="welcome-title">Olá, <strong>Gabriel</strong>!</h1>
+      <p class="welcome-subtitle">
+        Esse é seu primeiro acesso ao R2 People.<br>
+        Vamos te ajudar a configurar tudo em poucos minutos.
+      </p>
+
+      <div class="welcome-id-card">
+        <div class="welcome-avatar">GP</div>
+        <div class="welcome-id-info">
+          <div class="welcome-id-name">Gabriel Pinto Souza</div>
+          <div class="welcome-id-tag">
+            <span>Estagiário · Financeiro</span>
+            <span class="welcome-id-pill emp">EMP Labuta</span>
+            <span class="welcome-id-pill tom">TOM Cestão L1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-topics">
+        <div class="head">o que você vai fazer agora</div>
+        <ul>
+          <li>
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div><strong>Criar uma senha pessoal</strong> e segura para o seu acesso</div>
+          </li>
+          <li>
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div><strong>Adicionar uma foto</strong> de perfil para seus colegas te reconhecerem</div>
+          </li>
+          <li>
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div><strong>Confirmar seus dados</strong> de contato e bancários</div>
+          </li>
+          <li>
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <div><strong>Conhecer as principais áreas</strong> da plataforma</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============= STEP 2: CRIAR SENHA ============= -->
+    <div class="ob-step-content" data-step="2">
+      <div class="section-icon">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <h2 class="step-title">Criar uma senha</h2>
+      <p class="step-subtitle">Sua senha é pessoal e secreta. Não compartilhe com ninguém, nem com o RH.</p>
+
+      <div class="field-group">
+        <label class="field-label">Senha atual <span class="required">*</span></label>
+        <div class="field-input-wrap">
+          <span class="field-icon-left">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="16" r="1"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </span>
+          <input type="password" class="field-input has-icon has-suffix" value="GPC@2026" placeholder="A que o RH te enviou">
+          <button class="field-suffix" type="button" onclick="togglePassword(this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="field-help">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>Você recebeu essa senha temporária por e-mail ou direto com o RH</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Nova senha <span class="required">*</span></label>
+        <div class="field-input-wrap">
+          <span class="field-icon-left">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2M12 3v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg>
+          </span>
+          <input type="password" id="newPwd" class="field-input has-icon has-suffix" placeholder="Mínimo 8 caracteres" oninput="checkPassword()">
+          <button class="field-suffix" type="button" onclick="togglePassword(this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <div class="strength-meter">
+          <div class="strength-bar-wrap">
+            <div class="strength-bar" id="sb1"></div>
+            <div class="strength-bar" id="sb2"></div>
+            <div class="strength-bar" id="sb3"></div>
+            <div class="strength-bar" id="sb4"></div>
+          </div>
+          <div class="strength-label">
+            <span>Força da senha</span>
+            <span class="strength-tag" id="strengthTag">aguardando</span>
+          </div>
+        </div>
+
+        <div class="password-rules">
+          <div class="pr-title">requisitos da política do GPC</div>
+          <ul class="pr-list">
+            <li class="pr-item" id="r1">
+              <span class="pr-icon"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+              <span>No mínimo 8 caracteres</span>
+            </li>
+            <li class="pr-item" id="r2">
+              <span class="pr-icon"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+              <span>Pelo menos 1 número</span>
+            </li>
+            <li class="pr-item" id="r3">
+              <span class="pr-icon"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+              <span>Pelo menos 1 caractere especial (@#$%&*)</span>
+            </li>
+            <li class="pr-item" id="r4">
+              <span class="pr-icon"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+              <span>Pelo menos 1 letra maiúscula</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Confirmar nova senha <span class="required">*</span></label>
+        <div class="field-input-wrap">
+          <span class="field-icon-left">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+          </span>
+          <input type="password" class="field-input has-icon has-suffix" placeholder="Repita a senha que você criou">
+          <button class="field-suffix" type="button" onclick="togglePassword(this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============= STEP 3: FOTO + DADOS ============= -->
+    <div class="ob-step-content" data-step="3">
+      <div class="section-icon purple">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/></svg>
+      </div>
+      <h2 class="step-title">Sua foto e contato</h2>
+      <p class="step-subtitle">Adicione uma foto sua para que seus colegas te reconheçam (opcional, mas ajuda muito!)</p>
+
+      <div class="photo-area">
+        <div class="photo-circle" onclick="alert('Em produção: abre seletor de arquivo ou câmera do celular')">
+          <span class="photo-initials">GP</span>
+          <div class="photo-camera">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <div class="photo-actions">
+          <button class="photo-btn primary">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            Enviar do dispositivo
+          </button>
+          <button class="photo-btn">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Tirar foto
+          </button>
+        </div>
+        <div class="photo-help">JPG ou PNG · até 2MB · idealmente quadrada</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Telefone celular <span class="required">*</span></label>
+          <div class="field-input-wrap">
+            <span class="field-icon-left">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            </span>
+            <input type="tel" class="field-input has-icon" placeholder="(75) 9 9999-9999" value="(75) 9 8765-4321">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">E-mail pessoal</label>
+          <div class="field-input-wrap">
+            <span class="field-icon-left">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+            </span>
+            <input type="email" class="field-input has-icon" placeholder="seu@email.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Contato de emergência</label>
+        <div class="field-input-wrap">
+          <span class="field-icon-left">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+          </span>
+          <input type="text" class="field-input has-icon" placeholder="Nome · relação · telefone">
+        </div>
+        <div class="field-help">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>Pessoa para a empresa contatar em caso de emergência. Ex: "Maria Pinto · mãe · (75) 9 8888-7777"</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============= STEP 4: TOUR DAS FEATURES ============= -->
+    <div class="ob-step-content" data-step="4">
+      <div class="section-icon green">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <h2 class="step-title">Conheça suas áreas</h2>
+      <p class="step-subtitle">Essas são as principais funcionalidades que você vai usar como colaborador</p>
+
+      <div class="tour-grid">
+        <div class="tour-card orange">
+          <div class="tour-icon orange">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="tour-content">
+            <div class="tour-title">Avaliação de desempenho</div>
+            <div class="tour-desc">A cada 6 meses, faça sua auto-avaliação. Seu gestor (João Carvalho) também avalia, e vocês conversam no 1:1.</div>
+          </div>
+        </div>
+
+        <div class="tour-card purple">
+          <div class="tour-icon purple">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="tour-content">
+            <div class="tour-title">Feedback contínuo</div>
+            <div class="tour-desc">Receba e dê feedback aos colegas a qualquer momento. Pode ser anônimo. É privado entre você e a outra pessoa.</div>
+          </div>
+        </div>
+
+        <div class="tour-card green">
+          <div class="tour-icon green">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L19 22l-3.5-2L12 22l-3.5-2L5 22l3.5-8.5"/></svg>
+          </div>
+          <div class="tour-content">
+            <div class="tour-title">Mural de elogios</div>
+            <div class="tour-desc">Reconhecimento público para os colegas que merecem. Visível para todos do GPC. Comece reconhecendo alguém!</div>
+          </div>
+        </div>
+
+        <div class="tour-card">
+          <div class="tour-icon navy">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <div class="tour-content">
+            <div class="tour-title">Plano de Desenvolvimento (PDI)</div>
+            <div class="tour-desc">Objetivos co-construídos com seu gestor para evoluir na carreira. Você acompanha o progresso direto na sua home.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============= STEP 5: CELEBRAÇÃO ============= -->
+    <div class="ob-step-content" data-step="5">
+      <span class="celebrate-emoji">🎉</span>
+      <h2 class="celebrate-title">Tudo pronto, Gabriel!</h2>
+      <p class="celebrate-subtitle">
+        Seu acesso está configurado e você já pode começar a usar a plataforma.<br>
+        Bom começo na nova jornada! 🚀
+      </p>
+
+      <div class="next-step-card">
+        <div class="nsc-icon">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <div class="nsc-content">
+          <div class="nsc-title">Próxima ação: Auto-avaliação 2026.1</div>
+          <div class="nsc-desc">Como você acabou de entrar, sua participação é opcional este ciclo.</div>
+        </div>
+        <div class="nsc-time">~15 min</div>
+      </div>
+
+      <div class="help-card">
+        <div class="icon">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+        </div>
+        <div class="text">
+          <strong>Ficou com dúvida?</strong><br>
+          Sua referência no Cestão L1 é a Sandra Gomes (gerente). Para questões de RH, fale com a Patrícia Mello. Para problemas técnicos, abra um chamado no menu Ajuda.
+        </div>
+      </div>
+
+      <div class="help-card">
+        <div class="icon">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        </div>
+        <div class="text">
+          <strong>Sugestão amigável:</strong><br>
+          Que tal começar reconhecendo alguém no Mural de Elogios? É uma boa forma de se apresentar à empresa.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============= FOOTER ============= -->
+  <div class="ob-footer">
+    <button class="btn-back" id="btnBack" onclick="goBack()" disabled>
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      Voltar
+    </button>
+    <button class="btn-skip" id="btnSkip" onclick="skipStep()" style="display:none;">Pular esta etapa</button>
+    <button class="btn-next" id="btnNext" onclick="goNext()">
+      Começar
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 5;
+
+function updateProgress(){
+  for(let i = 1; i <= totalSteps; i++){
+    const bar = document.getElementById('bar' + i);
+    bar.classList.remove('done', 'current');
+    if(i < currentStep) bar.classList.add('done');
+    else if(i === currentStep) bar.classList.add('current');
+  }
+  document.getElementById('stepNum').textContent = currentStep;
+}
+
+function showStep(n){
+  document.querySelectorAll('.ob-step-content').forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.step) === n);
+  });
+
+  // Botão back
+  document.getElementById('btnBack').disabled = (n === 1);
+
+  // Botão skip aparece só no step 3 (foto/dados são opcionais)
+  document.getElementById('btnSkip').style.display = (n === 3) ? 'inline-flex' : 'none';
+
+  // Texto e cor do botão next muda conforme o passo
+  const btnNext = document.getElementById('btnNext');
+  btnNext.classList.remove('orange', 'green');
+
+  if(n === 1){
+    btnNext.innerHTML = 'Começar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+  } else if(n === 2){
+    btnNext.innerHTML = 'Salvar e continuar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+    btnNext.classList.add('orange');
+  } else if(n === 3){
+    btnNext.innerHTML = 'Continuar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+  } else if(n === 4){
+    btnNext.innerHTML = 'Quase lá! <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+  } else if(n === 5){
+    btnNext.innerHTML = 'Ir para minha home <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+    btnNext.classList.add('green');
+    document.getElementById('btnBack').style.display = 'none';
+  } else {
+    document.getElementById('btnBack').style.display = '';
+  }
+
+  // Reset back button display when not on last step
+  if(n !== 5) document.getElementById('btnBack').style.display = '';
+
+  updateProgress();
+  // Scroll to top
+  document.querySelector('.ob-body').scrollTop = 0;
+}
+
+function goNext(){
+  if(currentStep < totalSteps){
+    currentStep++;
+    showStep(currentStep);
+  } else {
+    alert('Em produção: redireciona para /home com Realtime ativando para receber o welcome message');
+  }
+}
+
+function goBack(){
+  if(currentStep > 1){
+    currentStep--;
+    showStep(currentStep);
+  }
+}
+
+function skipStep(){
+  // Só aparece no step 3 (foto e dados pessoais são opcionais)
+  if(currentStep === 3){
+    if(confirm('Tem certeza que quer pular? Você pode adicionar a foto e atualizar dados depois no seu perfil.')){
+      goNext();
+    }
+  }
+}
+
+function togglePassword(btn){
+  const input = btn.parentElement.querySelector('input');
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function checkPassword(){
+  const pwd = document.getElementById('newPwd').value;
+
+  // Verifica regras
+  const r1 = pwd.length >= 8;
+  const r2 = /\d/.test(pwd);
+  const r3 = /[!@#$%&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(pwd);
+  const r4 = /[A-Z]/.test(pwd);
+
+  document.getElementById('r1').classList.toggle('met', r1);
+  document.getElementById('r2').classList.toggle('met', r2);
+  document.getElementById('r3').classList.toggle('met', r3);
+  document.getElementById('r4').classList.toggle('met', r4);
+
+  // Calcula força
+  const passed = [r1, r2, r3, r4].filter(Boolean).length;
+  let strength = 0;
+  let label = 'aguardando';
+  let cls = '';
+
+  if(pwd.length === 0){
+    strength = 0; label = 'aguardando'; cls = '';
+  } else if(passed === 1){
+    strength = 1; label = 'fraca'; cls = 'weak';
+  } else if(passed === 2){
+    strength = 2; label = 'razoável'; cls = 'medium';
+  } else if(passed === 3){
+    strength = 3; label = 'boa'; cls = 'good';
+  } else if(passed === 4){
+    strength = 4; label = 'forte'; cls = 'strong';
+  }
+
+  for(let i = 1; i <= 4; i++){
+    const bar = document.getElementById('sb' + i);
+    bar.classList.remove('active', 'weak', 'medium', 'good', 'strong');
+    if(i <= strength){
+      bar.classList.add('active', cls);
+    }
+  }
+
+  const tag = document.getElementById('strengthTag');
+  tag.classList.remove('weak', 'medium', 'good', 'strong');
+  tag.textContent = label;
+  if(cls) tag.classList.add(cls);
+}
+
+// Inicializa
+showStep(1);
+</script>
+</body>
+</html>

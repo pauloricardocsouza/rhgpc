@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People · 1:1s · Hub do líder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; transition:all .15s; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.breadcrumb{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--txt2);}
+.breadcrumb a{color:var(--txt2); text-decoration:none; cursor:pointer;}
+.breadcrumb a:hover{color:var(--navy);}
+.breadcrumb .sep{color:var(--gray3);}
+.breadcrumb strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.icon-btn{width:36px; height:36px; background:transparent; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; color:var(--txt2);}
+.icon-btn:hover{background:var(--gray1);}
+.icon-btn .badge-dot{position:absolute; top:8px; right:9px; width:8px; height:8px; background:var(--orange); border-radius:50%; border:2px solid #fff;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-chip:hover{background:var(--gray1);}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:0 0 40px; overflow-x:hidden;}
+.container{max-width:1320px; margin:0 auto; padding:22px;}
+
+/* Botões */
+.btn{display:inline-flex; align-items:center; gap:7px; padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; border:1px solid transparent; transition:all .15s;}
+.btn svg{width:14px; height:14px;}
+.btn-primary{background:var(--navy); color:#fff;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border-color:var(--gray2);}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-ghost{background:transparent; color:var(--txt2);}
+.btn-ghost:hover{background:var(--gray1); color:var(--txt);}
+.btn-orange{background:var(--orange); color:#fff;}
+.btn-orange:hover{background:#dc7517;}
+.btn-sm{padding:6px 10px; font-size:11.5px; gap:5px;}
+.btn-sm svg{width:12px; height:12px;}
+
+/* Page header */
+.page-header{display:flex; align-items:flex-start; justify-content:space-between; gap:18px; margin-bottom:18px; flex-wrap:wrap;}
+.page-title{font-size:20px; font-weight:600; color:var(--txt); margin-bottom:4px; letter-spacing:-.3px;}
+.page-subtitle{font-size:13px; color:var(--txt2); display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.page-actions{display:flex; gap:8px; flex-wrap:wrap;}
+
+.persona-chip{display:inline-flex; align-items:center; gap:6px; padding:4px 10px; background:var(--blue2); color:var(--blue); border-radius:99px; font-size:11px; font-weight:500;}
+.persona-chip svg{width:12px; height:12px;}
+
+/* Alert banner */
+.alert-banner{display:flex; align-items:center; gap:12px; padding:13px 16px; border-radius:11px; background:var(--red2); border:1px solid #fcc; margin-bottom:18px;}
+.alert-banner.amber{background:var(--amber2); border-color:#fde2b5;}
+.alert-banner.blue{background:var(--blue2); border-color:#cfe1fb;}
+.alert-icon{flex-shrink:0; width:32px; height:32px; border-radius:8px; background:var(--red); color:#fff; display:flex; align-items:center; justify-content:center;}
+.alert-banner.amber .alert-icon{background:var(--orange);}
+.alert-banner.blue .alert-icon{background:var(--blue);}
+.alert-banner.amber.subtle .alert-icon{background:var(--amber);}
+.alert-content{flex:1;}
+.alert-title{font-size:13px; font-weight:600; color:var(--txt);}
+.alert-text{font-size:12px; color:var(--txt2); margin-top:2px;}
+.alert-text strong{color:var(--txt); font-weight:600;}
+.alert-actions{display:flex; gap:8px;}
+
+/* KPI strip */
+.kpi-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+.kpi-card{background:#fff; border:1px solid var(--gray1); border-radius:12px; padding:16px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi-card::before{content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--navy);}
+.kpi-card.k2::before{background:var(--green);}
+.kpi-card.k3::before{background:var(--orange);}
+.kpi-card.k4::before{background:var(--red);}
+.kpi-label{font-size:11px; color:var(--txt2); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:700; color:var(--txt); font-family:'JetBrains Mono',monospace; line-height:1.1;}
+.kpi-value-sm{font-size:18px;}
+.kpi-meta{font-size:11.5px; color:var(--txt2); margin-top:6px; display:flex; align-items:center; gap:5px;}
+.kpi-meta-good{color:var(--green); font-weight:500;}
+.kpi-meta-bad{color:var(--red); font-weight:500;}
+.kpi-meta-warn{color:var(--orange); font-weight:500;}
+
+/* Layout cols */
+.layout-2col{display:grid; grid-template-columns:1fr 380px; gap:18px;}
+.col-main, .col-side{min-width:0;}
+
+/* Card */
+.card{background:#fff; border:1px solid var(--gray1); border-radius:12px; box-shadow:var(--shadow-card); margin-bottom:16px;}
+.card-head{padding:14px 16px 0; display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.card-title{font-size:14px; font-weight:600; color:var(--txt); display:flex; align-items:center; gap:8px;}
+.card-title svg{width:15px; height:15px; color:var(--navy);}
+.card-sub{font-size:11.5px; color:var(--txt2); font-weight:400; margin-left:6px;}
+.card-body{padding:14px 16px 16px;}
+.card-tools{display:flex; gap:6px; align-items:center;}
+
+/* Team grid */
+.team-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+.team-card{border:1px solid var(--gray1); border-radius:11px; padding:14px; transition:all .15s; cursor:pointer; background:#fff; position:relative;}
+.team-card:hover{border-color:var(--navy3); box-shadow:0 4px 12px rgba(43,74,122,.08); transform:translateY(-1px);}
+.team-card.is-stale{border-left:3px solid var(--red);}
+.team-card.is-aging{border-left:3px solid var(--orange);}
+.team-card.is-fresh{border-left:3px solid var(--green);}
+.team-card-head{display:flex; align-items:flex-start; gap:10px; margin-bottom:12px;}
+.team-avatar{width:42px; height:42px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:14px; flex-shrink:0;}
+.team-info{flex:1; min-width:0;}
+.team-name{font-size:13.5px; font-weight:600; color:var(--txt); display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+.team-handle{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--navy3); background:var(--off); padding:1px 6px; border-radius:4px; font-weight:500;}
+.team-role{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+.team-pin{position:absolute; top:10px; right:10px; width:24px; height:24px; border-radius:6px; background:transparent; border:none; cursor:pointer; color:var(--txt3); display:flex; align-items:center; justify-content:center;}
+.team-pin:hover{background:var(--gray1); color:var(--txt);}
+
+.team-meta{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;}
+.team-meta-item{padding:8px 10px; background:var(--off); border-radius:8px;}
+.team-meta-label{font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.team-meta-value{font-size:12.5px; color:var(--txt); font-weight:600; margin-top:2px; font-family:'JetBrains Mono',monospace;}
+.team-meta-value.sm{font-size:11px; font-family:'Sora',sans-serif;}
+
+.idade-tag{display:inline-flex; align-items:center; gap:4px; padding:1px 7px; border-radius:99px; font-size:10.5px; font-weight:600;}
+.idade-tag.ok{background:var(--green2); color:var(--green);}
+.idade-tag.aging{background:var(--amber2); color:var(--amber);}
+.idade-tag.stale{background:var(--red2); color:var(--red);}
+.idade-tag.never{background:var(--gray1); color:var(--txt2);}
+
+.team-actionitems{font-size:11.5px; color:var(--txt2); margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+.ai-badge{display:inline-flex; align-items:center; gap:4px; padding:2px 7px; background:var(--purple2); color:var(--purple); border-radius:99px; font-size:10.5px; font-weight:600;}
+.ai-badge.zero{background:var(--gray1); color:var(--txt2);}
+.team-actions{display:flex; gap:6px;}
+.team-actions .btn{flex:1; justify-content:center; padding:7px 10px; font-size:11.5px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:1px solid var(--gray1); margin-bottom:14px; padding:0 16px;}
+.tab{padding:10px 12px; font-size:12.5px; color:var(--txt2); cursor:pointer; border-bottom:2px solid transparent; font-weight:500; transition:all .15s;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--navy); font-weight:600;}
+.tab-count{display:inline-block; margin-left:5px; background:var(--gray1); color:var(--txt2); font-size:10.5px; padding:1px 6px; border-radius:99px; font-weight:600;}
+.tab.active .tab-count{background:var(--navy); color:#fff;}
+
+/* Meeting list */
+.meeting-list{display:flex; flex-direction:column;}
+.meeting-row{display:flex; align-items:center; gap:12px; padding:10px 14px; border-bottom:1px solid var(--gray1); transition:background .12s; cursor:pointer;}
+.meeting-row:last-child{border-bottom:none;}
+.meeting-row:hover{background:var(--off);}
+.meet-date{flex-shrink:0; width:46px; text-align:center; padding:4px 0; background:var(--gray1); border-radius:7px;}
+.meet-date.today{background:var(--orange); color:#fff;}
+.meet-date.tomorrow{background:var(--blue); color:#fff;}
+.meet-date.past{background:var(--off); color:var(--txt2);}
+.meet-date-day{font-size:14px; font-weight:700; line-height:1; font-family:'JetBrains Mono',monospace;}
+.meet-date-mon{font-size:9.5px; text-transform:uppercase; letter-spacing:.5px; font-weight:500; line-height:1; margin-top:2px;}
+.meet-time{flex-shrink:0; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--txt2); width:46px;}
+.meet-person{flex:1; min-width:0; display:flex; align-items:center; gap:8px;}
+.meet-mini-avatar{width:24px; height:24px; border-radius:50%; color:#fff; font-size:10px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.meet-name{font-size:12.5px; font-weight:500; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.meet-name-handle{font-size:11px; color:var(--txt2); margin-left:4px;}
+.meet-status{display:flex; gap:4px; align-items:center; flex-shrink:0;}
+.meet-status-pill{display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:99px; font-size:10.5px; font-weight:500;}
+.meet-status-pill.prep{background:var(--green2); color:var(--green);}
+.meet-status-pill.noprep{background:var(--gray1); color:var(--txt2);}
+.meet-status-pill.recur{background:var(--purple2); color:var(--purple);}
+
+/* Empty state */
+.empty{padding:30px 16px; text-align:center; color:var(--txt2);}
+.empty-icon{width:46px; height:46px; margin:0 auto 10px; border-radius:50%; background:var(--gray1); color:var(--txt3); display:flex; align-items:center; justify-content:center;}
+.empty-title{font-size:13px; font-weight:600; color:var(--txt); margin-bottom:4px;}
+.empty-sub{font-size:12px; color:var(--txt2);}
+
+/* Filters */
+.toolbar{display:flex; gap:8px; align-items:center; padding:12px 16px; border-bottom:1px solid var(--gray1); flex-wrap:wrap;}
+.search-box{position:relative; flex:1; min-width:200px;}
+.search-box input{width:100%; padding:7px 10px 7px 32px; border:1px solid var(--gray2); border-radius:8px; font-size:12px; background:#fff; font-family:inherit; color:var(--txt);}
+.search-box input:focus{outline:none; border-color:var(--navy3); box-shadow:0 0 0 3px rgba(61,95,149,.12);}
+.search-box svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); width:14px; height:14px; color:var(--txt3);}
+.filter-chip{padding:6px 11px; border:1px solid var(--gray2); background:#fff; border-radius:99px; font-size:11.5px; cursor:pointer; color:var(--txt2); font-family:inherit; display:inline-flex; align-items:center; gap:5px;}
+.filter-chip:hover{background:var(--gray1);}
+.filter-chip.active{background:var(--navy); color:#fff; border-color:var(--navy); font-weight:500;}
+.filter-chip svg{width:12px; height:12px;}
+
+/* Modal */
+.modal-bd{position:fixed; inset:0; background:rgba(26,45,79,.45); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:20px; z-index:200; opacity:0; pointer-events:none; transition:opacity .15s;}
+.modal-bd.show{opacity:1; pointer-events:auto;}
+.modal{background:#fff; border-radius:14px; width:100%; max-width:560px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-pop); transform:translateY(8px); transition:transform .15s;}
+.modal-bd.show .modal{transform:translateY(0);}
+.modal-head{padding:16px 20px; border-bottom:1px solid var(--gray1); display:flex; align-items:center; justify-content:space-between;}
+.modal-title{font-size:15px; font-weight:600; color:var(--txt); display:flex; align-items:center; gap:8px;}
+.modal-title svg{width:16px; height:16px; color:var(--navy);}
+.modal-close{width:30px; height:30px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2); display:flex; align-items:center; justify-content:center;}
+.modal-close:hover{background:var(--gray1); color:var(--txt);}
+.modal-body{padding:18px 20px; overflow-y:auto; flex:1;}
+.modal-foot{padding:14px 20px; border-top:1px solid var(--gray1); display:flex; gap:8px; justify-content:flex-end; background:var(--off);}
+
+/* Form */
+.form-row{margin-bottom:14px;}
+.form-row.dual{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.form-label{font-size:11.5px; font-weight:500; color:var(--txt); display:block; margin-bottom:5px;}
+.form-input, .form-select, .form-textarea{width:100%; padding:8px 10px; border:1px solid var(--gray2); border-radius:8px; font-size:12.5px; background:#fff; font-family:inherit; color:var(--txt);}
+.form-input:focus, .form-select:focus, .form-textarea:focus{outline:none; border-color:var(--navy3); box-shadow:0 0 0 3px rgba(61,95,149,.12);}
+.form-textarea{resize:vertical; min-height:80px; font-family:inherit;}
+.form-help{font-size:11px; color:var(--txt2); margin-top:4px;}
+.recurrence-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:4px;}
+.recur-opt{padding:8px 6px; border:1px solid var(--gray2); border-radius:8px; background:#fff; cursor:pointer; text-align:center; font-size:11.5px; transition:all .15s;}
+.recur-opt:hover{border-color:var(--navy3);}
+.recur-opt.selected{background:var(--navy); color:#fff; border-color:var(--navy); font-weight:500;}
+.recur-opt-mini{font-size:10px; opacity:.8; margin-top:1px;}
+
+.person-pick{display:grid; grid-template-columns:repeat(2,1fr); gap:6px;}
+.person-opt{display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--gray2); border-radius:8px; cursor:pointer; transition:all .15s;}
+.person-opt:hover{border-color:var(--navy3);}
+.person-opt.selected{background:var(--navy); color:#fff; border-color:var(--navy);}
+.person-opt.selected .team-handle{background:rgba(255,255,255,.2); color:#fff;}
+.person-opt.selected .team-role{color:rgba(255,255,255,.85);}
+.person-opt .team-avatar{width:30px; height:30px; font-size:11px;}
+.person-opt-info{flex:1; min-width:0;}
+.person-opt-name{font-size:12px; font-weight:500;}
+.person-opt-role{font-size:10.5px; color:var(--txt2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+/* Toast */
+.toast{position:fixed; bottom:22px; right:22px; background:var(--dark); color:#fff; padding:12px 16px; border-radius:10px; font-size:12.5px; box-shadow:var(--shadow-pop); z-index:300; display:flex; align-items:center; gap:8px; transform:translateY(60px); opacity:0; transition:all .25s;}
+.toast.show{transform:translateY(0); opacity:1;}
+.toast svg{width:16px; height:16px; color:var(--green);}
+
+/* Overlay sidebar mobile */
+.sidebar-bd{display:none;}
+
+/* Responsive */
+@media (max-width:1100px){
+  .layout-2col{grid-template-columns:1fr;}
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .team-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:768px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; left:0; bottom:0; width:260px; transform:translateX(-100%); transition:transform .2s;}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-bd{display:block; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-bd.show{opacity:1; pointer-events:auto;}
+  .topbar-toggle{display:flex;}
+  .container{padding:14px;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .team-grid{grid-template-columns:1fr;}
+  .recurrence-grid{grid-template-columns:repeat(2,1fr);}
+  .person-pick{grid-template-columns:1fr;}
+  .form-row.dual{grid-template-columns:1fr;}
+  .user-info{display:none;}
+  .page-header{flex-direction:column; align-items:flex-start;}
+}
+@media (max-width:480px){
+  .kpi-grid{grid-template-columns:1fr;}
+  .alert-banner{flex-direction:column; align-items:flex-start;}
+  .alert-actions{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-bd" id="sbBd" onclick="toggleSidebar()"></div>
+
+<div class="app">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sb">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <div class="brand-name">R2 People</div>
+        <div class="brand-sub">GPC · João C.</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Pessoal</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+        Início
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0112 0v2"/></svg>
+        Minha equipe
+      </a>
+      <a class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Avaliações
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Atestados
+      </a>
+
+      <div class="sidebar-section">Operação</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Movimentações
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+        Férias
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Metas
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>v0.18.0</span>
+      <span class="v">JC</span>
+    </div>
+  </aside>
+
+  <!-- ================= TOPBAR ================= -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="breadcrumb">
+      <a>Início</a>
+      <span class="sep">›</span>
+      <strong>1:1s</strong>
+    </div>
+    <div class="topbar-spacer"></div>
+    <button class="icon-btn" aria-label="Notificações">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="badge-dot"></span>
+    </button>
+    <div class="user-chip">
+      <div class="user-avatar">JC</div>
+      <div class="user-info">
+        <div class="user-name">João Carvalho</div>
+        <div class="user-role">Líder Financeiro</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">1:1s · Hub do líder</h1>
+          <div class="page-subtitle">
+            <span class="persona-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0112 0v2"/></svg>
+              João Carvalho · 4 liderados diretos
+            </span>
+            <span>· Cadência configurada: <strong style="color:var(--txt)">quinzenal</strong></span>
+          </div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary" onclick="alert('Vai para configurações de cadência da equipe (mock)')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Cadência
+          </button>
+          <button class="btn btn-primary" onclick="openSchedule()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agendar 1:1
+          </button>
+        </div>
+      </div>
+
+      <!-- ALERTAS CONTEXTUAIS -->
+      <div class="alert-banner amber" id="alertStale">
+        <div class="alert-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title">Daniela está há 38 dias sem 1:1</div>
+          <div class="alert-text">Ela voltou de férias na <strong>segunda passada</strong>. Cadência da sua equipe é quinzenal · agendar logo evita acúmulo de pauta.</div>
+        </div>
+        <div class="alert-actions">
+          <button class="btn btn-orange btn-sm" onclick="quickSchedule('daniela')">Agendar agora</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('alertStale').style.display='none'">Dispensar</button>
+        </div>
+      </div>
+
+      <!-- KPI STRIP -->
+      <div class="kpi-grid">
+        <div class="kpi-card k1">
+          <div class="kpi-label">Cadência média</div>
+          <div class="kpi-value">14<span style="font-size:14px; color:var(--txt2); margin-left:4px;">d</span></div>
+          <div class="kpi-meta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <span class="kpi-meta-good">Dentro do alvo</span>
+          </div>
+        </div>
+        <div class="kpi-card k2">
+          <div class="kpi-label">Próxima 1:1</div>
+          <div class="kpi-value kpi-value-sm">Hoje 16h</div>
+          <div class="kpi-meta">com <strong style="color:var(--txt)">Fernanda Lima</strong></div>
+        </div>
+        <div class="kpi-card k3">
+          <div class="kpi-label">Action items abertos</div>
+          <div class="kpi-value">7</div>
+          <div class="kpi-meta">
+            <span class="kpi-meta-warn">2 em atraso</span> · 5 no prazo
+          </div>
+        </div>
+        <div class="kpi-card k4">
+          <div class="kpi-label">Sem 1:1 há +30d</div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-meta">
+            <span class="kpi-meta-bad">Daniela · 38d</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LAYOUT 2 COLUNAS -->
+      <div class="layout-2col">
+
+        <!-- COL MAIN -->
+        <div class="col-main">
+
+          <!-- TIME -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0112 0v2"/></svg>
+                Minha equipe
+                <span class="card-sub">4 liderados</span>
+              </div>
+              <div class="card-tools">
+                <button class="btn btn-ghost btn-sm" onclick="alert('Trocar para vista lista (mock)')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  Lista
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="team-grid" id="teamGrid"></div>
+            </div>
+          </div>
+
+          <!-- 1:1s RECENTES -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 3h18v18H3z"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                1:1s recentes
+                <span class="card-sub">últimas 6</span>
+              </div>
+              <div class="card-tools">
+                <button class="btn btn-ghost btn-sm">Ver tudo</button>
+              </div>
+            </div>
+            <div class="meeting-list" id="recentList"></div>
+          </div>
+        </div>
+
+        <!-- COL SIDE -->
+        <div class="col-side">
+
+          <!-- PRÓXIMAS -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Próximas 1:1s
+                <span class="card-sub">7 dias</span>
+              </div>
+            </div>
+            <div class="meeting-list" id="upcomingList"></div>
+          </div>
+
+          <!-- DICAS -->
+          <div class="card" style="background:linear-gradient(135deg, var(--navy), var(--navy2)); color:#fff; border:none;">
+            <div style="padding:16px;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; margin-bottom:8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Boas práticas
+              </div>
+              <ul style="list-style:none; font-size:11.5px; line-height:1.7; color:rgba(255,255,255,.9);">
+                <li>· Líder define a cadência. Liderado pode propor reagendar.</li>
+                <li>· Pauta em conjunto. Quem só ouve não conduz.</li>
+                <li>· Suas notas privadas não são vistas por ninguém. Pode escrever sem filtro.</li>
+                <li>· Action items aparecem no perfil do liderado e no seu hub.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- PRIVACIDADE -->
+          <div class="card">
+            <div style="padding:14px 16px;">
+              <div style="display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:600; color:var(--txt); margin-bottom:8px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="15" height="15" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Privacidade das suas 1:1s
+              </div>
+              <div style="font-size:11.5px; color:var(--txt2); line-height:1.6;">
+                <div style="margin-bottom:6px;">Suas <strong style="color:var(--txt)">notas privadas</strong> só você vê.</div>
+                <div style="margin-bottom:6px;">As <strong style="color:var(--txt)">notas compartilhadas</strong> aparecem para você e seu liderado.</div>
+                <div>O <strong style="color:var(--txt)">RH vê apenas metadados</strong> (que aconteceu, action items abertos), nunca o conteúdo.</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ================= MODAL AGENDAR ================= -->
+<div class="modal-bd" id="schedModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="schedTitle">
+    <div class="modal-head">
+      <div class="modal-title" id="schedTitle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Agendar 1:1
+      </div>
+      <button class="modal-close" onclick="closeSchedule()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-row">
+        <label class="form-label">Liderado</label>
+        <div class="person-pick" id="personPick"></div>
+      </div>
+
+      <div class="form-row dual">
+        <div>
+          <label class="form-label" for="schedDate">Data</label>
+          <input type="date" class="form-input" id="schedDate" value="2026-05-04">
+        </div>
+        <div>
+          <label class="form-label" for="schedTime">Hora</label>
+          <input type="time" class="form-input" id="schedTime" value="14:00">
+        </div>
+      </div>
+
+      <div class="form-row dual">
+        <div>
+          <label class="form-label" for="schedDuration">Duração</label>
+          <select class="form-select" id="schedDuration">
+            <option>30 min</option>
+            <option selected>45 min</option>
+            <option>60 min</option>
+            <option>90 min</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label" for="schedLocal">Local</label>
+          <select class="form-select" id="schedLocal">
+            <option>Sala 2 · Sede</option>
+            <option>Online · Meet</option>
+            <option>A definir</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Recorrência</label>
+        <div class="recurrence-grid">
+          <div class="recur-opt" data-recur="once" onclick="pickRecur(this)">Única<div class="recur-opt-mini">só desta vez</div></div>
+          <div class="recur-opt selected" data-recur="biweekly" onclick="pickRecur(this)">Quinzenal<div class="recur-opt-mini">a cada 14d</div></div>
+          <div class="recur-opt" data-recur="weekly" onclick="pickRecur(this)">Semanal<div class="recur-opt-mini">toda semana</div></div>
+          <div class="recur-opt" data-recur="monthly" onclick="pickRecur(this)">Mensal<div class="recur-opt-mini">todo mês</div></div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label" for="schedAgenda">Pauta inicial (opcional)</label>
+        <textarea class="form-textarea" id="schedAgenda" placeholder="Ex: Andamento das férias programadas, sentimento sobre o novo processo, plano de ação do PDI..."></textarea>
+        <div class="form-help">Se preencher, vira o primeiro item da pauta compartilhada · seu liderado também pode adicionar pauta antes da reunião.</div>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeSchedule()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmSchedule()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Agendar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">1:1 agendada com sucesso</span>
+</div>
+
+<script>
+/* ================= MOCKS ================= */
+
+// "Hoje" mockado: sex 01/05/2026
+const TODAY = new Date(2026, 4, 1); // mês 0-index
+
+const TEAM = [
+  {
+    id: 'fernanda', name: 'Fernanda Lima', handle: '@Fê', role: 'Analista Pleno · Financeiro',
+    avatar: 'FL', color: 'linear-gradient(135deg,#8B5CF6,#EC4899)',
+    nextOneOnOne: { date: '2026-05-01', time: '16:00', recurrence: 'biweekly', hasAgenda: true },
+    lastOneOnOne: { date: '2026-04-17', daysAgo: 14 },
+    actionItemsOpen: 2, actionItemsOverdue: 0, age: 'fresh'
+  },
+  {
+    id: 'daniela', name: 'Daniela Souza', handle: '@Dani', role: 'Analista Sênior · Financeiro',
+    avatar: 'DS', color: 'linear-gradient(135deg,#F5831F,#E82227)',
+    nextOneOnOne: null,
+    lastOneOnOne: { date: '2026-03-24', daysAgo: 38 },
+    actionItemsOpen: 1, actionItemsOverdue: 1, age: 'stale',
+    notes: 'Voltou de férias 27/04'
+  },
+  {
+    id: 'natalia', name: 'Natália Ferreira', handle: '@Nat', role: 'Assistente · Financeiro',
+    avatar: 'NF', color: 'linear-gradient(135deg,#1E5FBF,#0F766E)',
+    nextOneOnOne: { date: '2026-05-06', time: '10:30', recurrence: 'biweekly', hasAgenda: false },
+    lastOneOnOne: { date: '2026-04-22', daysAgo: 9 },
+    actionItemsOpen: 3, actionItemsOverdue: 1, age: 'fresh'
+  },
+  {
+    id: 'gabriel', name: 'Gabriel Pinto', handle: '@Gabi', role: 'Estagiário · Financeiro',
+    avatar: 'GP', color: 'linear-gradient(135deg,#1E7B4B,#0F766E)',
+    nextOneOnOne: { date: '2026-05-04', time: '14:00', recurrence: 'weekly', hasAgenda: true },
+    lastOneOnOne: { date: '2026-04-27', daysAgo: 4 },
+    actionItemsOpen: 1, actionItemsOverdue: 0, age: 'fresh',
+    notes: 'Estagiário · cadência semanal'
+  }
+];
+
+const UPCOMING = [
+  { id: 'u1', personId:'fernanda', date: '2026-05-01', time: '16:00', recurrence: 'biweekly', hasAgenda: true },
+  { id: 'u2', personId:'gabriel',  date: '2026-05-04', time: '14:00', recurrence: 'weekly',   hasAgenda: true },
+  { id: 'u3', personId:'natalia',  date: '2026-05-06', time: '10:30', recurrence: 'biweekly', hasAgenda: false }
+];
+
+const RECENT = [
+  { id: 'r1', personId:'gabriel',  date: '2026-04-27', time: '14:00', actionItems: 2, hadNotes: true,  status: 'done' },
+  { id: 'r2', personId:'natalia',  date: '2026-04-22', time: '10:30', actionItems: 4, hadNotes: true,  status: 'done' },
+  { id: 'r3', personId:'gabriel',  date: '2026-04-20', time: '14:00', actionItems: 1, hadNotes: true,  status: 'done' },
+  { id: 'r4', personId:'fernanda', date: '2026-04-17', time: '16:00', actionItems: 3, hadNotes: true,  status: 'done' },
+  { id: 'r5', personId:'gabriel',  date: '2026-04-13', time: '14:00', actionItems: 0, hadNotes: false, status: 'done' },
+  { id: 'r6', personId:'natalia',  date: '2026-04-08', time: '10:30', actionItems: 2, hadNotes: true,  status: 'done' }
+];
+
+/* ================= UTILS ================= */
+const MONTHS_SHORT = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
+
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function daysDiff(d1, d2){ return Math.floor((d2 - d1) / (1000*60*60*24)); }
+function fmtDayMon(s){ const d = parseDate(s); return { day: d.getDate(), mon: MONTHS_SHORT[d.getMonth()] }; }
+function isToday(s){ const d=parseDate(s); return d.getTime()===TODAY.getTime(); }
+function isTomorrow(s){ const d=parseDate(s); const t=new Date(TODAY); t.setDate(t.getDate()+1); return d.getTime()===t.getTime(); }
+
+function ageTag(daysAgo){
+  if(daysAgo===null||daysAgo===undefined) return {cls:'never', label:'Nunca tiveram 1:1'};
+  if(daysAgo<=21) return {cls:'ok', label:`${daysAgo}d atrás`};
+  if(daysAgo<=45) return {cls:'aging', label:`${daysAgo}d atrás`};
+  return {cls:'stale', label:`${daysAgo}d atrás`};
+}
+
+function getPerson(id){ return TEAM.find(t=>t.id===id); }
+
+function recurLabel(r){
+  return ({
+    once: 'Única',
+    weekly: 'Semanal',
+    biweekly: 'Quinzenal',
+    monthly: 'Mensal'
+  })[r] || r;
+}
+
+/* ================= RENDER ================= */
+function renderTeam(){
+  const grid = document.getElementById('teamGrid');
+  grid.innerHTML = TEAM.map(p => {
+    const tag = ageTag(p.lastOneOnOne ? p.lastOneOnOne.daysAgo : null);
+    const cls = p.age==='stale' ? 'is-stale' : (p.age==='aging' ? 'is-aging' : 'is-fresh');
+    const next = p.nextOneOnOne
+      ? `${fmtDayMon(p.nextOneOnOne.date).day}/${fmtDayMon(p.nextOneOnOne.date).mon} ${p.nextOneOnOne.time}`
+      : '<span style="color:var(--orange); font-weight:600;">Sem agenda</span>';
+    const aiBadge = p.actionItemsOpen>0
+      ? `<span class="ai-badge">${p.actionItemsOpen} AI ${p.actionItemsOverdue>0?`· ${p.actionItemsOverdue} atrasado`:''}</span>`
+      : `<span class="ai-badge zero">0 action items</span>`;
+
+    return `
+      <div class="team-card ${cls}" onclick="openRoom('${p.id}')">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:${p.color}">${p.avatar}</div>
+          <div class="team-info">
+            <div class="team-name">${p.name} <span class="team-handle">${p.handle}</span></div>
+            <div class="team-role">${p.role}</div>
+          </div>
+        </div>
+        <div class="team-meta">
+          <div class="team-meta-item">
+            <div class="team-meta-label">Próxima 1:1</div>
+            <div class="team-meta-value sm">${next}</div>
+          </div>
+          <div class="team-meta-item">
+            <div class="team-meta-label">Última 1:1</div>
+            <div class="team-meta-value sm"><span class="idade-tag ${tag.cls}">${tag.label}</span></div>
+          </div>
+        </div>
+        <div class="team-actionitems">${aiBadge}</div>
+        <div class="team-actions" onclick="event.stopPropagation()">
+          <button class="btn btn-secondary btn-sm" onclick="openRoom('${p.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+            Abrir sala
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="quickSchedule('${p.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agendar
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderUpcoming(){
+  const list = document.getElementById('upcomingList');
+  if(UPCOMING.length===0){
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/></svg></div>
+      <div class="empty-title">Nenhuma 1:1 nos próximos 7 dias</div>
+      <div class="empty-sub">Agende para manter cadência da equipe</div>
+    </div>`;
+    return;
+  }
+  list.innerHTML = UPCOMING.map(m => {
+    const p = getPerson(m.personId);
+    const dm = fmtDayMon(m.date);
+    let dateCls = 'past';
+    if(isToday(m.date)) dateCls = 'today';
+    else if(isTomorrow(m.date)) dateCls = 'tomorrow';
+    const prep = m.hasAgenda
+      ? `<span class="meet-status-pill prep">pauta ✓</span>`
+      : `<span class="meet-status-pill noprep">sem pauta</span>`;
+    const recur = m.recurrence!=='once'
+      ? `<span class="meet-status-pill recur">${recurLabel(m.recurrence).toLowerCase()}</span>`
+      : '';
+    return `
+      <div class="meeting-row" onclick="openRoom('${m.personId}')">
+        <div class="meet-date ${dateCls}">
+          <div class="meet-date-day">${dm.day}</div>
+          <div class="meet-date-mon">${dm.mon}</div>
+        </div>
+        <div class="meet-time">${m.time}</div>
+        <div class="meet-person">
+          <div class="meet-mini-avatar" style="background:${p.color}">${p.avatar}</div>
+          <div class="meet-name">${p.name}<span class="meet-name-handle">${p.handle}</span></div>
+        </div>
+        <div class="meet-status">${prep}${recur}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderRecent(){
+  const list = document.getElementById('recentList');
+  list.innerHTML = RECENT.map(m => {
+    const p = getPerson(m.personId);
+    const dm = fmtDayMon(m.date);
+    const aiTag = m.actionItems>0
+      ? `<span class="meet-status-pill recur">${m.actionItems} AI</span>`
+      : '<span class="meet-status-pill noprep">sem AI</span>';
+    const notesTag = m.hadNotes
+      ? `<span class="meet-status-pill prep">notas</span>`
+      : `<span class="meet-status-pill noprep">sem notas</span>`;
+    return `
+      <div class="meeting-row" onclick="openRoom('${m.personId}','${m.id}')">
+        <div class="meet-date past">
+          <div class="meet-date-day">${dm.day}</div>
+          <div class="meet-date-mon">${dm.mon}</div>
+        </div>
+        <div class="meet-time">${m.time}</div>
+        <div class="meet-person">
+          <div class="meet-mini-avatar" style="background:${p.color}">${p.avatar}</div>
+          <div class="meet-name">${p.name}<span class="meet-name-handle">${p.handle}</span></div>
+        </div>
+        <div class="meet-status">${notesTag}${aiTag}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ================= MODAL ================= */
+let selectedPerson = null;
+let selectedRecur = 'biweekly';
+
+function openSchedule(personId){
+  const pick = document.getElementById('personPick');
+  pick.innerHTML = TEAM.map(p => `
+    <div class="person-opt ${personId===p.id?'selected':''}" data-pid="${p.id}" onclick="pickPerson(this)">
+      <div class="team-avatar" style="background:${p.color}">${p.avatar}</div>
+      <div class="person-opt-info">
+        <div class="person-opt-name">${p.name} <span class="team-handle">${p.handle}</span></div>
+        <div class="person-opt-role team-role">${p.role}</div>
+      </div>
+    </div>
+  `).join('');
+  selectedPerson = personId || null;
+
+  // sugestão de data: próxima terça-feira útil
+  const sd = new Date(TODAY);
+  sd.setDate(sd.getDate() + 3);
+  document.getElementById('schedDate').value = sd.toISOString().slice(0,10);
+
+  document.getElementById('schedModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function quickSchedule(personId){
+  openSchedule(personId);
+}
+
+function closeSchedule(){
+  document.getElementById('schedModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function pickPerson(el){
+  document.querySelectorAll('.person-opt').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPerson = el.dataset.pid;
+}
+
+function pickRecur(el){
+  document.querySelectorAll('.recur-opt').forEach(x => x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRecur = el.dataset.recur;
+}
+
+function confirmSchedule(){
+  if(!selectedPerson){
+    alert('Selecione um liderado');
+    return;
+  }
+  const p = getPerson(selectedPerson);
+  closeSchedule();
+  showToast(`1:1 agendada com ${p.name} · ${recurLabel(selectedRecur).toLowerCase()}`);
+}
+
+/* ================= ABRIR SALA ================= */
+function openRoom(personId, meetingId){
+  const p = getPerson(personId);
+  const ctx = meetingId ? 'histórica' : 'próxima/atual';
+  alert(`Abrir sala da 1:1 com ${p.name} (${ctx})\n\nIria para: r2_people_oneonone_room.html?p=${personId}${meetingId?`&m=${meetingId}`:''}`);
+}
+
+/* ================= TOAST ================= */
+let toastTimer;
+function showToast(msg){
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3200);
+}
+
+/* ================= SIDEBAR MOBILE ================= */
+function toggleSidebar(){
+  document.getElementById('sb').classList.toggle('open');
+  document.getElementById('sbBd').classList.toggle('show');
+}
+
+/* ================= ESC PARA FECHAR MODAL ================= */
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    if(document.getElementById('schedModal').classList.contains('show')){
+      closeSchedule();
+    }
+  }
+});
+
+/* ================= INIT ================= */
+renderTeam();
+renderUpcoming();
+renderRecent();
+</script>
+</body>
+</html>

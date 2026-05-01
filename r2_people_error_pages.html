@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Algo não saiu como esperado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --radius:10px; --radius-lg:14px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{
+  font-family:'Sora',sans-serif;
+  background:var(--off);
+  color:var(--txt);
+  font-size:13px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex; flex-direction:column; align-items:center;
+  padding:30px 20px;
+}
+
+/* ============= DEMO TOGGLE (apenas para visualização) ============= */
+.demo-toggle{
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:11px;
+  padding:9px;
+  margin-bottom:30px;
+  display:flex; gap:5px; flex-wrap:wrap;
+  box-shadow:0 1px 3px rgba(26,45,79,.04);
+  max-width:680px;
+  width:100%;
+  justify-content:center;
+}
+.dt-tab{
+  padding:8px 13px;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt2);
+  background:transparent; border:none; cursor:pointer;
+  border-radius:8px;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.dt-tab:hover{background:var(--off);}
+.dt-tab.active{background:var(--navy); color:#fff;}
+.dt-tab-code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px; font-weight:700;
+  padding:1px 5px; border-radius:5px;
+  background:rgba(255,255,255,.18); color:inherit;
+}
+.dt-tab:not(.active) .dt-tab-code{background:var(--gray1); color:var(--txt2);}
+
+.demo-info{
+  font-size:10.5px;
+  color:var(--txt3);
+  text-align:center;
+  margin-bottom:30px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ============= CARD CENTRAL ============= */
+.error-card{
+  background:#fff;
+  border-radius:18px;
+  width:100%;
+  max-width:560px;
+  padding:42px 40px 36px;
+  box-shadow:0 10px 30px rgba(26,45,79,.08), 0 1px 3px rgba(26,45,79,.06);
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.error-state{display:none;}
+.error-state.active{display:block; animation:fadeIn .3s;}
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(8px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* ============= ILUSTRAÇÃO/ÍCONE GRANDE ============= */
+.error-illustration{
+  width:130px; height:130px;
+  border-radius:50%;
+  margin:0 auto 22px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+
+/* Variações por estado */
+.illust-404{
+  background:linear-gradient(135deg, #E8EFF8 0%, #DDE5F0 100%);
+  color:var(--navy);
+}
+.illust-403{
+  background:linear-gradient(135deg, #FCE6CD 0%, #FFF4D6 100%);
+  color:var(--amber);
+}
+.illust-500{
+  background:linear-gradient(135deg, #FDECEA 0%, #FFE6E6 100%);
+  color:var(--danger);
+}
+.illust-offline{
+  background:linear-gradient(135deg, var(--gray1) 0%, var(--gray2) 100%);
+  color:var(--txt2);
+}
+.illust-session{
+  background:linear-gradient(135deg, #F0E6FA 0%, #E5D4F8 100%);
+  color:var(--purple);
+}
+
+.error-illustration::before{
+  content:''; position:absolute;
+  inset:-8px;
+  border-radius:50%;
+  border:2px dashed currentColor;
+  opacity:.18;
+  animation:rotate 30s linear infinite;
+}
+@keyframes rotate{
+  from{transform:rotate(0);}
+  to{transform:rotate(360deg);}
+}
+.error-illustration svg{
+  width:60px; height:60px;
+  position:relative; z-index:1;
+}
+
+/* Código do erro pequeno acima do título */
+.error-code{
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700;
+  letter-spacing:1px;
+  padding:3px 11px;
+  border-radius:9px;
+  background:var(--gray1);
+  color:var(--txt2);
+  margin-bottom:11px;
+}
+.error-code.warn{background:var(--amber2); color:var(--amber);}
+.error-code.danger{background:var(--danger2); color:var(--danger);}
+.error-code.purple{background:#F0E6FA; color:var(--purple);}
+
+.error-title{
+  font-size:24px; font-weight:600;
+  letter-spacing:-.4px;
+  margin-bottom:11px;
+}
+.error-subtitle{
+  font-size:13.5px;
+  color:var(--txt2);
+  line-height:1.65;
+  margin-bottom:24px;
+  padding:0 12px;
+}
+.error-subtitle strong{color:var(--txt); font-weight:600;}
+
+/* ============= INFO BOX (contexto técnico) ============= */
+.error-context{
+  background:var(--off);
+  border-radius:11px;
+  padding:13px 16px;
+  margin-bottom:20px;
+  text-align:left;
+  display:flex; align-items:flex-start; gap:11px;
+}
+.error-context.amber{background:var(--amber2);}
+.error-context.danger{background:var(--danger2);}
+.error-context.purple{background:#F0E6FA;}
+
+.error-context .ec-icon{
+  width:28px; height:28px; border-radius:8px;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  color:var(--navy);
+}
+.error-context.amber .ec-icon{color:var(--amber);}
+.error-context.danger .ec-icon{color:var(--danger);}
+.error-context.purple .ec-icon{color:var(--purple);}
+
+.error-context .ec-text{
+  flex:1; min-width:0;
+  font-size:11.5px; line-height:1.55;
+  color:var(--txt2);
+}
+.error-context .ec-text strong{color:var(--txt); font-weight:600;}
+.error-context .ec-text code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  background:rgba(255,255,255,.6);
+  padding:1px 6px; border-radius:5px;
+  color:var(--txt);
+}
+
+/* ============= AÇÕES ============= */
+.error-actions{
+  display:flex; gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.btn{
+  padding:11px 20px;
+  border-radius:10px;
+  font-size:12.5px; font-weight:600;
+  cursor:pointer;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:7px;
+  border:none;
+  transition:all .15s;
+}
+.btn-primary{
+  background:linear-gradient(135deg, var(--navy), var(--navy2));
+  color:#fff;
+  box-shadow:0 4px 12px rgba(43,74,122,.25);
+}
+.btn-primary:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(43,74,122,.35);
+}
+.btn-secondary{
+  background:#fff;
+  color:var(--navy);
+  border:1.5px solid var(--gray2);
+}
+.btn-secondary:hover{
+  background:var(--off);
+  border-color:var(--gray3);
+}
+.btn-danger{
+  background:var(--danger);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(192,57,43,.25);
+}
+.btn-danger:hover{background:#A03022;}
+
+/* ============= LISTA DE SUGESTÕES ============= */
+.suggestions{
+  text-align:left;
+  background:var(--off);
+  border-radius:11px;
+  padding:16px 18px;
+  margin-bottom:18px;
+}
+.suggestions-title{
+  font-size:11px; color:var(--txt2); font-weight:600;
+  text-transform:uppercase; letter-spacing:.5px;
+  margin-bottom:11px;
+  display:flex; align-items:center; gap:6px;
+}
+.suggestions-list{list-style:none; padding:0;}
+.suggestions-item{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 0;
+  font-size:12.5px;
+  border-bottom:1px solid var(--gray1);
+  cursor:pointer;
+  transition:padding-left .12s;
+}
+.suggestions-item:last-child{border-bottom:none;}
+.suggestions-item:hover{padding-left:5px;}
+.suggestions-item .icon-wrap{
+  width:30px; height:30px; border-radius:8px;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  color:var(--navy);
+}
+.suggestions-item .icon-wrap.orange{color:var(--orange);}
+.suggestions-item .icon-wrap.purple{color:var(--purple);}
+.suggestions-item .icon-wrap.green{color:var(--green);}
+.suggestions-item .text{flex:1; min-width:0;}
+.suggestions-item .text strong{font-weight:600; display:block; margin-bottom:1px;}
+.suggestions-item .text span{font-size:11px; color:var(--txt2);}
+.suggestions-item .arrow{color:var(--txt3); flex-shrink:0;}
+
+/* ============= ERROR ID (footer) ============= */
+.error-footer{
+  font-size:10.5px;
+  color:var(--txt3);
+  border-top:1px solid var(--gray1);
+  padding-top:14px;
+  margin-top:6px;
+  display:flex; flex-direction:column; gap:5px;
+  align-items:center;
+}
+.error-footer .err-id{
+  font-family:'JetBrains Mono',monospace;
+  background:var(--gray1);
+  padding:3px 10px;
+  border-radius:7px;
+  color:var(--txt2);
+}
+.error-footer .err-help{
+  font-size:11px;
+  color:var(--txt2);
+}
+.error-footer .err-help a{
+  color:var(--navy);
+  text-decoration:none;
+  font-weight:500;
+  cursor:pointer;
+}
+.error-footer .err-help a:hover{text-decoration:underline;}
+
+/* ============= STATUS PING (para o estado offline) ============= */
+.network-ping{
+  display:flex; flex-direction:column;
+  align-items:center;
+  gap:5px;
+  margin-bottom:20px;
+}
+.ping-row{
+  display:flex; align-items:center; gap:9px;
+  padding:7px 13px;
+  background:var(--off);
+  border-radius:9px;
+  font-size:11.5px;
+  color:var(--txt2);
+}
+.ping-dot{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--danger);
+  animation:pulse 1.5s infinite;
+}
+.ping-dot.success{background:var(--green); animation:none;}
+@keyframes pulse{
+  0%,100%{opacity:1;}
+  50%{opacity:.4;}
+}
+.ping-row .ping-target{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--txt2);
+}
+
+/* ============= COUNTDOWN (sessão expirada) ============= */
+.countdown-display{
+  background:linear-gradient(135deg, #F0E6FA, #E5D4F8);
+  border-radius:11px;
+  padding:13px 16px;
+  margin-bottom:18px;
+  display:flex; align-items:center; gap:13px;
+  border:1px solid rgba(109,40,217,.2);
+}
+.cd-icon{
+  width:34px; height:34px; border-radius:9px;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--purple);
+  flex-shrink:0;
+}
+.cd-text{flex:1; min-width:0; text-align:left;}
+.cd-text-main{font-size:12.5px; font-weight:600;}
+.cd-text-sub{font-size:11px; color:var(--txt2); margin-top:1px;}
+.cd-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px; font-weight:700;
+  color:var(--purple);
+  letter-spacing:-.5px;
+}
+
+/* Responsive */
+@media (max-width: 600px){
+  body{padding:18px 13px;}
+  .demo-toggle{padding:6px; gap:3px;}
+  .dt-tab{padding:6px 9px; font-size:10.5px;}
+  .dt-tab span:not(.dt-tab-code){display:none;}
+  .demo-info{font-size:10px;}
+
+  .error-card{padding:30px 22px 26px; border-radius:14px;}
+  .error-illustration{width:100px; height:100px;}
+  .error-illustration svg{width:48px; height:48px;}
+  .error-title{font-size:20px;}
+  .error-subtitle{font-size:13px; padding:0 4px;}
+  .btn{padding:10px 16px; font-size:12px;}
+  .error-actions{flex-direction:column;}
+  .error-actions .btn{width:100%; justify-content:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============= TOGGLE DE DEMO (visualização dos 5 estados) ============= -->
+<div class="demo-toggle">
+  <button class="dt-tab active" data-state="404">
+    <span class="dt-tab-code">404</span>
+    <span>Não encontrado</span>
+  </button>
+  <button class="dt-tab" data-state="403">
+    <span class="dt-tab-code">403</span>
+    <span>Acesso negado</span>
+  </button>
+  <button class="dt-tab" data-state="500">
+    <span class="dt-tab-code">500</span>
+    <span>Servidor</span>
+  </button>
+  <button class="dt-tab" data-state="offline">
+    <span class="dt-tab-code">📡</span>
+    <span>Sem internet</span>
+  </button>
+  <button class="dt-tab" data-state="session">
+    <span class="dt-tab-code">⏰</span>
+    <span>Sessão expirada</span>
+  </button>
+</div>
+<div class="demo-info">↑ apenas para demonstração · em produção apenas 1 estado é exibido por vez</div>
+
+<!-- ============= CARD DE ERRO ============= -->
+<div class="error-card">
+
+  <!-- ============= ESTADO 1: 404 NÃO ENCONTRADO ============= -->
+  <div class="error-state active" data-state="404">
+    <div class="error-illustration illust-404">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+        <path d="M11 8v3M11 14h.01" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <span class="error-code">ERRO 404</span>
+    <h1 class="error-title">Não encontramos o que você procura</h1>
+    <p class="error-subtitle">
+      A página que você tentou acessar não existe, foi movida ou o link veio quebrado.<br>
+      Sem dramas, vamos te ajudar a encontrar o caminho.
+    </p>
+
+    <div class="suggestions">
+      <div class="suggestions-title">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>
+        Páginas que talvez você procure
+      </div>
+      <ul class="suggestions-list">
+        <li class="suggestions-item" onclick="alert('Em produção: navega para /home')">
+          <div class="icon-wrap orange">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>
+          </div>
+          <div class="text">
+            <strong>Minha Home</strong>
+            <span>Suas pendências, ciclo atual e PDI</span>
+          </div>
+          <svg class="arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </li>
+        <li class="suggestions-item" onclick="alert('Em produção: navega para /avaliacao')">
+          <div class="icon-wrap">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="text">
+            <strong>Minha avaliação 2026.1</strong>
+            <span>Em andamento · faltam 5 competências</span>
+          </div>
+          <svg class="arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </li>
+        <li class="suggestions-item" onclick="alert('Em produção: navega para /feedback')">
+          <div class="icon-wrap purple">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="text">
+            <strong>Feedback e Mural</strong>
+            <span>3 feedbacks não lidos</span>
+          </div>
+          <svg class="arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </li>
+      </ul>
+    </div>
+
+    <div class="error-actions">
+      <button class="btn btn-secondary" onclick="history.back()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="alert('Em produção: navega para /home')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>
+        Ir para minha home
+      </button>
+    </div>
+
+    <div class="error-footer">
+      <span class="err-id">URL: /relatorios/custos/2025</span>
+      <span class="err-help">
+        Acha que isso é um problema? <a>Reportar para o R2</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- ============= ESTADO 2: 403 ACESSO NEGADO ============= -->
+  <div class="error-state" data-state="403">
+    <div class="error-illustration illust-403">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path d="M7 11V7a5 5 0 0110 0v4"/>
+        <circle cx="12" cy="16" r="1" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <span class="error-code warn">ERRO 403 · ACESSO NEGADO</span>
+    <h1 class="error-title">Esta área é restrita ao seu perfil</h1>
+    <p class="error-subtitle">
+      Seu perfil de acesso atual <strong>não inclui permissão</strong> para visualizar esta página. Isso é parte do controle de privacidade do GPC.
+    </p>
+
+    <div class="error-context amber">
+      <div class="ec-icon">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      </div>
+      <div class="ec-text">
+        <strong>Por que estou vendo isso?</strong><br>
+        Você está logada como <code>fernanda.lima</code> com perfil <code>Colaborador</code>, que tem acesso ao próprio perfil, avaliações e feedbacks. A página <code>/dashboard-rh</code> é exclusiva para <strong>Administradores RH</strong> e líderes com permissões específicas.
+      </div>
+    </div>
+
+    <div class="error-actions">
+      <button class="btn btn-secondary" onclick="history.back()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="alert('Em produção: navega para /home')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+        Ir para meu perfil
+      </button>
+    </div>
+
+    <div class="error-footer">
+      <span class="err-id">PERFIL: Colaborador · ROTA: /dashboard-rh</span>
+      <span class="err-help">
+        Precisa deste acesso? <a>Solicite ao RH (Patrícia Mello)</a>
+      </span>
+    </div>
+  </div>
+
+  <!-- ============= ESTADO 3: 500 ERRO INTERNO ============= -->
+  <div class="error-state" data-state="500">
+    <div class="error-illustration illust-500">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4M12 16h.01" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <span class="error-code danger">ERRO 500 · SERVIDOR</span>
+    <h1 class="error-title">Algo deu errado do nosso lado</h1>
+    <p class="error-subtitle">
+      Um erro inesperado aconteceu enquanto processávamos sua solicitação. <strong>Não é culpa sua</strong>, é responsabilidade nossa. Já registramos o problema e nossa equipe vai investigar.
+    </p>
+
+    <div class="error-context danger">
+      <div class="ec-icon">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      </div>
+      <div class="ec-text">
+        <strong>O que você pode fazer agora:</strong><br>
+        Pode tentar novamente em alguns segundos. Se o erro continuar, espere alguns minutos e tente de novo. Quase sempre é algo passageiro. Em último caso, abra um chamado com o ID do erro abaixo.
+      </div>
+    </div>
+
+    <div class="error-actions">
+      <button class="btn btn-secondary" onclick="history.back()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn btn-primary" onclick="location.reload()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Tentar novamente
+      </button>
+    </div>
+
+    <div class="error-footer">
+      <span class="err-id" id="errId500">ID: ERR-2026-04-27-A8F3D</span>
+      <span class="err-help">
+        Precisa de ajuda? <a>Abrir chamado para o R2</a> · Inclua o ID acima
+      </span>
+    </div>
+  </div>
+
+  <!-- ============= ESTADO 4: OFFLINE ============= -->
+  <div class="error-state" data-state="offline">
+    <div class="error-illustration illust-offline">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M1 1l22 22"/>
+        <path d="M16.72 11.06A10.94 10.94 0 0119 12.55"/>
+        <path d="M5 12.55a10.94 10.94 0 015.17-2.39"/>
+        <path d="M10.71 5.05A16 16 0 0122.58 9"/>
+        <path d="M1.42 9a15.91 15.91 0 014.7-2.88"/>
+        <path d="M8.53 16.11a6 6 0 016.95 0"/>
+        <line x1="12" y1="20" x2="12.01" y2="20" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <span class="error-code">SEM CONEXÃO</span>
+    <h1 class="error-title">Você está sem internet no momento</h1>
+    <p class="error-subtitle">
+      Não conseguimos nos conectar ao servidor do R2 People. Verifique sua conexão Wi-Fi ou rede móvel e tente de novo.
+    </p>
+
+    <div class="network-ping">
+      <div class="ping-row">
+        <span class="ping-dot success"></span>
+        <span>Seu dispositivo</span>
+        <span class="ping-target">192.168.0.108</span>
+      </div>
+      <div class="ping-row">
+        <span class="ping-dot"></span>
+        <span>Servidor R2 People</span>
+        <span class="ping-target">api.solucoesr2.com.br</span>
+      </div>
+    </div>
+
+    <div class="error-context">
+      <div class="ec-icon">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      </div>
+      <div class="ec-text">
+        <strong>Boa notícia:</strong> seu trabalho não foi perdido. Quando a conexão voltar, vamos sincronizar automaticamente as alterações que você fez.
+      </div>
+    </div>
+
+    <div class="error-actions">
+      <button class="btn btn-primary" onclick="checkConnection()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        Tentar reconectar
+      </button>
+    </div>
+
+    <div class="error-footer">
+      <span class="err-help" id="lastSync">
+        Última sincronização: há 2 minutos
+      </span>
+    </div>
+  </div>
+
+  <!-- ============= ESTADO 5: SESSÃO EXPIRADA ============= -->
+  <div class="error-state" data-state="session">
+    <div class="error-illustration illust-session">
+      <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <span class="error-code purple">SESSÃO EXPIRADA</span>
+    <h1 class="error-title">Sua sessão expirou por segurança</h1>
+    <p class="error-subtitle">
+      Você ficou inativa por mais de <strong>60 minutos</strong>. Por questão de proteção dos seus dados (LGPD), a sessão foi encerrada automaticamente. Faça login de novo para continuar.
+    </p>
+
+    <div class="countdown-display">
+      <div class="cd-icon">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      </div>
+      <div class="cd-text">
+        <div class="cd-text-main">Redirecionando para o login</div>
+        <div class="cd-text-sub">automaticamente em alguns segundos</div>
+      </div>
+      <div class="cd-num" id="countdownNum">10</div>
+    </div>
+
+    <div class="error-context purple">
+      <div class="ec-icon">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="ec-text">
+        <strong>Por que isso aconteceu?</strong><br>
+        O GPC configurou tempo limite de inatividade de 60 minutos para todos os usuários. Isso protege sua conta caso você esqueça a sessão aberta em um computador compartilhado. Suas alterações foram salvas automaticamente.
+      </div>
+    </div>
+
+    <div class="error-actions">
+      <button class="btn btn-primary" onclick="alert('Em produção: navega para /login')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        Entrar novamente
+      </button>
+    </div>
+
+    <div class="error-footer">
+      <span class="err-help">
+        Trabalhando em equipamento compartilhado? <a>Saiba mais sobre segurança</a>
+      </span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Toggle de demonstração entre estados
+document.querySelectorAll('.dt-tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    const target = t.dataset.state;
+    document.querySelectorAll('.dt-tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('.error-state').forEach(s=>{
+      s.classList.toggle('active', s.dataset.state === target);
+    });
+
+    // Comportamentos específicos por estado
+    if(target === 'session'){
+      startCountdown();
+    } else {
+      stopCountdown();
+    }
+  });
+});
+
+// Countdown da sessão expirada
+let cdTimer;
+function startCountdown(){
+  let n = 10;
+  const el = document.getElementById('countdownNum');
+  el.textContent = n;
+  cdTimer = setInterval(()=>{
+    n--;
+    if(n < 0){
+      clearInterval(cdTimer);
+      // Em produção: location.href = '/login?reason=expired'
+      el.textContent = '0';
+      return;
+    }
+    el.textContent = n;
+  }, 1000);
+}
+function stopCountdown(){
+  clearInterval(cdTimer);
+}
+
+// Botão de reconectar (estado offline)
+function checkConnection(){
+  const btn = event.currentTarget;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .8s linear infinite;"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Verificando...';
+  btn.disabled = true;
+
+  if(!document.getElementById('spinKf')){
+    const s = document.createElement('style');
+    s.id = 'spinKf';
+    s.textContent = '@keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}';
+    document.head.appendChild(s);
+  }
+
+  setTimeout(()=>{
+    btn.innerHTML = orig;
+    btn.disabled = false;
+    alert('Em produção: tenta fetch para healthcheck endpoint. Se OK, recarrega a página.');
+  }, 1500);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Validação de atestados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#3D5F95,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; display:flex; flex-direction:column; overflow:hidden;}
+
+/* ============= PAGE TOP ============= */
+.page-top{
+  padding:18px 22px 14px;
+  background:#fff;
+  border-bottom:1px solid var(--gray1);
+}
+.page-top-row{
+  display:flex; justify-content:space-between; align-items:flex-end;
+  gap:14px; flex-wrap:wrap; margin-bottom:11px;
+}
+.page-top h1{font-size:20px; font-weight:600; letter-spacing:-.3px;}
+.page-top p{font-size:12.5px; color:var(--txt2); margin-top:2px; max-width:600px;}
+
+.qstats{
+  display:flex; gap:9px; flex-wrap:wrap;
+}
+.qstat{
+  background:linear-gradient(135deg, #fff, var(--off));
+  border:1px solid var(--gray1);
+  padding:7px 12px;
+  border-radius:9px;
+  display:flex; align-items:center; gap:8px;
+  font-size:11.5px;
+}
+.qstat .qs-dot{
+  width:8px; height:8px; border-radius:50%;
+  flex-shrink:0;
+}
+.qstat .qs-num{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:14px;
+}
+.qstat .qs-lbl{color:var(--txt2);}
+.qstat.urgent{background:linear-gradient(135deg, #fff, var(--red2)); border-color:var(--red);}
+.qstat.urgent .qs-dot{background:var(--red); animation:pulse 1.5s infinite;}
+.qstat.urgent .qs-num{color:var(--red);}
+.qstat.warn .qs-dot{background:var(--orange);}
+.qstat.warn .qs-num{color:var(--orange);}
+.qstat.ok .qs-dot{background:var(--green);}
+.qstat.ok .qs-num{color:var(--green);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+
+/* LGPD banner inline */
+.lgpd-banner{
+  background:linear-gradient(135deg, #E8EFF8, var(--off));
+  border-radius:9px;
+  padding:9px 13px;
+  display:flex; align-items:center; gap:10px;
+  border-left:3px solid var(--navy);
+  font-size:11.5px;
+  color:var(--txt2);
+  line-height:1.55;
+}
+.lgpd-banner svg{color:var(--navy); flex-shrink:0;}
+.lgpd-banner strong{color:var(--txt); font-weight:600;}
+
+/* ============= 3 COLUMNS LAYOUT ============= */
+.cols{
+  flex:1;
+  display:grid;
+  grid-template-columns:240px 360px 1fr;
+  gap:0;
+  overflow:hidden;
+}
+
+/* ============= COL 1: FILTERS ============= */
+.col-filters{
+  background:#fff;
+  border-right:1px solid var(--gray1);
+  overflow-y:auto;
+  padding:16px 14px 24px;
+}
+.col-filters h3{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  font-weight:600;
+  color:var(--txt2);
+  margin-bottom:10px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--gray1);
+}
+.col-filters h3:not(:first-child){margin-top:18px;}
+
+.filter-list{
+  display:flex; flex-direction:column;
+  gap:2px;
+}
+.filter-item{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 10px;
+  border-radius:7px;
+  cursor:pointer;
+  font-size:12px;
+  color:var(--txt);
+  transition:background .12s;
+  border-left:3px solid transparent;
+}
+.filter-item:hover{background:var(--off);}
+.filter-item.active{
+  background:#E8EFF8;
+  border-left-color:var(--navy);
+  font-weight:500;
+}
+.fi-icon{
+  width:20px; height:20px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  color:var(--txt2);
+}
+.filter-item.active .fi-icon{color:var(--navy);}
+.fi-label{flex:1; min-width:0;}
+.fi-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  font-weight:600;
+  background:var(--gray1);
+  color:var(--txt2);
+  padding:1px 7px;
+  border-radius:6px;
+}
+.filter-item.active .fi-count{background:var(--navy); color:#fff;}
+.filter-item.urgent .fi-count{background:var(--red); color:#fff;}
+.filter-item.warn .fi-count{background:var(--amber2); color:var(--orange);}
+
+/* Quick filters with colored badges */
+.quick-list{
+  display:flex; flex-direction:column;
+  gap:5px;
+}
+.quick-item{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 11px;
+  border-radius:8px;
+  font-size:11.5px;
+  cursor:pointer;
+  background:var(--off);
+  border:1px solid var(--gray1);
+  transition:all .12s;
+}
+.quick-item:hover{background:#fff; border-color:var(--gray2);}
+.quick-item .qi-dot{
+  width:7px; height:7px; border-radius:50%;
+  flex-shrink:0;
+}
+.quick-item .qi-text{flex:1; font-weight:500; color:var(--txt);}
+.quick-item .qi-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  font-weight:700;
+  color:var(--txt2);
+}
+
+/* ============= COL 2: QUEUE ============= */
+.col-queue{
+  background:var(--off);
+  border-right:1px solid var(--gray1);
+  overflow-y:auto;
+}
+.queue-header{
+  padding:11px 16px;
+  background:#fff;
+  border-bottom:1px solid var(--gray1);
+  display:flex; justify-content:space-between; align-items:center;
+  position:sticky; top:0;
+  z-index:5;
+}
+.queue-title{
+  font-size:12.5px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.queue-title svg{width:13px; height:13px; color:var(--navy);}
+.queue-meta{
+  font-size:11px; color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.queue-sort{
+  font-size:11px; color:var(--txt2);
+  display:inline-flex; align-items:center; gap:4px;
+  cursor:pointer;
+  padding:4px 7px;
+  border-radius:6px;
+}
+.queue-sort:hover{background:var(--off);}
+.queue-sort svg{width:11px; height:11px;}
+
+.queue-list{padding:8px 12px 24px;}
+
+.qcard{
+  background:#fff;
+  border-radius:10px;
+  padding:11px 13px;
+  margin-bottom:8px;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:all .12s;
+  position:relative;
+}
+.qcard:hover{
+  box-shadow:var(--shadow-card);
+  transform:translateX(2px);
+}
+.qcard.selected{
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.12);
+}
+
+.qc-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:10px; margin-bottom:6px;
+}
+.qc-emp{
+  display:flex; align-items:center; gap:8px;
+  min-width:0; flex:1;
+}
+.qc-avatar{
+  width:30px; height:30px; border-radius:50%;
+  color:#fff;
+  font-size:10.5px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.qc-emp-info{min-width:0;}
+.qc-name{
+  font-size:12.5px; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.qc-cargo{
+  font-size:10.5px; color:var(--txt2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.qc-priority-bar{
+  position:absolute;
+  left:0; top:8px; bottom:8px;
+  width:3px;
+  border-radius:0 2px 2px 0;
+  background:var(--gray3);
+}
+.qcard.urgent .qc-priority-bar{background:var(--red);}
+.qcard.high .qc-priority-bar{background:var(--orange);}
+.qcard.normal .qc-priority-bar{background:var(--blue);}
+
+.qc-time{
+  font-size:10px;
+  color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.qc-time.urgent{color:var(--red); font-weight:600;}
+
+.qc-meta-row{
+  display:flex; gap:7px;
+  margin-bottom:6px;
+  flex-wrap:wrap;
+}
+.qc-pill{
+  font-size:9.5px;
+  padding:2px 7px;
+  border-radius:5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.qc-pill.days{background:var(--purple2); color:var(--purple);}
+.qc-pill.type{background:var(--blue2); color:var(--blue);}
+.qc-pill.via{background:var(--amber2); color:var(--amber);}
+.qc-pill.lab{background:var(--purple2); color:var(--purple);}
+.qc-pill.gpc{background:#E8EFF8; color:var(--navy);}
+
+.qc-protocol{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--txt2);
+  margin-bottom:5px;
+}
+.qc-doctor{
+  font-size:11px;
+  color:var(--txt2);
+  margin-bottom:6px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.qc-doctor strong{color:var(--txt); font-weight:600;}
+
+.qc-quality{
+  display:flex; align-items:center; gap:5px;
+  font-size:10px;
+  padding:4px 8px;
+  background:var(--off);
+  border-radius:5px;
+}
+.qc-quality.good{background:var(--green2); color:var(--green);}
+.qc-quality.medium{background:var(--amber2); color:var(--amber);}
+.qc-quality.bad{background:var(--red2); color:var(--red);}
+.qc-quality svg{width:10px; height:10px;}
+.qc-quality strong{font-weight:600;}
+
+.qc-flag{
+  position:absolute;
+  top:8px; right:8px;
+  font-size:9px;
+  padding:2px 7px;
+  border-radius:5px;
+  background:var(--red);
+  color:#fff;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  display:none;
+}
+.qcard.urgent .qc-flag{display:inline-block;}
+
+/* ============= COL 3: VIEWER ============= */
+.col-viewer{
+  background:#fff;
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+
+.viewer-head{
+  padding:14px 20px;
+  border-bottom:1px solid var(--gray1);
+  background:linear-gradient(135deg, #fff, var(--off));
+}
+.vh-row{
+  display:flex; justify-content:space-between; align-items:center;
+  gap:14px; flex-wrap:wrap;
+}
+.vh-info{
+  display:flex; align-items:center; gap:11px;
+}
+.vh-avatar{
+  width:42px; height:42px; border-radius:50%;
+  background:linear-gradient(135deg, #E82227, #C0392B);
+  color:#fff;
+  font-size:14px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  border:2px solid #fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.1);
+}
+.vh-name-row{
+  display:flex; align-items:center; gap:7px;
+  flex-wrap:wrap;
+}
+.vh-name{font-size:14.5px; font-weight:600;}
+.vh-nick{
+  background:var(--orange2); color:var(--orange);
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  padding:1px 7px;
+  border-radius:6px;
+  font-weight:600;
+}
+.vh-emp{
+  font-size:11.5px;
+  color:var(--txt2);
+  margin-top:1px;
+}
+
+.vh-protocol{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  color:var(--orange);
+  font-weight:700;
+  background:var(--orange2);
+  padding:5px 11px;
+  border-radius:7px;
+}
+
+.viewer-body{
+  flex:1;
+  display:grid;
+  grid-template-columns:1fr 360px;
+  overflow:hidden;
+}
+
+/* PDF preview area */
+.pdf-pane{
+  background:linear-gradient(180deg, #2a3340, #1a2030);
+  overflow-y:auto;
+  padding:18px;
+  display:flex; flex-direction:column; align-items:center;
+}
+.pdf-toolbar{
+  background:rgba(255,255,255,.08);
+  border-radius:8px;
+  padding:6px 11px;
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:14px;
+  font-size:11px;
+  color:#fff;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.pdf-toolbar button{
+  background:transparent;
+  border:none;
+  color:#fff;
+  cursor:pointer;
+  padding:4px 8px;
+  border-radius:5px;
+  font-family:inherit;
+  font-size:11px;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.pdf-toolbar button:hover{background:rgba(255,255,255,.12);}
+.pdf-toolbar button svg{width:12px; height:12px;}
+.pdf-toolbar .zoom{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  padding:0 4px;
+}
+.pdf-toolbar .sep{
+  width:1px; height:14px;
+  background:rgba(255,255,255,.2);
+}
+
+.pdf-doc{
+  background:#fff;
+  border-radius:5px;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+  width:100%;
+  max-width:520px;
+  aspect-ratio:1/1.41;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Form pane */
+.form-pane{
+  background:#fff;
+  border-left:1px solid var(--gray1);
+  overflow-y:auto;
+  display:flex; flex-direction:column;
+}
+.fp-section{
+  padding:14px 18px;
+  border-bottom:1px solid var(--gray1);
+}
+.fp-title{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  font-weight:600;
+  color:var(--txt2);
+  margin-bottom:10px;
+}
+
+/* OCR extracted card */
+.ocr-card{
+  background:linear-gradient(135deg, var(--purple2), #fff);
+  border:1px solid #D4BBF5;
+  border-radius:9px;
+  padding:11px 13px;
+  margin-bottom:10px;
+}
+.ocr-card-row{
+  display:flex; justify-content:space-between;
+  padding:4px 0;
+  font-size:11.5px;
+  border-bottom:1px dashed rgba(109,40,217,.15);
+}
+.ocr-card-row:last-child{border-bottom:none;}
+.ocr-card-row .ocr-lbl{color:var(--txt2); font-size:10.5px;}
+.ocr-card-row .ocr-val{
+  font-weight:600; color:var(--txt);
+  font-family:'JetBrains Mono',monospace;
+}
+.ocr-card-header{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:7px; padding-bottom:7px;
+  border-bottom:1px solid rgba(109,40,217,.15);
+}
+.ocr-card-header h4{
+  font-size:11px;
+  font-weight:600;
+  color:var(--purple);
+  display:flex; align-items:center; gap:5px;
+}
+.ocr-card-header h4 svg{width:12px; height:12px;}
+.ocr-quality-badge{
+  font-size:9.5px;
+  padding:2px 7px;
+  border-radius:5px;
+  font-weight:700;
+  text-transform:uppercase;
+}
+.ocr-quality-badge.good{background:var(--green); color:#fff;}
+.ocr-quality-badge.medium{background:var(--orange); color:#fff;}
+.ocr-quality-badge.bad{background:var(--red); color:#fff;}
+
+/* Form fields */
+.field{
+  margin-bottom:11px;
+}
+.field-label{
+  display:block;
+  font-size:11px; font-weight:500;
+  color:var(--txt);
+  margin-bottom:5px;
+}
+.field-label .required{color:var(--red); margin-left:2px;}
+.field-label .helper{
+  font-size:10px;
+  color:var(--txt3);
+  font-weight:400;
+  margin-left:5px;
+}
+.field-input, .field-select, .field-textarea{
+  width:100%;
+  padding:9px 12px;
+  border:1.5px solid var(--gray2);
+  border-radius:8px;
+  font-size:12.5px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+  transition:all .15s;
+}
+.field-input:focus, .field-select:focus, .field-textarea:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+.field-textarea{resize:vertical; min-height:60px;}
+.field-row-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+/* CID autocomplete */
+.cid-wrap{
+  position:relative;
+}
+.cid-suggestions{
+  position:absolute;
+  top:calc(100% + 3px); left:0; right:0;
+  background:#fff;
+  border-radius:8px;
+  box-shadow:var(--shadow-pop);
+  border:1px solid var(--gray2);
+  max-height:200px;
+  overflow-y:auto;
+  z-index:10;
+  display:none;
+}
+.cid-wrap.open .cid-suggestions{display:block;}
+.cid-sugg-item{
+  padding:8px 12px;
+  font-size:11.5px;
+  cursor:pointer;
+  border-bottom:1px solid var(--gray1);
+  display:flex; align-items:center; gap:10px;
+}
+.cid-sugg-item:last-child{border-bottom:none;}
+.cid-sugg-item:hover, .cid-sugg-item.selected{background:var(--off);}
+.cid-code{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  color:var(--purple);
+  font-size:11px;
+  background:var(--purple2);
+  padding:2px 7px;
+  border-radius:5px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.cid-desc{
+  flex:1; min-width:0;
+  color:var(--txt2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cid-sugg-frequency{
+  font-size:9.5px;
+  color:var(--txt3);
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+}
+
+/* Selected CID display */
+.cid-selected{
+  background:linear-gradient(135deg, var(--purple2), #fff);
+  border:1px solid #D4BBF5;
+  border-radius:8px;
+  padding:9px 11px;
+  display:flex; align-items:center; gap:11px;
+  margin-top:5px;
+}
+.cid-selected .cid-code{font-size:12px;}
+.cid-selected-info{flex:1; min-width:0;}
+.cid-selected-desc{
+  font-size:11.5px; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cid-selected-meta{
+  font-size:10.5px; color:var(--txt2);
+  margin-top:1px;
+}
+.cid-clear{
+  background:transparent;
+  border:none;
+  color:var(--txt3);
+  cursor:pointer;
+  padding:4px;
+}
+.cid-clear:hover{color:var(--red);}
+
+/* Auto movement banner */
+.auto-mov-banner{
+  background:linear-gradient(135deg, var(--blue2), #fff);
+  border-left:3px solid var(--blue);
+  border-radius:8px;
+  padding:9px 12px;
+  margin-bottom:10px;
+  display:flex; align-items:flex-start; gap:9px;
+  font-size:11.5px;
+  color:var(--txt);
+  line-height:1.5;
+}
+.auto-mov-banner svg{
+  color:var(--blue);
+  flex-shrink:0;
+  margin-top:2px;
+}
+.auto-mov-banner strong{font-weight:600;}
+.auto-mov-banner code{
+  font-family:'JetBrains Mono',monospace;
+  background:#fff;
+  padding:1px 5px;
+  border-radius:4px;
+  font-size:10.5px;
+  border:1px solid var(--gray2);
+}
+
+/* Submitter info */
+.submitter-info{
+  display:flex; align-items:center; gap:9px;
+  background:var(--off);
+  padding:9px 11px;
+  border-radius:8px;
+  font-size:11px;
+  color:var(--txt2);
+}
+.submitter-avatar{
+  width:24px; height:24px; border-radius:50%;
+  color:#fff;
+  font-size:9px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.submitter-info strong{color:var(--txt); font-weight:600;}
+
+/* Action footer */
+.viewer-actions{
+  padding:14px 18px;
+  background:var(--off);
+  border-top:1px solid var(--gray1);
+  display:flex; gap:9px;
+  position:sticky; bottom:0;
+}
+.btn-action{
+  flex:1;
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:12px; font-weight:600;
+  font-family:inherit;
+  border:1.5px solid;
+  cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .12s;
+}
+.btn-reject{
+  background:#fff;
+  border-color:var(--red);
+  color:var(--red);
+}
+.btn-reject:hover{background:var(--red2);}
+.btn-approve{
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
+  box-shadow:0 4px 10px rgba(30,123,75,.25);
+}
+.btn-approve:hover{background:#15643A; box-shadow:0 6px 14px rgba(30,123,75,.35);}
+.btn-action svg{width:13px; height:13px;}
+
+/* Empty viewer state */
+.viewer-empty{
+  flex:1;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:30px 20px;
+  text-align:center;
+  color:var(--txt2);
+}
+.viewer-empty svg{
+  color:var(--gray3);
+  margin-bottom:13px;
+}
+.viewer-empty .ve-title{
+  font-size:15px; font-weight:600;
+  color:var(--txt);
+  margin-bottom:6px;
+}
+.viewer-empty .ve-sub{
+  font-size:12px;
+  max-width:340px;
+  line-height:1.55;
+}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 1280px){
+  .cols{grid-template-columns:200px 320px 1fr;}
+  .viewer-body{grid-template-columns:1fr 320px;}
+}
+@media (max-width: 1024px){
+  .cols{grid-template-columns:200px 1fr;}
+  .col-viewer{display:none;}
+  .col-viewer.mobile-open{
+    display:flex;
+    position:fixed; inset:0;
+    z-index:50;
+    background:#fff;
+  }
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .page-top{padding:13px 14px 11px;}
+  .page-top h1{font-size:17px;}
+  .qstats{gap:6px;}
+  .qstat{padding:5px 9px; font-size:10.5px;}
+  .cols{grid-template-columns:1fr;}
+  .col-filters{display:none;}
+  .viewer-body{grid-template-columns:1fr;}
+  .pdf-pane{padding:13px;}
+}
+.main *::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px; height:6px;}
+.main *::-webkit-scrollbar-thumb, .sidebar-nav::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3);}
+.pdf-pane::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <div class="sidebar-section">Pessoas</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Consultar histórico</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Férias</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><circle cx="12" cy="14" r="3"/></svg>Atestados</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>Movimentações</a>
+      <div class="sidebar-section">Avaliação</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Atestados · <strong>Validação</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info">
+        <span class="user-name">Patrícia Mello</span>
+        <span class="user-role">DP GPC</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Page top -->
+    <div class="page-top">
+      <div class="page-top-row">
+        <div>
+          <h1>Validação de atestados</h1>
+          <p>Revise documentos enviados, valide CID e libere movimentação de afastamento. Categoria especial LGPD Art. 11.</p>
+        </div>
+        <div class="qstats">
+          <div class="qstat urgent">
+            <span class="qs-dot"></span>
+            <span class="qs-num">3</span>
+            <span class="qs-lbl">urgentes</span>
+          </div>
+          <div class="qstat warn">
+            <span class="qs-dot"></span>
+            <span class="qs-num">8</span>
+            <span class="qs-lbl">pendentes</span>
+          </div>
+          <div class="qstat ok">
+            <span class="qs-dot"></span>
+            <span class="qs-num">42</span>
+            <span class="qs-lbl">validados (mês)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lgpd-banner">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div>
+          <strong>Dados sensíveis de saúde (LGPD Art. 11).</strong> Trate o conteúdo com sigilo. CID e dados clínicos só são acessíveis a perfis com permissão <code style="font-family:'JetBrains Mono',monospace;font-size:10.5px;background:#fff;padding:1px 5px;border-radius:4px;">view_medical_cid</code>. Toda visualização é registrada no audit log.
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-cols layout -->
+    <div class="cols">
+
+      <!-- ============= COL 1: FILTERS ============= -->
+      <aside class="col-filters">
+
+        <h3>Status</h3>
+        <div class="filter-list">
+          <div class="filter-item active urgent">
+            <span class="fi-icon"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+            <span class="fi-label">Pendentes</span>
+            <span class="fi-count">8</span>
+          </div>
+          <div class="filter-item">
+            <span class="fi-icon"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+            <span class="fi-label">Validados</span>
+            <span class="fi-count">42</span>
+          </div>
+          <div class="filter-item">
+            <span class="fi-icon"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg></span>
+            <span class="fi-label">Rejeitados</span>
+            <span class="fi-count">3</span>
+          </div>
+          <div class="filter-item">
+            <span class="fi-icon"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></span>
+            <span class="fi-label">Arquivados</span>
+            <span class="fi-count">187</span>
+          </div>
+        </div>
+
+        <h3>Filtros rápidos</h3>
+        <div class="quick-list">
+          <div class="quick-item">
+            <span class="qi-dot" style="background:var(--red);"></span>
+            <span class="qi-text">Alta prioridade (≥5 dias)</span>
+            <span class="qi-count">3</span>
+          </div>
+          <div class="quick-item">
+            <span class="qi-dot" style="background:var(--purple);"></span>
+            <span class="qi-text">CID ausente</span>
+            <span class="qi-count">5</span>
+          </div>
+          <div class="quick-item">
+            <span class="qi-dot" style="background:var(--orange);"></span>
+            <span class="qi-text">Qualidade OCR baixa</span>
+            <span class="qi-count">2</span>
+          </div>
+          <div class="quick-item">
+            <span class="qi-dot" style="background:var(--blue);"></span>
+            <span class="qi-text">Enviados pelo líder</span>
+            <span class="qi-count">6</span>
+          </div>
+          <div class="quick-item">
+            <span class="qi-dot" style="background:var(--teal);"></span>
+            <span class="qi-text">Auto-enviados</span>
+            <span class="qi-count">2</span>
+          </div>
+        </div>
+
+        <h3>Empregador</h3>
+        <div class="filter-list">
+          <div class="filter-item">
+            <span class="fi-icon"><span style="width:8px;height:8px;border-radius:50%;background:var(--navy);"></span></span>
+            <span class="fi-label">GPC</span>
+            <span class="fi-count">2</span>
+          </div>
+          <div class="filter-item">
+            <span class="fi-icon"><span style="width:8px;height:8px;border-radius:50%;background:var(--purple);"></span></span>
+            <span class="fi-label">Labuta</span>
+            <span class="fi-count">5</span>
+          </div>
+          <div class="filter-item">
+            <span class="fi-icon"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);"></span></span>
+            <span class="fi-label">Limpactiva</span>
+            <span class="fi-count">1</span>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ============= COL 2: QUEUE ============= -->
+      <section class="col-queue">
+
+        <div class="queue-header">
+          <div class="queue-title">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+            Pendentes
+            <span class="queue-meta">8</span>
+          </div>
+          <div class="queue-sort">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+            Prioridade
+          </div>
+        </div>
+
+        <div class="queue-list">
+
+          <div class="qcard urgent" onclick="selectCard(this, 'fernanda')">
+            <span class="qc-priority-bar"></span>
+            <span class="qc-flag">URGENTE</span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#E82227;">FL</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Fernanda Lima dos Santos</div>
+                  <div class="qc-cargo">Analista Pleno · Cestão Loja 1</div>
+                </div>
+              </div>
+              <span class="qc-time urgent">há 2h</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">2 dias</span>
+              <span class="qc-pill type">Atestado</span>
+              <span class="qc-pill via">Via líder</span>
+              <span class="qc-pill lab">Labuta</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-28-1A47B</div>
+            <div class="qc-doctor"><strong>Dr. Carlos Mendes</strong> · CRM-BA 12345</div>
+            <div class="qc-quality good">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Qualidade OCR <strong>alta</strong> · 247 palavras detectadas
+            </div>
+          </div>
+
+          <div class="qcard urgent selected" onclick="selectCard(this, 'rafael')">
+            <span class="qc-priority-bar"></span>
+            <span class="qc-flag">URGENTE</span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#6D28D9;">RL</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Rafael Costa Lima</div>
+                  <div class="qc-cargo">Repositor · ATP Varejo</div>
+                </div>
+              </div>
+              <span class="qc-time urgent">há 4h</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">7 dias</span>
+              <span class="qc-pill type">Atestado</span>
+              <span class="qc-pill via">Via líder</span>
+              <span class="qc-pill lab">Labuta</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-28-3D72A</div>
+            <div class="qc-doctor"><strong>Dra. Mariana Costa</strong> · CRM-BA 28734</div>
+            <div class="qc-quality good">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Qualidade OCR <strong>alta</strong> · gerará movimentação
+            </div>
+          </div>
+
+          <div class="qcard urgent" onclick="selectCard(this, 'thiago')">
+            <span class="qc-priority-bar"></span>
+            <span class="qc-flag">URGENTE</span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#0F766E;">TA</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Thiago Almeida</div>
+                  <div class="qc-cargo">Conferente · ATP Atacado</div>
+                </div>
+              </div>
+              <span class="qc-time urgent">há 6h</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">5 dias</span>
+              <span class="qc-pill type">Atestado</span>
+              <span class="qc-pill via">Via líder</span>
+              <span class="qc-pill lab">Labuta</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-28-9F45E</div>
+            <div class="qc-doctor"><strong>Dr. Roberto Pinheiro</strong> · CRM-BA 19876</div>
+            <div class="qc-quality medium">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              Qualidade OCR <strong>média</strong> · revisão recomendada
+            </div>
+          </div>
+
+          <div class="qcard high" onclick="selectCard(this, 'daniela')">
+            <span class="qc-priority-bar"></span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#6D28D9;">DV</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Daniela Vieira Matos</div>
+                  <div class="qc-cargo">Analista Júnior · Cestão Loja 1</div>
+                </div>
+              </div>
+              <span class="qc-time">há 1d</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">3 dias</span>
+              <span class="qc-pill type">Atestado</span>
+              <span class="qc-pill via">Via líder</span>
+              <span class="qc-pill lab">Labuta</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-27-7C12F</div>
+            <div class="qc-doctor"><strong>Dr. André Vasconcelos</strong> · CRM-BA 34122</div>
+            <div class="qc-quality good">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Qualidade OCR <strong>alta</strong>
+            </div>
+          </div>
+
+          <div class="qcard normal" onclick="selectCard(this, 'natalia')">
+            <span class="qc-priority-bar"></span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#F5831F;">NF</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Natália Ferreira</div>
+                  <div class="qc-cargo">Auxiliar Financeiro · Sede ATP</div>
+                </div>
+              </div>
+              <span class="qc-time">há 1d</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">1 dia</span>
+              <span class="qc-pill type">Consulta</span>
+              <span class="qc-pill via">Auto-enviado</span>
+              <span class="qc-pill lab">Labuta</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-27-2E89D</div>
+            <div class="qc-doctor"><strong>Dra. Patrícia Souza</strong> · CRM-BA 22456</div>
+            <div class="qc-quality bad">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+              Qualidade OCR <strong>baixa</strong> · pode precisar reenvio
+            </div>
+          </div>
+
+          <div class="qcard normal" onclick="selectCard(this, 'gabriel')">
+            <span class="qc-priority-bar"></span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#854F0B;">GP</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Gabriel Pinto Souza</div>
+                  <div class="qc-cargo">Estagiário · Cestão Loja 1</div>
+                </div>
+              </div>
+              <span class="qc-time">há 2d</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">1 dia</span>
+              <span class="qc-pill type">Consulta</span>
+              <span class="qc-pill via">Via líder</span>
+              <span class="qc-pill lab">Labuta</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-26-5A33B</div>
+            <div class="qc-doctor"><strong>Dr. Marcos Brandão</strong> · CRM-BA 11098</div>
+            <div class="qc-quality good">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Qualidade OCR <strong>alta</strong>
+            </div>
+          </div>
+
+          <div class="qcard normal" onclick="selectCard(this, 'beatriz')">
+            <span class="qc-priority-bar"></span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#3D5F95;">BL</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Beatriz Lopes Almeida</div>
+                  <div class="qc-cargo">Analista Sr. · Sede ATP</div>
+                </div>
+              </div>
+              <span class="qc-time">há 2d</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">2 dias</span>
+              <span class="qc-pill type">Atestado</span>
+              <span class="qc-pill via">Auto-enviado</span>
+              <span class="qc-pill gpc">GPC</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-26-8B17C</div>
+            <div class="qc-doctor"><strong>Dr. Felipe Ramos</strong> · CRM-BA 45673</div>
+            <div class="qc-quality good">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Qualidade OCR <strong>alta</strong>
+            </div>
+          </div>
+
+          <div class="qcard normal" onclick="selectCard(this, 'marcos')">
+            <span class="qc-priority-bar"></span>
+            <div class="qc-head">
+              <div class="qc-emp">
+                <div class="qc-avatar" style="background:#1E7B4B;">MO</div>
+                <div class="qc-emp-info">
+                  <div class="qc-name">Marcos Oliveira</div>
+                  <div class="qc-cargo">Operador Loja · Cestão Inhambupe</div>
+                </div>
+              </div>
+              <span class="qc-time">há 3d</span>
+            </div>
+            <div class="qc-meta-row">
+              <span class="qc-pill days">2 dias</span>
+              <span class="qc-pill type">Atestado</span>
+              <span class="qc-pill via">Via líder</span>
+              <span class="qc-pill lab">Labuta</span>
+            </div>
+            <div class="qc-protocol">ATD-2026-04-25-4D90A</div>
+            <div class="qc-doctor"><strong>Dra. Camila Borges</strong> · CRM-BA 17823</div>
+            <div class="qc-quality good">
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Qualidade OCR <strong>alta</strong>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============= COL 3: VIEWER ============= -->
+      <section class="col-viewer">
+
+        <div class="viewer-head">
+          <div class="vh-row">
+            <div class="vh-info">
+              <div class="vh-avatar" id="vhAvatar" style="background:linear-gradient(135deg, #6D28D9, #5523A8);">RL</div>
+              <div>
+                <div class="vh-name-row">
+                  <span class="vh-name" id="vhName">Rafael Costa Lima</span>
+                </div>
+                <div class="vh-emp" id="vhEmp">Repositor · Labuta · ATP Varejo</div>
+              </div>
+            </div>
+            <div class="vh-protocol" id="vhProtocol">ATD-2026-04-28-3D72A</div>
+          </div>
+        </div>
+
+        <div class="viewer-body">
+
+          <!-- PDF preview -->
+          <div class="pdf-pane">
+            <div class="pdf-toolbar">
+              <button title="Página anterior">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <span class="zoom">1 / 1</span>
+              <button title="Próxima página">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+              <span class="sep"></span>
+              <button title="Diminuir zoom">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              </button>
+              <span class="zoom">100%</span>
+              <button title="Aumentar zoom">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              </button>
+              <span class="sep"></span>
+              <button title="Baixar">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                487 KB
+              </button>
+              <button title="Imprimir">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              </button>
+            </div>
+
+            <!-- Mock PDF -->
+            <div class="pdf-doc">
+              <svg viewBox="0 0 595 842" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+                <rect width="595" height="842" fill="#fff"/>
+                <!-- Header timbrado -->
+                <rect x="40" y="40" width="515" height="80" fill="#f8f9fc" stroke="#dadce0" stroke-width="0.5"/>
+                <text x="60" y="65" font-family="serif" font-size="14" fill="#1a73e8" font-weight="bold">CLÍNICA SANTA MÔNICA</text>
+                <text x="60" y="82" font-family="serif" font-size="9" fill="#5f6368">Av. Tancredo Neves, 2782 · Caminho das Árvores · Salvador BA</text>
+                <text x="60" y="95" font-family="serif" font-size="9" fill="#5f6368">CNPJ 12.345.678/0001-90 · CRM 5476-PJ</text>
+                <text x="60" y="108" font-family="serif" font-size="9" fill="#5f6368">Tel (71) 3032-XXXX · contato@clinicasm.com.br</text>
+
+                <!-- Linha decorativa -->
+                <line x1="40" y1="140" x2="555" y2="140" stroke="#1a73e8" stroke-width="2"/>
+
+                <!-- Título -->
+                <text x="297" y="180" font-family="serif" font-size="20" fill="#202124" text-anchor="middle" font-weight="bold">ATESTADO MÉDICO</text>
+
+                <!-- Corpo -->
+                <text x="60" y="230" font-family="serif" font-size="12" fill="#3c4043">Atesto, para os devidos fins, que o(a) Sr(a):</text>
+
+                <text x="60" y="265" font-family="serif" font-size="14" fill="#202124" font-weight="bold">RAFAEL COSTA LIMA</text>
+                <text x="60" y="285" font-family="serif" font-size="11" fill="#3c4043">CPF: 234.567.890-12 · RG: 98.765.432-1 SSP-BA</text>
+
+                <text x="60" y="325" font-family="serif" font-size="12" fill="#3c4043">esteve sob meus cuidados em atendimento médico nesta data,</text>
+                <text x="60" y="345" font-family="serif" font-size="12" fill="#3c4043">apresentando quadro clínico que exige afastamento das suas</text>
+                <text x="60" y="365" font-family="serif" font-size="12" fill="#3c4043">atividades laborais por:</text>
+
+                <!-- Box destaque -->
+                <rect x="60" y="385" width="475" height="55" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1" rx="4"/>
+                <text x="297" y="408" font-family="serif" font-size="13" fill="#202124" text-anchor="middle">Período de afastamento</text>
+                <text x="297" y="428" font-family="serif" font-size="16" fill="#c5221f" text-anchor="middle" font-weight="bold">07 (SETE) DIAS</text>
+
+                <text x="60" y="475" font-family="serif" font-size="12" fill="#3c4043">a partir de <tspan font-weight="bold">28/04/2026</tspan>, com retorno previsto para</text>
+                <text x="60" y="495" font-family="serif" font-size="12" fill="#3c4043"><tspan font-weight="bold">05/05/2026</tspan>, conforme determinação clínica.</text>
+
+                <text x="60" y="535" font-family="serif" font-size="12" fill="#3c4043">Diagnóstico (CID-10):</text>
+                <text x="60" y="558" font-family="serif" font-size="14" fill="#202124" font-weight="bold">M54.5 - Dor lombar baixa</text>
+
+                <text x="60" y="600" font-family="serif" font-size="11" fill="#5f6368" font-style="italic">Recomenda-se repouso, fisioterapia e reavaliação ao final do</text>
+                <text x="60" y="615" font-family="serif" font-size="11" fill="#5f6368" font-style="italic">período de afastamento.</text>
+
+                <!-- Local e data -->
+                <text x="60" y="680" font-family="serif" font-size="11" fill="#3c4043">Salvador, 28 de abril de 2026.</text>
+
+                <!-- Assinatura -->
+                <line x1="345" y1="730" x2="535" y2="730" stroke="#5f6368" stroke-width="0.7"/>
+                <text x="440" y="748" font-family="serif" font-size="10" fill="#3c4043" text-anchor="middle" font-weight="bold">Dra. Mariana Costa</text>
+                <text x="440" y="762" font-family="serif" font-size="9" fill="#5f6368" text-anchor="middle">CRM-BA 28734</text>
+                <text x="440" y="775" font-family="serif" font-size="9" fill="#5f6368" text-anchor="middle">Ortopedia e Traumatologia</text>
+
+                <!-- Carimbo simulado -->
+                <ellipse cx="155" cy="745" rx="55" ry="20" fill="none" stroke="#1a73e8" stroke-width="1" opacity="0.3"/>
+                <text x="155" y="742" font-family="serif" font-size="7" fill="#1a73e8" text-anchor="middle" opacity="0.4">CARIMBO</text>
+                <text x="155" y="752" font-family="serif" font-size="7" fill="#1a73e8" text-anchor="middle" opacity="0.4">CRM 28734</text>
+
+                <!-- Footer -->
+                <text x="297" y="810" font-family="serif" font-size="8" fill="#9aa0a6" text-anchor="middle">Documento conforme Resolução CFM nº 1.851/2008</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Form pane -->
+          <div class="form-pane">
+
+            <!-- Submitter info -->
+            <div class="fp-section">
+              <div class="fp-title">Origem do envio</div>
+              <div class="submitter-info">
+                <div class="submitter-avatar" style="background:linear-gradient(135deg, #854F0B, #6E3F08);">SL</div>
+                <div>
+                  Enviado por <strong>Sandra Lima</strong> (Gerente · ATP Varejo)<br>
+                  em 28/04/2026 às 09:42 · há 4 horas
+                </div>
+              </div>
+            </div>
+
+            <!-- OCR extracted -->
+            <div class="fp-section">
+              <div class="fp-title">Dados extraídos automaticamente</div>
+              <div class="ocr-card">
+                <div class="ocr-card-header">
+                  <h4>
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    OCR · Tesseract WASM
+                  </h4>
+                  <span class="ocr-quality-badge good">Alta · 0,94</span>
+                </div>
+                <div class="ocr-card-row">
+                  <span class="ocr-lbl">Médico</span>
+                  <span class="ocr-val">Dra. Mariana Costa</span>
+                </div>
+                <div class="ocr-card-row">
+                  <span class="ocr-lbl">CRM</span>
+                  <span class="ocr-val">CRM-BA 28734</span>
+                </div>
+                <div class="ocr-card-row">
+                  <span class="ocr-lbl">Data emissão</span>
+                  <span class="ocr-val">28/04/2026</span>
+                </div>
+                <div class="ocr-card-row">
+                  <span class="ocr-lbl">Início</span>
+                  <span class="ocr-val">28/04/2026</span>
+                </div>
+                <div class="ocr-card-row">
+                  <span class="ocr-lbl">Dias</span>
+                  <span class="ocr-val">7 dias</span>
+                </div>
+                <div class="ocr-card-row">
+                  <span class="ocr-lbl">CID detectado</span>
+                  <span class="ocr-val" style="color:var(--purple);">M54.5</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validação -->
+            <div class="fp-section">
+              <div class="fp-title">Confirmar validação</div>
+
+              <div class="field">
+                <label class="field-label">
+                  Tipo do documento <span class="required">*</span>
+                </label>
+                <select class="field-select">
+                  <option selected>Atestado médico (afastamento)</option>
+                  <option>Comprovante de consulta</option>
+                  <option>Declaração de comparecimento</option>
+                  <option>Atestado de acompanhamento</option>
+                </select>
+              </div>
+
+              <div class="field-row-2">
+                <div class="field">
+                  <label class="field-label">Data início <span class="required">*</span></label>
+                  <input type="date" class="field-input" value="2026-04-28">
+                </div>
+                <div class="field">
+                  <label class="field-label">Dias <span class="required">*</span></label>
+                  <input type="number" class="field-input" value="7" min="0" max="365">
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field-label">
+                  CID-10 <span class="required">*</span>
+                  <span class="helper">visível só para perfis com permissão</span>
+                </label>
+                <div class="cid-wrap" id="cidWrap">
+                  <input type="text"
+                         class="field-input"
+                         id="cidInput"
+                         placeholder="Digite o código ou descrição..."
+                         autocomplete="off"
+                         oninput="searchCID(this.value)"
+                         onfocus="document.getElementById('cidWrap').classList.add('open')">
+                  <div class="cid-suggestions" id="cidSuggestions">
+                    <div class="cid-sugg-item selected" onclick="selectCID('M54.5', 'Dor lombar baixa')">
+                      <span class="cid-code">M54.5</span>
+                      <span class="cid-desc">Dor lombar baixa</span>
+                      <span class="cid-sugg-frequency">Detectado pelo OCR</span>
+                    </div>
+                    <div class="cid-sugg-item" onclick="selectCID('M54.4', 'Lumbago com ciática')">
+                      <span class="cid-code">M54.4</span>
+                      <span class="cid-desc">Lumbago com ciática</span>
+                      <span class="cid-sugg-frequency">comum</span>
+                    </div>
+                    <div class="cid-sugg-item" onclick="selectCID('M54.9', 'Dorsalgia não especificada')">
+                      <span class="cid-code">M54.9</span>
+                      <span class="cid-desc">Dorsalgia não especificada</span>
+                      <span class="cid-sugg-frequency">comum</span>
+                    </div>
+                    <div class="cid-sugg-item" onclick="selectCID('M51.1', 'Disco intervertebral lombar')">
+                      <span class="cid-code">M51.1</span>
+                      <span class="cid-desc">Disco intervertebral lombar com radiculopatia</span>
+                      <span class="cid-sugg-frequency">menos comum</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="cid-selected" id="cidSelected">
+                  <span class="cid-code">M54.5</span>
+                  <div class="cid-selected-info">
+                    <div class="cid-selected-desc">Dor lombar baixa</div>
+                    <div class="cid-selected-meta">Cap. XIII · Doenças do sistema osteomuscular</div>
+                  </div>
+                  <button class="cid-clear" onclick="clearCID()" title="Limpar">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field-label">
+                  Observações internas <span class="helper">não visíveis ao colaborador</span>
+                </label>
+                <textarea class="field-textarea" placeholder="Anotações para o RH (opcional)"></textarea>
+              </div>
+
+              <!-- Auto movement banner -->
+              <div class="auto-mov-banner">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>
+                <div>
+                  <strong>Movimentação será gerada automaticamente.</strong> Como o afastamento é de 7 dias (<code>≥3</code>), ao validar este atestado o sistema cria a movimentação <code>MOV-AUTO-2026-04-28-3D72A</code> de afastamento por enfermidade vinculada a este protocolo.
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Action footer -->
+        <div class="viewer-actions">
+          <button class="btn-action btn-reject">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+            Rejeitar
+          </button>
+          <button class="btn-action btn-approve">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+            Validar e gerar movimentação
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+</div>
+
+<script>
+const employeesMap = {
+  fernanda: {avatar:'FL', color:'#E82227', name:'Fernanda Lima dos Santos', emp:'Analista Pleno · Labuta · Cestão Loja 1', protocol:'ATD-2026-04-28-1A47B'},
+  rafael: {avatar:'RL', color:'#6D28D9', name:'Rafael Costa Lima', emp:'Repositor · Labuta · ATP Varejo', protocol:'ATD-2026-04-28-3D72A'},
+  thiago: {avatar:'TA', color:'#0F766E', name:'Thiago Almeida', emp:'Conferente · Labuta · ATP Atacado', protocol:'ATD-2026-04-28-9F45E'},
+  daniela: {avatar:'DV', color:'#6D28D9', name:'Daniela Vieira Matos', emp:'Analista Júnior · Labuta · Cestão Loja 1', protocol:'ATD-2026-04-27-7C12F'},
+  natalia: {avatar:'NF', color:'#F5831F', name:'Natália Ferreira', emp:'Auxiliar Financeiro · Labuta · Sede ATP', protocol:'ATD-2026-04-27-2E89D'},
+  gabriel: {avatar:'GP', color:'#854F0B', name:'Gabriel Pinto Souza', emp:'Estagiário · Labuta · Cestão Loja 1', protocol:'ATD-2026-04-26-5A33B'},
+  beatriz: {avatar:'BL', color:'#3D5F95', name:'Beatriz Lopes Almeida', emp:'Analista Sr. · GPC · Sede ATP', protocol:'ATD-2026-04-26-8B17C'},
+  marcos: {avatar:'MO', color:'#1E7B4B', name:'Marcos Oliveira', emp:'Operador Loja · Labuta · Cestão Inhambupe', protocol:'ATD-2026-04-25-4D90A'}
+};
+
+function selectCard(el, id){
+  document.querySelectorAll('.qcard').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const e = employeesMap[id];
+  if(!e) return;
+  document.getElementById('vhAvatar').textContent = e.avatar;
+  document.getElementById('vhAvatar').style.background = `linear-gradient(135deg, ${e.color}, ${e.color}dd)`;
+  document.getElementById('vhName').textContent = e.name;
+  document.getElementById('vhEmp').textContent = e.emp;
+  document.getElementById('vhProtocol').textContent = e.protocol;
+}
+
+// CID Autocomplete
+const CIDS = [
+  {code:'A09', desc:'Diarreia e gastroenterite de origem infecciosa presumível', cap:'I'},
+  {code:'B34', desc:'Doença viral não especificada', cap:'I'},
+  {code:'F32', desc:'Episódios depressivos', cap:'V'},
+  {code:'F41', desc:'Outros transtornos ansiosos', cap:'V'},
+  {code:'G43', desc:'Enxaqueca', cap:'VI'},
+  {code:'I10', desc:'Hipertensão essencial primária', cap:'IX'},
+  {code:'J00', desc:'Nasofaringite aguda (resfriado comum)', cap:'X'},
+  {code:'J06.9', desc:'Infecção aguda das vias aéreas superiores', cap:'X'},
+  {code:'J11', desc:'Influenza devido a vírus não identificado', cap:'X'},
+  {code:'J20', desc:'Bronquite aguda', cap:'X'},
+  {code:'K29', desc:'Gastrite e duodenite', cap:'XI'},
+  {code:'K59.0', desc:'Constipação', cap:'XI'},
+  {code:'M54.4', desc:'Lumbago com ciática', cap:'XIII'},
+  {code:'M54.5', desc:'Dor lombar baixa', cap:'XIII'},
+  {code:'M54.9', desc:'Dorsalgia não especificada', cap:'XIII'},
+  {code:'M51.1', desc:'Disco intervertebral lombar com radiculopatia', cap:'XIII'},
+  {code:'N39.0', desc:'Infecção do trato urinário', cap:'XIV'},
+  {code:'R10.4', desc:'Outras dores abdominais e as não especificadas', cap:'XVIII'},
+  {code:'R51', desc:'Cefaleia', cap:'XVIII'},
+  {code:'Z76.3', desc:'Pessoa em boa saúde acompanhando enferma', cap:'XXI'}
+];
+
+function searchCID(q){
+  const wrap = document.getElementById('cidWrap');
+  const sugg = document.getElementById('cidSuggestions');
+  if(!q.trim()){
+    wrap.classList.remove('open');
+    return;
+  }
+  wrap.classList.add('open');
+  const nq = q.toLowerCase();
+  const filtered = CIDS.filter(c =>
+    c.code.toLowerCase().includes(nq) ||
+    c.desc.toLowerCase().includes(nq)
+  ).slice(0, 8);
+
+  // Usa DOM API segura (textContent) ao invés de innerHTML para evitar XSS via input do usuário
+  sugg.innerHTML = '';
+
+  if(filtered.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'cid-sugg-item';
+    empty.style.cursor = 'default';
+    empty.style.color = 'var(--txt2)';
+    empty.style.fontStyle = 'italic';
+    empty.textContent = `Nenhum CID encontrado para "${q}"`;
+    sugg.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'cid-sugg-item';
+    // Bind via dataset + addEventListener para não interpolar em onclick
+    item.dataset.code = c.code;
+    item.dataset.desc = c.desc;
+    item.addEventListener('click', () => selectCID(c.code, c.desc));
+
+    const codeEl = document.createElement('span');
+    codeEl.className = 'cid-code';
+    codeEl.textContent = c.code;
+
+    const descEl = document.createElement('span');
+    descEl.className = 'cid-desc';
+    descEl.textContent = c.desc;
+
+    const capEl = document.createElement('span');
+    capEl.className = 'cid-sugg-frequency';
+    capEl.textContent = `Cap. ${c.cap}`;
+
+    item.appendChild(codeEl);
+    item.appendChild(descEl);
+    item.appendChild(capEl);
+    sugg.appendChild(item);
+  });
+}
+
+function selectCID(code, desc){
+  document.getElementById('cidWrap').classList.remove('open');
+  document.getElementById('cidInput').value = '';
+  document.getElementById('cidInput').style.display = 'none';
+  const sel = document.getElementById('cidSelected');
+  sel.style.display = 'flex';
+  sel.querySelector('.cid-code').textContent = code;
+  sel.querySelector('.cid-selected-desc').textContent = desc;
+}
+
+function clearCID(){
+  document.getElementById('cidSelected').style.display = 'none';
+  document.getElementById('cidInput').style.display = '';
+  document.getElementById('cidInput').focus();
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('.cid-wrap')){
+    document.getElementById('cidWrap').classList.remove('open');
+  }
+});
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

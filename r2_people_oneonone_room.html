@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People · Sala da 1:1 · Fernanda Lima</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+  --priv-tint:#FFF9E6;
+  --priv-border:#F5C842;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; transition:all .15s; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.breadcrumb{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--txt2); flex-wrap:wrap;}
+.breadcrumb a{color:var(--txt2); text-decoration:none; cursor:pointer;}
+.breadcrumb a:hover{color:var(--navy);}
+.breadcrumb .sep{color:var(--gray3);}
+.breadcrumb strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.icon-btn{width:36px; height:36px; background:transparent; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; color:var(--txt2);}
+.icon-btn:hover{background:var(--gray1);}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-chip:hover{background:var(--gray1);}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:0; overflow-x:hidden;}
+
+/* Botões */
+.btn{display:inline-flex; align-items:center; gap:7px; padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; border:1px solid transparent; transition:all .15s;}
+.btn svg{width:14px; height:14px;}
+.btn-primary{background:var(--navy); color:#fff;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border-color:var(--gray2);}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-ghost{background:transparent; color:var(--txt2);}
+.btn-ghost:hover{background:var(--gray1); color:var(--txt);}
+.btn-orange{background:var(--orange); color:#fff;}
+.btn-orange:hover{background:#dc7517;}
+.btn-green{background:var(--green); color:#fff;}
+.btn-green:hover{background:#155e39;}
+.btn-danger{background:#fff; color:var(--red); border-color:var(--red2);}
+.btn-danger:hover{background:var(--red2);}
+.btn-sm{padding:6px 10px; font-size:11.5px; gap:5px;}
+.btn-sm svg{width:12px; height:12px;}
+.btn-xs{padding:4px 8px; font-size:11px; gap:4px;}
+.btn-xs svg{width:11px; height:11px;}
+
+/* ============== HEADER STICKY DA SALA ============== */
+.room-header{
+  position:sticky; top:0;
+  background:#fff;
+  border-bottom:1px solid var(--gray1);
+  z-index:15;
+  padding:14px 22px 0;
+}
+.rh-top{display:flex; align-items:flex-start; gap:14px; padding-bottom:12px;}
+.rh-back{display:flex; align-items:center; gap:5px; color:var(--txt2); text-decoration:none; font-size:11.5px; cursor:pointer; padding:6px 8px; border-radius:6px; flex-shrink:0;}
+.rh-back:hover{background:var(--gray1); color:var(--txt);}
+.rh-back svg{width:14px; height:14px;}
+
+.rh-person{display:flex; align-items:center; gap:12px; flex:1; min-width:0;}
+.rh-avatar{width:54px; height:54px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:18px; flex-shrink:0;}
+.rh-info{flex:1; min-width:0;}
+.rh-name{font-size:18px; font-weight:600; color:var(--txt); display:flex; align-items:center; gap:8px; flex-wrap:wrap; letter-spacing:-.2px;}
+.rh-handle{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--navy3); background:var(--off); padding:2px 7px; border-radius:5px; font-weight:500;}
+.rh-role{font-size:12px; color:var(--txt2); margin-top:2px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.rh-role .chip{display:inline-flex; align-items:center; gap:4px; padding:2px 7px; border-radius:99px; font-size:10.5px; font-weight:500; background:var(--gray1); color:var(--txt2);}
+.rh-role .chip.emp{background:var(--purple2); color:var(--purple);}
+.rh-role .chip.tom{background:var(--blue2); color:var(--blue);}
+
+.rh-actions{display:flex; gap:8px; align-items:center; flex-shrink:0; flex-wrap:wrap;}
+
+/* Status bar */
+.rh-status{display:flex; align-items:center; gap:14px; padding:12px 0; border-top:1px solid var(--gray1); flex-wrap:wrap;}
+.status-pill{display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:99px; font-size:12px; font-weight:600;}
+.status-pill svg{width:14px; height:14px;}
+.status-pill.scheduled{background:var(--blue2); color:var(--blue);}
+.status-pill.in_progress{background:var(--green2); color:var(--green);}
+.status-pill.in_progress::before{content:""; width:8px; height:8px; background:var(--green); border-radius:50%; animation:pulse 1.6s infinite;}
+.status-pill.completed{background:var(--gray1); color:var(--txt2);}
+.status-pill.canceled{background:var(--red2); color:var(--red);}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(30,123,75,.5);}
+  70%{box-shadow:0 0 0 10px rgba(30,123,75,0);}
+  100%{box-shadow:0 0 0 0 rgba(30,123,75,0);}
+}
+
+.rh-meta{display:flex; align-items:center; gap:5px; font-size:12px; color:var(--txt2);}
+.rh-meta strong{color:var(--txt); font-weight:600;}
+.rh-meta svg{width:13px; height:13px;}
+.rh-meta-sep{color:var(--gray3);}
+
+.timer{font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:var(--green);}
+.timer.warning{color:var(--orange);}
+.timer.over{color:var(--red);}
+
+/* TABS */
+.room-tabs{
+  position:sticky; top:152px;
+  background:#fff;
+  border-bottom:1px solid var(--gray1);
+  z-index:14;
+  padding:0 22px;
+  display:flex;
+  gap:2px;
+  overflow-x:auto;
+}
+.room-tab{padding:12px 14px; font-size:12.5px; color:var(--txt2); cursor:pointer; border-bottom:2px solid transparent; font-weight:500; transition:all .15s; white-space:nowrap; display:flex; align-items:center; gap:6px;}
+.room-tab:hover{color:var(--txt);}
+.room-tab.active{color:var(--navy); border-bottom-color:var(--navy); font-weight:600;}
+.room-tab svg{width:14px; height:14px;}
+.tab-count{display:inline-block; background:var(--gray1); color:var(--txt2); font-size:10.5px; padding:1px 6px; border-radius:99px; font-weight:600; margin-left:2px;}
+.room-tab.active .tab-count{background:var(--navy); color:#fff;}
+
+/* CONTENT */
+.room-body{padding:18px 22px 40px; max-width:1380px; margin:0 auto; display:grid; grid-template-columns:1fr 320px; gap:18px;}
+.room-main{min-width:0;}
+.room-side{min-width:0; display:flex; flex-direction:column; gap:14px;}
+
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* Card */
+.card{background:#fff; border:1px solid var(--gray1); border-radius:12px; box-shadow:var(--shadow-card);}
+.card-head{padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid var(--gray1);}
+.card-head.no-border{border-bottom:none;}
+.card-title{font-size:13.5px; font-weight:600; color:var(--txt); display:flex; align-items:center; gap:8px;}
+.card-title svg{width:15px; height:15px; color:var(--navy);}
+.card-sub{font-size:11.5px; color:var(--txt2); font-weight:400; margin-left:6px;}
+.card-body{padding:14px 16px;}
+.card-tools{display:flex; gap:6px; align-items:center; flex-wrap:wrap;}
+
+/* ============ NOTAS DUAIS ============ */
+.notes-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.notes-col{display:flex; flex-direction:column;}
+.notes-col-head{padding:10px 12px 8px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.notes-col-head svg{width:14px; height:14px; flex-shrink:0;}
+.notes-col-title{font-size:12px; font-weight:600; color:var(--txt);}
+.notes-col-sub{font-size:10.5px; color:var(--txt2); font-weight:400;}
+.notes-priv{background:var(--priv-tint); border:1px solid var(--priv-border); border-radius:11px; overflow:hidden;}
+.notes-priv .notes-col-head{background:rgba(245,200,66,.15); border-bottom-color:rgba(245,200,66,.3);}
+.notes-priv .notes-col-head svg{color:var(--amber);}
+.notes-shar{background:#fff; border:1px solid var(--gray2); border-radius:11px; overflow:hidden;}
+.notes-shar .notes-col-head{background:var(--blue2); border-bottom-color:rgba(30,95,191,.15);}
+.notes-shar .notes-col-head svg{color:var(--blue);}
+
+.notes-textarea{width:100%; border:none; padding:14px; font-family:inherit; font-size:13px; line-height:1.55; color:var(--txt); resize:none; outline:none; min-height:280px; background:transparent;}
+.notes-textarea::placeholder{color:var(--txt3); font-style:italic;}
+
+.notes-foot{padding:8px 12px; border-top:1px solid var(--gray1); display:flex; align-items:center; justify-content:space-between; font-size:11px; color:var(--txt2); background:rgba(0,0,0,.02);}
+.notes-priv .notes-foot{background:rgba(245,200,66,.08); border-top-color:rgba(245,200,66,.2);}
+.notes-shar .notes-foot{background:rgba(30,95,191,.04);}
+.notes-counter{font-family:'JetBrains Mono',monospace;}
+.notes-saved{display:flex; align-items:center; gap:4px;}
+.notes-saved svg{width:12px; height:12px; color:var(--green);}
+
+/* ============ PAUTA ============ */
+.agenda-list{display:flex; flex-direction:column;}
+.agenda-item{display:flex; align-items:flex-start; gap:11px; padding:12px 16px; border-bottom:1px solid var(--gray1); transition:background .12s;}
+.agenda-item:last-child{border-bottom:none;}
+.agenda-item.discussed{background:var(--green2); opacity:.85;}
+.agenda-item.discussed .agenda-text{text-decoration:line-through; color:var(--txt2);}
+.agenda-item.is-carry{background:var(--amber2);}
+
+.agenda-check{flex-shrink:0; width:20px; height:20px; border:2px solid var(--gray3); border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; background:#fff; margin-top:1px;}
+.agenda-check:hover{border-color:var(--navy);}
+.agenda-check.checked{background:var(--green); border-color:var(--green);}
+.agenda-check.checked svg{display:block;}
+.agenda-check svg{display:none; width:13px; height:13px; color:#fff;}
+
+.agenda-body{flex:1; min-width:0;}
+.agenda-text{font-size:13px; color:var(--txt); line-height:1.5;}
+.agenda-meta{font-size:11px; color:var(--txt2); margin-top:4px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.agenda-author{display:inline-flex; align-items:center; gap:4px;}
+.agenda-author-mini{width:18px; height:18px; border-radius:50%; color:#fff; font-size:9px; font-weight:600; display:flex; align-items:center; justify-content:center;}
+.agenda-tag{display:inline-flex; align-items:center; gap:3px; padding:1px 6px; border-radius:99px; font-size:10px; font-weight:500;}
+.agenda-tag.carry{background:var(--amber); color:#fff;}
+.agenda-tag.mine{background:var(--blue2); color:var(--blue);}
+.agenda-actions{display:flex; gap:4px; opacity:0; transition:opacity .15s; flex-shrink:0;}
+.agenda-item:hover .agenda-actions{opacity:1;}
+.agenda-action{width:24px; height:24px; border:none; background:transparent; border-radius:5px; cursor:pointer; color:var(--txt2); display:flex; align-items:center; justify-content:center;}
+.agenda-action:hover{background:var(--gray1); color:var(--txt);}
+.agenda-action svg{width:13px; height:13px;}
+
+.agenda-add{padding:12px 16px; border-top:1px solid var(--gray1); display:flex; gap:8px; align-items:center; background:var(--off);}
+.agenda-input{flex:1; padding:8px 12px; border:1px solid var(--gray2); border-radius:8px; font-size:12.5px; font-family:inherit; background:#fff; color:var(--txt);}
+.agenda-input:focus{outline:none; border-color:var(--navy3); box-shadow:0 0 0 3px rgba(61,95,149,.12);}
+
+/* ============ ACTION ITEMS ============ */
+.ai-list{display:flex; flex-direction:column;}
+.ai-item{display:flex; align-items:flex-start; gap:11px; padding:13px 16px; border-bottom:1px solid var(--gray1); transition:background .12s;}
+.ai-item:last-child{border-bottom:none;}
+.ai-item.completed{background:var(--green2); opacity:.8;}
+.ai-item.completed .ai-text{text-decoration:line-through; color:var(--txt2);}
+.ai-item.overdue{border-left:3px solid var(--red);}
+.ai-item.from-prev{background:linear-gradient(to right, rgba(255,236,200,.4), transparent);}
+
+.ai-check{flex-shrink:0; width:20px; height:20px; border:2px solid var(--gray3); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; background:#fff; margin-top:1px;}
+.ai-check:hover{border-color:var(--navy);}
+.ai-check.checked{background:var(--green); border-color:var(--green);}
+.ai-check.checked svg{display:block;}
+.ai-check svg{display:none; width:13px; height:13px; color:#fff;}
+
+.ai-body{flex:1; min-width:0;}
+.ai-text{font-size:13px; color:var(--txt); line-height:1.5;}
+.ai-meta{font-size:11px; color:var(--txt2); margin-top:5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.ai-owner{display:inline-flex; align-items:center; gap:4px; padding:2px 7px; border-radius:99px; font-size:10.5px; font-weight:500;}
+.ai-owner.lead{background:var(--blue2); color:var(--blue);}
+.ai-owner.led{background:var(--purple2); color:var(--purple);}
+.ai-owner.both{background:var(--teal2); color:var(--teal);}
+
+.ai-due{display:inline-flex; align-items:center; gap:4px; font-size:11px;}
+.ai-due svg{width:11px; height:11px;}
+.ai-due.overdue-text{color:var(--red); font-weight:600;}
+.ai-due.soon{color:var(--orange); font-weight:500;}
+
+.ai-from-prev-tag{display:inline-flex; align-items:center; gap:3px; padding:1px 7px; background:var(--amber); color:#fff; border-radius:99px; font-size:10px; font-weight:600;}
+
+.ai-add{padding:12px 16px; border-top:1px solid var(--gray1); background:var(--off);}
+.ai-add-row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+.ai-add-row > *{font-family:inherit; font-size:12.5px;}
+.ai-add-row .ai-text-input{flex:1; min-width:200px; padding:8px 12px; border:1px solid var(--gray2); border-radius:8px; background:#fff; color:var(--txt);}
+.ai-add-row .ai-text-input:focus{outline:none; border-color:var(--navy3); box-shadow:0 0 0 3px rgba(61,95,149,.12);}
+.ai-add-row select, .ai-add-row input[type="date"]{padding:7px 10px; border:1px solid var(--gray2); border-radius:8px; background:#fff; color:var(--txt);}
+
+/* ============ HISTÓRICO ============ */
+.history-list{display:flex; flex-direction:column;}
+.history-item{padding:14px 16px; border-bottom:1px solid var(--gray1); cursor:pointer; transition:background .12s;}
+.history-item:last-child{border-bottom:none;}
+.history-item:hover{background:var(--off);}
+.history-head{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+.history-date{font-size:13px; font-weight:600; color:var(--txt); font-family:'JetBrains Mono',monospace;}
+.history-status{display:inline-flex; align-items:center; gap:4px; padding:1px 7px; border-radius:99px; font-size:10.5px; font-weight:500; background:var(--gray1); color:var(--txt2);}
+.history-meta{font-size:11.5px; color:var(--txt2); display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.history-meta-pill{display:inline-flex; align-items:center; gap:4px;}
+
+/* ============ SIDEBAR DA SALA ============ */
+.side-card{background:#fff; border:1px solid var(--gray1); border-radius:11px; padding:14px;}
+.side-card-title{font-size:12.5px; font-weight:600; color:var(--txt); margin-bottom:10px; display:flex; align-items:center; gap:6px;}
+.side-card-title svg{width:14px; height:14px; color:var(--navy);}
+
+.side-stat-row{display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px dashed var(--gray1); font-size:12px;}
+.side-stat-row:last-child{border-bottom:none;}
+.side-stat-row .lbl{color:var(--txt2);}
+.side-stat-row .val{font-weight:600; color:var(--txt); font-family:'JetBrains Mono',monospace;}
+
+.side-tip{background:linear-gradient(135deg, var(--navy), var(--navy2)); color:#fff; border-radius:11px; padding:14px; border:none;}
+.side-tip-title{font-size:12.5px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+.side-tip-title svg{width:14px; height:14px;}
+.side-tip-list{list-style:none; font-size:11.5px; line-height:1.7; color:rgba(255,255,255,.9);}
+.side-tip-list li{padding:2px 0;}
+
+.priv-side-card{background:var(--priv-tint); border:1px solid var(--priv-border); border-radius:11px; padding:13px;}
+.priv-side-card .side-card-title{color:var(--amber);}
+.priv-side-card .side-card-title svg{color:var(--amber);}
+.priv-side-card-text{font-size:11.5px; color:var(--txt); line-height:1.55;}
+.priv-side-card-text strong{font-weight:600;}
+
+/* SUMMARY DA PAUTA NA SIDEBAR */
+.agenda-summary{display:flex; flex-direction:column; gap:6px;}
+.agenda-sm-item{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--txt);}
+.agenda-sm-item.discussed{color:var(--txt2); text-decoration:line-through;}
+.agenda-sm-mark{width:14px; height:14px; border-radius:3px; border:1.5px solid var(--gray3); flex-shrink:0; display:flex; align-items:center; justify-content:center;}
+.agenda-sm-mark.checked{background:var(--green); border-color:var(--green);}
+.agenda-sm-mark.checked::after{content:"✓"; color:#fff; font-size:10px; font-weight:700;}
+.agenda-sm-empty{font-size:11.5px; color:var(--txt2); font-style:italic; text-align:center; padding:8px 0;}
+
+/* MODAL */
+.modal-bd{position:fixed; inset:0; background:rgba(26,45,79,.45); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:20px; z-index:200; opacity:0; pointer-events:none; transition:opacity .15s;}
+.modal-bd.show{opacity:1; pointer-events:auto;}
+.modal{background:#fff; border-radius:14px; width:100%; max-width:520px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:var(--shadow-pop); transform:translateY(8px); transition:transform .15s;}
+.modal-bd.show .modal{transform:translateY(0);}
+.modal-head{padding:16px 20px; border-bottom:1px solid var(--gray1); display:flex; align-items:center; justify-content:space-between;}
+.modal-title{font-size:15px; font-weight:600; color:var(--txt); display:flex; align-items:center; gap:8px;}
+.modal-title svg{width:16px; height:16px;}
+.modal-close{width:30px; height:30px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2); display:flex; align-items:center; justify-content:center;}
+.modal-close:hover{background:var(--gray1); color:var(--txt);}
+.modal-body{padding:18px 20px; overflow-y:auto; flex:1;}
+.modal-foot{padding:14px 20px; border-top:1px solid var(--gray1); display:flex; gap:8px; justify-content:flex-end; background:var(--off);}
+
+.form-row{margin-bottom:12px;}
+.form-label{font-size:11.5px; font-weight:500; color:var(--txt); display:block; margin-bottom:5px;}
+.form-input, .form-select, .form-textarea{width:100%; padding:8px 10px; border:1px solid var(--gray2); border-radius:8px; font-size:12.5px; background:#fff; font-family:inherit; color:var(--txt);}
+.form-input:focus, .form-select:focus, .form-textarea:focus{outline:none; border-color:var(--navy3); box-shadow:0 0 0 3px rgba(61,95,149,.12);}
+.form-textarea{resize:vertical; min-height:70px;}
+
+/* Toast */
+.toast{position:fixed; bottom:22px; right:22px; background:var(--dark); color:#fff; padding:11px 16px; border-radius:10px; font-size:12.5px; box-shadow:var(--shadow-pop); z-index:300; display:flex; align-items:center; gap:8px; transform:translateY(60px); opacity:0; transition:all .25s;}
+.toast.show{transform:translateY(0); opacity:1;}
+.toast svg{width:16px; height:16px; color:var(--green); flex-shrink:0;}
+
+/* Empty */
+.empty{padding:30px 16px; text-align:center; color:var(--txt2);}
+.empty-icon{width:46px; height:46px; margin:0 auto 10px; border-radius:50%; background:var(--gray1); color:var(--txt3); display:flex; align-items:center; justify-content:center;}
+.empty-icon svg{width:20px; height:20px;}
+.empty-title{font-size:13px; font-weight:600; color:var(--txt); margin-bottom:4px;}
+.empty-sub{font-size:12px; color:var(--txt2);}
+
+/* Sidebar overlay */
+.sidebar-bd{display:none;}
+
+/* RESPONSIVE */
+@media (max-width:1100px){
+  .room-body{grid-template-columns:1fr; max-width:780px;}
+  .room-side{flex-direction:row; flex-wrap:wrap;}
+  .room-side .side-card, .room-side .side-tip, .room-side .priv-side-card{flex:1 1 280px;}
+}
+@media (max-width:768px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; left:0; bottom:0; width:260px; transform:translateX(-100%); transition:transform .2s;}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-bd{display:block; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-bd.show{opacity:1; pointer-events:auto;}
+  .topbar-toggle{display:flex;}
+  .room-header{padding:12px 14px 0;}
+  .room-tabs{padding:0 14px; top:auto;}
+  .room-body{padding:14px;}
+  .rh-top{flex-direction:column;}
+  .rh-actions{width:100%;}
+  .notes-grid{grid-template-columns:1fr;}
+  .notes-tabs{display:flex; gap:4px; margin-bottom:8px;}
+  .user-info{display:none;}
+}
+@media (max-width:480px){
+  .rh-name{font-size:16px;}
+  .rh-avatar{width:46px; height:46px; font-size:15px;}
+  .ai-add-row{flex-direction:column; align-items:stretch;}
+  .ai-add-row .ai-text-input{min-width:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar-bd" id="sbBd" onclick="toggleSidebar()"></div>
+
+<div class="app">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sb">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <div class="brand-name">R2 People</div>
+        <div class="brand-sub">GPC · João C.</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Pessoal</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+        Início
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0112 0v2"/></svg>
+        Minha equipe
+      </a>
+      <a class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Avaliações
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Atestados
+      </a>
+      <div class="sidebar-section">Operação</div>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Movimentações
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+        Férias
+      </a>
+      <a class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Metas
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>v0.18.0</span>
+      <span class="v">JC</span>
+    </div>
+  </aside>
+
+  <!-- ============ TOPBAR ============ -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()" aria-label="Abrir menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="breadcrumb">
+      <a>1:1s</a>
+      <span class="sep">›</span>
+      <strong>Sala da 1:1</strong>
+    </div>
+    <div class="topbar-spacer"></div>
+    <button class="icon-btn" aria-label="Notificações">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+    </button>
+    <div class="user-chip">
+      <div class="user-avatar">JC</div>
+      <div class="user-info">
+        <div class="user-name">João Carvalho</div>
+        <div class="user-role">Líder Financeiro</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- HEADER STICKY DA SALA -->
+    <div class="room-header">
+      <div class="rh-top">
+        <a class="rh-back" onclick="goBack()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          1:1s
+        </a>
+
+        <div class="rh-person">
+          <div class="rh-avatar" style="background:linear-gradient(135deg,#8B5CF6,#EC4899)">FL</div>
+          <div class="rh-info">
+            <div class="rh-name">
+              Fernanda Lima
+              <span class="rh-handle">@Fê</span>
+            </div>
+            <div class="rh-role">
+              Analista Pleno · Financeiro
+              <span class="chip emp">EMP · Labuta</span>
+              <span class="chip tom">TOM · Cestão L1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rh-actions">
+          <button class="btn btn-secondary btn-sm" onclick="alert('Vai para perfil completo (mock)')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0112 0v2"/></svg>
+            Ver perfil
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="openReschedule()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+            Reagendar
+          </button>
+          <button class="btn btn-green btn-sm" id="completeBtn" onclick="completeMeeting()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Concluir 1:1
+          </button>
+        </div>
+      </div>
+
+      <div class="rh-status">
+        <span class="status-pill in_progress" id="statusPill">
+          Em andamento
+        </span>
+        <div class="rh-meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+          <strong>Hoje</strong> · 01/05/2026
+        </div>
+        <span class="rh-meta-sep">·</span>
+        <div class="rh-meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          16:00 às 16:45
+        </div>
+        <span class="rh-meta-sep">·</span>
+        <div class="rh-meta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Sala 2 · Sede
+        </div>
+        <span class="rh-meta-sep">·</span>
+        <div class="rh-meta">
+          <span class="timer" id="timer">23:14 restantes</span>
+        </div>
+        <div style="flex:1;"></div>
+        <div class="rh-meta">
+          Recorrência: <strong>Quinzenal</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="room-tabs">
+      <div class="room-tab active" data-tab="notas" onclick="switchTab(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Notas
+      </div>
+      <div class="room-tab" data-tab="pauta" onclick="switchTab(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Pauta
+        <span class="tab-count" id="tabCountAgenda">5</span>
+      </div>
+      <div class="room-tab" data-tab="ai" onclick="switchTab(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Action items
+        <span class="tab-count" id="tabCountAI">4</span>
+      </div>
+      <div class="room-tab" data-tab="hist" onclick="switchTab(this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Histórico
+        <span class="tab-count">8</span>
+      </div>
+    </div>
+
+    <div class="room-body">
+      <!-- COL MAIN -->
+      <div class="room-main">
+
+        <!-- ============ TAB · NOTAS ============ -->
+        <div class="tab-panel active" id="tab-notas">
+          <div class="notes-grid">
+
+            <!-- PRIVADAS -->
+            <div class="notes-priv">
+              <div class="notes-col-head">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                <div>
+                  <div class="notes-col-title">Notas privadas</div>
+                  <div class="notes-col-sub">só você vê · ninguém mais (nem RH)</div>
+                </div>
+              </div>
+              <textarea class="notes-textarea" id="notesPriv" oninput="onTypePriv()" placeholder="Reflexões, observações, sinais... Aqui é seu espaço pessoal de líder. Pode escrever sem filtro: ninguém mais lê isso, nem a Fernanda, nem o RH, nem seu gestor.">- Notei que a Fê veio mais quieta hoje, talvez algo aconteceu antes da reunião
+- Preparar conversa sobre escopo do projeto Y para próxima quinzena
+- Verificar com a Patrícia o status do PDI dela antes de entrar nesse tema</textarea>
+              <div class="notes-foot">
+                <span class="notes-counter" id="counterPriv">216 chars</span>
+                <span class="notes-saved">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span id="savedPriv">Salvo · agora</span>
+                </span>
+              </div>
+            </div>
+
+            <!-- COMPARTILHADAS -->
+            <div class="notes-shar">
+              <div class="notes-col-head">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                <div>
+                  <div class="notes-col-title">Notas compartilhadas</div>
+                  <div class="notes-col-sub">você e Fernanda · ambos editam</div>
+                </div>
+              </div>
+              <textarea class="notes-textarea" id="notesShar" oninput="onTypeShar()" placeholder="Notas que você e a Fernanda escrevem juntos durante a 1:1. Decisões, próximos passos, contexto que vocês querem registrar.">- Conversamos sobre carga atual: confortável mas precisa redefinir prioridades quando o projeto Y começar
+- Fernanda quer aprofundar em modelagem dimensional · combinamos curso interno + mentoria com Patrícia
+- Promoção pendente · ela está alinhada com cronograma (validação em junho)</textarea>
+              <div class="notes-foot">
+                <span class="notes-counter" id="counterShar">328 chars</span>
+                <span class="notes-saved">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                  <span id="savedShar">Salvo · 2 min atrás</span>
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ============ TAB · PAUTA ============ -->
+        <div class="tab-panel" id="tab-pauta">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+                Pauta da 1:1
+                <span class="card-sub">colaborativa · ambos podem adicionar</span>
+              </div>
+            </div>
+            <div class="agenda-list" id="agendaList"></div>
+            <div class="agenda-add">
+              <input type="text" class="agenda-input" id="newAgenda" placeholder="Adicionar item à pauta... (Enter para confirmar)" onkeydown="if(event.key==='Enter') addAgendaItem()">
+              <button class="btn btn-primary btn-sm" onclick="addAgendaItem()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Adicionar
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; padding:10px 14px; background:var(--amber2); border:1px solid #fde2b5; border-radius:10px; font-size:11.5px; color:var(--amber); display:flex; gap:8px; align-items:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Itens não marcados como discutidos viram pauta da próxima 1:1 automaticamente · com tag <strong>"vindo da anterior"</strong></span>
+          </div>
+        </div>
+
+        <!-- ============ TAB · ACTION ITEMS ============ -->
+        <div class="tab-panel" id="tab-ai">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                Action items desta 1:1
+                <span class="card-sub">visíveis para você e Fernanda</span>
+              </div>
+              <div class="card-tools">
+                <button class="btn btn-ghost btn-xs" onclick="alert('Puxar AI da última 1:1 (mock)')">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                  Puxar da anterior
+                </button>
+              </div>
+            </div>
+            <div class="ai-list" id="aiList"></div>
+            <div class="ai-add">
+              <div class="ai-add-row">
+                <input type="text" class="ai-text-input" id="newAIText" placeholder="Descrição do action item...">
+                <select id="newAIOwner">
+                  <option value="lead">Você (líder)</option>
+                  <option value="led" selected>Fernanda (liderada)</option>
+                  <option value="both">Ambos</option>
+                </select>
+                <input type="date" id="newAIDue" value="2026-05-15">
+                <button class="btn btn-primary btn-sm" onclick="addAI()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Adicionar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ TAB · HISTÓRICO ============ -->
+        <div class="tab-panel" id="tab-hist">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Histórico de 1:1s com Fernanda
+                <span class="card-sub">8 reuniões · cadência média 14d</span>
+              </div>
+            </div>
+            <div class="history-list" id="histList"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COL SIDE -->
+      <aside class="room-side">
+
+        <!-- INFO RÁPIDA -->
+        <div class="side-card">
+          <div class="side-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Info da 1:1
+          </div>
+          <div class="side-stat-row">
+            <span class="lbl">Última 1:1</span>
+            <span class="val">17/04 · 14d</span>
+          </div>
+          <div class="side-stat-row">
+            <span class="lbl">Cadência</span>
+            <span class="val">Quinzenal</span>
+          </div>
+          <div class="side-stat-row">
+            <span class="lbl">Total realizadas</span>
+            <span class="val">8</span>
+          </div>
+          <div class="side-stat-row">
+            <span class="lbl">AIs abertos</span>
+            <span class="val" style="color:var(--orange);">2</span>
+          </div>
+          <div class="side-stat-row">
+            <span class="lbl">Próxima após hoje</span>
+            <span class="val">15/05</span>
+          </div>
+        </div>
+
+        <!-- PAUTA RESUMO -->
+        <div class="side-card">
+          <div class="side-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>
+            Pauta resumida
+          </div>
+          <div class="agenda-summary" id="agendaSummary"></div>
+        </div>
+
+        <!-- PRIVACIDADE -->
+        <div class="priv-side-card">
+          <div class="side-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Privacidade
+          </div>
+          <div class="priv-side-card-text">
+            Seu painel <strong>amarelo</strong> é privado · ninguém vê. O painel azul é compartilhado com Fernanda. RH vê apenas <strong>metadados</strong> (que aconteceu, AIs abertos), nunca o conteúdo.
+          </div>
+        </div>
+
+        <!-- BOAS PRÁTICAS -->
+        <div class="side-tip">
+          <div class="side-tip-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Para esta 1:1
+          </div>
+          <ul class="side-tip-list">
+            <li>· Comece perguntando como ela está, antes de assunto técnico</li>
+            <li>· Revise os 2 AIs em atraso</li>
+            <li>· Toque em PDI · ela espera essa conversa há 2 sessões</li>
+            <li>· Reserve 5min finais para action items</li>
+          </ul>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL · REAGENDAR -->
+<div class="modal-bd" id="reschedModal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--navy)" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+        Reagendar 1:1
+      </div>
+      <button class="modal-close" onclick="closeReschedule()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="padding:10px 12px; background:var(--blue2); border-radius:8px; font-size:12px; color:var(--blue); margin-bottom:14px; display:flex; gap:8px; align-items:flex-start;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="margin-top:2px; flex-shrink:0;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Fernanda recebe notificação do novo horário · pauta e notas atuais ficam preservadas.</span>
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="newDate">Nova data</label>
+        <input type="date" class="form-input" id="newDate" value="2026-05-04">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="newTime">Novo horário</label>
+        <input type="time" class="form-input" id="newTime" value="16:00">
+      </div>
+      <div class="form-row">
+        <label class="form-label" for="reason">Motivo (opcional)</label>
+        <textarea class="form-textarea" id="reason" placeholder="Ex: tive um compromisso urgente, conflito de agenda..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeReschedule()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmReschedule()">Confirmar reagendamento</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL · CONCLUIR -->
+<div class="modal-bd" id="completeModal">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--green)" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        Concluir 1:1
+      </div>
+      <button class="modal-close" onclick="closeComplete()" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div style="padding:11px 14px; background:var(--green2); border-radius:9px; margin-bottom:14px; font-size:12px; color:var(--green);">
+        <strong>Resumo da 1:1 com Fernanda Lima · 01/05/2026</strong>
+        <div style="margin-top:6px; color:var(--txt); font-weight:400;">
+          · 4 itens de pauta discutidos (1 não discutido vai para próxima)<br>
+          · 2 action items criados (1 para Fernanda, 1 para você)<br>
+          · Notas privadas e compartilhadas registradas
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Sentimento desta sessão</label>
+        <div style="display:flex; gap:6px;">
+          <div class="recur-opt-mood" data-mood="great" onclick="pickMood(this)" style="flex:1; padding:10px; border:1px solid var(--gray2); border-radius:8px; text-align:center; cursor:pointer; font-size:12px;">
+            <div style="font-size:20px;">😊</div>
+            <div style="margin-top:4px;">Muito boa</div>
+          </div>
+          <div class="recur-opt-mood selected" data-mood="good" onclick="pickMood(this)" style="flex:1; padding:10px; border:1px solid var(--navy); border-radius:8px; text-align:center; cursor:pointer; font-size:12px; background:var(--navy); color:#fff;">
+            <div style="font-size:20px;">🙂</div>
+            <div style="margin-top:4px;">Boa</div>
+          </div>
+          <div class="recur-opt-mood" data-mood="neutral" onclick="pickMood(this)" style="flex:1; padding:10px; border:1px solid var(--gray2); border-radius:8px; text-align:center; cursor:pointer; font-size:12px;">
+            <div style="font-size:20px;">😐</div>
+            <div style="margin-top:4px;">Neutra</div>
+          </div>
+          <div class="recur-opt-mood" data-mood="bad" onclick="pickMood(this)" style="flex:1; padding:10px; border:1px solid var(--gray2); border-radius:8px; text-align:center; cursor:pointer; font-size:12px;">
+            <div style="font-size:20px;">😟</div>
+            <div style="margin-top:4px;">Difícil</div>
+          </div>
+        </div>
+        <div style="font-size:10.5px; color:var(--txt2); margin-top:6px;">Esse sentimento é privado · só você vê. Ajuda a calibrar suas próximas conversas.</div>
+      </div>
+
+      <div class="form-row">
+        <label style="display:flex; gap:8px; align-items:flex-start; cursor:pointer; font-size:12.5px;">
+          <input type="checkbox" id="lockNotes" checked style="margin-top:3px;">
+          <span>Bloquear edição após 7 dias <span style="color:var(--txt2);">· você ainda pode editar até <strong>08/05/2026</strong></span></span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeComplete()">Voltar</button>
+      <button class="btn btn-green" onclick="confirmComplete()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        Concluir
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Salvo automaticamente</span>
+</div>
+
+<script>
+/* =========== MOCKS =========== */
+const TODAY = new Date(2026, 4, 1);
+const ME_ID = 'joao';
+const HER_ID = 'fernanda';
+
+let agenda = [
+  { id: 'a1', text: 'Andamento das férias programadas para dezembro', author: 'fernanda', authorName: 'F. Lima', authorAvatar: 'FL', authorColor: 'linear-gradient(135deg,#8B5CF6,#EC4899)', createdAt: '2026-04-29 10:14', discussed: true, isCarry: false },
+  { id: 'a2', text: 'Sentimento sobre o novo processo de fechamento mensal', author: 'joao', authorName: 'J. Carvalho', authorAvatar: 'JC', authorColor: 'linear-gradient(135deg,var(--navy3),var(--purple))', createdAt: '2026-04-30 16:02', discussed: true, isCarry: false },
+  { id: 'a3', text: 'PDI · próximos passos para promoção', author: 'fernanda', authorName: 'F. Lima', authorAvatar: 'FL', authorColor: 'linear-gradient(135deg,#8B5CF6,#EC4899)', createdAt: '2026-05-01 09:30', discussed: true, isCarry: true },
+  { id: 'a4', text: 'Carga atual e capacidade para projeto Y', author: 'joao', authorName: 'J. Carvalho', authorAvatar: 'JC', authorColor: 'linear-gradient(135deg,var(--navy3),var(--purple))', createdAt: '2026-05-01 14:15', discussed: true, isCarry: false },
+  { id: 'a5', text: 'Feedback sobre a apresentação ao cliente na semana passada', author: 'joao', authorName: 'J. Carvalho', authorAvatar: 'JC', authorColor: 'linear-gradient(135deg,var(--navy3),var(--purple))', createdAt: '2026-05-01 15:45', discussed: false, isCarry: false }
+];
+
+let actionItems = [
+  { id: 'ai1', text: 'Compartilhar com a Fernanda o material do curso de modelagem dimensional', owner: 'lead', dueDate: '2026-05-08', completed: false, fromPrev: false, createdAt: '2026-05-01' },
+  { id: 'ai2', text: 'Validar com a Patrícia o cronograma de promoção da Fernanda', owner: 'lead', dueDate: '2026-05-12', completed: false, fromPrev: false, createdAt: '2026-05-01' },
+  { id: 'ai3', text: 'Preparar análise do novo processo de fechamento e trazer riscos identificados', owner: 'led', dueDate: '2026-05-09', completed: true, fromPrev: false, createdAt: '2026-04-17' },
+  { id: 'ai4', text: 'Revisar SOPs do setor e propor 3 melhorias prioritárias', owner: 'led', dueDate: '2026-04-30', completed: false, fromPrev: true, createdAt: '2026-04-17' }
+];
+
+const HISTORY = [
+  { date: '17/04/2026', time: '16:00', mood: 'good', notes: true, ai: 3, agenda: 4 },
+  { date: '03/04/2026', time: '16:00', mood: 'great', notes: true, ai: 2, agenda: 5 },
+  { date: '20/03/2026', time: '15:30', mood: 'good', notes: true, ai: 4, agenda: 6 },
+  { date: '06/03/2026', time: '16:00', mood: 'neutral', notes: true, ai: 2, agenda: 4 },
+  { date: '20/02/2026', time: '16:00', mood: 'good', notes: true, ai: 3, agenda: 5 },
+  { date: '06/02/2026', time: '16:00', mood: 'good', notes: true, ai: 1, agenda: 3 },
+  { date: '23/01/2026', time: '15:30', mood: 'great', notes: true, ai: 5, agenda: 7 },
+  { date: '09/01/2026', time: '16:00', mood: 'good', notes: false, ai: 0, agenda: 2 }
+];
+
+/* =========== TIMER =========== */
+function startTimer(){
+  const endTime = new Date(2026, 4, 1, 16, 45);
+  const startTime = new Date(2026, 4, 1, 16, 0);
+  // Mock: assume "agora" = 16:21:46
+  const fakeNow = new Date(2026, 4, 1, 16, 21, 46);
+  let remaining = Math.floor((endTime - fakeNow) / 1000);
+
+  const el = document.getElementById('timer');
+  function tick(){
+    if(remaining <= 0){
+      el.textContent = 'Tempo encerrado';
+      el.classList.add('over');
+      return;
+    }
+    const m = Math.floor(remaining/60);
+    const s = remaining % 60;
+    el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} restantes`;
+    if(remaining < 300) el.classList.add('warning');
+    remaining--;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* =========== TABS =========== */
+function switchTab(el){
+  document.querySelectorAll('.room-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const tab = el.dataset.tab;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+/* =========== PAUTA =========== */
+function renderAgenda(){
+  const list = document.getElementById('agendaList');
+  if(agenda.length === 0){
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg></div>
+      <div class="empty-title">Sem itens de pauta</div>
+      <div class="empty-sub">Adicione algo para discutir nesta 1:1</div>
+    </div>`;
+    document.getElementById('tabCountAgenda').textContent = '0';
+    renderAgendaSummary();
+    return;
+  }
+  list.innerHTML = agenda.map(a => {
+    const isMe = a.author === ME_ID;
+    const tags = [];
+    if(a.isCarry) tags.push('<span class="agenda-tag carry">vindo da anterior</span>');
+    if(isMe) tags.push('<span class="agenda-tag mine">você</span>');
+    return `
+      <div class="agenda-item ${a.discussed?'discussed':''} ${a.isCarry?'is-carry':''}" data-id="${a.id}">
+        <div class="agenda-check ${a.discussed?'checked':''}" onclick="toggleAgenda('${a.id}')" role="checkbox" aria-checked="${a.discussed}" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="agenda-body">
+          <div class="agenda-text">${a.text}</div>
+          <div class="agenda-meta">
+            <span class="agenda-author">
+              <span class="agenda-author-mini" style="background:${a.authorColor}">${a.authorAvatar}</span>
+              ${a.authorName} · ${a.createdAt}
+            </span>
+            ${tags.join('')}
+          </div>
+        </div>
+        <div class="agenda-actions">
+          ${isMe ? `<button class="agenda-action" onclick="deleteAgenda('${a.id}')" aria-label="Excluir">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+          </button>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('tabCountAgenda').textContent = agenda.length;
+  renderAgendaSummary();
+}
+
+function renderAgendaSummary(){
+  const sum = document.getElementById('agendaSummary');
+  if(agenda.length === 0){
+    sum.innerHTML = '<div class="agenda-sm-empty">Sem pauta ainda</div>';
+    return;
+  }
+  sum.innerHTML = agenda.map(a => `
+    <div class="agenda-sm-item ${a.discussed?'discussed':''}">
+      <div class="agenda-sm-mark ${a.discussed?'checked':''}"></div>
+      <span>${a.text.length>52 ? a.text.slice(0,52)+'…' : a.text}</span>
+    </div>
+  `).join('');
+}
+
+function toggleAgenda(id){
+  const a = agenda.find(x => x.id === id);
+  if(a){ a.discussed = !a.discussed; renderAgenda(); }
+}
+
+function addAgendaItem(){
+  const inp = document.getElementById('newAgenda');
+  const text = inp.value.trim();
+  if(!text) return;
+  agenda.push({
+    id: 'a' + Date.now(),
+    text,
+    author: ME_ID,
+    authorName: 'J. Carvalho',
+    authorAvatar: 'JC',
+    authorColor: 'linear-gradient(135deg,var(--navy3),var(--purple))',
+    createdAt: 'agora',
+    discussed: false,
+    isCarry: false
+  });
+  inp.value = '';
+  renderAgenda();
+  showToast('Item adicionado à pauta');
+}
+
+function deleteAgenda(id){
+  if(!confirm('Excluir este item da pauta?')) return;
+  agenda = agenda.filter(a => a.id !== id);
+  renderAgenda();
+}
+
+/* =========== ACTION ITEMS =========== */
+function renderAI(){
+  const list = document.getElementById('aiList');
+  if(actionItems.length === 0){
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+      <div class="empty-title">Nenhum action item</div>
+      <div class="empty-sub">Adicione tarefas que saíram desta 1:1</div>
+    </div>`;
+    document.getElementById('tabCountAI').textContent = '0';
+    return;
+  }
+  list.innerHTML = actionItems.map(ai => {
+    const ownerLabel = { lead: 'Você', led: 'Fernanda', both: 'Ambos' }[ai.owner];
+    const ownerCls = ai.owner;
+    const dueDate = parseDate(ai.dueDate);
+    const daysToDue = Math.floor((dueDate - TODAY) / (1000*60*60*24));
+    let dueCls = '', dueLabel = '';
+    if(ai.completed){
+      dueLabel = `concluído`;
+    } else if(daysToDue < 0){
+      dueCls = 'overdue-text';
+      dueLabel = `${Math.abs(daysToDue)}d em atraso`;
+    } else if(daysToDue <= 3){
+      dueCls = 'soon';
+      dueLabel = daysToDue === 0 ? 'hoje' : `em ${daysToDue}d`;
+    } else {
+      dueLabel = formatDate(ai.dueDate);
+    }
+    return `
+      <div class="ai-item ${ai.completed?'completed':''} ${(!ai.completed && daysToDue<0)?'overdue':''} ${ai.fromPrev?'from-prev':''}">
+        <div class="ai-check ${ai.completed?'checked':''}" onclick="toggleAI('${ai.id}')" role="checkbox" aria-checked="${ai.completed}" tabindex="0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="ai-body">
+          <div class="ai-text">${ai.text}</div>
+          <div class="ai-meta">
+            <span class="ai-owner ${ownerCls}">${ownerLabel}</span>
+            <span class="ai-due ${dueCls}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>
+              ${dueLabel}
+            </span>
+            ${ai.fromPrev ? '<span class="ai-from-prev-tag">↻ da anterior</span>' : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  const open = actionItems.filter(a => !a.completed).length;
+  document.getElementById('tabCountAI').textContent = open;
+}
+
+function toggleAI(id){
+  const ai = actionItems.find(x => x.id === id);
+  if(ai){ ai.completed = !ai.completed; renderAI(); showToast(ai.completed ? 'Action item concluído' : 'Action item reaberto'); }
+}
+
+function addAI(){
+  const text = document.getElementById('newAIText').value.trim();
+  const owner = document.getElementById('newAIOwner').value;
+  const due = document.getElementById('newAIDue').value;
+  if(!text) return;
+  actionItems.push({
+    id: 'ai' + Date.now(),
+    text, owner, dueDate: due,
+    completed: false, fromPrev: false,
+    createdAt: '2026-05-01'
+  });
+  document.getElementById('newAIText').value = '';
+  renderAI();
+  showToast('Action item criado');
+}
+
+/* =========== HISTÓRICO =========== */
+function renderHist(){
+  const list = document.getElementById('histList');
+  list.innerHTML = HISTORY.map(h => {
+    const moodLabel = ({ great: '😊 Muito boa', good: '🙂 Boa', neutral: '😐 Neutra', bad: '😟 Difícil' })[h.mood];
+    const notesPill = h.notes ? '<span class="history-meta-pill">📝 com notas</span>' : '<span class="history-meta-pill" style="color:var(--txt3);">sem notas</span>';
+    return `
+      <div class="history-item" onclick="alert('Abrir 1:1 histórica de ${h.date} · mock')">
+        <div class="history-head">
+          <span class="history-date">${h.date}</span>
+          <span class="history-status">${moodLabel}</span>
+          <span style="font-size:11px; color:var(--txt2);">${h.time}</span>
+        </div>
+        <div class="history-meta">
+          ${notesPill}
+          <span class="history-meta-pill">${h.agenda} itens de pauta</span>
+          <span class="history-meta-pill">${h.ai} action items</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* =========== UTILS =========== */
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function formatDate(s){ const d=parseDate(s); return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`; }
+
+/* =========== AUTOSAVE NOTAS =========== */
+let savePrivT, saveSharT;
+function onTypePriv(){
+  const ta = document.getElementById('notesPriv');
+  document.getElementById('counterPriv').textContent = `${ta.value.length} chars`;
+  document.getElementById('savedPriv').textContent = 'Salvando...';
+  clearTimeout(savePrivT);
+  savePrivT = setTimeout(() => {
+    document.getElementById('savedPriv').textContent = 'Salvo · agora';
+  }, 700);
+}
+function onTypeShar(){
+  const ta = document.getElementById('notesShar');
+  document.getElementById('counterShar').textContent = `${ta.value.length} chars`;
+  document.getElementById('savedShar').textContent = 'Salvando...';
+  clearTimeout(saveSharT);
+  saveSharT = setTimeout(() => {
+    document.getElementById('savedShar').textContent = 'Salvo · agora';
+  }, 700);
+}
+
+/* =========== MODAIS =========== */
+function openReschedule(){ document.getElementById('reschedModal').classList.add('show'); document.body.style.overflow='hidden'; }
+function closeReschedule(){ document.getElementById('reschedModal').classList.remove('show'); document.body.style.overflow=''; }
+function confirmReschedule(){
+  closeReschedule();
+  showToast('1:1 reagendada · Fernanda foi notificada');
+}
+
+function completeMeeting(){ document.getElementById('completeModal').classList.add('show'); document.body.style.overflow='hidden'; }
+function closeComplete(){ document.getElementById('completeModal').classList.remove('show'); document.body.style.overflow=''; }
+function confirmComplete(){
+  closeComplete();
+  // Atualiza header
+  document.getElementById('statusPill').className = 'status-pill completed';
+  document.getElementById('statusPill').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>Concluída`;
+  document.getElementById('completeBtn').style.display = 'none';
+  showToast('1:1 concluída · próxima agendada para 15/05');
+}
+
+function pickMood(el){
+  document.querySelectorAll('.recur-opt-mood').forEach(x => {
+    x.classList.remove('selected');
+    x.style.background = '#fff';
+    x.style.color = '';
+    x.style.borderColor = 'var(--gray2)';
+  });
+  el.classList.add('selected');
+  el.style.background = 'var(--navy)';
+  el.style.color = '#fff';
+  el.style.borderColor = 'var(--navy)';
+}
+
+function goBack(){ alert('Voltar para r2_people_oneonones.html'); }
+
+/* =========== TOAST =========== */
+let toastTimer;
+function showToast(msg){
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* =========== SIDEBAR MOBILE =========== */
+function toggleSidebar(){
+  document.getElementById('sb').classList.toggle('open');
+  document.getElementById('sbBd').classList.toggle('show');
+}
+
+/* =========== ESC PARA FECHAR MODAL =========== */
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    if(document.getElementById('reschedModal').classList.contains('show')) closeReschedule();
+    if(document.getElementById('completeModal').classList.contains('show')) closeComplete();
+  }
+});
+
+/* =========== INIT =========== */
+renderAgenda();
+renderAI();
+renderHist();
+startTimer();
+</script>
+</body>
+</html>

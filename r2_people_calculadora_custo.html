@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Calculadora de custo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#3D5F95,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1300px; margin:0 auto; padding:22px 22px 50px;}
+
+/* ============= HEADER ============= */
+.page-header{margin-bottom:18px;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:3px; max-width:680px;}
+.legal-banner{
+  margin-top:12px;
+  background:linear-gradient(135deg, #E8EFF8, var(--off));
+  border-radius:9px;
+  padding:9px 13px;
+  display:flex; align-items:center; gap:10px;
+  border-left:3px solid var(--navy);
+  font-size:11.5px;
+  color:var(--txt2);
+  line-height:1.55;
+}
+.legal-banner svg{color:var(--navy); flex-shrink:0;}
+.legal-banner strong{color:var(--txt); font-weight:600;}
+.legal-banner code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  background:#fff;
+  padding:1px 5px;
+  border-radius:4px;
+  border:1px solid var(--gray2);
+}
+
+/* ============= REGIME TOGGLE ============= */
+.regime-section{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+}
+.section-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:13px;
+  gap:11px;
+  flex-wrap:wrap;
+}
+.section-head h2{
+  font-size:14px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.section-head h2 .num{
+  width:22px; height:22px; border-radius:7px;
+  background:var(--navy);
+  color:#fff;
+  font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace;
+}
+.section-helper{
+  font-size:11px; color:var(--txt2);
+}
+
+.regime-toggle{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+}
+.regime-card{
+  border:2px solid var(--gray2);
+  background:#fff;
+  border-radius:11px;
+  padding:13px 15px;
+  cursor:pointer;
+  transition:all .15s;
+  text-align:left;
+  font-family:inherit;
+  position:relative;
+}
+.regime-card:hover{border-color:var(--navy3);}
+.regime-card.active{
+  border-color:var(--navy);
+  background:linear-gradient(135deg, #E8EFF8, #fff);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+.regime-card.active.simples{
+  border-color:var(--green);
+  background:linear-gradient(135deg, var(--green2), #fff);
+  box-shadow:0 0 0 3px rgba(30,123,75,.1);
+}
+.regime-card.active.lucro{
+  border-color:var(--purple);
+  background:linear-gradient(135deg, var(--purple2), #fff);
+  box-shadow:0 0 0 3px rgba(109,40,217,.1);
+}
+
+.rc-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:5px;
+}
+.rc-title{
+  font-size:13.5px; font-weight:600;
+  display:flex; align-items:center; gap:6px;
+}
+.rc-title svg{width:13px; height:13px;}
+.rc-badge{
+  font-size:9.5px;
+  padding:2px 7px;
+  border-radius:5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+.rc-badge.green{background:var(--green2); color:var(--green);}
+.rc-badge.purple{background:var(--purple2); color:var(--purple);}
+.rc-desc{
+  font-size:11.5px; color:var(--txt2);
+  line-height:1.5;
+  margin-bottom:7px;
+}
+.rc-meta{
+  display:flex; gap:6px;
+  font-size:10.5px;
+  flex-wrap:wrap;
+}
+.rc-meta-item{
+  background:#fff;
+  padding:3px 8px;
+  border-radius:5px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+  border:1px solid var(--gray1);
+}
+.regime-card.active .rc-meta-item{
+  background:rgba(255,255,255,.6);
+}
+
+.gpc-empresas{
+  margin-top:11px;
+  padding:9px 11px;
+  background:var(--off);
+  border-radius:8px;
+  font-size:11px;
+  color:var(--txt2);
+  display:flex; align-items:center; gap:8px;
+  flex-wrap:wrap;
+}
+.gpc-empresas svg{width:13px; height:13px; color:var(--navy);}
+.gpc-empresas strong{color:var(--txt); font-weight:600;}
+
+/* ============= MAIN GRID ============= */
+.calc-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:14px;
+}
+
+.calc-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+}
+
+/* ============= INPUT FIELDS ============= */
+.field{
+  margin-bottom:14px;
+}
+.field:last-child{margin-bottom:0;}
+.field-label{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:11px; font-weight:600;
+  color:var(--txt);
+  margin-bottom:6px;
+}
+.field-label .helper{
+  font-size:10px;
+  color:var(--txt3);
+  font-weight:400;
+}
+
+.input-wrap{
+  position:relative;
+}
+.input-prefix{
+  position:absolute;
+  left:11px; top:50%; transform:translateY(-50%);
+  font-size:12px;
+  color:var(--txt2);
+  font-weight:500;
+  pointer-events:none;
+}
+.input-suffix{
+  position:absolute;
+  right:11px; top:50%; transform:translateY(-50%);
+  font-size:11px;
+  color:var(--txt3);
+  pointer-events:none;
+}
+.field-input{
+  width:100%;
+  padding:10px 12px 10px 32px;
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  font-size:13.5px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+  color:var(--txt);
+  background:#fff;
+  transition:all .15s;
+}
+.field-input.no-prefix{padding-left:12px;}
+.field-input:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+
+/* Slider de salário */
+.salary-slider{
+  width:100%;
+  margin-top:8px;
+  -webkit-appearance:none;
+  height:6px;
+  background:linear-gradient(90deg, var(--green) 0%, var(--orange) 50%, var(--red) 100%);
+  border-radius:3px;
+  outline:none;
+}
+.salary-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:18px; height:18px;
+  border-radius:50%;
+  background:#fff;
+  border:3px solid var(--navy);
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.salary-slider::-moz-range-thumb{
+  width:18px; height:18px;
+  border-radius:50%;
+  background:#fff;
+  border:3px solid var(--navy);
+  cursor:pointer;
+}
+.slider-labels{
+  display:flex; justify-content:space-between;
+  font-size:10px; color:var(--txt3);
+  margin-top:5px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.field-row-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+}
+
+/* ============= CHECKBOX TOGGLE ============= */
+.toggle-row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:9px 12px;
+  background:var(--off);
+  border-radius:9px;
+  margin-bottom:7px;
+  cursor:pointer;
+  transition:all .12s;
+  border:1px solid var(--gray1);
+}
+.toggle-row:hover{background:var(--gray1);}
+.toggle-row.checked{
+  background:linear-gradient(135deg, var(--green2), #fff);
+  border-color:var(--green);
+}
+.toggle-info{
+  display:flex; flex-direction:column;
+}
+.toggle-label{
+  font-size:12px; font-weight:600;
+}
+.toggle-desc{
+  font-size:10.5px; color:var(--txt2);
+  margin-top:1px;
+}
+.toggle-right{
+  display:flex; align-items:center; gap:9px;
+}
+.toggle-input{
+  width:42px; height:22px;
+  background:var(--gray2);
+  border-radius:11px;
+  position:relative;
+  transition:all .2s;
+  flex-shrink:0;
+}
+.toggle-input::after{
+  content:''; position:absolute;
+  top:2px; left:2px;
+  width:18px; height:18px;
+  background:#fff;
+  border-radius:50%;
+  transition:all .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle-row.checked .toggle-input{background:var(--green);}
+.toggle-row.checked .toggle-input::after{left:22px;}
+
+/* ============= RESULT PANEL ============= */
+.result-panel{
+  background:linear-gradient(135deg, var(--dark), var(--navy));
+  border-radius:14px;
+  padding:22px 24px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.result-panel::before{
+  content:''; position:absolute;
+  top:-30%; right:-10%;
+  width:300px; height:300px;
+  background:radial-gradient(circle, rgba(245,131,31,.3) 0%, transparent 65%);
+  border-radius:50%;
+  pointer-events:none;
+}
+.result-panel.simples::before{
+  background:radial-gradient(circle, rgba(30,123,75,.3) 0%, transparent 65%);
+}
+.result-panel.lucro::before{
+  background:radial-gradient(circle, rgba(109,40,217,.3) 0%, transparent 65%);
+}
+
+.result-row{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  position:relative; z-index:2;
+  flex-wrap:wrap;
+  gap:18px;
+}
+
+.result-main{
+  flex:1;
+  min-width:240px;
+}
+.result-label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  color:rgba(255,255,255,.7);
+  font-weight:600;
+  margin-bottom:5px;
+}
+.result-value{
+  font-size:38px;
+  font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:-.8px;
+  line-height:1;
+  display:flex; align-items:baseline; gap:6px;
+}
+.result-value .currency{
+  font-size:16px;
+  font-weight:500;
+  color:rgba(255,255,255,.7);
+  font-family:'Sora',sans-serif;
+}
+.result-mult{
+  margin-top:6px;
+  font-size:12px;
+  color:rgba(255,255,255,.85);
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(255,255,255,.1);
+  padding:4px 10px;
+  border-radius:6px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.result-mult strong{
+  color:var(--orange);
+  font-family:'JetBrains Mono',monospace;
+}
+.result-mult.green strong{color:#A8E5BC;}
+.result-mult.purple strong{color:#D4BBF5;}
+
+/* Liquido + INSS funcionário */
+.result-side{
+  display:flex; flex-direction:column;
+  gap:9px;
+  text-align:right;
+  min-width:160px;
+}
+.side-stat{
+  background:rgba(255,255,255,.1);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.side-stat-lbl{
+  font-size:9.5px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:rgba(255,255,255,.7);
+  font-weight:600;
+  margin-bottom:2px;
+}
+.side-stat-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+}
+
+/* ============= BREAKDOWN ============= */
+.breakdown-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+}
+
+.bk-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:13px;
+}
+.bk-head h2{
+  font-size:14px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+
+.bk-grid{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:22px;
+  align-items:flex-start;
+}
+
+/* Donut chart */
+.donut-wrap{
+  position:relative;
+  display:flex; flex-direction:column; align-items:center;
+}
+.donut-svg{
+  width:240px; height:240px;
+}
+.donut-center{
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%, -50%);
+  text-align:center;
+  pointer-events:none;
+}
+.donut-center-lbl{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--txt2);
+  font-weight:600;
+}
+.donut-center-val{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:20px;
+  color:var(--txt);
+  margin-top:2px;
+}
+.donut-center-sub{
+  font-size:10.5px;
+  color:var(--txt3);
+  font-family:'JetBrains Mono',monospace;
+  margin-top:2px;
+}
+
+/* Detalhes em lista */
+.bk-list{
+  display:flex; flex-direction:column;
+  gap:6px;
+}
+.bk-section-title{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  font-weight:600;
+  color:var(--txt2);
+  margin:9px 0 5px;
+  padding-bottom:5px;
+  border-bottom:1px solid var(--gray1);
+}
+.bk-section-title:first-child{margin-top:0;}
+
+.bk-item{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:7px 10px;
+  border-radius:7px;
+  font-size:12px;
+  background:var(--off);
+}
+.bk-item.zero{opacity:.45;}
+.bk-item-left{
+  display:flex; align-items:center; gap:8px;
+  min-width:0;
+}
+.bk-dot{
+  width:9px; height:9px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.bk-name{
+  font-weight:500;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.bk-perc{
+  font-size:10px;
+  color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+  margin-left:5px;
+  background:#fff;
+  padding:1px 6px;
+  border-radius:4px;
+  font-weight:600;
+}
+.bk-value{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:12px;
+  color:var(--txt);
+  white-space:nowrap;
+}
+
+.bk-total{
+  margin-top:11px;
+  padding:11px 13px;
+  background:linear-gradient(135deg, var(--orange2), #fff);
+  border-radius:9px;
+  border-left:3px solid var(--orange);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.bk-total-lbl{
+  font-size:11px; font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+.bk-total-val{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:16px;
+  color:var(--orange);
+}
+
+/* ============= COMPARATIVO ============= */
+.comparison-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+}
+
+.comparison-grid{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:18px;
+  align-items:center;
+}
+
+.comp-side{
+  background:linear-gradient(135deg, var(--green2), #fff);
+  border:1.5px solid var(--green);
+  border-radius:11px;
+  padding:14px 16px;
+}
+.comp-side.lucro{
+  background:linear-gradient(135deg, var(--purple2), #fff);
+  border-color:var(--purple);
+}
+.comp-side-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:9px;
+}
+.comp-side-title{
+  font-size:11.5px; font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--green);
+}
+.comp-side.lucro .comp-side-title{color:var(--purple);}
+.comp-side-tag{
+  font-size:9px;
+  padding:2px 7px;
+  border-radius:4px;
+  background:#fff;
+  font-weight:700;
+  text-transform:uppercase;
+}
+.comp-side-tag.green{color:var(--green); border:1px solid var(--green);}
+.comp-side-tag.purple{color:var(--purple); border:1px solid var(--purple);}
+
+.comp-cost{
+  font-family:'JetBrains Mono',monospace;
+  font-size:24px;
+  font-weight:700;
+  color:var(--txt);
+  letter-spacing:-.5px;
+  line-height:1;
+}
+.comp-cost .currency{
+  font-size:13px;
+  color:var(--txt2);
+  font-family:'Sora',sans-serif;
+  font-weight:500;
+}
+.comp-mult{
+  margin-top:5px;
+  font-size:11px;
+  color:var(--txt2);
+}
+.comp-mult strong{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--txt);
+  font-weight:700;
+}
+
+.comp-divider{
+  display:flex; flex-direction:column; align-items:center;
+  gap:5px;
+}
+.comp-vs{
+  width:34px; height:34px;
+  border-radius:50%;
+  background:var(--dark);
+  color:#fff;
+  font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  letter-spacing:.5px;
+}
+.comp-diff-arrow{
+  font-size:10.5px;
+  color:var(--red);
+  font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+  background:var(--red2);
+  padding:3px 8px;
+  border-radius:5px;
+  white-space:nowrap;
+}
+
+/* ============= ANNUAL CARD ============= */
+.annual-card{
+  background:linear-gradient(135deg, #E8EFF8, #fff);
+  border:1px solid var(--navy);
+  border-radius:11px;
+  padding:14px 16px;
+  margin-top:14px;
+}
+.annual-row{
+  display:flex; align-items:center; gap:12px;
+  flex-wrap:wrap;
+}
+.annual-icon{
+  width:38px; height:38px;
+  background:var(--navy);
+  color:#fff;
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.annual-info{flex:1; min-width:0;}
+.annual-lbl{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--navy);
+  font-weight:700;
+}
+.annual-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px; font-weight:700;
+  color:var(--txt);
+  letter-spacing:-.3px;
+  margin-top:1px;
+}
+.annual-detail{
+  font-size:10.5px;
+  color:var(--txt2);
+  margin-top:2px;
+}
+
+/* ============= ACTIONS ============= */
+.actions-row{
+  display:flex; gap:9px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+.btn-primary{
+  padding:11px 18px;
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  border-radius:9px;
+  font-size:12.5px; font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px;
+  box-shadow:0 3px 8px rgba(43,74,122,.2);
+}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary svg{width:14px; height:14px;}
+.btn-secondary{
+  padding:11px 18px;
+  background:#fff;
+  color:var(--txt);
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  font-size:12.5px; font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.btn-secondary:hover{border-color:var(--navy); color:var(--navy);}
+.btn-secondary svg{width:14px; height:14px;}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 1024px){
+  .calc-grid{grid-template-columns:1fr;}
+  .bk-grid{grid-template-columns:1fr; gap:16px;}
+  .donut-wrap{align-self:center;}
+  .comparison-grid{grid-template-columns:1fr; gap:11px;}
+  .comp-divider{flex-direction:row; gap:10px;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:14px 14px 30px;}
+  .page-header h1{font-size:18px;}
+  .regime-toggle{grid-template-columns:1fr;}
+  .calc-card, .breakdown-card, .comparison-card{padding:14px 15px;}
+  .result-panel{padding:16px 18px;}
+  .result-value{font-size:30px;}
+  .result-side{text-align:left; flex-direction:row; min-width:0;}
+  .side-stat{flex:1;}
+  .field-row-2{grid-template-columns:1fr;}
+  .donut-svg{width:200px; height:200px;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <div class="sidebar-section">Folha &amp; custo</div>
+      <a class="nav-item active"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/></svg>Calculadora de custo</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Folha &amp; benefícios</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Variáveis &amp; metas</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Folha &amp; custo · <strong>Calculadora de custo</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info">
+        <span class="user-name">Patrícia Mello</span>
+        <span class="user-role">RH GPC</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="page-header">
+        <h1>Calculadora de custo do funcionário</h1>
+        <p>Simule o custo total mensal e anual de um colaborador combinando salário, encargos legais, benefícios e remuneração variável. Atualizada com a legislação 2026.</p>
+        <div class="legal-banner">
+          <svg aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+          <div>
+            Tabelas conforme <strong>Portaria Interministerial MPS/MF nº 13/2026</strong> · isenção IRRF até <code>R$ 5.000</code> pela <strong>Lei 15.270/2025</strong> · teto INSS <code>R$ 8.475,55</code> · salário mínimo <code>R$ 1.621,00</code>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============= 1. REGIME ============= -->
+      <div class="regime-section">
+        <div class="section-head">
+          <h2><span class="num">1</span> Regime tributário da empresa</h2>
+          <span class="section-helper">A escolha do regime altera os encargos patronais</span>
+        </div>
+
+        <div class="regime-toggle">
+          <button class="regime-card active simples" id="regimeSimples" onclick="setRegime('simples')">
+            <div class="rc-head">
+              <div class="rc-title">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                Simples Nacional
+              </div>
+              <span class="rc-badge green">~30%</span>
+            </div>
+            <p class="rc-desc">Empresa com faturamento até R$ 4,8 mi/ano. Encargos patronais (INSS, RAT, Sistema S) já estão no DAS · folha paga apenas FGTS 8% e provisões.</p>
+            <div class="rc-meta">
+              <span class="rc-meta-item">FGTS 8%</span>
+              <span class="rc-meta-item">+ provisões</span>
+            </div>
+          </button>
+
+          <button class="regime-card" id="regimeLucro" onclick="setRegime('lucro')">
+            <div class="rc-head">
+              <div class="rc-title">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+                Lucro Real / Presumido
+              </div>
+              <span class="rc-badge purple">~67%</span>
+            </div>
+            <p class="rc-desc">Empresa com faturamento maior ou que opta pelo regime. Encargos patronais incidem direto na folha: INSS Patronal 20%, RAT, Sistema S, FGTS 8%.</p>
+            <div class="rc-meta">
+              <span class="rc-meta-item">INSS 20%</span>
+              <span class="rc-meta-item">RAT 2%</span>
+              <span class="rc-meta-item">Sistema S 5,8%</span>
+              <span class="rc-meta-item">FGTS 8%</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="gpc-empresas">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+          <strong>No GPC:</strong> ATP Varejo, ATP Atacado, Cestão Loja 1 e Cestão Inhambupe operam em <strong>Lucro Real</strong> · Labuta, Limpactiva e Segure (prestadoras) operam em <strong>Simples Nacional</strong>
+        </div>
+      </div>
+
+      <!-- ============= 2. INPUT GRID ============= -->
+      <div class="calc-grid">
+
+        <!-- ------- COL ESQUERDA: SALÁRIO + DEPENDENTES + BENEFÍCIOS ------- -->
+        <div class="calc-card">
+          <div class="section-head">
+            <h2><span class="num">2</span> Remuneração e benefícios</h2>
+          </div>
+
+          <div class="field">
+            <label class="field-label">
+              Salário bruto mensal
+              <span class="helper">CTPS · sem variáveis</span>
+            </label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input type="number" class="field-input" id="inputSalario" value="3000" min="0" step="100" oninput="recalculate()">
+            </div>
+            <input type="range" class="salary-slider" id="sliderSalario" min="1621" max="20000" step="100" value="3000" oninput="syncSlider(this.value)">
+            <div class="slider-labels">
+              <span>R$ 1.621 (mín)</span>
+              <span>R$ 8.475 (teto INSS)</span>
+              <span>R$ 20.000</span>
+            </div>
+          </div>
+
+          <div class="field-row-2">
+            <div class="field">
+              <label class="field-label">
+                Dependentes IRRF
+              </label>
+              <div class="input-wrap">
+                <input type="number" class="field-input no-prefix" id="inputDependentes" value="0" min="0" max="20" oninput="recalculate()">
+                <span class="input-suffix">pessoas</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">
+                Vale-transporte
+                <span class="helper">desconto 6%</span>
+              </label>
+              <div class="input-wrap">
+                <span class="input-prefix">R$</span>
+                <input type="number" class="field-input" id="inputVT" value="220" min="0" step="10" oninput="recalculate()">
+              </div>
+            </div>
+          </div>
+
+          <div class="bk-section-title" style="margin-top:14px;">Benefícios oferecidos pela empresa</div>
+
+          <div class="toggle-row checked" role="checkbox" tabindex="0" aria-checked="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="toggleBenefit(this, 'vr', 600)">
+            <div class="toggle-info">
+              <span class="toggle-label">Vale-refeição</span>
+              <span class="toggle-desc">R$ 30/dia útil · 22 dias</span>
+            </div>
+            <div class="toggle-right">
+              <input type="number" class="field-input no-prefix" style="width:75px; padding:5px 8px; font-size:11px;" id="inputVR" value="600" min="0" step="50" onclick="event.stopPropagation()" oninput="recalculate()">
+              <div class="toggle-input"></div>
+            </div>
+          </div>
+
+          <div class="toggle-row checked" role="checkbox" tabindex="0" aria-checked="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="toggleBenefit(this, 'va', 350)">
+            <div class="toggle-info">
+              <span class="toggle-label">Vale-alimentação</span>
+              <span class="toggle-desc">cesta básica complementar</span>
+            </div>
+            <div class="toggle-right">
+              <input type="number" class="field-input no-prefix" style="width:75px; padding:5px 8px; font-size:11px;" id="inputVA" value="350" min="0" step="50" onclick="event.stopPropagation()" oninput="recalculate()">
+              <div class="toggle-input"></div>
+            </div>
+          </div>
+
+          <div class="toggle-row" role="checkbox" tabindex="0" aria-checked="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="toggleBenefit(this, 'saude', 280)">
+            <div class="toggle-info">
+              <span class="toggle-label">Plano de saúde</span>
+              <span class="toggle-desc">parte empresa, sem coparticipação</span>
+            </div>
+            <div class="toggle-right">
+              <input type="number" class="field-input no-prefix" style="width:75px; padding:5px 8px; font-size:11px;" id="inputSaude" value="280" min="0" step="50" onclick="event.stopPropagation()" oninput="recalculate()">
+              <div class="toggle-input"></div>
+            </div>
+          </div>
+
+          <div class="toggle-row" role="checkbox" tabindex="0" aria-checked="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="toggleBenefit(this, 'odonto', 45)">
+            <div class="toggle-info">
+              <span class="toggle-label">Plano odontológico</span>
+              <span class="toggle-desc">individual</span>
+            </div>
+            <div class="toggle-right">
+              <input type="number" class="field-input no-prefix" style="width:75px; padding:5px 8px; font-size:11px;" id="inputOdonto" value="45" min="0" step="10" onclick="event.stopPropagation()" oninput="recalculate()">
+              <div class="toggle-input"></div>
+            </div>
+          </div>
+
+          <div class="toggle-row" role="checkbox" tabindex="0" aria-checked="false" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="toggleBenefit(this, 'seguro', 35)">
+            <div class="toggle-info">
+              <span class="toggle-label">Seguro de vida</span>
+              <span class="toggle-desc">apólice corporativa</span>
+            </div>
+            <div class="toggle-right">
+              <input type="number" class="field-input no-prefix" style="width:75px; padding:5px 8px; font-size:11px;" id="inputSeguro" value="35" min="0" step="5" onclick="event.stopPropagation()" oninput="recalculate()">
+              <div class="toggle-input"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ------- COL DIREITA: VARIÁVEIS + METAS ------- -->
+        <div class="calc-card">
+          <div class="section-head">
+            <h2><span class="num">3</span> Remuneração variável e metas</h2>
+          </div>
+
+          <div class="field">
+            <label class="field-label">
+              Comissão / variável mensal
+              <span class="helper">média histórica</span>
+            </label>
+            <div class="input-wrap">
+              <span class="input-prefix">R$</span>
+              <input type="number" class="field-input" id="inputComissao" value="0" min="0" step="100" oninput="recalculate()">
+            </div>
+          </div>
+
+          <div class="field-row-2">
+            <div class="field">
+              <label class="field-label">Hora extra média/mês</label>
+              <div class="input-wrap">
+                <span class="input-prefix">R$</span>
+                <input type="number" class="field-input" id="inputHE" value="0" min="0" step="50" oninput="recalculate()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Adicionais legais</label>
+              <div class="input-wrap">
+                <span class="input-prefix">R$</span>
+                <input type="number" class="field-input" id="inputAdicional" value="0" min="0" step="50" oninput="recalculate()">
+              </div>
+            </div>
+          </div>
+
+          <div class="bk-section-title" style="margin-top:14px;">Programas anuais (rateado por mês)</div>
+
+          <div class="field-row-2">
+            <div class="field">
+              <label class="field-label">
+                PLR / bônus anual
+                <span class="helper">salários × N</span>
+              </label>
+              <div class="input-wrap">
+                <input type="number" class="field-input no-prefix" id="inputPLRMult" value="2" min="0" max="12" step="0.5" oninput="recalculate()">
+                <span class="input-suffix">salários</span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">
+                Atingimento meta
+                <span class="helper">% esperado</span>
+              </label>
+              <div class="input-wrap">
+                <input type="number" class="field-input no-prefix" id="inputAtingimento" value="100" min="0" max="200" step="5" oninput="recalculate()">
+                <span class="input-suffix">%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="annual-card">
+            <div class="annual-row">
+              <div class="annual-icon">
+                <svg aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>
+              </div>
+              <div class="annual-info">
+                <div class="annual-lbl">PLR esperado anual</div>
+                <div class="annual-val" id="plrTotal">R$ 6.000,00</div>
+                <div class="annual-detail" id="plrDetail">2 salários × 100% atingimento · R$ 500/mês quando rateado</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bk-section-title" style="margin-top:14px;">Outros custos diretos</div>
+
+          <div class="field-row-2">
+            <div class="field">
+              <label class="field-label">
+                Treinamento /mês
+                <span class="helper">média anual</span>
+              </label>
+              <div class="input-wrap">
+                <span class="input-prefix">R$</span>
+                <input type="number" class="field-input" id="inputTreinamento" value="0" min="0" step="50" oninput="recalculate()">
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">
+                Equipamento /mês
+                <span class="helper">notebook, etc · prov.</span>
+              </label>
+              <div class="input-wrap">
+                <span class="input-prefix">R$</span>
+                <input type="number" class="field-input" id="inputEquip" value="0" min="0" step="50" oninput="recalculate()">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============= 4. RESULTADO ============= -->
+      <div class="result-panel simples" id="resultPanel">
+        <div class="result-row">
+          <div class="result-main">
+            <div class="result-label">Custo mensal total no <span id="resultRegime">Simples Nacional</span></div>
+            <div class="result-value">
+              <span class="currency">R$</span>
+              <span id="resultTotal">3.890,00</span>
+            </div>
+            <div class="result-mult green">
+              <span>Salário multiplicado por</span>
+              <strong id="resultMult">1,30×</strong>
+              <span>·</span>
+              <strong id="resultPercent">+30%</strong>
+              <span>sobre o bruto</span>
+            </div>
+          </div>
+          <div class="result-side">
+            <div class="side-stat">
+              <div class="side-stat-lbl">Líquido na conta</div>
+              <div class="side-stat-val" id="resultLiquido">R$ 2.546,34</div>
+            </div>
+            <div class="side-stat">
+              <div class="side-stat-lbl">Anual (×12)</div>
+              <div class="side-stat-val" id="resultAnual">R$ 46.680,00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============= 5. BREAKDOWN ============= -->
+      <div class="breakdown-card">
+        <div class="bk-head">
+          <h2>
+            <svg aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>
+            Decomposição do custo
+          </h2>
+        </div>
+
+        <div class="bk-grid">
+          <!-- DONUT -->
+          <div class="donut-wrap">
+            <svg class="donut-svg" id="donutChart" viewBox="0 0 200 200">
+              <!-- Será populado via JS -->
+            </svg>
+            <div class="donut-center">
+              <div class="donut-center-lbl">Custo total</div>
+              <div class="donut-center-val" id="donutTotal">R$ 3.890</div>
+              <div class="donut-center-sub" id="donutBase">de R$ 3.000 base</div>
+            </div>
+          </div>
+
+          <!-- BREAKDOWN LIST -->
+          <div class="bk-list" id="breakdownList">
+            <!-- populado via JS -->
+          </div>
+        </div>
+
+        <div class="bk-total">
+          <span class="bk-total-lbl">Custo total mensal</span>
+          <span class="bk-total-val" id="bkTotalValue">R$ 3.890,00</span>
+        </div>
+      </div>
+
+      <!-- ============= 6. COMPARATIVO ============= -->
+      <div class="comparison-card">
+        <div class="bk-head">
+          <h2>
+            <svg aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+            Comparativo entre regimes
+          </h2>
+          <span style="font-size:11px; color:var(--txt2);">Mesmo cenário aplicado nos dois regimes</span>
+        </div>
+
+        <div class="comparison-grid">
+          <div class="comp-side">
+            <div class="comp-side-head">
+              <div class="comp-side-title">Simples Nacional</div>
+              <span class="comp-side-tag green">prestadoras</span>
+            </div>
+            <div class="comp-cost"><span class="currency">R$</span> <span id="compSimples">3.890,00</span></div>
+            <div class="comp-mult"><strong id="compSimplesMult">1,30×</strong> o salário · <strong id="compSimplesPerc">+30%</strong></div>
+          </div>
+
+          <div class="comp-divider">
+            <div class="comp-vs">VS</div>
+            <div class="comp-diff-arrow" id="compDiff">+R$ 1.218,00 (+31%)</div>
+          </div>
+
+          <div class="comp-side lucro">
+            <div class="comp-side-head">
+              <div class="comp-side-title">Lucro Real / Presumido</div>
+              <span class="comp-side-tag purple">ATP, Cestão</span>
+            </div>
+            <div class="comp-cost"><span class="currency">R$</span> <span id="compLucro">5.108,00</span></div>
+            <div class="comp-mult"><strong id="compLucroMult">1,70×</strong> o salário · <strong id="compLucroPerc">+70%</strong></div>
+          </div>
+        </div>
+
+        <div class="annual-card" style="margin-top:14px;">
+          <div class="annual-row">
+            <div class="annual-icon" style="background:var(--orange);">
+              <svg aria-hidden="true" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="annual-info">
+              <div class="annual-lbl" style="color:var(--orange);">Diferença anual entre regimes</div>
+              <div class="annual-val" id="compAnnualDiff">R$ 14.616,00</div>
+              <div class="annual-detail" id="compAnnualDetail">Para uma equipe de 10 pessoas com este salário, a diferença anual seria de R$ 146.160</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn-primary">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Exportar simulação
+          </button>
+          <button class="btn-secondary">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+            Aplicar a colaborador real
+          </button>
+          <button class="btn-secondary">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Comparar 2 cenários
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// ============= LEGISLAÇÃO 2026 =============
+// Tabela INSS 2026 (Portaria Interministerial MPS/MF nº 13/2026) - método com dedução
+const INSS_TABLE_2026 = [
+  { until: 1621.00, rate: 0.075, deduction: 0 },
+  { until: 2902.84, rate: 0.09,  deduction: 24.32 },
+  { until: 4354.27, rate: 0.12,  deduction: 111.40 },
+  { until: 8475.55, rate: 0.14,  deduction: 198.49 }
+];
+const INSS_TETO = 8475.55;
+const INSS_DESCONTO_MAX = 988.09;
+
+// IRRF 2026 (Lei 15.270/2025) - tabela progressiva tradicional acima de R$ 7.350
+const IRRF_TABLE_2026 = [
+  { until: 2428.80, rate: 0,    deduction: 0 },
+  { until: 2826.65, rate: 0.075, deduction: 182.16 },
+  { until: 3751.05, rate: 0.15,  deduction: 394.16 },
+  { until: 4664.68, rate: 0.225, deduction: 675.49 },
+  { until: Infinity, rate: 0.275, deduction: 908.73 }
+];
+const IRRF_DEPENDENTE = 189.59;
+const IRRF_ISENCAO_INTEGRAL = 5000.00;
+const IRRF_ISENCAO_PARCIAL_MAX = 7350.00;
+// Redutor adicional Lei 15.270/2025: aplicado entre R$ 5.000,01 e R$ 7.350,00
+// Fórmula oficial Receita Federal: redutor = 978,62 - (0,133145 × rendimentos tributáveis)
+const IRRF_REDUTOR_BASE = 978.62;
+const IRRF_REDUTOR_COEF = 0.133145;
+
+// Encargos Lucro Real
+const ENCARGOS_LUCRO_REAL = {
+  inss_patronal: 0.20,
+  rat: 0.02,
+  sistema_s: 0.058,
+  fgts: 0.08
+};
+const ENCARGOS_SIMPLES = {
+  fgts: 0.08
+};
+
+// Provisões (independem do regime)
+const PROVISIONAMENTOS = {
+  ferias: 11.11 / 100,
+  decimo_terceiro: 8.33 / 100,
+  multa_rescisoria: 0.04
+};
+
+// ============= STATE =============
+let state = {
+  regime: 'simples',
+  salario: 3000,
+  dependentes: 0,
+  vt: 220,
+  benefits: { vr: 600, va: 350, saude: 0, odonto: 0, seguro: 0 },
+  comissao: 0,
+  he: 0,
+  adicional: 0,
+  plr_mult: 2,
+  atingimento: 100,
+  treinamento: 0,
+  equip: 0
+};
+
+// ============= CÁLCULOS =============
+function calcINSSEmpregado(salarioBruto){
+  if(salarioBruto <= 0) return 0;
+  const baseCalc = Math.min(salarioBruto, INSS_TETO);
+  for(const faixa of INSS_TABLE_2026){
+    if(baseCalc <= faixa.until){
+      return Math.min((baseCalc * faixa.rate) - faixa.deduction, INSS_DESCONTO_MAX);
+    }
+  }
+  return INSS_DESCONTO_MAX;
+}
+
+function calcIRRF(salarioBruto, dependentes, inss){
+  // Base do IRRF: salário - INSS - dependentes
+  const base = salarioBruto - inss - (dependentes * IRRF_DEPENDENTE);
+
+  // Nova isenção 2026 (Lei 15.270/2025): rendimento bruto até R$ 5k = isento integral
+  if(salarioBruto <= IRRF_ISENCAO_INTEGRAL) return 0;
+
+  // Cálculo tradicional pela tabela progressiva
+  let irrfBruto = 0;
+  for(const faixa of IRRF_TABLE_2026){
+    if(base <= faixa.until){
+      irrfBruto = Math.max(0, (base * faixa.rate) - faixa.deduction);
+      break;
+    }
+  }
+
+  // Aplicar redutor adicional Lei 15.270/2025 para faixa intermediária (5k - 7.350)
+  // Fórmula oficial Receita Federal: redutor = 978,62 - (0,133145 × rendimentos tributáveis)
+  // Para salário R$ 6.000: redutor = R$ 978,62 - R$ 798,87 = R$ 179,75
+  // Para salário R$ 7.000: redutor = R$ 978,62 - R$ 932,02 = R$ 46,60
+  if(salarioBruto > IRRF_ISENCAO_INTEGRAL && salarioBruto <= IRRF_ISENCAO_PARCIAL_MAX){
+    const redutor = Math.max(0, IRRF_REDUTOR_BASE - (IRRF_REDUTOR_COEF * salarioBruto));
+    // O redutor é limitado ao valor do imposto apurado (não gera crédito)
+    irrfBruto = Math.max(0, irrfBruto - redutor);
+  }
+
+  return irrfBruto;
+}
+
+function calcEncargosPatronais(salarioBruto, regime){
+  const encargos = regime === 'simples' ? ENCARGOS_SIMPLES : ENCARGOS_LUCRO_REAL;
+  const result = {};
+  for(const [key, rate] of Object.entries(encargos)){
+    result[key] = salarioBruto * rate;
+  }
+  return result;
+}
+
+function calcProvisoes(salarioBruto, regime){
+  // FGTS incide sobre férias e 13º também, multiplicador
+  const fgtsAdicional = (PROVISIONAMENTOS.ferias + PROVISIONAMENTOS.decimo_terceiro) * 0.08;
+  // Encargos patronais (só Lucro Real) também incidem sobre férias e 13º
+  let encargosAdicionais = 0;
+  if(regime === 'lucro'){
+    encargosAdicionais = (PROVISIONAMENTOS.ferias + PROVISIONAMENTOS.decimo_terceiro) *
+      (ENCARGOS_LUCRO_REAL.inss_patronal + ENCARGOS_LUCRO_REAL.rat + ENCARGOS_LUCRO_REAL.sistema_s);
+  }
+  return {
+    ferias: salarioBruto * PROVISIONAMENTOS.ferias,
+    decimo_terceiro: salarioBruto * PROVISIONAMENTOS.decimo_terceiro,
+    multa_rescisoria: salarioBruto * PROVISIONAMENTOS.multa_rescisoria,
+    encargos_sobre_provisoes: salarioBruto * (fgtsAdicional + encargosAdicionais)
+  };
+}
+
+function calcBenefits(state){
+  let total = 0;
+  for(const v of Object.values(state.benefits)) total += v;
+  return total;
+}
+
+function calcVariaveis(state){
+  // Comissão e HE são valor mensal direto
+  // PLR é anual, rateado: (mult * salario * atingimento%) / 12
+  const plrMensal = (state.plr_mult * state.salario * state.atingimento / 100) / 12;
+  return {
+    comissao: state.comissao,
+    he: state.he,
+    adicional: state.adicional,
+    plr_mensal: plrMensal,
+    treinamento: state.treinamento,
+    equip: state.equip
+  };
+}
+
+function calcVTLiquido(state){
+  // Empresa pode descontar 6% do salário do funcionário; o que sobra é custo da empresa
+  if(state.vt <= 0) return 0;
+  const desconto = Math.min(state.salario * 0.06, state.vt);
+  return Math.max(0, state.vt - desconto);
+}
+
+function calcAll(stateOverride){
+  const s = stateOverride || state;
+  const sal = s.salario;
+  const inssEmp = calcINSSEmpregado(sal);
+  const irrf = calcIRRF(sal, s.dependentes, inssEmp);
+  const enc = calcEncargosPatronais(sal, s.regime);
+  const prov = calcProvisoes(sal, s.regime);
+  const benTotal = calcBenefits(s);
+  const vtLiq = calcVTLiquido(s);
+  const vars = calcVariaveis(s);
+
+  // VT desconto do funcionário (até 6%)
+  const vtDescontoFunc = Math.min(s.salario * 0.06, s.vt);
+
+  const liquido = sal - inssEmp - irrf - vtDescontoFunc;
+
+  const totalEncargos = Object.values(enc).reduce((a,b) => a+b, 0);
+  const totalProvisoes = prov.ferias + prov.decimo_terceiro + prov.multa_rescisoria + prov.encargos_sobre_provisoes;
+  const totalVariaveis = vars.comissao + vars.he + vars.adicional + vars.plr_mensal + vars.treinamento + vars.equip;
+
+  const custoTotal = sal + totalEncargos + totalProvisoes + benTotal + vtLiq + totalVariaveis;
+
+  return {
+    salario: sal,
+    inssEmp,
+    irrf,
+    vtDescontoFunc,
+    liquido,
+    encargos: enc,
+    totalEncargos,
+    provisoes: prov,
+    totalProvisoes,
+    benefits: s.benefits,
+    benTotal,
+    vtCustoEmpresa: vtLiq,
+    variaveis: vars,
+    totalVariaveis,
+    custoTotal
+  };
+}
+
+// ============= UI UPDATE =============
+function fmt(n){
+  return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtBRL(n){
+  return 'R$ ' + fmt(n);
+}
+
+function updateUI(){
+  const r = calcAll();
+
+  // Result panel
+  document.getElementById('resultRegime').textContent = state.regime === 'simples' ? 'Simples Nacional' : 'Lucro Real';
+  document.getElementById('resultTotal').textContent = fmt(r.custoTotal);
+  const mult = r.salario > 0 ? r.custoTotal / r.salario : 0;
+  document.getElementById('resultMult').textContent = mult.toFixed(2) + '×';
+  document.getElementById('resultPercent').textContent = '+' + ((mult - 1) * 100).toFixed(0) + '%';
+  document.getElementById('resultLiquido').textContent = fmtBRL(r.liquido);
+  document.getElementById('resultAnual').textContent = fmtBRL(r.custoTotal * 12);
+
+  // Color the multiplier text
+  const multEl = document.querySelector('.result-mult');
+  multEl.classList.remove('green', 'purple');
+  multEl.classList.add(state.regime === 'simples' ? 'green' : 'purple');
+
+  // Color the panel
+  const panel = document.getElementById('resultPanel');
+  panel.classList.remove('simples', 'lucro');
+  panel.classList.add(state.regime);
+
+  // PLR detalhe
+  const plrAnual = state.plr_mult * state.salario * (state.atingimento / 100);
+  document.getElementById('plrTotal').textContent = fmtBRL(plrAnual);
+  document.getElementById('plrDetail').textContent = `${state.plr_mult} salário${state.plr_mult !== 1 ? 's' : ''} × ${state.atingimento}% atingimento · ${fmtBRL(plrAnual / 12)}/mês quando rateado`;
+
+  // Donut + Breakdown
+  updateDonutAndBreakdown(r);
+
+  // Comparativo
+  updateComparison();
+}
+
+function updateDonutAndBreakdown(r){
+  document.getElementById('donutTotal').textContent = 'R$ ' + Math.round(r.custoTotal).toLocaleString('pt-BR');
+  document.getElementById('donutBase').textContent = 'de ' + fmtBRL(r.salario) + ' base';
+  document.getElementById('bkTotalValue').textContent = fmtBRL(r.custoTotal);
+
+  // Categorias agregadas para o donut
+  const segments = [
+    { name: 'Salário base', value: r.salario, color: '#2B4A7A', dot: '#2B4A7A' },
+    { name: 'Encargos patronais', value: r.totalEncargos, color: '#6D28D9', dot: '#6D28D9' },
+    { name: 'Provisões (férias + 13º)', value: r.totalProvisoes, color: '#F5831F', dot: '#F5831F' },
+    { name: 'Benefícios', value: r.benTotal + r.vtCustoEmpresa, color: '#1E7B4B', dot: '#1E7B4B' },
+    { name: 'Variáveis e metas', value: r.totalVariaveis, color: '#0F766E', dot: '#0F766E' }
+  ];
+
+  // Renderizar donut
+  const total = r.custoTotal;
+  let cumAngle = -Math.PI / 2; // começa em cima
+  const cx = 100, cy = 100, rOuter = 88, rInner = 60;
+  const svg = document.getElementById('donutChart');
+  svg.innerHTML = '';
+
+  segments.forEach(seg => {
+    if(seg.value <= 0) return;
+    const angle = (seg.value / total) * Math.PI * 2;
+    const x1 = cx + rOuter * Math.cos(cumAngle);
+    const y1 = cy + rOuter * Math.sin(cumAngle);
+    const x2 = cx + rOuter * Math.cos(cumAngle + angle);
+    const y2 = cy + rOuter * Math.sin(cumAngle + angle);
+    const x3 = cx + rInner * Math.cos(cumAngle + angle);
+    const y3 = cy + rInner * Math.sin(cumAngle + angle);
+    const x4 = cx + rInner * Math.cos(cumAngle);
+    const y4 = cy + rInner * Math.sin(cumAngle);
+    const largeArc = angle > Math.PI ? 1 : 0;
+
+    const path = `M ${x1} ${y1} A ${rOuter} ${rOuter} 0 ${largeArc} 1 ${x2} ${y2} L ${x3} ${y3} A ${rInner} ${rInner} 0 ${largeArc} 0 ${x4} ${y4} Z`;
+    const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    pathEl.setAttribute('d', path);
+    pathEl.setAttribute('fill', seg.color);
+    pathEl.setAttribute('stroke', '#fff');
+    pathEl.setAttribute('stroke-width', '1.5');
+    svg.appendChild(pathEl);
+
+    cumAngle += angle;
+  });
+
+  // Breakdown list detalhado
+  const list = document.getElementById('breakdownList');
+  let html = '<div class="bk-section-title">Salário e encargos legais</div>';
+  html += renderItem('Salário bruto', r.salario, r.custoTotal, '#2B4A7A');
+
+  const regimeLabel = state.regime === 'simples' ? 'Simples Nacional' : 'Lucro Real';
+  html += `<div class="bk-section-title">Encargos patronais (${regimeLabel})</div>`;
+
+  if(state.regime === 'lucro'){
+    html += renderItem('INSS Patronal (20%)', r.encargos.inss_patronal, r.custoTotal, '#6D28D9');
+    html += renderItem('RAT/SAT (2%)', r.encargos.rat, r.custoTotal, '#8E4FE3');
+    html += renderItem('Sistema S (5,8%)', r.encargos.sistema_s, r.custoTotal, '#A574EC');
+  } else {
+    html += `<div class="bk-item zero"><div class="bk-item-left"><span class="bk-dot" style="background:#A8B5C8;"></span><span class="bk-name">INSS, RAT, Sistema S</span><span class="bk-perc">no DAS</span></div><span class="bk-value">- · incluso</span></div>`;
+  }
+  html += renderItem('FGTS (8%)', r.encargos.fgts, r.custoTotal, '#5523A8');
+
+  html += '<div class="bk-section-title">Provisões mensais</div>';
+  html += renderItem('Férias (1/12 + 1/3)', r.provisoes.ferias, r.custoTotal, '#F5831F');
+  html += renderItem('13º salário (1/12)', r.provisoes.decimo_terceiro, r.custoTotal, '#FF9F47');
+  html += renderItem('Multa rescisória (4%)', r.provisoes.multa_rescisoria, r.custoTotal, '#D87013');
+  if(r.provisoes.encargos_sobre_provisoes > 0){
+    html += renderItem('Encargos sobre provisões', r.provisoes.encargos_sobre_provisoes, r.custoTotal, '#B85C0F');
+  }
+
+  if(r.benTotal > 0 || r.vtCustoEmpresa > 0){
+    html += '<div class="bk-section-title">Benefícios</div>';
+    if(state.benefits.vr > 0) html += renderItem('Vale-refeição', state.benefits.vr, r.custoTotal, '#1E7B4B');
+    if(state.benefits.va > 0) html += renderItem('Vale-alimentação', state.benefits.va, r.custoTotal, '#2BA567');
+    if(state.benefits.saude > 0) html += renderItem('Plano de saúde', state.benefits.saude, r.custoTotal, '#15643A');
+    if(state.benefits.odonto > 0) html += renderItem('Plano odontológico', state.benefits.odonto, r.custoTotal, '#48C284');
+    if(state.benefits.seguro > 0) html += renderItem('Seguro de vida', state.benefits.seguro, r.custoTotal, '#0F4D2C');
+    if(r.vtCustoEmpresa > 0) html += renderItem('Vale-transporte (líquido)', r.vtCustoEmpresa, r.custoTotal, '#62C896');
+  }
+
+  if(r.totalVariaveis > 0){
+    html += '<div class="bk-section-title">Variáveis e metas</div>';
+    if(r.variaveis.comissao > 0) html += renderItem('Comissão', r.variaveis.comissao, r.custoTotal, '#0F766E');
+    if(r.variaveis.he > 0) html += renderItem('Hora extra', r.variaveis.he, r.custoTotal, '#0D8B81');
+    if(r.variaveis.adicional > 0) html += renderItem('Adicionais legais', r.variaveis.adicional, r.custoTotal, '#0A5E58');
+    if(r.variaveis.plr_mensal > 0) html += renderItem('PLR rateado /mês', r.variaveis.plr_mensal, r.custoTotal, '#119C90');
+    if(r.variaveis.treinamento > 0) html += renderItem('Treinamento', r.variaveis.treinamento, r.custoTotal, '#13B0A2');
+    if(r.variaveis.equip > 0) html += renderItem('Equipamento', r.variaveis.equip, r.custoTotal, '#16C4B5');
+  }
+
+  list.innerHTML = html;
+}
+
+function renderItem(name, value, total, color){
+  const perc = total > 0 ? (value / total * 100).toFixed(1) : 0;
+  const z = value < 0.01 ? ' zero' : '';
+  return `
+    <div class="bk-item${z}">
+      <div class="bk-item-left">
+        <span class="bk-dot" style="background:${color};"></span>
+        <span class="bk-name">${name}</span>
+        <span class="bk-perc">${perc}%</span>
+      </div>
+      <span class="bk-value">${fmtBRL(value)}</span>
+    </div>
+  `;
+}
+
+function updateComparison(){
+  // Calcula nos dois regimes para o mesmo state
+  const stateSimples = { ...state, regime: 'simples' };
+  const stateLucro = { ...state, regime: 'lucro' };
+
+  const rSimples = calcAll(stateSimples);
+  const rLucro = calcAll(stateLucro);
+
+  document.getElementById('compSimples').textContent = fmt(rSimples.custoTotal);
+  document.getElementById('compLucro').textContent = fmt(rLucro.custoTotal);
+
+  const multS = rSimples.salario > 0 ? rSimples.custoTotal / rSimples.salario : 0;
+  const multL = rLucro.salario > 0 ? rLucro.custoTotal / rLucro.salario : 0;
+  document.getElementById('compSimplesMult').textContent = multS.toFixed(2) + '×';
+  document.getElementById('compLucroMult').textContent = multL.toFixed(2) + '×';
+  document.getElementById('compSimplesPerc').textContent = '+' + ((multS - 1) * 100).toFixed(0) + '%';
+  document.getElementById('compLucroPerc').textContent = '+' + ((multL - 1) * 100).toFixed(0) + '%';
+
+  const diff = rLucro.custoTotal - rSimples.custoTotal;
+  const diffPerc = rSimples.custoTotal > 0 ? (diff / rSimples.custoTotal * 100).toFixed(0) : 0;
+  document.getElementById('compDiff').textContent = `+${fmtBRL(diff).replace('R$ ', 'R$ ')} (+${diffPerc}%)`;
+
+  document.getElementById('compAnnualDiff').textContent = fmtBRL(diff * 12);
+  document.getElementById('compAnnualDetail').textContent = `Para uma equipe de 10 pessoas com este salário, a diferença anual seria de ${fmtBRL(diff * 12 * 10)}`;
+}
+
+// ============= EVENTS =============
+function setRegime(reg){
+  state.regime = reg;
+  document.getElementById('regimeSimples').classList.toggle('active', reg === 'simples');
+  document.getElementById('regimeLucro').classList.toggle('active', reg === 'lucro');
+  updateUI();
+}
+
+function syncSlider(value){
+  document.getElementById('inputSalario').value = value;
+  recalculate();
+}
+
+function toggleBenefit(el, key, defaultValue){
+  el.classList.toggle('checked');
+  if(el.classList.contains('checked')){
+    state.benefits[key] = parseFloat(document.getElementById('input' + key.charAt(0).toUpperCase() + key.slice(1)).value) || defaultValue;
+  } else {
+    state.benefits[key] = 0;
+  }
+  updateUI();
+}
+
+function recalculate(){
+  state.salario = parseFloat(document.getElementById('inputSalario').value) || 0;
+  document.getElementById('sliderSalario').value = Math.min(20000, Math.max(1621, state.salario));
+  state.dependentes = parseInt(document.getElementById('inputDependentes').value) || 0;
+  state.vt = parseFloat(document.getElementById('inputVT').value) || 0;
+
+  // Benefits · só atualiza valor se estiver "checked"
+  const benKeys = [['vr','VR'], ['va','VA'], ['saude','Saude'], ['odonto','Odonto'], ['seguro','Seguro']];
+  benKeys.forEach(([k, suffix]) => {
+    const input = document.getElementById('input' + suffix);
+    const row = input.closest('.toggle-row');
+    if(row.classList.contains('checked')){
+      state.benefits[k] = parseFloat(input.value) || 0;
+    }
+  });
+
+  state.comissao = parseFloat(document.getElementById('inputComissao').value) || 0;
+  state.he = parseFloat(document.getElementById('inputHE').value) || 0;
+  state.adicional = parseFloat(document.getElementById('inputAdicional').value) || 0;
+  state.plr_mult = parseFloat(document.getElementById('inputPLRMult').value) || 0;
+  state.atingimento = parseFloat(document.getElementById('inputAtingimento').value) || 0;
+  state.treinamento = parseFloat(document.getElementById('inputTreinamento').value) || 0;
+  state.equip = parseFloat(document.getElementById('inputEquip').value) || 0;
+
+  updateUI();
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// Init
+updateUI();
+</script>
+</body>
+</html>

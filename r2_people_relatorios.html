@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Relatórios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+/* Botões */
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+
+/* Banner */
+.intro-banner{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px; align-items:center;
+  background:linear-gradient(90deg, #E8EFF8, #F4F7FC);
+  border-left:3px solid var(--navy);
+  padding:14px 16px; border-radius:var(--radius);
+  margin-bottom:14px;
+}
+.intro-icon{
+  width:42px; height:42px; border-radius:10px;
+  background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.intro-text{font-size:12.5px; color:var(--txt2); line-height:1.5;}
+.intro-text strong{color:var(--txt); font-weight:600;}
+
+/* ============= TABS ============= */
+.tabs{display:flex; gap:2px; background:#fff; padding:4px; border-radius:var(--radius); box-shadow:var(--shadow-card); margin-bottom:14px; overflow-x:auto;}
+.tab{padding:9px 16px; font-size:12.5px; font-weight:500; color:var(--txt2); background:transparent; border:none; cursor:pointer; border-radius:7px; font-family:inherit; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
+.tab:hover{background:var(--gray1); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab svg{width:14px; height:14px;}
+.tab .count{background:rgba(255,255,255,.2); padding:1px 7px; border-radius:10px; font-size:10.5px; font-weight:600; font-family:'JetBrains Mono',monospace;}
+.tab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* ============= CATEGORIAS DE RELATÓRIOS ============= */
+.cat-section{margin-bottom:18px;}
+.cat-head{
+  display:flex; align-items:center; gap:9px;
+  margin-bottom:10px;
+}
+.cat-icon{
+  width:26px; height:26px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700;
+}
+.cat-icon.head{background:#F0E6FA; color:var(--purple);}
+.cat-icon.fin{background:var(--green2); color:var(--green);}
+.cat-icon.perf{background:var(--amber2); color:var(--amber);}
+.cat-icon.mov{background:#E8EFF8; color:var(--navy);}
+.cat-icon.fav{background:#FCE6CD; color:var(--orange);}
+.cat-title{font-size:14px; font-weight:600;}
+.cat-sub{font-size:11px; color:var(--txt2);}
+.cat-count{
+  margin-left:auto;
+  font-size:10.5px;
+  background:var(--gray1); color:var(--txt2);
+  padding:3px 10px; border-radius:11px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+}
+
+.report-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+}
+.report-card{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:14px 16px;
+  cursor:pointer;
+  transition:all .15s;
+  border:2px solid transparent;
+  display:flex; flex-direction:column;
+  position:relative;
+}
+.report-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(26,45,79,.08);
+  border-color:var(--navy3);
+}
+.report-card.featured{
+  background:linear-gradient(135deg, #2B4A7A 0%, #1F3A6B 100%);
+  color:#fff;
+}
+.rc-head{display:flex; align-items:flex-start; gap:10px; margin-bottom:9px;}
+.rc-icon{
+  width:36px; height:36px; border-radius:8px;
+  background:#E8EFF8; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.report-card.featured .rc-icon{background:rgba(255,255,255,.15); color:#fff;}
+.rc-info{flex:1; min-width:0;}
+.rc-title{font-size:13px; font-weight:600; margin-bottom:1px;}
+.rc-desc{font-size:11px; color:var(--txt2); line-height:1.45;}
+.report-card.featured .rc-desc{color:rgba(255,255,255,.78);}
+.rc-meta{
+  display:flex; align-items:center; gap:11px;
+  margin-top:auto; padding-top:9px;
+  font-size:10.5px; color:var(--txt3);
+}
+.report-card.featured .rc-meta{color:rgba(255,255,255,.55);}
+.rc-meta .axis{
+  display:inline-flex; gap:4px; align-items:center;
+}
+.rc-meta .axis-tag{
+  font-size:9px; padding:2px 7px; border-radius:7px;
+  font-weight:700; letter-spacing:.3px;
+  text-transform:uppercase;
+}
+.report-card .axis-tag.emp{background:#F0E6FA; color:var(--purple);}
+.report-card .axis-tag.tom{background:var(--green2); color:var(--green);}
+.report-card .axis-tag.both{background:#FCE6CD; color:var(--amber);}
+.report-card.featured .axis-tag.emp{background:rgba(245,131,31,.25); color:#fff;}
+.report-card.featured .axis-tag.tom{background:rgba(255,255,255,.2); color:#fff;}
+.report-card.featured .axis-tag.both{background:rgba(245,131,31,.35); color:#fff;}
+.report-card .star{
+  position:absolute; top:11px; right:11px;
+  color:var(--gray3); cursor:pointer;
+}
+.report-card .star:hover, .report-card .star.active{color:var(--orange);}
+
+/* ============= REPORT BUILDER ============= */
+.builder-frame{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); overflow:hidden; margin-bottom:14px;}
+.builder-head{
+  background:linear-gradient(135deg, #2B4A7A 0%, #1F3A6B 100%);
+  color:#fff;
+  padding:18px 22px;
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  flex-wrap:wrap;
+}
+.bh-info h2{font-size:18px; font-weight:600; letter-spacing:-.3px;}
+.bh-info p{font-size:12px; color:rgba(255,255,255,.78); margin-top:2px;}
+.bh-actions{display:flex; gap:8px; flex-wrap:wrap;}
+.bh-actions button{
+  padding:8px 14px; border-radius:7px; border:1px solid rgba(255,255,255,.25);
+  background:transparent; color:#fff; font-size:12px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.bh-actions button:hover{background:rgba(255,255,255,.1);}
+.bh-actions button.primary{background:var(--orange); border-color:var(--orange);}
+.bh-actions button.primary:hover{background:#D87013;}
+
+/* Switch eixo principal · destaque visual */
+.axis-switch-section{
+  background:#FFF8EB;
+  border-bottom:1px solid var(--amber2);
+  padding:16px 22px;
+}
+.axis-switch-head{
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:10px;
+}
+.axis-switch-head svg{color:var(--amber);}
+.axis-switch-head h3{font-size:13px; font-weight:600;}
+.axis-switch-head p{font-size:11px; color:var(--txt2);}
+
+.axis-toggle{
+  display:flex; gap:8px;
+  background:#fff;
+  border-radius:10px;
+  padding:5px;
+  border:1px solid #F0E0BF;
+  max-width:520px;
+}
+.axis-option{
+  flex:1;
+  display:flex; align-items:center; gap:9px;
+  padding:9px 13px;
+  border-radius:7px;
+  cursor:pointer;
+  background:transparent;
+  border:none;
+  font-family:inherit;
+  text-align:left;
+  transition:all .15s;
+}
+.axis-option:hover{background:var(--gray1);}
+.axis-option.active.emp{background:#F0E6FA; box-shadow:0 1px 3px rgba(109,40,217,.2);}
+.axis-option.active.tom{background:var(--green2); box-shadow:0 1px 3px rgba(30,123,75,.2);}
+.axis-option .ao-icon{
+  width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:14px;
+  flex-shrink:0;
+}
+.axis-option.emp .ao-icon{background:#F0E6FA; color:var(--purple);}
+.axis-option.tom .ao-icon{background:var(--green2); color:var(--green);}
+.axis-option.active.emp .ao-icon{background:var(--purple); color:#fff;}
+.axis-option.active.tom .ao-icon{background:var(--green); color:#fff;}
+.ao-text{flex:1; min-width:0;}
+.ao-label{font-size:12px; font-weight:600; color:var(--txt);}
+.ao-sub{font-size:10.5px; color:var(--txt2); margin-top:1px; line-height:1.35;}
+
+/* Filtros do builder */
+.builder-filters{
+  padding:14px 22px;
+  border-bottom:1px solid var(--gray1);
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:12px;
+}
+.bf-field{}
+.bf-field label{display:block; font-size:10.5px; color:var(--txt2); margin-bottom:5px; font-weight:600; text-transform:uppercase; letter-spacing:.3px;}
+.bf-field select, .bf-field input{
+  width:100%; padding:8px 11px;
+  border:1px solid var(--gray2); border-radius:6px;
+  font-size:12px; font-family:inherit; color:var(--txt); background:#fff;
+}
+
+/* Resumo do filtro aplicado */
+.filter-summary{
+  background:var(--off);
+  padding:11px 22px;
+  display:flex; align-items:center; gap:11px;
+  font-size:11.5px;
+  border-bottom:1px solid var(--gray1);
+  flex-wrap:wrap;
+}
+.filter-summary .label{color:var(--txt2); font-weight:600;}
+.fs-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  background:#fff; border:1px solid var(--gray2);
+  padding:3px 9px; border-radius:11px;
+  font-size:11px;
+}
+.fs-chip strong{font-weight:600;}
+.fs-result{
+  margin-left:auto;
+  font-size:12px; color:var(--txt);
+}
+.fs-result strong{color:var(--orange); font-family:'JetBrains Mono',monospace; font-weight:600;}
+
+/* Body do relatório */
+.report-body{padding:18px 22px;}
+
+/* KPIs do relatório */
+.report-kpis{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+.rk{
+  background:var(--off); border-radius:var(--radius);
+  padding:13px 14px;
+  border-left:3px solid var(--navy);
+}
+.rk.emp{border-left-color:var(--purple);}
+.rk.tom{border-left-color:var(--green);}
+.rk.amber{border-left-color:var(--amber);}
+.rk-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.rk-value{font-size:24px; font-weight:600; margin-top:5px; letter-spacing:-.5px;}
+.rk-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+/* Visualizações lado a lado */
+.viz-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:14px;
+}
+.viz-card{
+  background:#fff;
+  border:1px solid var(--gray1);
+  border-radius:var(--radius);
+  padding:14px 16px;
+}
+.viz-head{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  margin-bottom:11px;
+}
+.viz-title{font-size:13px; font-weight:600;}
+.viz-sub{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.chart-wrap{position:relative; width:100%; height:240px;}
+.chart-wrap.short{height:200px;}
+
+/* Tabela de breakdown */
+.breakdown-tbl{width:100%; border-collapse:collapse; font-size:12px;}
+.breakdown-tbl thead{background:var(--off);}
+.breakdown-tbl th{text-align:left; padding:8px 11px; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--txt2); border-bottom:1px solid var(--gray2); font-weight:600;}
+.breakdown-tbl th.right{text-align:right;}
+.breakdown-tbl td{padding:9px 11px; border-bottom:1px solid var(--gray1);}
+.breakdown-tbl td.right{text-align:right;}
+.breakdown-tbl tr:last-child td{border-bottom:none; background:var(--off); font-weight:600;}
+.breakdown-tbl .axis-tag{font-size:9px; padding:1px 6px; border-radius:7px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; margin-right:5px;}
+.breakdown-tbl .axis-tag.emp{background:#F0E6FA; color:var(--purple);}
+.breakdown-tbl .axis-tag.tom{background:var(--green2); color:var(--green);}
+
+.breakdown-tbl .pct-bar{
+  display:flex; align-items:center; gap:7px;
+}
+.breakdown-tbl .pct-bar-fill{
+  height:6px; background:var(--gray1); border-radius:3px;
+  flex:1; max-width:80px; overflow:hidden;
+}
+.breakdown-tbl .pct-bar-fill > div{
+  height:100%; background:var(--navy);
+  border-radius:3px;
+}
+.breakdown-tbl .pct-bar-fill.emp > div{background:var(--purple);}
+.breakdown-tbl .pct-bar-fill.tom > div{background:var(--green);}
+.breakdown-tbl .pct-bar-num{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt2); min-width:42px; text-align:right;}
+
+/* Comparação visual EMP vs TOM */
+.compare-block{
+  background:#fff; border-radius:var(--radius);
+  border:2px solid var(--amber);
+  padding:14px 16px;
+  margin-bottom:14px;
+}
+.compare-head{display:flex; align-items:center; gap:9px; margin-bottom:10px;}
+.compare-head svg{color:var(--amber);}
+.compare-head h3{font-size:13px; font-weight:600;}
+.compare-head p{font-size:11px; color:var(--txt2);}
+.compare-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.compare-side{
+  background:var(--off); border-radius:8px;
+  padding:11px 13px;
+}
+.compare-side.emp{border-left:3px solid var(--purple);}
+.compare-side.tom{border-left:3px solid var(--green);}
+.cs-head{
+  display:flex; align-items:center; gap:7px;
+  margin-bottom:8px;
+}
+.cs-tag{
+  font-size:9px; padding:2px 7px; border-radius:7px;
+  font-weight:700; letter-spacing:.3px; text-transform:uppercase;
+}
+.cs-tag.emp{background:#F0E6FA; color:var(--purple);}
+.cs-tag.tom{background:var(--green2); color:var(--green);}
+.cs-title{font-size:11.5px; font-weight:600;}
+.cs-row{
+  display:flex; justify-content:space-between;
+  padding:4px 0;
+  font-size:11.5px;
+}
+.cs-row .label{color:var(--txt2);}
+.cs-row .value{font-weight:600; font-family:'JetBrains Mono',monospace;}
+.cs-row.total{
+  border-top:1px solid var(--gray2); margin-top:4px; padding-top:7px;
+  font-weight:700; font-size:13px;
+}
+
+/* ============= RECENTES / FAVORITOS ============= */
+.recent-card{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); padding:14px 16px;}
+.recent-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:11px;}
+.recent-head h3{font-size:13.5px; font-weight:600;}
+.recent-head p{font-size:11px; color:var(--txt2);}
+.recent-tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+.recent-tbl th{text-align:left; padding:9px 11px; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--txt2); border-bottom:1px solid var(--gray2); font-weight:600;}
+.recent-tbl th.center{text-align:center;}
+.recent-tbl th.right{text-align:right;}
+.recent-tbl td{padding:10px 11px; border-bottom:1px solid var(--gray1);}
+.recent-tbl tr:last-child td{border-bottom:none;}
+.recent-tbl tr:hover{background:var(--off);}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .report-grid{grid-template-columns:repeat(2, 1fr);}
+  .builder-filters{grid-template-columns:repeat(2, 1fr);}
+  .report-kpis{grid-template-columns:repeat(2, 1fr);}
+  .viz-grid{grid-template-columns:1fr;}
+  .compare-grid{grid-template-columns:1fr;}
+  .axis-toggle{flex-direction:column;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .company-name, .user-info{display:none;}
+  .user-chip{padding:0;}
+
+  .main{padding:14px 14px 40px;}
+  .page-header h1{font-size:18px;}
+  .report-grid{grid-template-columns:1fr;}
+  .builder-filters{grid-template-columns:1fr;}
+  .report-kpis{grid-template-columns:1fr;}
+  .builder-head{flex-direction:column; align-items:stretch;}
+  .bh-actions{justify-content:flex-start;}
+
+  .recent-tbl thead{display:none;}
+  .recent-tbl, .recent-tbl tbody, .recent-tbl tr, .recent-tbl td{display:block; width:100%;}
+  .recent-tbl tr{padding:11px 13px; border-bottom:1px solid var(--gray1);}
+  .recent-tbl td{padding:3px 0; border:none;}
+  .recent-tbl td[data-label]::before{content:attr(data-label) ': '; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.3px; font-weight:600; margin-right:4px;}
+}
+@media (max-width: 420px){
+  .tab span{display:none;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+.tabs::-webkit-scrollbar{height:0;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <div class="sidebar-section">RH</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Aprovações</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>Movimentações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>Relatórios</a>
+      <div class="sidebar-section">Estrutura</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18"/></svg>Filiais e cargos</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Relatórios <strong>Analíticos</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar">RS</div>
+      <div class="user-info">
+        <span class="user-name">Ricardo Silva</span>
+        <span class="user-role">Admin RH</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Relatórios Analíticos</h1>
+        <p>Análises por empregador, tomador e cruzamentos multidimensionais</p>
+      </div>
+      <button class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Criar relatório customizado
+      </button>
+    </div>
+
+    <!-- Banner explicativo -->
+    <div class="intro-banner">
+      <div class="intro-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+      </div>
+      <div class="intro-text">
+        Todo relatório aceita o switch <strong style="color:var(--purple);">EMPREGADOR</strong> ↔ <strong style="color:var(--green);">TOMADOR</strong>.
+        O mesmo dado pode ser visto por quem paga a folha (CNPJ) ou por onde a pessoa trabalha (filial). Use ambos lado a lado para responder perguntas como
+        <em>"a Labuta concentra muita gente em uma única loja?"</em> ou <em>"que % do Cestão L1 é mão de obra terceirizada?"</em>.
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="biblioteca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        <span>Biblioteca</span>
+        <span class="count">24</span>
+      </button>
+      <button class="tab" data-tab="explorar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+        <span>Explorar</span>
+        <span class="count">●</span>
+      </button>
+      <button class="tab" data-tab="recentes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>Recentes</span>
+      </button>
+      <button class="tab" data-tab="agendados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Agendados</span>
+        <span class="count">5</span>
+      </button>
+    </div>
+
+    <!-- ============= TAB: BIBLIOTECA ============= -->
+    <div class="tab-panel active" data-panel="biblioteca">
+
+      <!-- Favoritos primeiro -->
+      <div class="cat-section">
+        <div class="cat-head">
+          <div class="cat-icon fav">★</div>
+          <div>
+            <div class="cat-title">Favoritos do RH</div>
+            <div class="cat-sub">Os mais usados pela sua equipe nos últimos 30 dias</div>
+          </div>
+          <span class="cat-count">3 relatórios</span>
+        </div>
+        <div class="report-grid">
+          <div class="report-card featured" onclick="openBuilder()">
+            <span class="star active" style="color:var(--orange);">★</span>
+            <div class="rc-head">
+              <div class="rc-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+              </div>
+              <div class="rc-info">
+                <div class="rc-title">Headcount por filial e empregador</div>
+                <div class="rc-desc">Quantos colaboradores em cada combinação. Mostra o "fatiamento" terceirizado vs próprio.</div>
+              </div>
+            </div>
+            <div class="rc-meta">
+              <span class="axis"><span class="axis-tag both">EMP×TOM</span></span>
+              <span>•</span>
+              <span>Usado <strong style="color:#fff;">142 vezes</strong> este mês</span>
+            </div>
+          </div>
+
+          <div class="report-card">
+            <span class="star active" style="color:var(--orange);">★</span>
+            <div class="rc-head">
+              <div class="rc-icon" style="background:var(--green2); color:var(--green);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              </div>
+              <div class="rc-info">
+                <div class="rc-title">Folha consolidada por empregador</div>
+                <div class="rc-desc">Total a pagar por CNPJ empregador. Base para conciliação com o ERP.</div>
+              </div>
+            </div>
+            <div class="rc-meta">
+              <span class="axis"><span class="axis-tag emp">EMP</span></span>
+              <span>•</span>
+              <span>89 usos</span>
+            </div>
+          </div>
+
+          <div class="report-card">
+            <span class="star active" style="color:var(--orange);">★</span>
+            <div class="rc-head">
+              <div class="rc-icon" style="background:#F0E6FA; color:var(--purple);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM21 9H3M9 21V9"/></svg>
+              </div>
+              <div class="rc-info">
+                <div class="rc-title">Custo de pessoal por filial (DRE)</div>
+                <div class="rc-desc">Custo total da operação de cada filial, somando próprios + terceirizados alocados.</div>
+              </div>
+            </div>
+            <div class="rc-meta">
+              <span class="axis"><span class="axis-tag tom">TOM</span></span>
+              <span>•</span>
+              <span>76 usos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Headcount -->
+      <div class="cat-section">
+        <div class="cat-head">
+          <div class="cat-icon head">⛁</div>
+          <div>
+            <div class="cat-title">Headcount</div>
+            <div class="cat-sub">Quantitativos de pessoas, distribuição e turnover</div>
+          </div>
+          <span class="cat-count">7 relatórios</span>
+        </div>
+        <div class="report-grid">
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Distribuição por departamento</div>
+                <div class="rc-desc">Pessoas por área funcional, com sub-totais por filial</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Turnover mensal</div>
+                <div class="rc-desc">Taxa de saída calculada por empregador ou tomador</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Tempo médio de casa</div>
+                <div class="rc-desc">Senioridade média por filial e área</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">% de terceirização por filial</div>
+                <div class="rc-desc">Quanto de cada filial é mão de obra de prestadora</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag tom">TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Concentração da prestadora</div>
+                <div class="rc-desc">Quão pulverizada está cada prestadora entre filiais</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag emp">EMP</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Pirâmide etária</div>
+                <div class="rc-desc">Distribuição de idade por sexo, filial e área</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M5 8h6M5 16h6M14 8c2.5 0 4 1 4 2.5S16.5 13 14 13M14 13c2.5 0 4 1 4 2.5S16.5 18 14 18"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Pirâmide salarial</div>
+                <div class="rc-desc">Distribuição de salários, equidade interna</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financeiros -->
+      <div class="cat-section">
+        <div class="cat-head">
+          <div class="cat-icon fin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div>
+            <div class="cat-title">Custos e folha</div>
+            <div class="cat-sub">Análises financeiras de pessoal, conciliação ERP</div>
+          </div>
+          <span class="cat-count">6 relatórios</span>
+        </div>
+        <div class="report-grid">
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon" style="background:var(--green2); color:var(--green);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 16l4-7 4 4 5-9"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Evolução da folha 12m</div>
+                <div class="rc-desc">Crescimento mês a mês, separado por empregador</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag emp">EMP</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon" style="background:var(--green2); color:var(--green);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 002 1.6h9.7a2 2 0 002-1.6L23 6H6"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Custo médio por colaborador</div>
+                <div class="rc-desc">Salário + encargos por filial, identifica filiais caras</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag tom">TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon" style="background:var(--green2); color:var(--green);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Conciliação ERP × R2 People</div>
+                <div class="rc-desc">Compara folha do TOTVS WinThor com cadastro do R2</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag emp">EMP</span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance -->
+      <div class="cat-section">
+        <div class="cat-head">
+          <div class="cat-icon perf"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          <div>
+            <div class="cat-title">Avaliação e desempenho</div>
+            <div class="cat-sub">Performance, 9-Box, distribuição de notas</div>
+          </div>
+          <span class="cat-count">5 relatórios</span>
+        </div>
+        <div class="report-grid">
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon" style="background:var(--amber2); color:var(--amber);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">9-Box do ciclo atual</div>
+                <div class="rc-desc">Matriz desempenho × potencial, exportável</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon" style="background:var(--amber2); color:var(--amber);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Distribuição de notas</div>
+                <div class="rc-desc">Histograma das avaliações por filial</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag tom">TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon" style="background:var(--amber2); color:var(--amber);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5L19 22l-3.5-2L12 22l-3.5-2L5 22l3.5-8.5"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Top performers por área</div>
+                <div class="rc-desc">Ranking dos melhores avaliados por departamento</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag tom">TOM</span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Movimentações -->
+      <div class="cat-section">
+        <div class="cat-head">
+          <div class="cat-icon mov"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg></div>
+          <div>
+            <div class="cat-title">Movimentações</div>
+            <div class="cat-sub">Promoções, transferências, demissões</div>
+          </div>
+          <span class="cat-count">3 relatórios</span>
+        </div>
+        <div class="report-grid">
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 16l4-7 4 4 5-9"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Promoções por trimestre</div>
+                <div class="rc-desc">Volume e distribuição de promoções aprovadas</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Demissões por motivo</div>
+                <div class="rc-desc">Causa raiz das saídas, identifica padrões</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag both">EMP×TOM</span></span></div>
+          </div>
+          <div class="report-card">
+            <div class="rc-head">
+              <div class="rc-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg></div>
+              <div class="rc-info">
+                <div class="rc-title">Transferências entre filiais</div>
+                <div class="rc-desc">Fluxo de pessoas entre tomadores no período</div>
+              </div>
+            </div>
+            <div class="rc-meta"><span class="axis"><span class="axis-tag tom">TOM</span></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: EXPLORAR (BUILDER) ============= -->
+    <div class="tab-panel" data-panel="explorar">
+
+      <div class="builder-frame">
+        <div class="builder-head">
+          <div class="bh-info">
+            <h2>Headcount por filial e empregador</h2>
+            <p>Visão multidimensional do quadro de pessoas</p>
+          </div>
+          <div class="bh-actions">
+            <button>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+              Salvar como
+            </button>
+            <button>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              Agendar envio
+            </button>
+            <button class="primary">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              Exportar Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- SWITCH PRINCIPAL: EMPREGADOR vs TOMADOR -->
+        <div class="axis-switch-section">
+          <div class="axis-switch-head">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>
+            <div>
+              <h3>Eixo principal de análise</h3>
+              <p style="margin:0;">Como você quer agrupar os dados? Esta escolha define toda a lógica do relatório.</p>
+            </div>
+          </div>
+
+          <div class="axis-toggle">
+            <button class="axis-option emp" id="axisEmp" onclick="setAxis('emp')">
+              <div class="ao-icon">⚛</div>
+              <div class="ao-text">
+                <div class="ao-label">Por empregador</div>
+                <div class="ao-sub">Agrupa por CNPJ que paga a folha. Útil para folha, RH da prestadora, conciliação contábil.</div>
+              </div>
+            </button>
+            <button class="axis-option tom active" id="axisTom" onclick="setAxis('tom')">
+              <div class="ao-icon">⌂</div>
+              <div class="ao-text">
+                <div class="ao-label">Por tomador (filial)</div>
+                <div class="ao-sub">Agrupa por filial onde a pessoa trabalha. Útil para gerência local, custo de loja, DRE.</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="builder-filters">
+          <div class="bf-field">
+            <label>Período</label>
+            <select>
+              <option>Posição atual (hoje)</option>
+              <option>30/04/2026</option>
+              <option>Últimos 12 meses</option>
+              <option>Período customizado</option>
+            </select>
+          </div>
+          <div class="bf-field">
+            <label>Empregadores incluídos</label>
+            <select>
+              <option>Todos (4)</option>
+              <option>Só GPC (próprios)</option>
+              <option>Só prestadoras (3)</option>
+              <option>Selecionar...</option>
+            </select>
+          </div>
+          <div class="bf-field">
+            <label>Tomadores incluídos</label>
+            <select>
+              <option>Todas as filiais (14)</option>
+              <option>Só lojas</option>
+              <option>Só CDs</option>
+              <option>Selecionar...</option>
+            </select>
+          </div>
+          <div class="bf-field">
+            <label>Status</label>
+            <select>
+              <option>Apenas ativos</option>
+              <option>Ativos + férias + licença</option>
+              <option>Todos (incluindo desligados)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Resumo do filtro -->
+        <div class="filter-summary">
+          <span class="label">FILTROS APLICADOS:</span>
+          <span class="fs-chip">Período: <strong>hoje</strong></span>
+          <span class="fs-chip">Empregadores: <strong>todos (4)</strong></span>
+          <span class="fs-chip">Tomadores: <strong>todas (14)</strong></span>
+          <span class="fs-chip">Status: <strong>ativos</strong></span>
+          <span class="fs-result">Resultado: <strong>367</strong> colaboradores</span>
+        </div>
+
+        <!-- Body do relatório -->
+        <div class="report-body">
+
+          <!-- KPIs do relatório -->
+          <div class="report-kpis">
+            <div class="rk">
+              <div class="rk-label">Total no escopo</div>
+              <div class="rk-value">367</div>
+              <div class="rk-sub">100% do quadro ativo</div>
+            </div>
+            <div class="rk emp">
+              <div class="rk-label">Empregadores distintos</div>
+              <div class="rk-value">4</div>
+              <div class="rk-sub">GPC + 3 prestadoras</div>
+            </div>
+            <div class="rk tom">
+              <div class="rk-label">Tomadores distintos</div>
+              <div class="rk-value">14</div>
+              <div class="rk-sub">Lojas, CDs, escritórios</div>
+            </div>
+            <div class="rk amber">
+              <div class="rk-label">% terceirizado</div>
+              <div class="rk-value">83,4%</div>
+              <div class="rk-sub">307 de 367 são terceirizados</div>
+            </div>
+          </div>
+
+          <!-- COMPARAÇÃO LADO A LADO: EMP vs TOM -->
+          <div class="compare-block">
+            <div class="compare-head">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+              <div>
+                <h3>O mesmo dado por dois eixos diferentes</h3>
+                <p style="margin:0;">Os totais batem, mas a leitura é completamente diferente. Use o eixo certo conforme a pergunta que está respondendo.</p>
+              </div>
+            </div>
+            <div class="compare-grid">
+              <div class="compare-side emp">
+                <div class="cs-head">
+                  <span class="cs-tag emp">EMP</span>
+                  <span class="cs-title">Visão por empregador (CNPJ)</span>
+                </div>
+                <div class="cs-row"><span class="label">GPC (próprios)</span><span class="value">60</span></div>
+                <div class="cs-row"><span class="label">Labuta Serviços</span><span class="value">247</span></div>
+                <div class="cs-row"><span class="label">Limpactiva</span><span class="value">38</span></div>
+                <div class="cs-row"><span class="label">Segure Vigilância</span><span class="value">22</span></div>
+                <div class="cs-row total"><span class="label">Total</span><span class="value">367</span></div>
+                <div style="margin-top:7px; padding-top:7px; border-top:1px dashed var(--gray2); font-size:10.5px; color:var(--txt2); line-height:1.4;">
+                  <strong>Quem usa:</strong> RH corporativo conferindo folha, financeiro reconciliando notas das prestadoras, contabilidade.
+                </div>
+              </div>
+              <div class="compare-side tom">
+                <div class="cs-head">
+                  <span class="cs-tag tom">TOM</span>
+                  <span class="cs-title">Visão por tomador (filial)</span>
+                </div>
+                <div class="cs-row"><span class="label">ATP-Varejo</span><span class="value">78</span></div>
+                <div class="cs-row"><span class="label">Cestão L1</span><span class="value">91</span></div>
+                <div class="cs-row"><span class="label">Cestão Inhambupe</span><span class="value">46</span></div>
+                <div class="cs-row"><span class="label">Outras 11 filiais</span><span class="value">152</span></div>
+                <div class="cs-row total"><span class="label">Total</span><span class="value">367</span></div>
+                <div style="margin-top:7px; padding-top:7px; border-top:1px dashed var(--gray2); font-size:10.5px; color:var(--txt2); line-height:1.4;">
+                  <strong>Quem usa:</strong> Gerentes de loja, diretor de operações, controle de DRE por unidade, auditoria de quadro local.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visualizações lado a lado -->
+          <div class="viz-grid">
+            <div class="viz-card">
+              <div class="viz-head">
+                <div>
+                  <div class="viz-title">Headcount por <span style="color:var(--green);">tomador</span></div>
+                  <div class="viz-sub">Empilhado por empregador para mostrar a composição</div>
+                </div>
+              </div>
+              <div class="chart-wrap"><canvas id="chTom"></canvas></div>
+            </div>
+            <div class="viz-card">
+              <div class="viz-head">
+                <div>
+                  <div class="viz-title">Headcount por <span style="color:var(--purple);">empregador</span></div>
+                  <div class="viz-sub">Empilhado por tomador para mostrar onde estão alocados</div>
+                </div>
+              </div>
+              <div class="chart-wrap"><canvas id="chEmp"></canvas></div>
+            </div>
+          </div>
+
+          <!-- Tabela cruzada (matriz) -->
+          <div class="viz-card">
+            <div class="viz-head">
+              <div>
+                <div class="viz-title">Matriz cruzada Empregador × Tomador</div>
+                <div class="viz-sub">Quantos colaboradores em cada interseção. Células vazias = nenhuma alocação.</div>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="breakdown-tbl" style="min-width:680px;">
+                <thead>
+                  <tr>
+                    <th>Empregador / Tomador</th>
+                    <th class="right">ATP-Var</th>
+                    <th class="right">ATP-Ata</th>
+                    <th class="right">Cestão L1</th>
+                    <th class="right">Cestão Inh.</th>
+                    <th class="right">ATP S.Bonfim</th>
+                    <th class="right">CD Logística</th>
+                    <th class="right">Outras</th>
+                    <th class="right" style="background:#F0E6FA;">Total EMP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="axis-tag emp">EMP</span><strong>GPC (próprios)</strong></td>
+                    <td class="right">8</td>
+                    <td class="right">6</td>
+                    <td class="right">11</td>
+                    <td class="right">5</td>
+                    <td class="right">3</td>
+                    <td class="right">7</td>
+                    <td class="right">20</td>
+                    <td class="right" style="background:#F0E6FA; font-weight:700;">60</td>
+                  </tr>
+                  <tr>
+                    <td><span class="axis-tag emp">EMP</span><strong>Labuta</strong></td>
+                    <td class="right">52</td>
+                    <td class="right">28</td>
+                    <td class="right">63</td>
+                    <td class="right">31</td>
+                    <td class="right">18</td>
+                    <td class="right">22</td>
+                    <td class="right">33</td>
+                    <td class="right" style="background:#F0E6FA; font-weight:700;">247</td>
+                  </tr>
+                  <tr>
+                    <td><span class="axis-tag emp">EMP</span><strong>Limpactiva</strong></td>
+                    <td class="right">10</td>
+                    <td class="right">5</td>
+                    <td class="right">9</td>
+                    <td class="right">6</td>
+                    <td class="right">3</td>
+                    <td class="right">4</td>
+                    <td class="right">1</td>
+                    <td class="right" style="background:#F0E6FA; font-weight:700;">38</td>
+                  </tr>
+                  <tr>
+                    <td><span class="axis-tag emp">EMP</span><strong>Segure</strong></td>
+                    <td class="right">8</td>
+                    <td class="right">3</td>
+                    <td class="right">8</td>
+                    <td class="right">4</td>
+                    <td class="right">4</td>
+                    <td class="right">4</td>
+                    <td class="right" style="color:var(--txt3);">-</td>
+                    <td class="right" style="background:#F0E6FA; font-weight:700;">22</td>
+                  </tr>
+                  <tr>
+                    <td style="background:var(--green2);"><span class="axis-tag tom">TOM</span><strong>Total TOM</strong></td>
+                    <td class="right" style="background:var(--green2);"><strong>78</strong></td>
+                    <td class="right" style="background:var(--green2);"><strong>42</strong></td>
+                    <td class="right" style="background:var(--green2);"><strong>91</strong></td>
+                    <td class="right" style="background:var(--green2);"><strong>46</strong></td>
+                    <td class="right" style="background:var(--green2);"><strong>28</strong></td>
+                    <td class="right" style="background:var(--green2);"><strong>37</strong></td>
+                    <td class="right" style="background:var(--green2);"><strong>54</strong></td>
+                    <td class="right" style="background:linear-gradient(135deg, #F0E6FA, #D4EDDF); font-weight:800;">367</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="margin-top:10px; padding:9px 11px; background:var(--off); border-radius:7px; font-size:11px; color:var(--txt2); line-height:1.5;">
+              <strong style="color:var(--txt);">Como ler:</strong>
+              Linha = empregador (CNPJ que paga). Coluna = tomador (filial onde trabalha).
+              Por exemplo: <strong style="color:var(--purple);">63 colaboradores da Labuta</strong> trabalham operacionalmente no <strong style="color:var(--green);">Cestão L1</strong>.
+              Total da linha = soma do empregador. Total da coluna = soma da filial.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: RECENTES ============= -->
+    <div class="tab-panel" data-panel="recentes">
+      <div class="recent-card">
+        <div class="recent-head">
+          <div>
+            <h3>Relatórios executados recentemente</h3>
+            <p>Últimos 30 dias, todos os usuários da sua equipe</p>
+          </div>
+        </div>
+        <table class="recent-tbl">
+          <thead>
+            <tr>
+              <th>Relatório</th>
+              <th>Eixo</th>
+              <th>Quem rodou</th>
+              <th>Quando</th>
+              <th class="center">Linhas</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Relatório"><strong>Headcount por filial e empregador</strong></td>
+              <td data-label="Eixo"><span class="axis-tag both" style="font-size:9px; padding:2px 7px; border-radius:7px; font-weight:700; background:#FCE6CD; color:var(--amber);">EMP×TOM</span></td>
+              <td data-label="Por">Patrícia Mello</td>
+              <td data-label="Quando" style="color:var(--txt2); font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 2h</td>
+              <td class="center" data-label="Linhas">367</td>
+              <td class="right" data-label="Ações"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Reabrir</button></td>
+            </tr>
+            <tr>
+              <td><strong>% de terceirização por filial</strong></td>
+              <td><span class="axis-tag tom" style="font-size:9px; padding:2px 7px; border-radius:7px; font-weight:700; background:var(--green2); color:var(--green);">TOM</span></td>
+              <td>Maria Santos</td>
+              <td style="color:var(--txt2); font-family:'JetBrains Mono',monospace; font-size:11.5px;">ontem</td>
+              <td class="center">14</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Reabrir</button></td>
+            </tr>
+            <tr>
+              <td><strong>Folha consolidada · Labuta</strong></td>
+              <td><span class="axis-tag emp" style="font-size:9px; padding:2px 7px; border-radius:7px; font-weight:700; background:#F0E6FA; color:var(--purple);">EMP</span></td>
+              <td>Larissa Pereira</td>
+              <td style="color:var(--txt2); font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 2 dias</td>
+              <td class="center">247</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Reabrir</button></td>
+            </tr>
+            <tr>
+              <td><strong>Custo médio por colaborador</strong></td>
+              <td><span class="axis-tag tom" style="font-size:9px; padding:2px 7px; border-radius:7px; font-weight:700; background:var(--green2); color:var(--green);">TOM</span></td>
+              <td>Patrícia Mello</td>
+              <td style="color:var(--txt2); font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 3 dias</td>
+              <td class="center">14</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Reabrir</button></td>
+            </tr>
+            <tr>
+              <td><strong>Conciliação ERP × R2</strong></td>
+              <td><span class="axis-tag emp" style="font-size:9px; padding:2px 7px; border-radius:7px; font-weight:700; background:#F0E6FA; color:var(--purple);">EMP</span></td>
+              <td>Ricardo Silva</td>
+              <td style="color:var(--txt2); font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 5 dias</td>
+              <td class="center">120</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Reabrir</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============= TAB: AGENDADOS ============= -->
+    <div class="tab-panel" data-panel="agendados">
+      <div class="recent-card">
+        <div class="recent-head">
+          <div>
+            <h3>Relatórios agendados</h3>
+            <p>Envios automáticos por e-mail com periodicidade definida</p>
+          </div>
+          <button class="btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Novo agendamento</button>
+        </div>
+        <table class="recent-tbl">
+          <thead>
+            <tr>
+              <th>Relatório</th>
+              <th>Frequência</th>
+              <th>Destinatários</th>
+              <th>Próximo envio</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Headcount semanal</strong></td>
+              <td>Segundas, 8h</td>
+              <td>Diretoria + Coord. RH</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">28/04 08:00</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Editar</button></td>
+            </tr>
+            <tr>
+              <td><strong>Folha mensal · Labuta</strong></td>
+              <td>Dia 5 de cada mês</td>
+              <td>RH Labuta + Financeiro GPC</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">05/05 06:00</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Editar</button></td>
+            </tr>
+            <tr>
+              <td><strong>Custo de pessoal · Cestão L1</strong></td>
+              <td>Mensal, último dia útil</td>
+              <td>Sandra Gomes (Gerente)</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">30/04 18:00</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Editar</button></td>
+            </tr>
+            <tr>
+              <td><strong>9-Box trimestral</strong></td>
+              <td>A cada 3 meses</td>
+              <td>Diretoria executiva</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">30/06 09:00</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Editar</button></td>
+            </tr>
+            <tr>
+              <td><strong>Distribuição de notas · Ciclo encerrado</strong></td>
+              <td>Após cada ciclo</td>
+              <td>Líderes + Coord. RH</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">aguardando ciclo</td>
+              <td class="right"><button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Editar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ============= TABS ============= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+    if(t.dataset.tab==='explorar') setTimeout(renderCharts, 50);
+  });
+});
+
+function openBuilder(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+  document.querySelector('[data-tab="explorar"]').classList.add('active');
+  document.querySelector('[data-panel="explorar"]').classList.add('active');
+  setTimeout(renderCharts, 50);
+}
+
+/* ============= AXIS SWITCH ============= */
+let currentAxis = 'tom';
+function setAxis(axis){
+  currentAxis = axis;
+  document.getElementById('axisEmp').classList.toggle('active', axis==='emp');
+  document.getElementById('axisTom').classList.toggle('active', axis==='tom');
+  // Reordena os charts dando ênfase
+  setTimeout(renderCharts, 50);
+}
+
+/* ============= CHARTS ============= */
+function renderCharts(){
+  Chart.defaults.color = '#5A7090';
+  Chart.defaults.font.family = "'Sora', sans-serif";
+  Chart.defaults.font.size = 10.5;
+  const TT = {backgroundColor:'#1A2D4F', borderColor:'#3D5F95', borderWidth:1, padding:10, titleColor:'#fff', bodyColor:'#cbd5e1', cornerRadius:6};
+
+  // Chart por TOMADOR (filiais), empilhado por empregador
+  if(window._chTom) window._chTom.destroy();
+  const ctxTom = document.getElementById('chTom');
+  if(ctxTom){
+    window._chTom = new Chart(ctxTom, {
+      type:'bar',
+      data:{
+        labels:['ATP-Var','ATP-Ata','Cestão L1','Cestão Inh','ATP S.Bonfim','CD Log.','Outras'],
+        datasets:[
+          {label:'GPC (próprios)', data:[8,6,11,5,3,7,20], backgroundColor:'#2B4A7A', stack:'a', borderRadius:3, maxBarThickness:32},
+          {label:'Labuta',        data:[52,28,63,31,18,22,33], backgroundColor:'#6D28D9', stack:'a', borderRadius:3, maxBarThickness:32},
+          {label:'Limpactiva',    data:[10,5,9,6,3,4,1], backgroundColor:'#F5831F', stack:'a', borderRadius:3, maxBarThickness:32},
+          {label:'Segure',        data:[8,3,8,4,4,4,0], backgroundColor:'#1E7B4B', stack:'a', borderRadius:3, maxBarThickness:32}
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{position:'bottom', labels:{boxWidth:10, boxHeight:10, padding:11}}, tooltip:{...TT, callbacks:{footer:(items)=>{const tot=items.reduce((s,i)=>s+i.parsed.y,0); return `Total: ${tot}`;}}}},
+        scales:{x:{stacked:true, grid:{display:false}, ticks:{color:'#1A2D4F', font:{size:10.5}}}, y:{stacked:true, beginAtZero:true, grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#8FA3BE'}}}
+      }
+    });
+  }
+
+  // Chart por EMPREGADOR
+  if(window._chEmp) window._chEmp.destroy();
+  const ctxEmp = document.getElementById('chEmp');
+  if(ctxEmp){
+    window._chEmp = new Chart(ctxEmp, {
+      type:'bar',
+      data:{
+        labels:['GPC','Labuta','Limpactiva','Segure'],
+        datasets:[
+          {label:'ATP-Var',     data:[8,52,10,8], backgroundColor:'#2B4A7A', stack:'a', borderRadius:3, maxBarThickness:42},
+          {label:'ATP-Ata',     data:[6,28,5,3], backgroundColor:'#3D5F95', stack:'a', borderRadius:3, maxBarThickness:42},
+          {label:'Cestão L1',   data:[11,63,9,8], backgroundColor:'#1E7B4B', stack:'a', borderRadius:3, maxBarThickness:42},
+          {label:'Cestão Inh',  data:[5,31,6,4], backgroundColor:'#F5831F', stack:'a', borderRadius:3, maxBarThickness:42},
+          {label:'ATP S.Bonfim',data:[3,18,3,4], backgroundColor:'#854F0B', stack:'a', borderRadius:3, maxBarThickness:42},
+          {label:'CD Log.',     data:[7,22,4,4], backgroundColor:'#6D28D9', stack:'a', borderRadius:3, maxBarThickness:42},
+          {label:'Outras',      data:[20,33,1,0], backgroundColor:'#A8B5C8', stack:'a', borderRadius:3, maxBarThickness:42}
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false, indexAxis:'y',
+        plugins:{legend:{position:'bottom', labels:{boxWidth:10, boxHeight:10, padding:11}}, tooltip:{...TT, callbacks:{footer:(items)=>{const tot=items.reduce((s,i)=>s+i.parsed.x,0); return `Total: ${tot}`;}}}},
+        scales:{x:{stacked:true, beginAtZero:true, grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#8FA3BE'}}, y:{stacked:true, grid:{display:false}, ticks:{color:'#1A2D4F', font:{size:11}}}}
+      }
+    });
+  }
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Minhas metas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1280px; margin:0 auto; padding:18px 22px 50px;}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg, var(--navy) 0%, var(--purple) 100%);
+  border-radius:14px;
+  padding:22px 26px;
+  color:#fff;
+  margin-bottom:14px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  top:-30%; right:-10%;
+  width:280px; height:280px;
+  background:radial-gradient(circle, rgba(255,255,255,.1), transparent);
+  pointer-events:none;
+}
+.hero-row{display:flex; gap:18px; align-items:center; flex-wrap:wrap; position:relative; z-index:1;}
+.hero-avatar{
+  width:62px; height:62px; border-radius:50%;
+  background:linear-gradient(135deg,#fff,var(--gray1));
+  color:var(--purple); font-size:21px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 4px 14px rgba(0,0,0,.15);
+}
+.hero-text{flex:1; min-width:200px;}
+.hero-greet{font-size:13px; color:rgba(255,255,255,.85); margin-bottom:3px;}
+.hero-name{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.hero-role{font-size:12px; color:rgba(255,255,255,.85); margin-top:3px;}
+.hero-stat{
+  background:rgba(255,255,255,.13);
+  -webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:12px;
+  padding:13px 18px;
+  min-width:165px;
+}
+.hero-stat-lbl{font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:rgba(255,255,255,.8); font-weight:600;}
+.hero-stat-val{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:21px; letter-spacing:-.4px; margin-top:3px;}
+.hero-stat-val .currency{font-size:11px; font-weight:500; opacity:.85; font-family:'Sora',sans-serif;}
+.hero-stat-detail{font-size:10.5px; color:rgba(255,255,255,.75); margin-top:3px;}
+
+/* TIMELINE PESSOAL ANUAL */
+.year-timeline{
+  background:#fff;
+  border-radius:13px;
+  padding:14px 18px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:13px;
+}
+.year-timeline-head{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-bottom:11px;
+}
+.year-timeline-head h3{
+  font-size:13.5px; font-weight:600; letter-spacing:-.1px;
+  display:flex; align-items:center; gap:7px;
+}
+.year-timeline-head h3 svg{width:14px; height:14px; color:var(--purple);}
+.year-timeline-summary{
+  font-size:11px; color:var(--txt2);
+}
+.year-timeline-summary strong{color:var(--txt); font-family:'JetBrains Mono',monospace;}
+
+.year-grid{
+  display:grid;
+  grid-template-columns:repeat(12, 1fr);
+  gap:5px;
+  margin-bottom:8px;
+}
+.year-month{
+  position:relative;
+  padding:6px 4px;
+  text-align:center;
+  border-radius:7px;
+  background:var(--off);
+  border:1px solid var(--gray1);
+  cursor:pointer;
+  transition:all .12s;
+}
+.year-month:hover{transform:translateY(-1px); box-shadow:var(--shadow-card);}
+.year-month.has-paid{
+  background:linear-gradient(135deg, var(--purple2), #fff);
+  border-color:var(--purple);
+}
+.year-month.has-pending{
+  background:linear-gradient(135deg, var(--amber2), #fff);
+  border-color:var(--amber);
+}
+.year-month.has-validated{
+  background:linear-gradient(135deg, var(--green2), #fff);
+  border-color:var(--green);
+}
+.year-month.current{
+  outline:2px solid var(--orange);
+  outline-offset:1px;
+}
+.ym-label{
+  font-size:10px;
+  font-weight:600;
+  text-transform:uppercase;
+  color:var(--txt2);
+  letter-spacing:.4px;
+}
+.ym-value{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:700;
+  color:var(--txt);
+  margin-top:2px;
+}
+.ym-value.muted{color:var(--txt3); font-weight:500;}
+.ym-dot{
+  width:5px; height:5px;
+  border-radius:50%;
+  margin:3px auto 0;
+}
+
+.year-legend{
+  display:flex; gap:13px; flex-wrap:wrap;
+  font-size:10.5px;
+  color:var(--txt2);
+}
+.lg-item{display:flex; align-items:center; gap:5px;}
+.lg-item .lg-color{width:9px; height:9px; border-radius:50%;}
+
+/* GRID PRINCIPAL */
+.main-grid{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:13px;
+  margin-bottom:13px;
+}
+
+@media (max-width: 1024px){
+  .main-grid{grid-template-columns:1fr;}
+}
+
+.section-card{
+  background:#fff;
+  border-radius:13px;
+  padding:16px 18px;
+  box-shadow:var(--shadow-card);
+}
+.section-head{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:13px;
+  padding-bottom:11px;
+  border-bottom:1px solid var(--gray1);
+}
+.section-head h2{
+  font-size:14px; font-weight:600; letter-spacing:-.2px;
+  display:flex; align-items:center; gap:8px;
+}
+.section-head h2 svg{width:15px; height:15px; color:var(--orange);}
+.section-helper{font-size:11px; color:var(--txt2);}
+
+/* GOAL ITEM (lista) */
+.my-goal-list{display:flex; flex-direction:column; gap:11px;}
+.my-goal{
+  border:1.5px solid var(--gray1);
+  border-radius:11px;
+  padding:13px 15px;
+  transition:all .12s;
+  cursor:pointer;
+  position:relative;
+}
+.my-goal:hover{border-color:var(--navy); box-shadow:var(--shadow-card);}
+.my-goal.active{border-left:4px solid var(--blue);}
+.my-goal.result_pending{border-left:4px solid var(--amber); background:linear-gradient(180deg, var(--amber2), #fff);}
+.my-goal.validation_pending{border-left:4px solid var(--orange);}
+.my-goal.validated{border-left:4px solid var(--green); background:linear-gradient(180deg, var(--green2), #fff);}
+.my-goal.paid{border-left:4px solid var(--purple);}
+
+.mg-head{display:flex; justify-content:space-between; gap:11px; align-items:flex-start; margin-bottom:9px;}
+.mg-title{flex:1; min-width:0;}
+.mg-title h3{font-size:13px; font-weight:600; line-height:1.3;}
+.mg-meta{
+  font-size:10.5px; color:var(--txt2); margin-top:3px;
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+
+.status-pill{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:6px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap;}
+.status-pill.active{background:var(--blue2); color:var(--blue);}
+.status-pill.result_pending{background:var(--amber2); color:var(--amber);}
+.status-pill.validation_pending{background:var(--orange2); color:var(--orange);}
+.status-pill.validated{background:var(--green2); color:var(--green);}
+.status-pill.paid{background:var(--purple2); color:var(--purple);}
+.status-pill .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+.mg-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+  margin-bottom:9px;
+}
+.mg-block{
+  background:var(--off);
+  border-radius:8px;
+  padding:9px 11px;
+}
+.mg-block.gold{
+  background:linear-gradient(135deg, var(--orange2), #fff);
+  border:1px solid var(--orange);
+}
+.mg-block.green{
+  background:linear-gradient(135deg, var(--green2), #fff);
+  border:1px solid var(--green);
+}
+.mg-block.purple{
+  background:linear-gradient(135deg, var(--purple2), #fff);
+  border:1px solid var(--purple);
+}
+.mg-block-lbl{
+  font-size:9.5px; text-transform:uppercase;
+  letter-spacing:.4px; font-weight:700;
+  color:var(--txt2);
+}
+.mg-block.gold .mg-block-lbl{color:var(--orange);}
+.mg-block.green .mg-block-lbl{color:var(--green);}
+.mg-block.purple .mg-block-lbl{color:var(--purple);}
+
+.mg-block-val{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:15px;
+  margin-top:2px;
+  letter-spacing:-.2px;
+}
+.mg-block-detail{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+
+.mg-indicators{
+  margin-top:9px;
+  padding-top:9px;
+  border-top:1px dashed var(--gray2);
+}
+.mg-ind-head{
+  font-size:10px; text-transform:uppercase;
+  letter-spacing:.4px; font-weight:600;
+  color:var(--txt2);
+  margin-bottom:7px;
+}
+.mg-ind-item{
+  display:flex; align-items:center; gap:9px;
+  padding:5px 0;
+  font-size:11.5px;
+}
+.mg-ind-item:not(:last-child){border-bottom:1px dotted var(--gray2);}
+.mg-ind-name{flex:1; color:var(--txt); font-weight:500; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.mg-ind-target{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt2); white-space:nowrap;}
+.mg-ind-pct{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:12px;
+  width:50px; text-align:right;
+}
+.mg-ind-pct.pending{color:var(--txt3); font-weight:500; font-size:11px;}
+.mg-ind-pct.success{color:var(--green);}
+.mg-ind-pct.below{color:var(--amber);}
+.mg-ind-pct.danger{color:var(--red);}
+
+.mg-foot{
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px dashed var(--gray2);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:11px;
+  font-size:11px;
+  color:var(--txt2);
+}
+.mg-foot .deadline{
+  display:flex; align-items:center; gap:5px;
+}
+.mg-foot .deadline svg{width:11px; height:11px; color:var(--txt3);}
+.mg-foot .deadline strong{color:var(--txt); font-family:'JetBrains Mono',monospace; font-size:11px;}
+.mg-foot .next-step{
+  font-weight:500;
+  color:var(--navy);
+}
+.mg-foot .next-step.warn{color:var(--orange);}
+
+/* SIDEBAR (próximos pagamentos + dicas) */
+.aside-card{
+  background:#fff;
+  border-radius:13px;
+  padding:14px 16px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:13px;
+}
+.aside-head{
+  display:flex; align-items:center; gap:7px;
+  font-size:12px; font-weight:600;
+  margin-bottom:11px;
+  padding-bottom:9px;
+  border-bottom:1px solid var(--gray1);
+  letter-spacing:-.1px;
+}
+.aside-head svg{width:13px; height:13px; color:var(--orange);}
+
+.upcoming-pay{
+  display:flex; flex-direction:column; gap:9px;
+}
+.up-item{
+  display:flex; gap:9px;
+  padding:7px 0;
+}
+.up-item:not(:last-child){border-bottom:1px dotted var(--gray2);}
+.up-icon{
+  width:32px; height:32px;
+  border-radius:9px;
+  background:var(--purple2);
+  color:var(--purple);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.up-icon svg{width:13px; height:13px;}
+.up-icon.amber{background:var(--amber2); color:var(--amber);}
+.up-icon.orange{background:var(--orange2); color:var(--orange);}
+.up-info{flex:1; min-width:0;}
+.up-title{font-size:11.5px; font-weight:500; color:var(--txt); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.up-detail{font-size:10.5px; color:var(--txt2); margin-top:1px; line-height:1.3;}
+.up-amount{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:12px;
+  color:var(--purple);
+  white-space:nowrap;
+}
+.up-amount.amber{color:var(--amber);}
+.up-amount.orange{color:var(--orange);}
+
+.tip-card{
+  background:linear-gradient(180deg, var(--blue2), #fff);
+  border-radius:11px;
+  padding:13px 15px;
+  border:1px solid var(--blue);
+  margin-bottom:11px;
+  display:flex; gap:10px;
+}
+.tip-card:last-child{margin-bottom:0;}
+.tip-icon{
+  width:30px; height:30px;
+  border-radius:50%;
+  background:var(--blue);
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.tip-icon svg{width:13px; height:13px;}
+.tip-text{font-size:11.5px; line-height:1.4; color:var(--txt);}
+.tip-text strong{color:var(--blue);}
+
+/* COMPARE BAR (% atingido vs equipe) */
+.cmp-bar{
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px dashed var(--gray2);
+  font-size:10.5px;
+}
+.cmp-bar-lbl{color:var(--txt2); margin-bottom:5px;}
+.cmp-bar-track{
+  height:6px; background:var(--gray1);
+  border-radius:3px; position:relative;
+  overflow:hidden;
+}
+.cmp-bar-mine{
+  position:absolute; inset:0 auto 0 0;
+  background:linear-gradient(90deg, var(--blue), var(--green));
+  border-radius:3px;
+}
+.cmp-bar-team{
+  position:absolute;
+  top:-3px; bottom:-3px;
+  width:2px;
+  background:var(--orange);
+  border-radius:1px;
+}
+.cmp-bar-team::after{
+  content:''; position:absolute;
+  top:-2px; left:50%; transform:translateX(-50%);
+  width:0; height:0;
+  border-left:3px solid transparent;
+  border-right:3px solid transparent;
+  border-top:4px solid var(--orange);
+}
+.cmp-bar-info{
+  display:flex; justify-content:space-between;
+  font-size:10px; color:var(--txt2);
+  margin-top:5px;
+}
+.cmp-bar-info .me{color:var(--blue); font-weight:600;}
+.cmp-bar-info .team{color:var(--orange); font-weight:600;}
+
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:13px 14px 30px;}
+  .hero{padding:18px 16px;}
+  .hero-row{gap:12px;}
+  .hero-name{font-size:18px;}
+  .hero-text{min-width:0; flex:1 1 100%;}
+  .hero-stat{flex:1 1 100%; min-width:0;}
+  .hero-stat-val{font-size:18px;}
+  .year-grid{grid-template-columns:repeat(6, 1fr);}
+  .mg-grid{grid-template-columns:1fr;}
+}
+@media (max-width: 480px){
+  .hero-avatar{width:50px; height:50px; font-size:18px;}
+  .hero-name{font-size:16px;}
+  .hero-greet, .hero-role{font-size:11.5px;}
+  .year-grid{grid-template-columns:repeat(4, 1fr); gap:4px;}
+  .ym-label{font-size:9.5px;}
+  .ym-value{font-size:10px;}
+  .year-timeline{padding:13px 14px;}
+  .year-timeline-head{flex-direction:column; align-items:flex-start; gap:6px;}
+  .year-timeline-summary{font-size:10.5px;}
+  .upcoming-pay .up-amount{font-size:11px;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Sua jornada</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M3 21v-1a7 7 0 0114 0v1"/></svg>Meu perfil</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Minha trajetória</a>
+      <a class="nav-item active"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Minhas metas</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks</a>
+      <div class="sidebar-section">Operações</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Férias</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Atestados</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Sua jornada · <strong>Minhas metas</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FO</div>
+      <div class="user-info">
+        <span class="user-name">Fernanda Oliveira</span>
+        <span class="user-role">Compradora Pleno · Cestão L1</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-row">
+          <div class="hero-avatar">FO</div>
+          <div class="hero-text">
+            <div class="hero-greet">Bom dia,</div>
+            <div class="hero-name">Fernanda Oliveira</div>
+            <div class="hero-role">Compradora Pleno · Cestão Loja 1 · 2 anos e 3 meses de casa</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-lbl">Recebido em 2026</div>
+            <div class="hero-stat-val"><span class="currency">R$</span> 2.150,00</div>
+            <div class="hero-stat-detail">3 metas pagas · jan a abr</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-lbl">Em curso · este trimestre</div>
+            <div class="hero-stat-val"><span class="currency">R$</span> 1.700,00</div>
+            <div class="hero-stat-detail">2 metas · previsto se atingir 100%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIMELINE ANUAL -->
+      <div class="year-timeline">
+        <div class="year-timeline-head">
+          <h3>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Sua linha do tempo · 2026
+          </h3>
+          <div class="year-timeline-summary">
+            Total realizado <strong>R$ 2.150</strong> · previsto <strong>R$ 5.700</strong> · YTD vs equipe: <strong style="color:var(--green);">+12%</strong>
+          </div>
+        </div>
+
+        <div class="year-grid">
+          <div class="year-month has-paid" title="Janeiro: PLR Anual 2025 paga">
+            <div class="ym-label">Jan</div>
+            <div class="ym-value">600</div>
+            <div class="ym-dot" style="background:var(--purple);"></div>
+          </div>
+          <div class="year-month has-paid" title="Fevereiro: Vendas mensais">
+            <div class="ym-label">Fev</div>
+            <div class="ym-value">450</div>
+            <div class="ym-dot" style="background:var(--purple);"></div>
+          </div>
+          <div class="year-month has-paid" title="Março: PLR + Vendas">
+            <div class="ym-label">Mar</div>
+            <div class="ym-value">800</div>
+            <div class="ym-dot" style="background:var(--purple);"></div>
+          </div>
+          <div class="year-month has-validated" title="Abril: validada · pgto em maio">
+            <div class="ym-label">Abr</div>
+            <div class="ym-value">300</div>
+            <div class="ym-dot" style="background:var(--green);"></div>
+          </div>
+          <div class="year-month has-pending current" title="Maio: período corrente">
+            <div class="ym-label">Mai</div>
+            <div class="ym-value muted">aguarda</div>
+            <div class="ym-dot" style="background:var(--amber);"></div>
+          </div>
+          <div class="year-month current" title="Junho: em curso">
+            <div class="ym-label">Jun</div>
+            <div class="ym-value muted">em curso</div>
+            <div class="ym-dot" style="background:var(--blue);"></div>
+          </div>
+          <div class="year-month" title="Julho: futuro">
+            <div class="ym-label">Jul</div>
+            <div class="ym-value muted">-</div>
+          </div>
+          <div class="year-month" title="Agosto: futuro">
+            <div class="ym-label">Ago</div>
+            <div class="ym-value muted">-</div>
+          </div>
+          <div class="year-month" title="Setembro: futuro">
+            <div class="ym-label">Set</div>
+            <div class="ym-value muted">-</div>
+          </div>
+          <div class="year-month" title="Outubro: futuro">
+            <div class="ym-label">Out</div>
+            <div class="ym-value muted">-</div>
+          </div>
+          <div class="year-month" title="Novembro: futuro">
+            <div class="ym-label">Nov</div>
+            <div class="ym-value muted">-</div>
+          </div>
+          <div class="year-month" title="Dezembro: futuro">
+            <div class="ym-label">Dez</div>
+            <div class="ym-value muted">-</div>
+          </div>
+        </div>
+
+        <div class="year-legend">
+          <div class="lg-item"><span class="lg-color" style="background:var(--purple);"></span>Pago</div>
+          <div class="lg-item"><span class="lg-color" style="background:var(--green);"></span>Validado · aguarda folha</div>
+          <div class="lg-item"><span class="lg-color" style="background:var(--amber);"></span>Aguarda lançamento de resultado</div>
+          <div class="lg-item"><span class="lg-color" style="background:var(--blue);"></span>Em curso</div>
+        </div>
+      </div>
+
+      <!-- GRID PRINCIPAL -->
+      <div class="main-grid">
+
+        <!-- METAS -->
+        <div class="section-card">
+          <div class="section-head">
+            <h2>
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              Metas das quais você participa
+            </h2>
+            <span class="section-helper">5 metas · 2026</span>
+          </div>
+
+          <div class="my-goal-list">
+
+            <!-- META 1: ATIVA -->
+            <div class="my-goal active">
+              <div class="mg-head">
+                <div class="mg-title">
+                  <h3>Rentabilidade Cestão Loja 1 · 2º trimestre 2026</h3>
+                  <div class="mg-meta">
+                    <span>Por cargo · <strong style="color:var(--txt);">Compradora Pleno</strong></span>
+                    <span>·</span>
+                    <span>Período: 01/04 a 30/06/2026</span>
+                  </div>
+                </div>
+                <span class="status-pill active"><span class="dot"></span>Em curso</span>
+              </div>
+
+              <div class="mg-grid">
+                <div class="mg-block gold">
+                  <div class="mg-block-lbl">Você pode receber</div>
+                  <div class="mg-block-val" style="color:var(--orange);">R$ 500,00</div>
+                  <div class="mg-block-detail">se a meta atingir 100%</div>
+                </div>
+                <div class="mg-block">
+                  <div class="mg-block-lbl">Indicadores</div>
+                  <div class="mg-block-val" style="color:var(--txt);">1</div>
+                  <div class="mg-block-detail">Rentabilidade líquida da loja</div>
+                </div>
+              </div>
+
+              <div class="mg-indicators">
+                <div class="mg-ind-head">Indicador</div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">Rentabilidade líquida</span>
+                  <span class="mg-ind-target">alvo: R$ 280k</span>
+                  <span class="mg-ind-pct pending">aguarda fim do período</span>
+                </div>
+              </div>
+
+              <div class="mg-foot">
+                <div class="deadline">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                  Resultado em <strong>62 dias</strong>
+                </div>
+                <span class="next-step">Responsável pela validação: João Carvalho</span>
+              </div>
+            </div>
+
+            <!-- META 2: AGUARDA LANÇAMENTO -->
+            <div class="my-goal result_pending">
+              <div class="mg-head">
+                <div class="mg-title">
+                  <h3>Vendas Mensais ATP Varejo · maio/2026</h3>
+                  <div class="mg-meta">
+                    <span>Colaboradora específica</span>
+                    <span>·</span>
+                    <span>Período: 01 a 31/05/2026</span>
+                  </div>
+                </div>
+                <span class="status-pill result_pending"><span class="dot"></span>Aguarda lançamento</span>
+              </div>
+
+              <div class="mg-grid">
+                <div class="mg-block gold">
+                  <div class="mg-block-lbl">Você pode receber</div>
+                  <div class="mg-block-val" style="color:var(--orange);">R$ 1.200,00</div>
+                  <div class="mg-block-detail">proporcional ao atingimento</div>
+                </div>
+                <div class="mg-block">
+                  <div class="mg-block-lbl">Indicadores</div>
+                  <div class="mg-block-val" style="color:var(--txt);">2</div>
+                  <div class="mg-block-detail">Faturamento + Ticket médio</div>
+                </div>
+              </div>
+
+              <div class="mg-indicators">
+                <div class="mg-ind-head">Indicadores · 2 a serem lançados</div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">Faturamento bruto</span>
+                  <span class="mg-ind-target">alvo: R$ 1,85M</span>
+                  <span class="mg-ind-pct pending">aguarda</span>
+                </div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">Ticket médio</span>
+                  <span class="mg-ind-target">alvo: R$ 78,00</span>
+                  <span class="mg-ind-pct pending">aguarda</span>
+                </div>
+              </div>
+
+              <div class="mg-foot">
+                <div class="deadline">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                  Lançamento até <strong>05/06/2026</strong>
+                </div>
+                <span class="next-step warn">Mariana Costa lançará o resultado</span>
+              </div>
+            </div>
+
+            <!-- META 3: AGUARDA VALIDAÇÃO -->
+            <div class="my-goal validation_pending">
+              <div class="mg-head">
+                <div class="mg-title">
+                  <h3>Redução de quebra Açougue · abril/2026</h3>
+                  <div class="mg-meta">
+                    <span>Por departamento · Compras / Adm</span>
+                    <span>·</span>
+                    <span>Período: 01 a 30/04/2026</span>
+                  </div>
+                </div>
+                <span class="status-pill validation_pending"><span class="dot"></span>Aguarda validação</span>
+              </div>
+
+              <div class="mg-grid">
+                <div class="mg-block gold">
+                  <div class="mg-block-lbl">Valor previsto</div>
+                  <div class="mg-block-val" style="color:var(--orange);">R$ 300,00</div>
+                  <div class="mg-block-detail">aguarda João Carvalho validar</div>
+                </div>
+                <div class="mg-block green">
+                  <div class="mg-block-lbl">Resultado lançado</div>
+                  <div class="mg-block-val" style="color:var(--green);">117%</div>
+                  <div class="mg-block-detail">superou alvo · acima do gate</div>
+                </div>
+              </div>
+
+              <div class="mg-indicators">
+                <div class="mg-ind-head">Indicador · resultado lançado</div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">Quebra (%)</span>
+                  <span class="mg-ind-target">alvo: máx 5% · realizado: 4,2%</span>
+                  <span class="mg-ind-pct success">117%</span>
+                </div>
+              </div>
+
+              <div class="mg-foot">
+                <div class="deadline">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                  Validação esperada até <strong>10/05/2026</strong>
+                </div>
+                <span class="next-step warn">Aguardando aprovação do gestor</span>
+              </div>
+            </div>
+
+            <!-- META 4: VALIDADA, AGUARDA FOLHA -->
+            <div class="my-goal validated">
+              <div class="mg-head">
+                <div class="mg-title">
+                  <h3>Redução absenteísmo · abril/2026</h3>
+                  <div class="mg-meta">
+                    <span>Por departamento · Frente de Loja</span>
+                    <span>·</span>
+                    <span>Período: 01 a 30/04/2026</span>
+                  </div>
+                </div>
+                <span class="status-pill validated"><span class="dot"></span>Validada</span>
+              </div>
+
+              <div class="mg-grid">
+                <div class="mg-block green">
+                  <div class="mg-block-lbl">Valor confirmado</div>
+                  <div class="mg-block-val" style="color:var(--green);">R$ 50,00</div>
+                  <div class="mg-block-detail">será pago em <strong>05/05/2026</strong></div>
+                </div>
+                <div class="mg-block green">
+                  <div class="mg-block-lbl">Atingimento</div>
+                  <div class="mg-block-val" style="color:var(--green);">120%</div>
+                  <div class="mg-block-detail">superou alvo · validado por Patrícia</div>
+                </div>
+              </div>
+
+              <div class="mg-indicators">
+                <div class="mg-ind-head">Indicador · validado</div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">Taxa absenteísmo</span>
+                  <span class="mg-ind-target">alvo: máx 3% · realizado: 2,4%</span>
+                  <span class="mg-ind-pct success">120%</span>
+                </div>
+              </div>
+
+              <div class="mg-foot">
+                <div class="deadline">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                  Validada em <strong>02/05/2026</strong>
+                </div>
+                <span class="next-step">Aguarda processamento da folha de maio</span>
+              </div>
+            </div>
+
+            <!-- META 5: PAGA (histórico) -->
+            <div class="my-goal paid">
+              <div class="mg-head">
+                <div class="mg-title">
+                  <h3>PLR Anual GPC · 2025</h3>
+                  <div class="mg-meta">
+                    <span>Por cargo · Compradora Pleno</span>
+                    <span>·</span>
+                    <span>Período anual: jan-dez/2025</span>
+                  </div>
+                </div>
+                <span class="status-pill paid"><span class="dot"></span>Pago</span>
+              </div>
+
+              <div class="mg-grid">
+                <div class="mg-block purple">
+                  <div class="mg-block-lbl">Recebido</div>
+                  <div class="mg-block-val" style="color:var(--purple);">R$ 800,00</div>
+                  <div class="mg-block-detail">creditado em <strong>20/03/2026</strong></div>
+                </div>
+                <div class="mg-block">
+                  <div class="mg-block-lbl">Atingimento médio</div>
+                  <div class="mg-block-val" style="color:var(--green);">94%</div>
+                  <div class="mg-block-detail">4 indicadores avaliados</div>
+                </div>
+              </div>
+
+              <div class="mg-indicators">
+                <div class="mg-ind-head">Indicadores</div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">EBITDA consolidado</span>
+                  <span class="mg-ind-target">alvo: R$ 18M · real: R$ 17,3M</span>
+                  <span class="mg-ind-pct below">96%</span>
+                </div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">Crescimento de vendas</span>
+                  <span class="mg-ind-target">alvo: 8% · real: 9,2%</span>
+                  <span class="mg-ind-pct success">115%</span>
+                </div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">NPS médio das lojas</span>
+                  <span class="mg-ind-target">alvo: 65 · real: 58</span>
+                  <span class="mg-ind-pct below">89%</span>
+                </div>
+                <div class="mg-ind-item">
+                  <span class="mg-ind-name">Turnover anual</span>
+                  <span class="mg-ind-target">alvo: máx 24% · real: 27%</span>
+                  <span class="mg-ind-pct below">89%</span>
+                </div>
+              </div>
+
+              <div class="cmp-bar">
+                <div class="cmp-bar-lbl">Você comparada à média da equipe (compradores)</div>
+                <div class="cmp-bar-track">
+                  <div class="cmp-bar-mine" style="width:94%;"></div>
+                  <div class="cmp-bar-team" style="left:88%;"></div>
+                </div>
+                <div class="cmp-bar-info">
+                  <span><span class="me">Você: 94%</span></span>
+                  <span><span class="team">Média da equipe: 88%</span></span>
+                </div>
+              </div>
+
+              <div class="mg-foot">
+                <div class="deadline">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                  Pago em <strong>20/03/2026</strong>
+                </div>
+                <span class="next-step">Histórico arquivado</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ASIDE -->
+        <div>
+          <!-- Próximos pagamentos -->
+          <div class="aside-card">
+            <div class="aside-head">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              Próximos pagamentos
+            </div>
+            <div class="upcoming-pay">
+              <div class="up-item">
+                <div class="up-icon">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                </div>
+                <div class="up-info">
+                  <div class="up-title">Absenteísmo abril/2026</div>
+                  <div class="up-detail">Folha de maio · 05/05</div>
+                </div>
+                <div class="up-amount">R$ 50</div>
+              </div>
+              <div class="up-item">
+                <div class="up-icon orange">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                </div>
+                <div class="up-info">
+                  <div class="up-title">Quebra açougue abril</div>
+                  <div class="up-detail">Aguarda gestor validar</div>
+                </div>
+                <div class="up-amount orange">R$ 300</div>
+              </div>
+              <div class="up-item">
+                <div class="up-icon amber">
+                  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                </div>
+                <div class="up-info">
+                  <div class="up-title">Vendas ATP maio/2026</div>
+                  <div class="up-detail">Líder lança após 31/05</div>
+                </div>
+                <div class="up-amount amber">até R$ 1.200</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dicas / Coaching -->
+          <div class="aside-card">
+            <div class="aside-head">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.66 18L7 22h10l-2.66-4M12 2a7 7 0 00-4 12.74V18h8v-3.26A7 7 0 0012 2z"/></svg>
+              Sua trajetória diz que...
+            </div>
+
+            <div class="tip-card">
+              <div class="tip-icon">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div class="tip-text">
+                <strong>Você está acima da média da equipe</strong> em metas de rentabilidade (94% vs 88%). Continue priorizando margem por categoria.
+              </div>
+            </div>
+
+            <div class="tip-card" style="background:linear-gradient(180deg, var(--orange2), #fff); border-color:var(--orange);">
+              <div class="tip-icon" style="background:var(--orange);">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+              </div>
+              <div class="tip-text">
+                <strong>2 metas exigem atenção:</strong> a meta de vendas de maio depende do lançamento da Mariana até <strong>05/06</strong>. Você não precisa fazer nada agora.
+              </div>
+            </div>
+
+            <div class="tip-card" style="background:linear-gradient(180deg, var(--green2), #fff); border-color:var(--green);">
+              <div class="tip-icon" style="background:var(--green);">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="tip-text">
+                <strong>Como funciona pagamento proporcional:</strong> em metas marcadas como proporcionais, atingir 80% paga 80% do valor (após o gate mínimo). Em metas binárias, é tudo ou nada.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

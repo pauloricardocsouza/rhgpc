@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Importação de Planilhas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; transition:all .15s; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500;}
+.icon-btn{width:36px; height:36px; background:transparent; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.icon-btn:hover{background:var(--gray1);}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-chip:hover{background:var(--gray1);}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary:disabled{background:var(--gray3); cursor:not-allowed;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-success{background:var(--green); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-success:hover{background:#16633C;}
+.btn-warn{background:var(--amber); color:#fff; border:none; padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-warn:hover{background:#6E3F09;}
+.btn-link{background:transparent; color:var(--navy); border:none; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; padding:0; display:inline-flex; align-items:center; gap:5px;}
+.btn-link:hover{color:var(--orange);}
+.btn-link svg{width:14px; height:14px;}
+
+/* Banner */
+.banner{
+  display:flex; gap:11px; align-items:flex-start;
+  padding:11px 14px; border-radius:8px;
+  margin-bottom:14px;
+  font-size:12px; line-height:1.5;
+}
+.banner.info{background:#E8EFF8; border-left:3px solid var(--navy); color:var(--txt2);}
+.banner.warn{background:var(--amber2); border-left:3px solid var(--amber); color:var(--txt);}
+.banner.success{background:var(--green2); border-left:3px solid var(--green); color:var(--txt);}
+.banner.error{background:var(--danger2); border-left:3px solid var(--danger); color:var(--txt);}
+.banner svg{flex-shrink:0; margin-top:1px;}
+.banner strong{color:var(--txt); font-weight:600;}
+
+/* ============= HUB DE TIPOS ============= */
+.import-hub{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin-bottom:22px;}
+.import-card{
+  background:#fff;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:18px 20px;
+  cursor:pointer;
+  transition:all .15s;
+  border:2px solid transparent;
+  position:relative;
+  overflow:hidden;
+}
+.import-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 20px rgba(26,45,79,.08);
+  border-color:var(--navy3);
+}
+.import-card.featured{
+  background:linear-gradient(135deg, #2B4A7A, #1F3A6B);
+  color:#fff;
+}
+.import-card.featured::before{
+  content:''; position:absolute;
+  right:-30px; top:-30px;
+  width:120px; height:120px;
+  background:radial-gradient(circle, rgba(245,131,31,.25), transparent 65%);
+  border-radius:50%;
+}
+.ic-head{display:flex; align-items:center; gap:11px; margin-bottom:10px; position:relative; z-index:1;}
+.ic-icon{
+  width:42px; height:42px; border-radius:10px;
+  background:#E8EFF8; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:18px;
+  flex-shrink:0;
+}
+.import-card.featured .ic-icon{background:rgba(255,255,255,.15); color:#fff;}
+.ic-title{font-size:14.5px; font-weight:600;}
+.ic-sub{font-size:11px; color:var(--txt2); margin-top:1px;}
+.import-card.featured .ic-sub{color:rgba(255,255,255,.75);}
+.ic-desc{font-size:12px; color:var(--txt2); line-height:1.5; margin-bottom:11px; position:relative; z-index:1;}
+.import-card.featured .ic-desc{color:rgba(255,255,255,.8);}
+.ic-meta{font-size:11px; color:var(--txt3); display:flex; align-items:center; gap:11px; flex-wrap:wrap; position:relative; z-index:1;}
+.import-card.featured .ic-meta{color:rgba(255,255,255,.6);}
+.ic-meta strong{color:var(--txt); font-family:'JetBrains Mono',monospace;}
+.import-card.featured .ic-meta strong{color:#fff;}
+
+/* ============= HISTÓRICO ============= */
+.history-card{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); padding:16px 18px; margin-bottom:14px;}
+.history-card-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:13px;}
+.history-card-head h3{font-size:13.5px; font-weight:600;}
+.history-card-head p{font-size:11px; color:var(--txt2); margin-top:1px;}
+.tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+.tbl thead{background:var(--off);}
+.tbl th{text-align:left; padding:10px 11px; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--txt2); border-bottom:1px solid var(--gray2); font-weight:600; white-space:nowrap;}
+.tbl th.center{text-align:center;}
+.tbl th.right{text-align:right;}
+.tbl td{padding:10px 11px; border-bottom:1px solid var(--gray1); color:var(--txt);}
+.tbl td.center{text-align:center;}
+.tbl tr:last-child td{border-bottom:none;}
+
+.status-pill{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:11px; font-size:10.5px; font-weight:600;}
+.sp-success{background:var(--green2); color:var(--green);}
+.sp-partial{background:var(--amber2); color:var(--amber);}
+.sp-failed{background:var(--danger2); color:var(--danger);}
+.sp-pending{background:#E8EFF8; color:var(--navy);}
+
+/* ============= WIZARD ============= */
+.wizard-frame{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+}
+.wizard-head{
+  padding:14px 18px;
+  background:var(--off);
+  border-bottom:1px solid var(--gray1);
+  display:flex; align-items:center; gap:11px;
+}
+.wizard-back{
+  background:transparent; border:none; cursor:pointer;
+  color:var(--txt2);
+  display:flex; align-items:center; gap:5px;
+  font-size:12px; font-family:inherit;
+}
+.wizard-back:hover{color:var(--navy);}
+.wizard-title{font-size:14px; font-weight:600;}
+.wizard-title-sub{font-size:11.5px; color:var(--txt2); margin-left:6px;}
+
+.wizard-steps{display:flex; align-items:center; gap:8px; padding:14px 18px; border-bottom:1px solid var(--gray1);}
+.ws-step{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--txt3);}
+.ws-step.done{color:var(--green);}
+.ws-step.current{color:var(--navy); font-weight:600;}
+.ws-circle{width:22px; height:22px; border-radius:50%; background:var(--gray1); color:var(--txt3); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600;}
+.ws-step.done .ws-circle{background:var(--green); color:#fff;}
+.ws-step.current .ws-circle{background:var(--navy); color:#fff;}
+.ws-line{flex:1; height:2px; background:var(--gray1); border-radius:1px;}
+.ws-line.done{background:var(--green);}
+
+.wizard-body{padding:22px 22px;}
+.wizard-foot{
+  padding:14px 22px;
+  border-top:1px solid var(--gray1);
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  background:var(--off);
+}
+.wf-info{font-size:11.5px; color:var(--txt2);}
+.wf-actions{display:flex; gap:9px;}
+
+/* ============= STEP 1: MODELO ============= */
+.template-block{
+  background:linear-gradient(135deg, #E8EFF8, #F4F7FC);
+  border:1px solid #C9D6E8;
+  border-radius:10px;
+  padding:18px 20px;
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:14px;
+}
+.template-icon{
+  width:50px; height:50px; border-radius:10px;
+  background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.template-info{flex:1;}
+.template-info h4{font-size:14px; font-weight:600; margin-bottom:3px;}
+.template-info p{font-size:12px; color:var(--txt2); line-height:1.5;}
+
+.column-table{
+  background:#fff;
+  border-radius:8px;
+  border:1px solid var(--gray2);
+  overflow:hidden;
+}
+.column-row{
+  display:grid;
+  grid-template-columns:120px 80px 60px 1fr;
+  gap:9px;
+  padding:9px 13px;
+  font-size:11.5px;
+  border-bottom:1px solid var(--gray1);
+  align-items:center;
+}
+.column-row:last-child{border-bottom:none;}
+.column-row.head{
+  background:var(--off);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--txt2);
+  font-weight:600;
+}
+.column-row .col-name{font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--txt);}
+.column-row .col-required{font-size:10px; padding:2px 7px; border-radius:8px; font-weight:600; text-align:center; display:inline-block; width:max-content;}
+.col-required.req{background:var(--danger2); color:var(--danger);}
+.col-required.opt{background:var(--gray1); color:var(--txt2);}
+.column-row .col-type{font-family:'JetBrains Mono',monospace; color:var(--txt2); font-size:10.5px;}
+.column-row .col-desc{color:var(--txt2);}
+.column-row .col-desc strong{color:var(--txt); font-weight:500;}
+
+/* ============= STEP 2: UPLOAD ============= */
+.dropzone{
+  border:2px dashed var(--gray2);
+  border-radius:12px;
+  padding:36px 22px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .15s;
+  background:var(--off);
+}
+.dropzone:hover, .dropzone.active{
+  border-color:var(--navy);
+  background:#E8EFF8;
+}
+.dropzone svg{color:var(--navy3); margin-bottom:9px;}
+.dropzone h4{font-size:14px; font-weight:600; margin-bottom:4px;}
+.dropzone p{font-size:12px; color:var(--txt2); margin-bottom:11px;}
+.dropzone .formats{font-size:10.5px; color:var(--txt3); font-family:'JetBrains Mono',monospace;}
+.dropzone-uploaded{
+  background:#fff; border-color:var(--green); border-style:solid;
+}
+.dropzone-uploaded svg{color:var(--green);}
+.uploaded-file{
+  display:flex; align-items:center; gap:12px;
+  background:#fff; border:1px solid var(--gray2);
+  border-radius:8px; padding:12px 14px;
+}
+.uploaded-file .uf-icon{
+  width:40px; height:40px; border-radius:8px;
+  background:var(--green2); color:var(--green);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.uploaded-file .uf-info{flex:1;}
+.uploaded-file .uf-name{font-size:13px; font-weight:600;}
+.uploaded-file .uf-meta{font-size:11px; color:var(--txt2); margin-top:1px; font-family:'JetBrains Mono',monospace;}
+.uploaded-file .uf-actions{display:flex; gap:7px;}
+
+.upload-config{
+  margin-top:14px;
+  background:var(--off); border-radius:8px;
+  padding:12px 14px;
+}
+.upload-config-row{
+  display:grid; grid-template-columns:1fr 1fr; gap:11px;
+}
+.field{margin-bottom:0;}
+.field label{display:block; font-size:11px; color:var(--txt2); margin-bottom:5px; font-weight:500;}
+.field select{width:100%; padding:8px 11px; border:1px solid var(--gray2); border-radius:6px; font-size:12.5px; font-family:inherit; background:#fff;}
+
+/* ============= STEP 3: VALIDAÇÃO PRÉVIA ============= */
+.validation-summary{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+.vs-card{
+  background:#fff;
+  border-radius:var(--radius);
+  padding:13px 14px;
+  border-left:3px solid var(--navy);
+  box-shadow:var(--shadow-card);
+}
+.vs-card.success{border-left-color:var(--green);}
+.vs-card.warn{border-left-color:var(--amber);}
+.vs-card.error{border-left-color:var(--danger);}
+.vs-card .label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px; font-weight:500;}
+.vs-card .value{font-size:24px; font-weight:600; margin-top:4px; letter-spacing:-.5px;}
+.vs-card.success .value{color:var(--green);}
+.vs-card.warn .value{color:var(--amber);}
+.vs-card.error .value{color:var(--danger);}
+.vs-card .sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+/* Tabs no preview */
+.preview-tabs{display:flex; gap:2px; background:#fff; padding:4px; border-radius:var(--radius); box-shadow:var(--shadow-card); margin-bottom:11px; overflow-x:auto;}
+.pt-tab{padding:8px 14px; font-size:12px; font-weight:500; color:var(--txt2); background:transparent; border:none; cursor:pointer; border-radius:7px; font-family:inherit; transition:all .15s; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;}
+.pt-tab:hover{background:var(--gray1); color:var(--txt);}
+.pt-tab.active{background:var(--navy); color:#fff;}
+.pt-tab svg{width:13px; height:13px;}
+.pt-tab .count{background:rgba(255,255,255,.2); padding:1px 6px; border-radius:9px; font-size:10px; font-weight:600; font-family:'JetBrains Mono',monospace;}
+.pt-tab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+.pt-panel{display:none;}
+.pt-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* Linha do preview */
+.preview-row{
+  background:#fff;
+  border-radius:8px;
+  border:1px solid var(--gray1);
+  padding:11px 13px;
+  margin-bottom:7px;
+  font-size:12px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:11px;
+  align-items:start;
+}
+.preview-row.error{border-left:3px solid var(--danger);}
+.preview-row.warn{border-left:3px solid var(--amber);}
+.preview-row.ok{border-left:3px solid var(--green);}
+
+.pr-line{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+  color:var(--txt2);
+  font-size:11.5px;
+  width:36px;
+  text-align:center;
+  background:var(--off);
+  padding:4px 0;
+  border-radius:5px;
+}
+.pr-content{min-width:0;}
+.pr-name{font-weight:600; font-size:12.5px; margin-bottom:3px;}
+.pr-fields{font-size:11px; color:var(--txt2); display:flex; gap:13px; flex-wrap:wrap;}
+.pr-fields strong{color:var(--txt); font-family:'JetBrains Mono',monospace; font-size:10.5px;}
+
+.pr-issues{
+  margin-top:7px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.pr-issue{
+  display:flex; align-items:flex-start; gap:7px;
+  padding:5px 10px;
+  border-radius:6px;
+  font-size:11px;
+  line-height:1.4;
+}
+.pr-issue.error{background:var(--danger2); color:var(--danger);}
+.pr-issue.warn{background:var(--amber2); color:var(--amber);}
+.pr-issue svg{flex-shrink:0; margin-top:1px;}
+.pr-issue strong{font-weight:600;}
+.pr-issue code{font-family:'JetBrains Mono',monospace; background:rgba(255,255,255,.4); padding:0 4px; border-radius:3px;}
+
+.pr-status{flex-shrink:0;}
+.pr-actions{display:flex; flex-direction:column; gap:5px; align-items:flex-end; flex-shrink:0;}
+
+/* ============= STEP 4: CONFIRMAR ============= */
+.confirm-card{
+  background:#fff; border-radius:var(--radius);
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+}
+.confirm-card h3{font-size:14px; font-weight:600; margin-bottom:11px;}
+.confirm-stats{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+.cs-stat{
+  background:var(--off); border-radius:8px;
+  padding:11px 13px;
+  text-align:center;
+}
+.cs-stat .v{font-size:22px; font-weight:600; margin-bottom:2px;}
+.cs-stat .v.green{color:var(--green);}
+.cs-stat .v.amber{color:var(--amber);}
+.cs-stat .v.danger{color:var(--danger);}
+.cs-stat .l{font-size:11px; color:var(--txt2);}
+
+.options-list{display:flex; flex-direction:column; gap:9px;}
+.option-row{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 13px;
+  background:var(--off);
+  border-radius:8px;
+  cursor:pointer;
+  font-size:12.5px;
+}
+.option-row:hover{background:var(--gray1);}
+.option-row input[type=checkbox]{accent-color:var(--navy);}
+.option-row .opt-text strong{display:block; font-weight:500;}
+.option-row .opt-text span{font-size:11px; color:var(--txt2); margin-top:1px;}
+
+/* ============= STEP 5: EXECUÇÃO / RESULTADO ============= */
+.progress-card{
+  background:#fff; border-radius:var(--radius);
+  padding:24px 22px;
+  box-shadow:var(--shadow-card);
+  text-align:center;
+}
+.progress-icon{
+  width:64px; height:64px; border-radius:50%;
+  background:var(--green2); color:var(--green);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 14px;
+}
+.progress-bar-wrap{
+  background:var(--gray1); border-radius:6px;
+  height:10px; overflow:hidden;
+  margin:14px 0 7px;
+}
+.progress-bar{
+  height:100%;
+  background:linear-gradient(90deg, var(--navy3), var(--navy));
+  border-radius:6px;
+  transition:width .3s;
+}
+.progress-bar.success{background:linear-gradient(90deg, var(--green), #16633C);}
+
+.result-summary{
+  background:linear-gradient(135deg, var(--green2), #C5E5D2);
+  border-radius:10px;
+  padding:18px 22px;
+  margin-bottom:14px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+}
+.rs-icon{
+  width:56px; height:56px; border-radius:14px;
+  background:var(--green); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.rs-text h3{font-size:16px; font-weight:600; color:var(--green); margin-bottom:3px;}
+.rs-text p{font-size:12.5px; color:var(--txt);}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .import-hub{grid-template-columns:repeat(2, 1fr);}
+  .validation-summary, .confirm-stats{grid-template-columns:repeat(2, 1fr);}
+  .upload-config-row{grid-template-columns:1fr;}
+  .column-row{grid-template-columns:1fr 1fr; gap:6px;}
+  .column-row .col-desc{grid-column:1/-1;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .company-name, .user-info{display:none;}
+  .user-chip{padding:0;}
+
+  .main{padding:14px 14px 40px;}
+  .page-header h1{font-size:18px;}
+  .import-hub{grid-template-columns:1fr;}
+  .validation-summary{grid-template-columns:repeat(2, 1fr); gap:8px;}
+  .confirm-stats{grid-template-columns:1fr;}
+
+  .preview-row{grid-template-columns:auto 1fr; gap:9px;}
+  .pr-actions{grid-column:1/-1; flex-direction:row; justify-content:flex-end; padding-top:6px; border-top:1px solid var(--gray1); margin-top:7px;}
+
+  .wizard-steps{padding:11px 14px; gap:6px;}
+  .ws-step span:not(.ws-circle){display:none;}
+  .wizard-body{padding:14px 14px;}
+
+  .result-summary{grid-template-columns:1fr; text-align:center;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <div class="sidebar-section">Administração</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18"/></svg>Estrutura</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Importação</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83"/></svg>Configurações</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Importação <strong>de Planilhas</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar">RS</div>
+      <div class="user-info">
+        <span class="user-name">Ricardo Silva</span>
+        <span class="user-role">Admin RH</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ============= ESTADO 1: HUB ============= -->
+    <div id="hubView">
+      <div class="page-header">
+        <div>
+          <h1>Importação de Planilhas</h1>
+          <p>Cadastro em lote para implantação inicial e atualizações periódicas</p>
+        </div>
+      </div>
+
+      <div class="banner info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>
+          <strong>Toda importação passa por validação prévia (dry-run) obrigatória.</strong>
+          O sistema lê seu arquivo, valida cada linha contra as regras do banco, mostra erros e avisos antes de escrever qualquer coisa. Você decide se importa apenas as válidas ou volta para corrigir o arquivo.
+        </div>
+      </div>
+
+      <h3 style="font-size:13.5px; font-weight:600; margin-bottom:12px;">O que você quer importar?</h3>
+
+      <div class="import-hub">
+        <div class="import-card featured" onclick="openWizard('colaboradores')">
+          <div class="ic-head">
+            <div class="ic-icon">⛁</div>
+            <div>
+              <div class="ic-title">Colaboradores</div>
+              <div class="ic-sub">Cadastro completo em lote</div>
+            </div>
+          </div>
+          <div class="ic-desc">Mais comum. Importa colaboradores com dados pessoais, vínculo (empregador + tomador), cargo, departamento, gestor e dados trabalhistas.</div>
+          <div class="ic-meta">
+            <span><strong>24</strong> colunas</span>
+            <span><strong>14</strong> obrigatórias</span>
+            <span>•</span>
+            <span>Última: <strong>há 2 meses</strong></span>
+          </div>
+        </div>
+
+        <div class="import-card" onclick="openWizard('filiais')">
+          <div class="ic-head">
+            <div class="ic-icon">⌂</div>
+            <div>
+              <div class="ic-title">Filiais e empresas</div>
+              <div class="ic-sub">Estrutura legal e operacional</div>
+            </div>
+          </div>
+          <div class="ic-desc">Filiais operacionais (lojas, CDs, escritórios) e empresas prestadoras (Labuta, Limpactiva). Suporta hierarquia.</div>
+          <div class="ic-meta">
+            <span><strong>11</strong> colunas</span>
+            <span><strong>4</strong> obrigatórias</span>
+          </div>
+        </div>
+
+        <div class="import-card" onclick="openWizard('cargos')">
+          <div class="ic-head">
+            <div class="ic-icon">⚐</div>
+            <div>
+              <div class="ic-title">Cargos</div>
+              <div class="ic-sub">Catálogo de funções</div>
+            </div>
+          </div>
+          <div class="ic-desc">Cargos com nível de carreira, faixa salarial, CBO e departamento associado. Ideal para reorganização do plano de cargos.</div>
+          <div class="ic-meta">
+            <span><strong>8</strong> colunas</span>
+            <span><strong>3</strong> obrigatórias</span>
+          </div>
+        </div>
+
+        <div class="import-card" onclick="openWizard('departamentos')">
+          <div class="ic-head">
+            <div class="ic-icon">⌧</div>
+            <div>
+              <div class="ic-title">Departamentos</div>
+              <div class="ic-sub">Áreas funcionais e hierarquia</div>
+            </div>
+          </div>
+          <div class="ic-desc">Departamentos com líder, filial associada (ou multi-filial), descrição e hierarquia interna.</div>
+          <div class="ic-meta">
+            <span><strong>6</strong> colunas</span>
+            <span><strong>2</strong> obrigatórias</span>
+          </div>
+        </div>
+
+        <div class="import-card" onclick="openWizard('historico')">
+          <div class="ic-head">
+            <div class="ic-icon">⌚</div>
+            <div>
+              <div class="ic-title">Histórico de avaliações</div>
+              <div class="ic-sub">Migração de ciclos antigos</div>
+            </div>
+          </div>
+          <div class="ic-desc">Importa avaliações já realizadas em outras ferramentas (Sólides, Qulture, planilhas). Preserva histórico do colaborador.</div>
+          <div class="ic-meta">
+            <span><strong>9</strong> colunas</span>
+            <span><strong>5</strong> obrigatórias</span>
+          </div>
+        </div>
+
+        <div class="import-card" onclick="openWizard('movimentacoes')">
+          <div class="ic-head">
+            <div class="ic-icon">⇄</div>
+            <div>
+              <div class="ic-title">Movimentações em lote</div>
+              <div class="ic-sub">Reajustes, promoções, transferências</div>
+            </div>
+          </div>
+          <div class="ic-desc">Movimentações já aprovadas (ex: dissídio coletivo, reorganização). Aplica direto sem fluxo de aprovação.</div>
+          <div class="ic-meta">
+            <span><strong>7</strong> colunas</span>
+            <span><strong>4</strong> obrigatórias</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Histórico -->
+      <div class="history-card">
+        <div class="history-card-head">
+          <div>
+            <h3>Histórico de importações</h3>
+            <p>Últimas 30 execuções, mais recentes primeiro</p>
+          </div>
+          <button class="btn-link">Ver todas →</button>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Arquivo</th>
+              <th>Quem importou</th>
+              <th>Data</th>
+              <th class="center">Total</th>
+              <th class="center">Sucesso</th>
+              <th class="center">Erros</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Movimentações</strong></td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">dissidio_2026_labuta.csv</td>
+              <td>Patrícia Mello</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 3 dias</td>
+              <td class="center">247</td>
+              <td class="center"><strong style="color:var(--green);">247</strong></td>
+              <td class="center">0</td>
+              <td><span class="status-pill sp-success"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Concluída</span></td>
+            </tr>
+            <tr>
+              <td><strong>Colaboradores</strong></td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">labuta_admissoes_abr.xlsx</td>
+              <td>Larissa Pereira</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 7 dias</td>
+              <td class="center">12</td>
+              <td class="center"><strong style="color:var(--green);">11</strong></td>
+              <td class="center"><strong style="color:var(--amber);">1</strong></td>
+              <td><span class="status-pill sp-partial">Parcial</span></td>
+            </tr>
+            <tr>
+              <td><strong>Cargos</strong></td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">plano_cargos_2026.csv</td>
+              <td>Ricardo Silva</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 21 dias</td>
+              <td class="center">28</td>
+              <td class="center"><strong style="color:var(--green);">28</strong></td>
+              <td class="center">0</td>
+              <td><span class="status-pill sp-success">Concluída</span></td>
+            </tr>
+            <tr>
+              <td><strong>Colaboradores</strong></td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">implantacao_inicial_gpc.xlsx</td>
+              <td>Ricardo Silva</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 2 meses</td>
+              <td class="center">367</td>
+              <td class="center"><strong style="color:var(--green);">365</strong></td>
+              <td class="center"><strong style="color:var(--amber);">2</strong></td>
+              <td><span class="status-pill sp-partial">Parcial</span></td>
+            </tr>
+            <tr>
+              <td><strong>Filiais</strong></td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">estrutura_inicial.csv</td>
+              <td>Ricardo Silva</td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">há 2 meses</td>
+              <td class="center">14</td>
+              <td class="center"><strong style="color:var(--green);">14</strong></td>
+              <td class="center">0</td>
+              <td><span class="status-pill sp-success">Concluída</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============= ESTADO 2: WIZARD ============= -->
+    <div id="wizardView" style="display:none;">
+      <div class="wizard-frame">
+        <div class="wizard-head">
+          <button class="wizard-back" onclick="closeWizard()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Voltar
+          </button>
+          <div>
+            <span class="wizard-title" id="wTitle">Importar colaboradores</span>
+            <span class="wizard-title-sub" id="wSub">5 passos · validação prévia obrigatória</span>
+          </div>
+        </div>
+
+        <div class="wizard-steps">
+          <div class="ws-step current" data-step="1"><div class="ws-circle">1</div><span>Modelo</span></div>
+          <div class="ws-line"></div>
+          <div class="ws-step" data-step="2"><div class="ws-circle">2</div><span>Upload</span></div>
+          <div class="ws-line"></div>
+          <div class="ws-step" data-step="3"><div class="ws-circle">3</div><span>Validação</span></div>
+          <div class="ws-line"></div>
+          <div class="ws-step" data-step="4"><div class="ws-circle">4</div><span>Confirmar</span></div>
+          <div class="ws-line"></div>
+          <div class="ws-step" data-step="5"><div class="ws-circle">5</div><span>Resultado</span></div>
+        </div>
+
+        <div class="wizard-body" id="wBody"></div>
+
+        <div class="wizard-foot">
+          <div class="wf-info" id="wInfo">Baixe o modelo e revise as colunas obrigatórias antes de prosseguir.</div>
+          <div class="wf-actions">
+            <button class="btn-secondary" id="wPrev" onclick="prevStep()" style="display:none;">Voltar</button>
+            <button class="btn-primary" id="wNext" onclick="nextStep()">Próximo →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+
+/* ============= COLUNAS DOS TIPOS DE IMPORTAÇÃO ============= */
+const importTypes = {
+  colaboradores: {
+    title:'Importar colaboradores',
+    sub:'24 colunas · 14 obrigatórias',
+    columns:[
+      {name:'username', req:true, type:'text', desc:'Login único (sem espaços, ex: <strong>fernanda.lima</strong>)'},
+      {name:'nome_completo', req:true, type:'text', desc:'Nome completo do colaborador'},
+      {name:'cpf', req:true, type:'cpf', desc:'CPF (formato: <strong>000.000.000-00</strong> ou só dígitos)'},
+      {name:'data_nascimento', req:true, type:'date', desc:'<strong>DD/MM/AAAA</strong>'},
+      {name:'sexo', req:false, type:'enum', desc:'M, F ou O (outro)'},
+      {name:'email', req:false, type:'email', desc:'E-mail de contato (não é login)'},
+      {name:'celular', req:false, type:'phone', desc:'(00) 9 0000-0000 ou só dígitos'},
+      {name:'empregador', req:true, type:'ref', desc:'Código do empregador. Ex: <strong>LABUTA</strong>, <strong>GPC</strong>, <strong>ATP</strong>'},
+      {name:'tomador', req:true, type:'ref', desc:'Código da filial onde trabalha. Ex: <strong>CES-L1</strong>, <strong>ATP-VAR</strong>'},
+      {name:'departamento', req:true, type:'ref', desc:'Código do departamento. Ex: <strong>FIN</strong>, <strong>COM</strong>'},
+      {name:'cargo', req:true, type:'ref', desc:'Código do cargo. Ex: <strong>ANL-PL</strong>, <strong>OP-CX</strong>'},
+      {name:'matricula', req:false, type:'text', desc:'Matrícula no empregador (vinda do ERP)'},
+      {name:'gestor_username', req:false, type:'ref', desc:'Username do gestor direto'},
+      {name:'data_admissao', req:true, type:'date', desc:'<strong>DD/MM/AAAA</strong> (data CTPS)'},
+      {name:'salario', req:false, type:'number', desc:'Valor numérico (ex: 3900,00)'},
+      {name:'tipo_contrato', req:true, type:'enum', desc:'CLT, PJ, ESTAGIO, APRENDIZ, TERCEIRIZADO'},
+      {name:'status', req:false, type:'enum', desc:'ATIVO (padrão), FERIAS, LICENCA'},
+      {name:'ctps_numero', req:false, type:'text', desc:'Número da CTPS'},
+      {name:'ctps_serie', req:false, type:'text', desc:'Série da CTPS'},
+      {name:'pis', req:false, type:'text', desc:'PIS/NIS/NIT'},
+      {name:'rg', req:false, type:'text', desc:'Número do RG'},
+      {name:'endereco', req:false, type:'text', desc:'Endereço completo'},
+      {name:'cep', req:false, type:'cep', desc:'CEP (00000-000)'},
+      {name:'cidade', req:false, type:'text', desc:'Cidade'},
+      {name:'uf', req:false, type:'text', desc:'UF (2 letras)'}
+    ]
+  },
+  filiais: {title:'Importar filiais', sub:'11 colunas · 4 obrigatórias', columns:[
+    {name:'codigo', req:true, type:'text', desc:'Código curto único (ex: ATP-VAR)'},
+    {name:'nome', req:true, type:'text', desc:'Nome da filial'},
+    {name:'tipo', req:true, type:'enum', desc:'MATRIZ, FILIAL, LOJA, CD, ESCRITORIO, PRESTADORA'},
+    {name:'cnpj', req:false, type:'cnpj', desc:'CNPJ formatado'},
+    {name:'parent_codigo', req:false, type:'ref', desc:'Código da filial pai (hierarquia)'}
+  ]},
+  cargos: {title:'Importar cargos', sub:'8 colunas · 3 obrigatórias', columns:[
+    {name:'codigo', req:true, type:'text', desc:'Código curto (ex: ANL-PL)'},
+    {name:'nome', req:true, type:'text', desc:'Nome do cargo'},
+    {name:'nivel', req:true, type:'enum', desc:'OPERACIONAL, JUNIOR, PLENO, SENIOR, COORDENADOR, GERENTE, DIRETORIA'}
+  ]},
+  departamentos: {title:'Importar departamentos', sub:'6 colunas · 2 obrigatórias', columns:[
+    {name:'codigo', req:true, type:'text', desc:'Código curto (ex: FIN)'},
+    {name:'nome', req:true, type:'text', desc:'Nome do departamento'}
+  ]},
+  historico: {title:'Importar histórico de avaliações', sub:'9 colunas · 5 obrigatórias', columns:[]},
+  movimentacoes: {title:'Importar movimentações em lote', sub:'7 colunas · 4 obrigatórias', columns:[]}
+};
+
+/* ============= MOCK DATA: VALIDAÇÃO PRÉVIA ============= */
+const validationData = {
+  total: 247,
+  ok: 232,
+  warn: 12,
+  error: 3,
+  rows: [
+    // 3 erros bloqueantes
+    {line:14, status:'error', name:'Roberto Silva Santos', cpf:'042.815.392-67', employer:'LABUTA', taker:'CES-L1', dept:'FIN', position:'ANL-PL',
+      issues:[
+        {type:'error', text:'CPF duplicado', detail:'Já existe colaborador ativo com este CPF: <code>Beatriz Lopes Almeida</code> (linha 89 ou no banco)'}
+      ]},
+    {line:42, status:'error', name:'Marcos Andrade Ferreira', cpf:'185.392.741-22', employer:'LABUTA', taker:'XYZ-99', dept:'FIN', position:'ANL-PL',
+      issues:[
+        {type:'error', text:'Tomador inexistente', detail:'Código <code>XYZ-99</code> não existe nas filiais cadastradas. Cadastre a filial primeiro ou corrija o código.'}
+      ]},
+    {line:88, status:'error', name:'Juliana Santos', cpf:'329.481.052-1', employer:'LABUTA', taker:'CES-L1', dept:'FIN', position:'ANL-JR',
+      issues:[
+        {type:'error', text:'CPF inválido', detail:'O CPF informado não passa na validação dos dígitos verificadores. Confirme o número.'}
+      ]},
+
+    // 12 warnings (mostro alguns)
+    {line:7, status:'warn', name:'Carla Almeida Souza', cpf:'421.583.927-45', employer:'LABUTA', taker:'ATP-VAR', dept:'OPER', position:'OP-CX',
+      issues:[
+        {type:'warn', text:'Salário acima da faixa do cargo', detail:'Cargo <code>OP-CX</code> tem faixa de R$ 1.518 a R$ 1.750. Salário informado: R$ 1.890. Será aceito mas geramos um alerta.'}
+      ]},
+    {line:23, status:'warn', name:'Pedro Henrique Lima', cpf:'785.420.193-58', employer:'LABUTA', taker:'CES-L1', dept:'OPER', position:'REP',
+      issues:[
+        {type:'warn', text:'Gestor não informado', detail:'Campo <code>gestor_username</code> está vazio. Colaborador ficará sem gestor direto até atribuição manual.'}
+      ]},
+    {line:54, status:'warn', name:'Ana Beatriz Costa', cpf:'903.812.547-30', employer:'LABUTA', taker:'CES-INH', dept:'OPER', position:'OP-CX',
+      issues:[
+        {type:'warn', text:'E-mail vazio', detail:'Sem e-mail cadastrado. Senha temporária precisará ser entregue presencialmente.'}
+      ]},
+
+    // OKs (mostro 2 por amostragem)
+    {line:1, status:'ok', name:'Fernanda Lima dos Santos', cpf:'042.815.392-68', employer:'LABUTA', taker:'CES-L1', dept:'FIN', position:'ANL-PL', issues:[]},
+    {line:2, status:'ok', name:'Carlos Eduardo Lopes', cpf:'185.473.921-44', employer:'LABUTA', taker:'ATP-ATA', dept:'COM-COMP', position:'COMP-OP', issues:[]}
+  ]
+};
+
+/* ============= STATE ============= */
+let wState = {step:1, type:null, ignoreWarnings:true, createMissing:false, dryRunDone:false};
+
+/* ============= NAV ENTRE TELAS ============= */
+function openWizard(type){
+  wState = {step:1, type, ignoreWarnings:true, createMissing:false, dryRunDone:false};
+  document.getElementById('hubView').style.display='none';
+  document.getElementById('wizardView').style.display='block';
+  document.getElementById('wTitle').textContent = importTypes[type].title;
+  document.getElementById('wSub').textContent = importTypes[type].sub;
+  renderStep();
+}
+
+function closeWizard(){
+  document.getElementById('hubView').style.display='block';
+  document.getElementById('wizardView').style.display='none';
+}
+
+function renderStep(){
+  document.querySelectorAll('.ws-step').forEach((el,i)=>{
+    el.classList.remove('current','done');
+    if(i+1 < wState.step) el.classList.add('done');
+    if(i+1 === wState.step) el.classList.add('current');
+  });
+  document.querySelectorAll('.ws-line').forEach((el,i)=>{
+    el.classList.toggle('done', i+1 < wState.step);
+  });
+
+  document.getElementById('wPrev').style.display = wState.step>1 && wState.step<5 ? 'inline-flex' : 'none';
+
+  const renderers = [renderStep1, renderStep2, renderStep3, renderStep4, renderStep5];
+  renderers[wState.step-1]();
+}
+
+/* ============= STEP 1: MODELO ============= */
+function renderStep1(){
+  document.getElementById('wInfo').textContent = 'Baixe o modelo e revise as colunas obrigatórias antes de prosseguir';
+  document.getElementById('wNext').textContent = 'Já tenho o arquivo, prosseguir →';
+
+  const t = importTypes[wState.type];
+
+  document.getElementById('wBody').innerHTML = `
+    <div class="template-block">
+      <div class="template-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      </div>
+      <div class="template-info">
+        <h4>Modelo de planilha</h4>
+        <p>Use exatamente os nomes de coluna abaixo. O modelo já vem com 2 linhas de exemplo. Aceitamos <strong>.csv</strong>, <strong>.xlsx</strong> e <strong>.ods</strong>.</p>
+      </div>
+      <button class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Baixar modelo CSV
+      </button>
+    </div>
+
+    <h4 style="font-size:13px; font-weight:600; margin:18px 0 10px;">Colunas esperadas</h4>
+
+    <div class="column-table">
+      <div class="column-row head">
+        <div>Coluna</div>
+        <div>Tipo</div>
+        <div>Status</div>
+        <div>Descrição</div>
+      </div>
+      ${t.columns.map(c=>`
+        <div class="column-row">
+          <div class="col-name">${c.name}</div>
+          <div class="col-type">${c.type}</div>
+          <div><span class="col-required ${c.req?'req':'opt'}">${c.req?'obrig.':'opcional'}</span></div>
+          <div class="col-desc">${c.desc}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="banner warn" style="margin-top:14px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <div>
+        <strong>Sobre as referências cruzadas (campos do tipo <code style="background:rgba(0,0,0,.06); padding:1px 5px; border-radius:3px; font-family:'JetBrains Mono',monospace;">ref</code>):</strong>
+        Empregador, tomador, departamento, cargo e gestor precisam existir antes da importação. Use os <strong>códigos curtos</strong> (não os nomes). Se algum não existir, você verá um erro na próxima etapa e poderá voltar para cadastrar primeiro.
+      </div>
+    </div>
+  `;
+}
+
+/* ============= STEP 2: UPLOAD ============= */
+function renderStep2(){
+  document.getElementById('wInfo').textContent = 'Suba o arquivo preenchido. Aceitamos CSV, XLSX e ODS até 20 MB';
+  document.getElementById('wNext').textContent = 'Validar arquivo →';
+
+  document.getElementById('wBody').innerHTML = `
+    <h4 style="font-size:13px; font-weight:600; margin-bottom:10px;">Suba seu arquivo preenchido</h4>
+
+    <div class="dropzone dropzone-uploaded">
+      <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+      <h4>Arquivo carregado</h4>
+      <p>Pronto para validar</p>
+    </div>
+
+    <div class="uploaded-file" style="margin-top:14px;">
+      <div class="uf-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+      </div>
+      <div class="uf-info">
+        <div class="uf-name">labuta_implantacao_abr2026.xlsx</div>
+        <div class="uf-meta">2.4 MB • 247 linhas detectadas • 25 colunas</div>
+      </div>
+      <div class="uf-actions">
+        <button class="btn-secondary" style="padding:7px 11px;">Trocar arquivo</button>
+      </div>
+    </div>
+
+    <div class="upload-config">
+      <h4 style="font-size:12px; font-weight:600; margin-bottom:10px;">Configurações da importação</h4>
+      <div class="upload-config-row">
+        <div class="field">
+          <label>Comportamento ao encontrar colaborador existente</label>
+          <select>
+            <option>Pular (não atualiza nada)</option>
+            <option selected>Atualizar dados (mantém histórico)</option>
+            <option>Pular e gerar relatório de duplicidades</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Identificador único para deduplicação</label>
+          <select>
+            <option selected>CPF</option>
+            <option>Username</option>
+            <option>Matrícula no empregador</option>
+            <option>Combinação (CPF + Empregador)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="banner info" style="margin-top:14px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <div>
+        Ao clicar em <strong>"Validar arquivo"</strong>, o sistema executa o <strong>dry-run</strong>: lê todas as 247 linhas, valida cada campo, verifica referências cruzadas (empregador, tomador, gestor existem?), checa duplicidades. <strong>Nada é gravado no banco nesta etapa.</strong>
+      </div>
+    </div>
+  `;
+}
+
+/* ============= STEP 3: VALIDAÇÃO PRÉVIA (DRY-RUN) ============= */
+function renderStep3(){
+  document.getElementById('wInfo').textContent = 'Resultado da validação prévia. Nada foi gravado ainda.';
+  document.getElementById('wNext').textContent = 'Prosseguir para confirmação →';
+
+  const v = validationData;
+
+  document.getElementById('wBody').innerHTML = `
+    <div class="banner ${v.error>0 ? 'warn' : 'success'}">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <div>
+        <strong>Validação concluída em 1,8s.</strong>
+        ${v.error>0 ? `Há <strong>${v.error} erros bloqueantes</strong> que precisam ser corrigidos. As linhas com erro <strong>não serão importadas</strong>. Você pode prosseguir importando apenas as ${v.ok+v.warn} linhas válidas, ou voltar e corrigir o arquivo.` : 'Todas as linhas passaram. Pronto para importar.'}
+      </div>
+    </div>
+
+    <div class="validation-summary">
+      <div class="vs-card"><div class="label">Total no arquivo</div><div class="value">${v.total}</div><div class="sub">linhas detectadas</div></div>
+      <div class="vs-card success"><div class="label">Válidas</div><div class="value">${v.ok}</div><div class="sub">${((v.ok/v.total)*100).toFixed(1)}% do total</div></div>
+      <div class="vs-card warn"><div class="label">Com aviso</div><div class="value">${v.warn}</div><div class="sub">Importam, geram alerta</div></div>
+      <div class="vs-card error"><div class="label">Com erro</div><div class="value">${v.error}</div><div class="sub">Bloqueadas, não importam</div></div>
+    </div>
+
+    <div class="preview-tabs">
+      <button class="pt-tab active" data-pt="todas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        Todas
+        <span class="count">${v.total}</span>
+      </button>
+      <button class="pt-tab" data-pt="error">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+        Bloqueadas
+        <span class="count">${v.error}</span>
+      </button>
+      <button class="pt-tab" data-pt="warn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        Com aviso
+        <span class="count">${v.warn}</span>
+      </button>
+      <button class="pt-tab" data-pt="ok">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+        Válidas
+        <span class="count">${v.ok}</span>
+      </button>
+    </div>
+
+    <div class="pt-panel active" id="ptAll">
+      ${renderPreviewRows(v.rows)}
+    </div>
+    <div class="pt-panel" id="ptError">
+      ${renderPreviewRows(v.rows.filter(r=>r.status==='error'))}
+    </div>
+    <div class="pt-panel" id="ptWarn">
+      ${renderPreviewRows(v.rows.filter(r=>r.status==='warn'))}
+    </div>
+    <div class="pt-panel" id="ptOk">
+      ${renderPreviewRows(v.rows.filter(r=>r.status==='ok'))}
+      <div style="text-align:center; padding:14px; color:var(--txt2); font-size:11.5px;">
+        Mostrando 2 de 232 linhas válidas. Em produção haveria paginação.
+      </div>
+    </div>
+
+    <div style="display:flex; gap:9px; margin-top:14px; flex-wrap:wrap;">
+      <button class="btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Baixar relatório de erros (CSV)
+      </button>
+      <button class="btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Re-executar validação após correção
+      </button>
+    </div>
+  `;
+
+  // Tab switcher do preview
+  document.querySelectorAll('.pt-tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      document.querySelectorAll('.pt-tab').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.pt-panel').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const map = {todas:'ptAll', error:'ptError', warn:'ptWarn', ok:'ptOk'};
+      document.getElementById(map[t.dataset.pt]).classList.add('active');
+    });
+  });
+}
+
+function renderPreviewRows(rows){
+  if(rows.length===0) return '<div style="background:#fff; padding:30px; text-align:center; color:var(--txt2); border-radius:8px;">Nenhuma linha nesta categoria.</div>';
+
+  return rows.map(r=>{
+    const stIcon = r.status==='error' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--danger)"><circle cx="12" cy="12" r="10" fill="var(--danger)"/><path d="M15 9l-6 6M9 9l6 6" stroke="#fff" stroke-width="2.5"/></svg>'
+      : r.status==='warn' ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--amber)"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" fill="var(--amber)"/><path d="M12 9v4M12 17h.01" stroke="#fff" stroke-width="2.5"/></svg>'
+      : '<svg width="20" height="20" viewBox="0 0 24 24" fill="var(--green)"><circle cx="12" cy="12" r="10" fill="var(--green)"/><path d="M20 6L9 17l-5-5" stroke="#fff" stroke-width="2.5" fill="none" transform="scale(0.7) translate(5 5)"/></svg>';
+
+    return `
+      <div class="preview-row ${r.status}">
+        <div class="pr-line">L${r.line}</div>
+        <div class="pr-content">
+          <div class="pr-name">${r.name}</div>
+          <div class="pr-fields">
+            <span><strong>${r.cpf}</strong></span>
+            <span>EMP: <strong>${r.employer}</strong></span>
+            <span>TOM: <strong>${r.taker}</strong></span>
+            <span>DEPT: <strong>${r.dept}</strong></span>
+            <span>CARGO: <strong>${r.position}</strong></span>
+          </div>
+          ${r.issues.length>0 ? `
+            <div class="pr-issues">
+              ${r.issues.map(i=>`
+                <div class="pr-issue ${i.type}">
+                  ${i.type==='error' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>'}
+                  <div><strong>${i.text}.</strong> ${i.detail}</div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+        <div class="pr-status">${stIcon}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ============= STEP 4: CONFIRMAR ============= */
+function renderStep4(){
+  document.getElementById('wInfo').textContent = 'Última chance de revisar antes de gravar no banco';
+  document.getElementById('wNext').textContent = 'Importar agora →';
+
+  const v = validationData;
+
+  document.getElementById('wBody').innerHTML = `
+    <div class="banner warn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div>
+        <strong>Esta ação grava no banco e dispara notificações.</strong>
+        Cada colaborador novo recebe senha temporária, perfil "Colaborador" padrão e e-mail de boas-vindas (se houver). Você pode reverter a importação em até 24h via auditoria.
+      </div>
+    </div>
+
+    <div class="confirm-card">
+      <h3>Resumo da importação</h3>
+      <div class="confirm-stats">
+        <div class="cs-stat"><div class="v green">${v.ok}</div><div class="l">Válidas (importam normalmente)</div></div>
+        <div class="cs-stat"><div class="v amber">${v.warn}</div><div class="l">Com aviso (importam com flag)</div></div>
+        <div class="cs-stat"><div class="v danger">${v.error}</div><div class="l">Bloqueadas (não importam)</div></div>
+      </div>
+
+      <h4 style="font-size:12.5px; font-weight:600; margin-bottom:9px;">Opções de execução</h4>
+      <div class="options-list">
+        <label class="option-row">
+          <input type="checkbox" checked>
+          <div class="opt-text">
+            <strong>Importar mesmo com avisos</strong>
+            <span>Linhas com warning serão criadas mas marcadas para revisão posterior</span>
+          </div>
+        </label>
+        <label class="option-row">
+          <input type="checkbox">
+          <div class="opt-text">
+            <strong>Criar referências ausentes automaticamente</strong>
+            <span>Se departamento ou cargo não existir, cria como rascunho ao invés de bloquear</span>
+          </div>
+        </label>
+        <label class="option-row">
+          <input type="checkbox" checked>
+          <div class="opt-text">
+            <strong>Gerar senha temporária e relatório PDF</strong>
+            <span>Senhas listadas em PDF para entrega presencial aos colaboradores sem e-mail</span>
+          </div>
+        </label>
+        <label class="option-row">
+          <input type="checkbox" checked>
+          <div class="opt-text">
+            <strong>Enviar e-mail de boas-vindas</strong>
+            <span>Para colaboradores que tenham e-mail informado</span>
+          </div>
+        </label>
+        <label class="option-row">
+          <input type="checkbox">
+          <div class="opt-text">
+            <strong>Notificar gestores diretos</strong>
+            <span>Avisa gestores sobre os novos liderados que receberam</span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="banner info">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <div>
+        Ao confirmar, <strong>${v.ok + v.warn} colaboradores</strong> serão criados no banco. As ${v.error} linhas com erro permanecem no relatório para você corrigir e reenviar.
+      </div>
+    </div>
+  `;
+}
+
+/* ============= STEP 5: RESULTADO ============= */
+function renderStep5(){
+  document.getElementById('wInfo').textContent = 'Importação concluída';
+  document.getElementById('wPrev').style.display = 'none';
+  document.getElementById('wNext').textContent = 'Voltar ao hub';
+  document.getElementById('wNext').onclick = closeWizard;
+
+  const v = validationData;
+
+  document.getElementById('wBody').innerHTML = `
+    <div class="result-summary">
+      <div class="rs-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+      </div>
+      <div class="rs-text">
+        <h3>Importação concluída</h3>
+        <p>${v.ok + v.warn} colaboradores foram cadastrados em 4,2 segundos. ${v.error} linhas continuam pendentes no relatório de erros.</p>
+      </div>
+      <div>
+        <button class="btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Baixar relatório completo
+        </button>
+      </div>
+    </div>
+
+    <div class="confirm-card">
+      <h3>Estatísticas finais</h3>
+      <div class="confirm-stats">
+        <div class="cs-stat"><div class="v green">${v.ok + v.warn}</div><div class="l">Cadastrados com sucesso</div></div>
+        <div class="cs-stat"><div class="v">218</div><div class="l">E-mails de boas-vindas enviados</div></div>
+        <div class="cs-stat"><div class="v">${v.ok + v.warn - 218}</div><div class="l">Senhas no PDF (entrega presencial)</div></div>
+      </div>
+
+      <h4 style="font-size:12.5px; font-weight:600; margin-bottom:9px;">Próximos passos sugeridos</h4>
+      <div class="options-list">
+        <div class="option-row" style="background:var(--green2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+          <div class="opt-text">
+            <strong>Atribuir gestores aos ${v.warn} colaboradores que ficaram sem</strong>
+            <span>Use a tela de Colaboradores ou edite individualmente</span>
+          </div>
+          <button class="btn-link" style="margin-left:auto;">Abrir lista →</button>
+        </div>
+        <div class="option-row" style="background:var(--amber2);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+          <div class="opt-text">
+            <strong>Corrigir as ${v.error} linhas bloqueadas no arquivo original</strong>
+            <span>Baixe o relatório de erros, corrija e suba novamente para complementar</span>
+          </div>
+          <button class="btn-link" style="margin-left:auto;">Baixar relatório →</button>
+        </div>
+        <div class="option-row" style="background:var(--off);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <div class="opt-text">
+            <strong>Revisar perfil de acesso de cada colaborador novo</strong>
+            <span>Todos foram criados com perfil "Colaborador". Líderes precisam de upgrade manual.</span>
+          </div>
+          <button class="btn-link" style="margin-left:auto;">Ir para Acessos →</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function nextStep(){
+  if(wState.step<5){wState.step++; renderStep();}
+}
+function prevStep(){
+  if(wState.step>1){wState.step--; renderStep();}
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Programação anual de férias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#3D5F95,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 50px; overflow-x:hidden;}
+
+/* ============= PAGE HEADER ============= */
+.page-header{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:16px; margin-bottom:16px; flex-wrap:wrap;
+}
+.ph-left h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.ph-left p{font-size:13px; color:var(--txt2); margin-top:3px; max-width:560px;}
+
+.persona-switch{
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:11px;
+  padding:5px;
+  display:flex; gap:3px;
+  box-shadow:var(--shadow-card);
+  flex-wrap:wrap;
+}
+.persona-btn{
+  padding:7px 11px;
+  border:none;
+  background:transparent;
+  border-radius:7px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:11.5px;
+  color:var(--txt2);
+  display:inline-flex; align-items:center; gap:6px;
+  transition:all .15s;
+}
+.persona-btn:hover{background:var(--off); color:var(--txt);}
+.persona-btn.active{background:var(--navy); color:#fff; font-weight:500;}
+.persona-btn .pavatar{
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:700;
+}
+.persona-btn.active .pavatar{background:var(--orange); color:#fff;}
+
+/* ============= SCOPE BANNER ============= */
+.scope-banner{
+  background:linear-gradient(135deg, #fff, #E8EFF8);
+  border-radius:11px;
+  padding:11px 16px;
+  margin-bottom:14px;
+  display:flex; align-items:center; gap:13px;
+  border-left:3px solid var(--navy);
+  box-shadow:var(--shadow-card);
+}
+.sb-icon{
+  width:36px; height:36px; border-radius:9px;
+  background:#fff;
+  color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 1px 3px rgba(26,45,79,.08);
+}
+.sb-text{
+  flex:1;
+  font-size:12px;
+  color:var(--txt2);
+  line-height:1.55;
+}
+.sb-text strong{color:var(--txt); font-weight:600;}
+.sb-num{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  color:var(--orange);
+}
+
+/* ============= KPI ROW ============= */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:11px;
+  margin-bottom:14px;
+}
+.kpi-mini{
+  background:#fff;
+  border-radius:10px;
+  padding:11px 14px;
+  box-shadow:var(--shadow-card);
+  border-bottom:3px solid var(--navy);
+}
+.kpi-mini.green{border-bottom-color:var(--green);}
+.kpi-mini.amber{border-bottom-color:var(--orange);}
+.kpi-mini.red{border-bottom-color:var(--red);}
+.kpi-mini.purple{border-bottom-color:var(--purple);}
+.km-lbl{
+  font-size:10px;
+  color:var(--txt2);
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  font-weight:600;
+  margin-bottom:4px;
+}
+.km-val{
+  font-size:22px;
+  font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:-.4px;
+  line-height:1;
+  color:var(--txt);
+}
+.km-sub{
+  font-size:10.5px;
+  color:var(--txt2);
+  margin-top:3px;
+}
+.km-sub.alert{color:var(--red); font-weight:600;}
+.km-sub.warn{color:var(--orange); font-weight:600;}
+
+/* ============= FILTER BAR ============= */
+.filter-bar{
+  background:#fff;
+  border-radius:11px;
+  padding:13px 16px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+  display:flex; gap:12px; align-items:center;
+  flex-wrap:wrap;
+}
+.fb-search{
+  position:relative;
+  flex:1;
+  min-width:220px;
+  max-width:320px;
+}
+.fb-search input{
+  width:100%;
+  padding:9px 12px 9px 36px;
+  border:1px solid var(--gray2);
+  border-radius:8px;
+  font-size:12.5px;
+  font-family:inherit;
+  color:var(--txt);
+}
+.fb-search input:focus{outline:none; border-color:var(--navy);}
+.fb-search svg{
+  position:absolute; left:11px; top:50%;
+  transform:translateY(-50%);
+  color:var(--txt3);
+  pointer-events:none;
+}
+
+.fb-multi-wrap{
+  position:relative;
+}
+.fb-multi-trigger{
+  padding:9px 12px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:8px;
+  font-size:12px;
+  color:var(--txt);
+  cursor:pointer;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px;
+  white-space:nowrap;
+}
+.fb-multi-trigger:hover{border-color:var(--navy);}
+.fb-multi-trigger svg{width:13px; height:13px; color:var(--txt2);}
+.fb-multi-trigger strong{font-weight:600; color:var(--txt);}
+.fb-count-pill{
+  background:var(--navy);
+  color:#fff;
+  font-size:9.5px;
+  padding:1px 6px;
+  border-radius:6px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+}
+.fb-multi-dropdown{
+  position:absolute;
+  top:calc(100% + 5px); left:0;
+  background:#fff;
+  border-radius:9px;
+  box-shadow:var(--shadow-pop);
+  min-width:220px;
+  padding:7px;
+  z-index:20;
+  display:none;
+  border:1px solid var(--gray1);
+}
+.fb-multi-dropdown.open{display:block;}
+.fb-opt{
+  display:flex; align-items:center; gap:9px;
+  padding:7px 10px;
+  font-size:12px;
+  cursor:pointer;
+  border-radius:6px;
+}
+.fb-opt:hover{background:var(--off);}
+.fb-opt input{margin:0; cursor:pointer; accent-color:var(--navy);}
+
+.fb-clear{
+  background:transparent;
+  border:none;
+  color:var(--txt2);
+  font-size:11.5px;
+  cursor:pointer; font-family:inherit;
+  text-decoration:underline;
+}
+.fb-clear:hover{color:var(--navy);}
+
+.spacer{flex:1;}
+
+.view-toggle{
+  display:inline-flex;
+  background:var(--off);
+  padding:3px;
+  border-radius:8px;
+  border:1px solid var(--gray2);
+}
+.vt-btn{
+  padding:6px 11px;
+  background:transparent;
+  border:none;
+  border-radius:6px;
+  font-size:11.5px;
+  font-weight:500;
+  color:var(--txt2);
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.vt-btn svg{width:12px; height:12px;}
+.vt-btn:hover{color:var(--txt);}
+.vt-btn.active{background:#fff; color:var(--navy); font-weight:600; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+
+.btn-export{
+  padding:9px 14px;
+  background:var(--orange);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-size:12px; font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px;
+  box-shadow:0 4px 10px rgba(245,131,31,.25);
+}
+.btn-export:hover{background:#D87013;}
+.btn-export svg{width:13px; height:13px;}
+
+/* ============= TABELA DETALHADA ============= */
+.table-card{
+  background:#fff;
+  border-radius:14px;
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+}
+
+.table-card.hidden{display:none;}
+
+.table-scroll{
+  overflow-x:auto;
+  max-height:calc(100vh - 320px);
+}
+
+.tbl{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:1100px;
+}
+.tbl thead{
+  background:var(--off);
+  border-bottom:2px solid var(--gray1);
+  position:sticky; top:0;
+  z-index:5;
+}
+.tbl th{
+  padding:10px 14px;
+  text-align:left;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--txt2);
+  font-weight:600;
+  white-space:nowrap;
+}
+.tbl tbody tr{
+  border-bottom:1px solid var(--gray1);
+  transition:background .12s;
+}
+.tbl tbody tr:hover{background:var(--off);}
+.tbl td{
+  padding:11px 14px;
+  vertical-align:middle;
+}
+
+.group-header td{
+  background:linear-gradient(90deg, #E8EFF8, var(--off));
+  padding:8px 14px;
+  font-size:10.5px;
+  font-weight:700;
+  color:var(--navy);
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  border-bottom:1px solid var(--gray2);
+  border-top:2px solid var(--gray2);
+}
+.group-header td:first-child{border-left:3px solid var(--orange);}
+.group-header .group-count{
+  background:#fff;
+  color:var(--navy);
+  font-family:'JetBrains Mono',monospace;
+  padding:2px 8px;
+  border-radius:6px;
+  margin-left:6px;
+  font-size:10px;
+}
+
+.tcol-emp{display:flex; align-items:center; gap:9px;}
+.tcol-emp .tav{
+  width:30px; height:30px; border-radius:50%;
+  color:#fff;
+  font-size:10.5px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.tcol-emp .tinfo{min-width:0;}
+.tcol-emp .tname{
+  font-size:12.5px; font-weight:600;
+  display:flex; align-items:center; gap:5px;
+  flex-wrap:wrap;
+}
+.tnick-pill{
+  background:var(--orange2);
+  color:var(--orange);
+  font-family:'JetBrains Mono',monospace;
+  font-size:9.5px;
+  padding:1px 6px;
+  border-radius:5px;
+  font-weight:600;
+}
+.tcol-emp .tcargo{
+  font-size:10.5px; color:var(--txt2);
+  margin-top:1px;
+}
+
+.local-tag{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10.5px;
+  color:var(--txt2);
+}
+.local-tag .ldot{
+  width:7px; height:7px; border-radius:50%;
+  flex-shrink:0;
+}
+
+.aquis-cell{
+  display:flex; flex-direction:column;
+  gap:4px;
+  min-width:140px;
+}
+.aquis-period{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+}
+.aquis-period.expired{color:var(--red);}
+.aquis-bar{
+  height:4px; background:var(--gray1); border-radius:2px; overflow:hidden;
+  position:relative;
+}
+.aquis-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg, var(--green), #2BA567);
+  border-radius:2px;
+}
+.aquis-bar-fill.warn{background:linear-gradient(90deg, var(--orange), #FAA053);}
+.aquis-bar-fill.danger{background:linear-gradient(90deg, var(--red), #FF5B62);}
+.aquis-deadline{
+  font-size:10px;
+  color:var(--txt3);
+  font-family:'JetBrains Mono',monospace;
+}
+.aquis-deadline.urgent{color:var(--red); font-weight:600;}
+
+.last-cell, .next-cell{
+  display:flex; flex-direction:column;
+  gap:2px;
+  min-width:130px;
+}
+.last-period, .next-period{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+}
+.last-meta, .next-meta{
+  font-size:10px;
+  color:var(--txt2);
+  display:flex; align-items:center; gap:5px;
+  flex-wrap:wrap;
+}
+.last-meta .lm-pill{
+  font-size:9px;
+  padding:1px 5px;
+  border-radius:4px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.lm-pill.frac{background:var(--blue2); color:var(--blue);}
+.lm-pill.full{background:var(--gray1); color:var(--txt2);}
+.lm-pill.thirteenth{background:var(--green2); color:var(--green);}
+
+.empty-cell{
+  font-size:11px;
+  color:var(--txt3);
+  font-style:italic;
+}
+
+.next-status-pill{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9.5px;
+  padding:2px 7px;
+  border-radius:6px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.nsp.approved{background:var(--green2); color:var(--green);}
+.nsp.planned{background:var(--blue2); color:var(--blue);}
+.nsp.pending{background:var(--amber2); color:var(--orange);}
+.nsp.none{background:var(--red2); color:var(--red);}
+.nsp svg{width:9px; height:9px;}
+
+.alert-cell{
+  display:flex; flex-direction:column; gap:3px;
+  min-width:120px;
+}
+.alert-pill{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px;
+  padding:3px 8px;
+  border-radius:6px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.alert-pill svg{width:10px; height:10px; flex-shrink:0;}
+.alert-pill.urgent{background:var(--red); color:#fff; animation:blink 2s infinite;}
+.alert-pill.warn{background:var(--amber2); color:var(--orange);}
+.alert-pill.ok{background:var(--green2); color:var(--green);}
+.alert-pill.info{background:var(--blue2); color:var(--blue);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.65;}}
+
+.tcol-actions{
+  display:flex; gap:5px;
+  white-space:nowrap;
+}
+.tbtn{
+  width:28px; height:28px;
+  border-radius:6px;
+  background:transparent;
+  border:1px solid var(--gray2);
+  cursor:pointer;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--txt2);
+}
+.tbtn:hover{background:var(--off); color:var(--navy); border-color:var(--navy);}
+.tbtn svg{width:13px; height:13px;}
+
+/* ============= MATRIZ ANUAL ============= */
+.matrix-card{
+  background:#fff;
+  border-radius:14px;
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+  display:none;
+}
+.matrix-card.active{display:block;}
+
+.matrix-header{
+  padding:13px 18px;
+  border-bottom:1px solid var(--gray1);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.matrix-header h3{
+  font-size:13px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.matrix-header h3 svg{width:14px; height:14px; color:var(--navy);}
+
+.matrix-legend{
+  display:flex; gap:11px;
+  font-size:10.5px;
+  color:var(--txt2);
+  flex-wrap:wrap;
+}
+.ml-item{display:flex; align-items:center; gap:5px;}
+.ml-cell{
+  width:14px; height:11px;
+  border-radius:3px;
+}
+.ml-cell.last{background:linear-gradient(135deg, var(--gray3), #8B9CB5);}
+.ml-cell.taken{background:linear-gradient(135deg, var(--green), #15643A);}
+.ml-cell.next{background:linear-gradient(135deg, var(--blue), #1849A8);}
+.ml-cell.urgent{background:linear-gradient(135deg, var(--red), #B71C1F);}
+
+.matrix-scroll{
+  overflow-x:auto;
+  max-height:calc(100vh - 340px);
+}
+
+.matrix{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  font-size:11.5px;
+  min-width:900px;
+}
+.matrix th{
+  background:var(--off);
+  padding:8px 6px;
+  font-size:10px;
+  font-weight:600;
+  color:var(--txt2);
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  border-bottom:2px solid var(--gray1);
+  position:sticky; top:0;
+  z-index:5;
+  text-align:center;
+}
+.matrix th.first-col{
+  text-align:left;
+  padding-left:14px;
+  background:var(--off);
+  position:sticky; left:0;
+  z-index:6;
+  min-width:200px;
+}
+.matrix th.month-col{
+  font-family:'JetBrains Mono',monospace;
+  width:60px;
+}
+.matrix th.month-col.current{
+  background:linear-gradient(180deg, var(--orange2), var(--off));
+  color:var(--orange);
+  border-bottom-color:var(--orange);
+}
+.matrix td{
+  padding:6px 8px;
+  border-bottom:1px solid var(--gray1);
+  height:38px;
+}
+.matrix tr.matrix-group td{
+  background:linear-gradient(90deg, #E8EFF8, var(--off));
+  padding:6px 14px;
+  font-size:10px;
+  font-weight:700;
+  color:var(--navy);
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  border-bottom:1px solid var(--gray2);
+  position:sticky; left:0;
+  z-index:4;
+}
+.matrix td.first-col{
+  background:#fff;
+  position:sticky; left:0;
+  border-right:2px solid var(--gray1);
+  z-index:3;
+}
+.matrix tr:hover td.first-col{background:var(--off);}
+
+.matrix-emp{display:flex; align-items:center; gap:8px;}
+.matrix-emp .tav{
+  width:24px; height:24px; border-radius:50%;
+  color:#fff;
+  font-size:9px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.matrix-emp .me-info{min-width:0;}
+.matrix-emp .me-name{
+  font-size:11px; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  max-width:140px;
+}
+.matrix-emp .me-cargo{
+  font-size:9.5px; color:var(--txt2);
+}
+
+.mcell{
+  position:relative;
+  text-align:center;
+}
+.mbar{
+  display:inline-block;
+  width:90%;
+  height:18px;
+  border-radius:4px;
+  font-size:9px;
+  font-weight:700;
+  color:#fff;
+  line-height:18px;
+  letter-spacing:.3px;
+  cursor:default;
+  white-space:nowrap;
+}
+.mbar.last{background:linear-gradient(135deg, var(--gray3), #8B9CB5);}
+.mbar.taken{background:linear-gradient(135deg, var(--green), #15643A);}
+.mbar.next{background:linear-gradient(135deg, var(--blue), #1849A8);}
+.mbar.urgent{background:linear-gradient(135deg, var(--red), #B71C1F); animation:blink 2s infinite;}
+.mbar.partial{
+  background:repeating-linear-gradient(45deg, var(--blue), var(--blue) 4px, #1849A8 4px, #1849A8 8px);
+}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 1100px){
+  .kpi-row{grid-template-columns:repeat(3, 1fr);}
+  .kpi-mini:nth-child(4), .kpi-mini:nth-child(5){grid-column:span 1;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:13px 13px 30px;}
+  .page-header{flex-direction:column; align-items:stretch; gap:11px;}
+  .page-header h1{font-size:18px;}
+  .persona-switch{justify-content:flex-start;}
+  .persona-btn{font-size:10.5px; padding:6px 9px;}
+  .kpi-row{grid-template-columns:repeat(2, 1fr);}
+  .km-val{font-size:18px;}
+  .filter-bar{padding:11px; flex-direction:column; align-items:stretch; gap:8px;}
+  .fb-search{max-width:none;}
+  .scope-banner{padding:9px 12px; gap:9px;}
+  .sb-icon{width:30px; height:30px;}
+  .table-scroll{max-height:480px;}
+}
+.main::-webkit-scrollbar, .table-scroll::-webkit-scrollbar, .matrix-scroll::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px; height:6px;}
+.main::-webkit-scrollbar-thumb, .table-scroll::-webkit-scrollbar-thumb, .matrix-scroll::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <div class="sidebar-section">Pessoas</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Consultar histórico</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Férias</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Atestados</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>Movimentações</a>
+      <div class="sidebar-section">Avaliação</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Férias · <strong>Programação anual</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb" id="topUserAvatar">PM</div>
+      <div class="user-info">
+        <span class="user-name" id="topUserName">Patrícia Mello</span>
+        <span class="user-role" id="topUserRole">RH GPC</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="page-header">
+      <div class="ph-left">
+        <h1>Programação anual de férias</h1>
+        <p>Visão consolidada para a reunião de planejamento entre DP, diretoria e líderes. Compare período aquisitivo, últimas férias e próximas programações por filial e setor.</p>
+      </div>
+      <div class="persona-switch">
+        <button class="persona-btn" data-persona="lider" onclick="setPersona('lider')">
+          <span class="pavatar">JC</span>
+          João (Líder)
+        </button>
+        <button class="persona-btn active" data-persona="dp" onclick="setPersona('dp')">
+          <span class="pavatar">PM</span>
+          Patrícia (DP)
+        </button>
+        <button class="persona-btn" data-persona="diretoria" onclick="setPersona('diretoria')">
+          <span class="pavatar">RP</span>
+          Renato (Diretoria)
+        </button>
+      </div>
+    </div>
+
+    <!-- Scope banner -->
+    <div class="scope-banner">
+      <div class="sb-icon">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="sb-text" id="scopeText">
+        <strong>Você (Patrícia · DP GPC) está visualizando todos os <span class="sb-num" id="scopeCount">16</span> colaboradores ativos do tenant.</strong> A diretoria também tem visão integral. Líderes veem apenas seus liderados diretos. Filtros por filial e setor estão habilitados.
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi-mini">
+        <div class="km-lbl">Em escopo</div>
+        <div class="km-val" id="kpiTotal">16</div>
+        <div class="km-sub">colaboradores ativos</div>
+      </div>
+      <div class="kpi-mini green">
+        <div class="km-lbl">Programadas 2026</div>
+        <div class="km-val" id="kpiPlanned">11</div>
+        <div class="km-sub">próximas férias definidas</div>
+      </div>
+      <div class="kpi-mini purple">
+        <div class="km-lbl">Sem programação</div>
+        <div class="km-val" id="kpiNoplan">3</div>
+        <div class="km-sub">precisam ser planejadas</div>
+      </div>
+      <div class="kpi-mini amber">
+        <div class="km-lbl">Vencendo (60d)</div>
+        <div class="km-val" id="kpiExpiring">3</div>
+        <div class="km-sub warn">prazo crítico</div>
+      </div>
+      <div class="kpi-mini red">
+        <div class="km-lbl">Em dobro</div>
+        <div class="km-val" id="kpiOverdue">1</div>
+        <div class="km-sub alert">paga dobrado</div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      <div class="fb-search">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Buscar por nome ou apelido..." id="searchInput" oninput="applyFilters()">
+      </div>
+
+      <!-- Multi-select Filial -->
+      <div class="fb-multi-wrap">
+        <button class="fb-multi-trigger" onclick="toggleDropdown('branchDropdown', event)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          Filial: <strong id="branchLabel">Todas</strong>
+          <span class="fb-count-pill" id="branchCount" style="display:none;">0</span>
+        </button>
+        <div class="fb-multi-dropdown" id="branchDropdown">
+          <label class="fb-opt"><input type="checkbox" class="filter-branch" value="Sede ATP" checked onchange="applyFilters()"> Sede ATP</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-branch" value="Cestão Loja 1" checked onchange="applyFilters()"> Cestão Loja 1</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-branch" value="Cestão Inhambupe" checked onchange="applyFilters()"> Cestão Inhambupe</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-branch" value="ATP Varejo" checked onchange="applyFilters()"> ATP Varejo</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-branch" value="ATP Atacado" checked onchange="applyFilters()"> ATP Atacado</label>
+        </div>
+      </div>
+
+      <!-- Multi-select Setor -->
+      <div class="fb-multi-wrap">
+        <button class="fb-multi-trigger" onclick="toggleDropdown('deptDropdown', event)">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+          Setor: <strong id="deptLabel">Todos</strong>
+          <span class="fb-count-pill" id="deptCount" style="display:none;">0</span>
+        </button>
+        <div class="fb-multi-dropdown" id="deptDropdown">
+          <label class="fb-opt"><input type="checkbox" class="filter-dept" value="Financeiro" checked onchange="applyFilters()"> Financeiro</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-dept" value="RH" checked onchange="applyFilters()"> RH</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-dept" value="Operações" checked onchange="applyFilters()"> Operações</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-dept" value="Frente de Loja" checked onchange="applyFilters()"> Frente de Loja</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-dept" value="Recebimento" checked onchange="applyFilters()"> Recebimento</label>
+          <label class="fb-opt"><input type="checkbox" class="filter-dept" value="Compras" checked onchange="applyFilters()"> Compras</label>
+        </div>
+      </div>
+
+      <button class="fb-clear" onclick="clearFilters()">Limpar</button>
+
+      <div class="spacer"></div>
+
+      <div class="view-toggle">
+        <button class="vt-btn active" data-view="table" onclick="setView('table')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          Tabela
+        </button>
+        <button class="vt-btn" data-view="matrix" onclick="setView('matrix')">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Matriz Anual
+        </button>
+      </div>
+
+      <button class="btn-export">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Exportar
+      </button>
+    </div>
+
+    <!-- ============= TABELA DETALHADA ============= -->
+    <div class="table-card" id="tableCard">
+      <div class="table-scroll">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Colaborador</th>
+              <th>Filial · Setor</th>
+              <th>Período aquisitivo</th>
+              <th>Últimas férias</th>
+              <th>Próximas férias</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- preenchido via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============= MATRIZ ANUAL ============= -->
+    <div class="matrix-card" id="matrixCard">
+      <div class="matrix-header">
+        <h3>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          Matriz anual 2026 · janelas de férias
+        </h3>
+        <div class="matrix-legend">
+          <span class="ml-item"><span class="ml-cell last"></span>Histórico</span>
+          <span class="ml-item"><span class="ml-cell taken"></span>Em curso</span>
+          <span class="ml-item"><span class="ml-cell next"></span>Programada</span>
+          <span class="ml-item"><span class="ml-cell urgent"></span>Urgente</span>
+        </div>
+      </div>
+
+      <div class="matrix-scroll">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th class="first-col">Colaborador</th>
+              <th class="month-col">Jan</th>
+              <th class="month-col">Fev</th>
+              <th class="month-col">Mar</th>
+              <th class="month-col current">Abr</th>
+              <th class="month-col">Mai</th>
+              <th class="month-col">Jun</th>
+              <th class="month-col">Jul</th>
+              <th class="month-col">Ago</th>
+              <th class="month-col">Set</th>
+              <th class="month-col">Out</th>
+              <th class="month-col">Nov</th>
+              <th class="month-col">Dez</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody">
+            <!-- preenchido via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ============= DATASET MOCK =============
+const employees = [
+  // SEDE ATP - Financeiro
+  {id:'beatriz', name:'Beatriz Lopes Almeida', nick:'Bia', avatar:'BL', color:'#3D5F95',
+   role:'Analista Sr. Financeiro', employer:'GPC', branch:'Sede ATP', dept:'Financeiro', manager:'cadu',
+   aquis:{label:'2024/2025', progress:100, deadline:'13/09/2026', status:'released'},
+   last:{period:'10/12/24 a 24/12/24', days:15, fractioned:true, thirteenth:false},
+   next:{period:null, days:null, status:'none'},
+   alerts:['no_planning']},
+
+  {id:'helena', name:'Helena Cardoso', nick:null, avatar:'HC', color:'#1E7B4B',
+   role:'Analista Sr. Financeiro', employer:'GPC', branch:'Sede ATP', dept:'Financeiro', manager:'cadu',
+   aquis:{label:'2023/2024', progress:100, deadline:'18/05/2026', status:'expiring_critical'},
+   last:{period:'05/06/23 a 04/07/23', days:30, fractioned:false, thirteenth:true},
+   next:{period:null, days:null, status:'none'},
+   alerts:['critical_expiry']},
+
+  {id:'joao_carvalho', name:'João Carvalho', nick:null, avatar:'JC', color:'#3D5F95',
+   role:'Líder Financeiro', employer:'GPC', branch:'Sede ATP', dept:'Financeiro', manager:null,
+   aquis:{label:'2024/2025', progress:100, deadline:'02/11/2026', status:'released'},
+   last:{period:'02/11/24 a 16/11/24', days:15, fractioned:true, thirteenth:false},
+   next:{period:'06/07/26 a 05/08/26', days:30, status:'approved'},
+   alerts:[]},
+
+  {id:'cadu', name:'Carlos Eduardo Rocha', nick:'Cadu', avatar:'CR', color:'#0F766E',
+   role:'Coordenador Operações', employer:'GPC', branch:'Sede ATP', dept:'Operações', manager:null,
+   aquis:{label:'2024/2025', progress:100, deadline:'22/03/2027', status:'released'},
+   last:{period:'15/03/25 a 13/04/25', days:30, fractioned:false, thirteenth:true},
+   next:{period:'05/10/26 a 03/11/26', days:30, status:'approved'},
+   alerts:[]},
+
+  // SEDE ATP - RH
+  {id:'patricia', name:'Patrícia Mello', nick:null, avatar:'PM', color:'#3D5F95',
+   role:'Coordenadora RH', employer:'GPC', branch:'Sede ATP', dept:'RH', manager:null,
+   aquis:{label:'2025/2026', progress:55, deadline:'10/07/2027', status:'forming'},
+   last:{period:'15/02/26 a 16/03/26', days:30, fractioned:false, thirteenth:true},
+   next:{period:null, days:null, status:'none'},
+   alerts:['recent_taken']},
+
+  {id:'larissa', name:'Larissa Pereira', nick:null, avatar:'LP', color:'#6D28D9',
+   role:'RH Labuta', employer:'Labuta', branch:'Sede ATP', dept:'RH', manager:null,
+   aquis:{label:'2024/2025', progress:100, deadline:'05/06/2026', status:'expiring'},
+   last:{period:'12/12/24 a 11/01/25', days:30, fractioned:false, thirteenth:true},
+   next:{period:'01/06/26 a 05/06/26', days:5, status:'planned'},
+   alerts:['expiring_warn', 'short_period']},
+
+  // CESTÃO LOJA 1 - Financeiro
+  {id:'fernanda', name:'Fernanda Lima dos Santos', nick:'Fê', avatar:'FL', color:'#E82227',
+   role:'Analista Pleno', employer:'Labuta', branch:'Cestão Loja 1', dept:'Financeiro', manager:'joao_carvalho',
+   aquis:{label:'2024/2025', progress:100, deadline:'13/09/2026', status:'released'},
+   last:{period:'18/12/25 a 16/01/26', days:30, fractioned:false, thirteenth:true},
+   next:{period:'15/12/26 a 13/01/27', days:30, status:'approved'},
+   alerts:[]},
+
+  {id:'daniela', name:'Daniela Vieira Matos', nick:null, avatar:'DV', color:'#6D28D9',
+   role:'Analista Júnior', employer:'Labuta', branch:'Cestão Loja 1', dept:'Financeiro', manager:'joao_carvalho',
+   aquis:{label:'2024/2025', progress:100, deadline:'22/07/2026', status:'released'},
+   last:{period:'05/12/24 a 04/01/25', days:30, fractioned:false, thirteenth:false},
+   next:{period:'08/06/26 a 22/06/26', days:15, status:'approved'},
+   alerts:[]},
+
+  {id:'natalia', name:'Natália Ferreira', nick:null, avatar:'NF', color:'#F5831F',
+   role:'Auxiliar Financeiro', employer:'Labuta', branch:'Cestão Loja 1', dept:'Financeiro', manager:'joao_carvalho',
+   aquis:{label:'2024/2025', progress:100, deadline:'08/11/2026', status:'released'},
+   last:{period:'02/01/25 a 16/01/25', days:15, fractioned:true, thirteenth:false},
+   next:{period:'05/05/26 a 19/05/26 + 17/08 a 31/08', days:30, status:'approved'},
+   alerts:['fractioned_plan']},
+
+  {id:'gabriel', name:'Gabriel Pinto Souza', nick:'Gabi', avatar:'GP', color:'#854F0B',
+   role:'Estagiário', employer:'Labuta', branch:'Cestão Loja 1', dept:'Financeiro', manager:'joao_carvalho',
+   aquis:{label:'2025/2026', progress:25, deadline:'15/03/2027', status:'forming'},
+   last:{period:null, days:null, fractioned:false, thirteenth:false},
+   next:{period:null, days:null, status:'none'},
+   alerts:['intern']},
+
+  // ATP VAREJO - Frente de Loja
+  {id:'joao_pedro', name:'João Pedro Silva', nick:'JP', avatar:'JS', color:'#1E7B4B',
+   role:'Operador Caixa', employer:'Labuta', branch:'ATP Varejo', dept:'Frente de Loja', manager:'sandra',
+   aquis:{label:'2024/2025', progress:100, deadline:'12/09/2026', status:'released'},
+   last:{period:null, days:null, fractioned:false, thirteenth:false},
+   next:{period:'06/07/26 a 20/07/26', days:15, status:'pending'},
+   alerts:['first_vacation']},
+
+  {id:'ana_souza', name:'Ana Souza Santos', nick:null, avatar:'AS', color:'#F5831F',
+   role:'Atendente', employer:'Labuta', branch:'ATP Varejo', dept:'Frente de Loja', manager:'sandra',
+   aquis:{label:'2025/2026', progress:35, deadline:'06/02/2028', status:'forming'},
+   last:{period:'03/01/26 a 17/01/26', days:15, fractioned:true, thirteenth:false},
+   next:{period:null, days:null, status:'none'},
+   alerts:['recent_taken']},
+
+  {id:'rafael', name:'Rafael Costa Lima', nick:null, avatar:'RL', color:'#6D28D9',
+   role:'Repositor', employer:'Labuta', branch:'ATP Varejo', dept:'Frente de Loja', manager:'sandra',
+   aquis:{label:'2023/2024', progress:100, deadline:'30/06/2026', status:'expiring'},
+   last:{period:'10/05/23 a 09/06/23', days:30, fractioned:false, thirteenth:true},
+   next:{period:'15/06/26 a 29/06/26', days:15, status:'planned'},
+   alerts:['expiring_warn']},
+
+  // CESTÃO INHAMBUPE - Operações
+  {id:'marcos', name:'Marcos Oliveira', nick:null, avatar:'MO', color:'#1E7B4B',
+   role:'Operador Loja', employer:'Labuta', branch:'Cestão Inhambupe', dept:'Operações', manager:null,
+   aquis:{label:'2024/2025', progress:100, deadline:'18/04/2027', status:'released'},
+   last:{period:'18/08/25 a 16/09/25', days:30, fractioned:false, thirteenth:true},
+   next:{period:'09/11/26 a 23/11/26', days:15, status:'approved'},
+   alerts:[]},
+
+  {id:'juliana', name:'Juliana Mendes Carvalho', nick:'Ju', avatar:'JM', color:'#E82227',
+   role:'Caixa', employer:'Labuta', branch:'Cestão Inhambupe', dept:'Frente de Loja', manager:null,
+   aquis:{label:'2022/2023', progress:100, deadline:'15/03/2026 (vencido)', status:'overdue'},
+   last:{period:'20/02/22 a 21/03/22', days:30, fractioned:false, thirteenth:false},
+   next:{period:null, days:null, status:'none'},
+   alerts:['overdue_double']},
+
+  // ATP ATACADO - Recebimento
+  {id:'thiago', name:'Thiago Almeida', nick:null, avatar:'TA', color:'#0F766E',
+   role:'Conferente', employer:'Labuta', branch:'ATP Atacado', dept:'Recebimento', manager:null,
+   aquis:{label:'2024/2025', progress:100, deadline:'12/12/2026', status:'released'},
+   last:{period:'01/09/25 a 30/09/25', days:30, fractioned:false, thirteenth:true},
+   next:{period:'07/09/26 a 06/10/26', days:30, status:'planned'},
+   alerts:[]},
+];
+
+const branchColors = {
+  'Sede ATP': '#3D5F95',
+  'Cestão Loja 1': '#E82227',
+  'Cestão Inhambupe': '#1E7B4B',
+  'ATP Varejo': '#F5831F',
+  'ATP Atacado': '#0F766E'
+};
+
+const personas = {
+  lider: {
+    name:'João Carvalho', avatar:'JC', role:'Líder Financeiro',
+    label:'João Carvalho · Líder Financeiro',
+    visibleIds: employees.filter(e=>e.manager==='joao_carvalho').map(e=>e.id),
+    description: 'Você (João Carvalho · Líder Financeiro) está visualizando apenas os <strong><span class="sb-num">{count}</span> colaboradores</strong> da sua equipe direta. Você não consegue ver outras filiais ou setores. Use os filtros para refinar dentro do seu escopo.'
+  },
+  dp: {
+    name:'Patrícia Mello', avatar:'PM', role:'RH GPC',
+    label:'Patrícia Mello · DP GPC',
+    visibleIds:'all',
+    description: '<strong>Você (Patrícia · DP GPC) está visualizando todos os <span class="sb-num">{count}</span> colaboradores ativos do tenant.</strong> A diretoria também tem visão integral. Líderes veem apenas seus liderados diretos. Filtros por filial e setor estão habilitados.'
+  },
+  diretoria: {
+    name:'Renato Pinto', avatar:'RP', role:'Diretor Operações',
+    label:'Renato Pinto · Diretoria',
+    visibleIds:'all',
+    description: 'Você (Renato Pinto · Diretoria) tem <strong>visão integral</strong> dos <span class="sb-num">{count}</span> colaboradores. Use esta tela para a reunião de planejamento anual com o DP e os líderes. Cuidado com aquisitivos vencidos: <strong>geram pagamento em dobro</strong>.'
+  }
+};
+
+let currentPersona = 'dp';
+let currentView = 'table';
+
+// ============= UTILS =============
+function getVisibleEmployees(){
+  const persona = personas[currentPersona];
+  let pool = persona.visibleIds === 'all'
+    ? employees
+    : employees.filter(e => persona.visibleIds.includes(e.id));
+
+  // Filtros aplicados
+  const branches = Array.from(document.querySelectorAll('.filter-branch:checked')).map(c=>c.value);
+  const depts = Array.from(document.querySelectorAll('.filter-dept:checked')).map(c=>c.value);
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+
+  return pool.filter(e =>
+    branches.includes(e.branch)
+    && depts.includes(e.dept)
+    && (search === '' || e.name.toLowerCase().includes(search) || (e.nick && e.nick.toLowerCase().includes(search)))
+  );
+}
+
+function getAlertPill(alert){
+  const map = {
+    overdue_double: ['urgent', '<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>', 'EM DOBRO'],
+    critical_expiry: ['urgent', '<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>', 'VENCE 18/05'],
+    expiring_warn: ['warn', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>', 'Vencendo'],
+    no_planning: ['warn', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>', 'Sem programação'],
+    fractioned_plan: ['info', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>', 'Fracionado'],
+    first_vacation: ['info', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>', 'Primeiras férias'],
+    short_period: ['warn', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>', '5 dias só'],
+    recent_taken: ['ok', '<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>', 'Recém gozada'],
+    intern: ['info', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>', 'Estagiário']
+  };
+  const m = map[alert];
+  if(!m) return '';
+  return `<span class="alert-pill ${m[0]}">${m[1]} ${m[2]}</span>`;
+}
+
+// ============= RENDER TABLE =============
+function renderTable(){
+  const tbody = document.getElementById('tableBody');
+  const list = getVisibleEmployees();
+
+  // Agrupa por filial → setor
+  const grouped = {};
+  list.forEach(e => {
+    const key = e.branch + '|' + e.dept;
+    if(!grouped[key]) grouped[key] = {branch:e.branch, dept:e.dept, items:[]};
+    grouped[key].items.push(e);
+  });
+
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:50px 20px; text-align:center; color:var(--txt2);">
+      <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--gray3); margin-bottom:8px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <div style="font-size:13px; font-weight:600; margin-bottom:4px;">Nenhum colaborador encontrado</div>
+      <div style="font-size:11.5px;">Ajuste os filtros ou troque a persona.</div>
+    </td></tr>`;
+    return;
+  }
+
+  let html = '';
+  Object.values(grouped).forEach(g => {
+    html += `<tr class="group-header"><td colspan="7">
+      ${g.branch} · ${g.dept}
+      <span class="group-count">${g.items.length}</span>
+    </td></tr>`;
+
+    g.items.forEach(e => {
+      const aquisColor = e.aquis.status === 'overdue' ? 'danger'
+                       : e.aquis.status === 'expiring_critical' ? 'danger'
+                       : e.aquis.status === 'expiring' ? 'warn'
+                       : '';
+      const aquisDeadlineClass = (e.aquis.status === 'overdue' || e.aquis.status === 'expiring_critical') ? 'urgent' : '';
+
+      const lastCell = e.last.period
+        ? `<div class="last-period">${e.last.period}</div>
+           <div class="last-meta">
+             <span>${e.last.days} dias</span>
+             ${e.last.fractioned ? '<span class="lm-pill frac">Frac.</span>' : '<span class="lm-pill full">Integral</span>'}
+             ${e.last.thirteenth ? '<span class="lm-pill thirteenth">+13º</span>' : ''}
+           </div>`
+        : `<span class="empty-cell">Nenhuma anterior</span>`;
+
+      const nextStatusMap = {
+        approved: ['nsp approved', '<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Aprovada'],
+        planned: ['nsp planned', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/></svg> Planejada'],
+        pending: ['nsp pending', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Pendente'],
+        none: ['nsp none', '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg> Sem programação']
+      };
+      const ns = nextStatusMap[e.next.status] || nextStatusMap.none;
+
+      const nextCell = e.next.period
+        ? `<div class="next-period">${e.next.period}</div>
+           <div class="next-meta">
+             <span>${e.next.days} dias</span>
+             <span class="next-status-pill ${ns[0]}">${ns[1]}</span>
+           </div>`
+        : `<span class="next-status-pill ${ns[0]}">${ns[1]}</span>`;
+
+      html += `<tr>
+        <td>
+          <div class="tcol-emp">
+            <div class="tav" style="background:${e.color};">${e.avatar}</div>
+            <div class="tinfo">
+              <div class="tname">${e.name}${e.nick ? `<span class="tnick-pill">@${e.nick}</span>` : ''}</div>
+              <div class="tcargo">${e.role} · ${e.employer}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="local-tag">
+            <span class="ldot" style="background:${branchColors[e.branch]};"></span>
+            <span><strong>${e.branch}</strong> · ${e.dept}</span>
+          </div>
+        </td>
+        <td>
+          <div class="aquis-cell">
+            <span class="aquis-period ${e.aquis.status === 'overdue' ? 'expired' : ''}">${e.aquis.label}</span>
+            <div class="aquis-bar"><div class="aquis-bar-fill ${aquisColor}" style="width:${e.aquis.progress}%;"></div></div>
+            <span class="aquis-deadline ${aquisDeadlineClass}">${e.aquis.status === 'forming' ? 'Em formação · ' + e.aquis.progress + '%' : 'Limite gozo: ' + e.aquis.deadline}</span>
+          </div>
+        </td>
+        <td>${lastCell}</td>
+        <td>${nextCell}</td>
+        <td>
+          <div class="alert-cell">
+            ${e.alerts.map(getAlertPill).join('') || '<span class="alert-pill ok"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Em dia</span>'}
+          </div>
+        </td>
+        <td>
+          <div class="tcol-actions">
+            <button class="tbtn" title="Ver histórico"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5M12 7v5l4 2"/></svg></button>
+            <button class="tbtn" title="Programar"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          </div>
+        </td>
+      </tr>`;
+    });
+  });
+
+  tbody.innerHTML = html;
+}
+
+// ============= RENDER MATRIX =============
+function renderMatrix(){
+  const tbody = document.getElementById('matrixBody');
+  const list = getVisibleEmployees();
+
+  if(list.length === 0){
+    tbody.innerHTML = `<tr><td colspan="13" style="padding:50px 20px; text-align:center; color:var(--txt2); font-size:12px;">Nenhum colaborador no escopo atual.</td></tr>`;
+    return;
+  }
+
+  // Agrupa por filial
+  const grouped = {};
+  list.forEach(e => {
+    if(!grouped[e.branch]) grouped[e.branch] = [];
+    grouped[e.branch].push(e);
+  });
+
+  // Mock de janelas por mês (1-12) - posições de barras
+  // Simplificação: cada colaborador tem janelas mock
+  const windows = {
+    beatriz: {12:'last|15d frac'},
+    helena: {6:'last|30d', 5:'urgent|VENCE!'},
+    joao_carvalho: {11:'last|15d', 7:'next|30d'},
+    cadu: {3:'last|30d', 10:'next|30d'},
+    patricia: {2:'taken|30d'},
+    larissa: {1:'last|30d', 6:'next|5d'},
+    fernanda: {12:'next|30d'},
+    daniela: {6:'next|15d'},
+    natalia: {5:'next partial|15d', 8:'next partial|15d'},
+    joao_pedro: {7:'next|15d'},
+    ana_souza: {1:'last|15d frac'},
+    rafael: {5:'last|30d', 6:'next|15d'},
+    marcos: {8:'last|30d', 11:'next|15d'},
+    juliana: {3:'urgent|VENCIDO'},
+    thiago: {9:'last|30d (parc.)', 9:'next|30d'}
+  };
+
+  let html = '';
+  Object.entries(grouped).forEach(([branch, items]) => {
+    html += `<tr class="matrix-group"><td colspan="13">${branch}</td></tr>`;
+    items.forEach(e => {
+      let row = `<tr><td class="first-col">
+        <div class="matrix-emp">
+          <div class="tav" style="background:${e.color};">${e.avatar}</div>
+          <div class="me-info">
+            <div class="me-name">${e.name}${e.nick ? ' <span style="color:var(--orange); font-family:JetBrains Mono,monospace; font-size:9px;">@'+e.nick+'</span>' : ''}</div>
+            <div class="me-cargo">${e.role}</div>
+          </div>
+        </div>
+      </td>`;
+
+      const w = windows[e.id] || {};
+      for(let m = 1; m <= 12; m++){
+        const cell = w[m];
+        if(cell){
+          const [type, label] = cell.split('|');
+          row += `<td class="mcell"><span class="mbar ${type}" title="${label}">${label}</span></td>`;
+        } else {
+          row += `<td class="mcell"></td>`;
+        }
+      }
+      row += `</tr>`;
+      html += row;
+    });
+  });
+
+  tbody.innerHTML = html;
+}
+
+// ============= UPDATE KPIs =============
+function updateKPIs(){
+  const list = getVisibleEmployees();
+  document.getElementById('kpiTotal').textContent = list.length;
+
+  const planned = list.filter(e => e.next.status === 'approved' || e.next.status === 'planned').length;
+  const noplan = list.filter(e => e.next.status === 'none' && !e.alerts.includes('intern') && !e.alerts.includes('recent_taken')).length;
+  const expiring = list.filter(e => e.aquis.status === 'expiring' || e.aquis.status === 'expiring_critical').length;
+  const overdue = list.filter(e => e.aquis.status === 'overdue').length;
+
+  document.getElementById('kpiPlanned').textContent = planned;
+  document.getElementById('kpiNoplan').textContent = noplan;
+  document.getElementById('kpiExpiring').textContent = expiring;
+  document.getElementById('kpiOverdue').textContent = overdue;
+}
+
+// ============= UPDATE SCOPE =============
+function updateScope(){
+  const persona = personas[currentPersona];
+  const list = getVisibleEmployees();
+  const totalScope = persona.visibleIds === 'all' ? employees.length : persona.visibleIds.length;
+
+  document.getElementById('scopeText').innerHTML = persona.description.replace('{count}', totalScope);
+  document.getElementById('scopeCount').textContent = totalScope;
+
+  document.getElementById('topUserName').textContent = persona.name;
+  document.getElementById('topUserRole').textContent = persona.role;
+  document.getElementById('topUserAvatar').textContent = persona.avatar;
+}
+
+// ============= APPLY ALL =============
+function applyFilters(){
+  updateBranchLabel();
+  updateDeptLabel();
+  updateKPIs();
+  if(currentView === 'table') renderTable();
+  else renderMatrix();
+}
+
+function setPersona(p){
+  currentPersona = p;
+  document.querySelectorAll('.persona-btn').forEach(b => b.classList.toggle('active', b.dataset.persona === p));
+  updateScope();
+  applyFilters();
+}
+
+function setView(v){
+  currentView = v;
+  document.querySelectorAll('.vt-btn').forEach(b => b.classList.toggle('active', b.dataset.view === v));
+  document.getElementById('tableCard').classList.toggle('hidden', v !== 'table');
+  document.getElementById('matrixCard').classList.toggle('active', v === 'matrix');
+  if(v === 'table') renderTable(); else renderMatrix();
+}
+
+// ============= DROPDOWNS =============
+function toggleDropdown(id, ev){
+  ev.stopPropagation();
+  document.querySelectorAll('.fb-multi-dropdown').forEach(d => {
+    if(d.id !== id) d.classList.remove('open');
+  });
+  document.getElementById(id).classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if(!e.target.closest('.fb-multi-wrap')){
+    document.querySelectorAll('.fb-multi-dropdown').forEach(d => d.classList.remove('open'));
+  }
+});
+
+function updateBranchLabel(){
+  const checked = document.querySelectorAll('.filter-branch:checked').length;
+  const total = document.querySelectorAll('.filter-branch').length;
+  const label = document.getElementById('branchLabel');
+  const pill = document.getElementById('branchCount');
+  if(checked === total){ label.textContent = 'Todas'; pill.style.display = 'none'; }
+  else if(checked === 0){ label.textContent = 'Nenhuma'; pill.style.display = 'none'; }
+  else { label.textContent = checked + ' de ' + total; pill.style.display = ''; pill.textContent = checked; }
+}
+
+function updateDeptLabel(){
+  const checked = document.querySelectorAll('.filter-dept:checked').length;
+  const total = document.querySelectorAll('.filter-dept').length;
+  const label = document.getElementById('deptLabel');
+  const pill = document.getElementById('deptCount');
+  if(checked === total){ label.textContent = 'Todos'; pill.style.display = 'none'; }
+  else if(checked === 0){ label.textContent = 'Nenhum'; pill.style.display = 'none'; }
+  else { label.textContent = checked + ' de ' + total; pill.style.display = ''; pill.textContent = checked; }
+}
+
+function clearFilters(){
+  document.querySelectorAll('.filter-branch, .filter-dept').forEach(c => c.checked = true);
+  document.getElementById('searchInput').value = '';
+  applyFilters();
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// Init
+setPersona('dp');
+</script>
+</body>
+</html>

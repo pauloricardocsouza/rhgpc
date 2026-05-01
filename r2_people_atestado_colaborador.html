@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Meus atestados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-modal:0 20px 60px rgba(26,45,79,.25);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.nav-badge{margin-left:auto; background:var(--orange); color:#fff; font-size:9.5px; padding:1px 7px; border-radius:9px; font-weight:700; font-family:'JetBrains Mono',monospace;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#E82227,#C0392B); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+
+/* ============= PAGE HEADER ============= */
+.page-header{
+  margin-bottom:16px;
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:14px; flex-wrap:wrap;
+}
+.page-header-text{flex:1; min-width:260px;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:3px; max-width:580px;}
+
+.btn-primary{
+  background:var(--orange); color:#fff;
+  border:none;
+  padding:11px 18px;
+  border-radius:9px;
+  font-size:12.5px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:7px;
+  box-shadow:0 4px 11px rgba(245,131,31,.32);
+  transition:all .15s;
+  white-space:nowrap;
+}
+.btn-primary:hover{background:#D87013; transform:translateY(-1px); box-shadow:0 6px 14px rgba(245,131,31,.42);}
+.btn-primary svg{width:14px; height:14px;}
+
+/* ============= LGPD INFO CARD ============= */
+.lgpd-card{
+  background:linear-gradient(135deg, #E8EFF8 0%, var(--off) 100%);
+  border-left:3px solid var(--navy);
+  border-radius:9px;
+  padding:13px 16px;
+  margin-bottom:18px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:13px;
+  align-items:flex-start;
+}
+.lgpd-card .icon{
+  width:34px; height:34px; border-radius:9px;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--navy);
+  flex-shrink:0;
+  box-shadow:0 1px 3px rgba(26,45,79,.08);
+}
+.lgpd-card .text{font-size:12px; color:var(--txt2); line-height:1.6;}
+.lgpd-card .text strong{color:var(--txt); font-weight:600;}
+
+/* ============= STATS ROW ============= */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+.stat-card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  padding:14px 16px;
+  display:flex; flex-direction:column;
+  gap:4px;
+  position:relative;
+  overflow:hidden;
+}
+.stat-card::after{
+  content:''; position:absolute;
+  top:0; right:0;
+  width:50px; height:50px; border-radius:50%;
+  opacity:.08;
+}
+.stat-card.navy::after{background:var(--navy);}
+.stat-card.amber::after{background:var(--orange);}
+.stat-card.green::after{background:var(--green);}
+.stat-card.purple::after{background:var(--purple);}
+
+.stat-label{
+  font-size:10.5px; color:var(--txt2);
+  text-transform:uppercase; letter-spacing:.5px;
+  font-weight:500;
+}
+.stat-value{
+  font-size:24px; font-weight:600;
+  letter-spacing:-.5px;
+  font-family:'JetBrains Mono',monospace;
+}
+.stat-value .unit{font-size:13px; color:var(--txt2); font-weight:400; margin-left:3px;}
+.stat-sub{
+  font-size:11px; color:var(--txt2);
+  display:flex; align-items:center; gap:5px;
+  margin-top:2px;
+}
+.stat-sub.up{color:var(--green);}
+.stat-sub.attention{color:var(--orange);}
+.stat-sub svg{width:12px; height:12px;}
+
+/* ============= FILTERS ============= */
+.filters-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.filter-tabs{
+  display:flex;
+  gap:6px;
+  background:#fff;
+  border-radius:10px;
+  padding:4px;
+  box-shadow:var(--shadow-card);
+  flex-wrap:wrap;
+}
+.tab{
+  background:transparent;
+  border:none;
+  padding:7px 13px;
+  border-radius:7px;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt2);
+  cursor:pointer; font-family:inherit;
+  display:flex; align-items:center; gap:6px;
+  transition:all .12s;
+  white-space:nowrap;
+}
+.tab:hover{background:var(--off); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab .count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px; font-weight:600;
+  padding:1px 6px;
+  border-radius:6px;
+  background:var(--gray1);
+  color:var(--txt2);
+}
+.tab.active .count{background:rgba(255,255,255,.2); color:#fff;}
+
+.search-wrap{
+  position:relative;
+  min-width:240px;
+  flex:1;
+  max-width:320px;
+}
+.search-input{
+  width:100%;
+  padding:9px 12px 9px 34px;
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  font-size:12.5px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-input:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.08);
+}
+.search-icon{
+  position:absolute; left:11px; top:50%; transform:translateY(-50%);
+  color:var(--txt3);
+  pointer-events:none;
+}
+
+/* ============= CERTIFICATE LIST ============= */
+.cert-list{
+  display:flex; flex-direction:column;
+  gap:10px;
+}
+
+.cert-card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+  border-left:4px solid var(--gray2);
+  transition:all .15s;
+}
+.cert-card.processing{border-left-color:var(--orange);}
+.cert-card.validated{border-left-color:var(--green);}
+.cert-card.archived{border-left-color:var(--gray3);}
+.cert-card.rejected{border-left-color:var(--danger);}
+
+.cert-header{
+  padding:14px 18px;
+  display:grid;
+  grid-template-columns:auto 1fr auto auto auto;
+  gap:14px;
+  align-items:center;
+  cursor:pointer;
+  user-select:none;
+}
+.cert-header:hover{background:var(--off);}
+
+.cert-type-icon{
+  width:42px; height:42px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.cert-card.processing .cert-type-icon{background:var(--amber2); color:var(--amber);}
+.cert-card.validated .cert-type-icon{background:var(--green2); color:var(--green);}
+.cert-card.archived .cert-type-icon{background:var(--gray1); color:var(--txt2);}
+.cert-card.rejected .cert-type-icon{background:var(--danger2); color:var(--danger);}
+.cert-type-icon svg{width:19px; height:19px;}
+
+.cert-info{min-width:0;}
+.cert-title-row{
+  display:flex; align-items:center;
+  gap:9px; flex-wrap:wrap;
+  margin-bottom:3px;
+}
+.cert-title{font-size:13.5px; font-weight:600;}
+.cert-protocol{
+  font-size:10.5px;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--txt2);
+  background:var(--off);
+  padding:2px 8px;
+  border-radius:6px;
+}
+.cert-meta{
+  font-size:11.5px; color:var(--txt2);
+  display:flex; gap:7px; align-items:center;
+  flex-wrap:wrap;
+}
+.cert-meta-item{display:flex; align-items:center; gap:4px;}
+.cert-meta-item svg{width:11px; height:11px; color:var(--txt3);}
+
+.cert-days{
+  display:inline-flex; align-items:center;
+  background:var(--off);
+  padding:5px 11px;
+  border-radius:9px;
+  font-size:11px; font-weight:600;
+  color:var(--txt);
+  white-space:nowrap;
+}
+.cert-days .days-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;
+  margin-right:4px;
+  color:var(--navy);
+}
+
+.cert-status-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px;
+  border-radius:9px;
+  font-size:10.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.4px;
+  white-space:nowrap;
+}
+.cert-status-pill.processing{background:var(--amber2); color:var(--amber);}
+.cert-status-pill.validated{background:var(--green2); color:var(--green);}
+.cert-status-pill.archived{background:var(--gray1); color:var(--txt2);}
+.cert-status-pill.rejected{background:var(--danger2); color:var(--danger);}
+.cert-status-pill .dot{
+  width:6px; height:6px; border-radius:50%;
+}
+.cert-status-pill.processing .dot{background:var(--orange); animation:pulse 1.5s infinite;}
+.cert-status-pill.validated .dot{background:var(--green);}
+.cert-status-pill.archived .dot{background:var(--gray3);}
+.cert-status-pill.rejected .dot{background:var(--danger);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+.cert-chevron{
+  color:var(--txt3);
+  transition:transform .2s;
+}
+.cert-card.open .cert-chevron{transform:rotate(180deg);}
+
+/* Expanded */
+.cert-body{
+  display:none;
+  padding:0 18px 16px;
+  border-top:1px solid var(--gray1);
+  margin-top:0;
+}
+.cert-card.open .cert-body{display:block; animation:slideDown .25s;}
+@keyframes slideDown{from{opacity:0; transform:translateY(-6px);}to{opacity:1; transform:translateY(0);}}
+
+.cert-body-grid{
+  display:grid;
+  grid-template-columns:1fr 280px;
+  gap:18px;
+  padding-top:14px;
+}
+
+/* Detalhes do atestado */
+.cert-details{
+  display:flex; flex-direction:column;
+  gap:11px;
+}
+.detail-block{
+  background:var(--off);
+  border-radius:9px;
+  padding:11px 13px;
+}
+.detail-label{
+  font-size:9.5px;
+  text-transform:uppercase; letter-spacing:.5px;
+  color:var(--txt2);
+  font-weight:600;
+  margin-bottom:4px;
+}
+.detail-value{
+  font-size:12.5px;
+  color:var(--txt);
+  font-weight:500;
+}
+.detail-value.cid{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  display:flex; align-items:center; gap:7px;
+  flex-wrap:wrap;
+}
+.detail-value .cid-code{
+  background:var(--purple); color:#fff;
+  padding:2px 8px; border-radius:6px;
+  font-weight:700;
+  font-size:11px;
+}
+.detail-value .cid-desc{color:var(--txt2); font-weight:400; font-family:'Sora',sans-serif; font-size:12px;}
+
+.detail-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+
+.submitted-by{
+  display:flex; align-items:center;
+  gap:9px;
+  padding:8px 11px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:8px;
+  margin-top:7px;
+}
+.submitted-by .sub-avatar{
+  width:24px; height:24px; border-radius:50%;
+  color:#fff; font-size:10px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.submitted-by .sub-text{
+  font-size:11.5px;
+  color:var(--txt);
+  flex:1;
+  min-width:0;
+}
+.submitted-by .sub-text strong{font-weight:600;}
+.submitted-by .sub-text .role{
+  color:var(--txt2);
+  font-size:10.5px;
+  display:block;
+  margin-top:1px;
+}
+
+/* Arquivo */
+.cert-file-card{
+  background:linear-gradient(135deg, #E8EFF8 0%, var(--off) 100%);
+  border-radius:11px;
+  padding:14px;
+  display:flex; flex-direction:column;
+  gap:11px;
+  height:fit-content;
+}
+.cert-file-preview{
+  background:#fff;
+  border-radius:8px;
+  border:1px solid var(--gray2);
+  height:130px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  overflow:hidden;
+}
+.cert-file-preview svg.preview-icon{
+  width:48px; height:48px;
+  color:var(--danger);
+  opacity:.5;
+}
+.cert-file-preview .preview-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,.55));
+  display:flex; align-items:flex-end;
+  padding:9px 11px;
+}
+.cert-file-preview .preview-text{
+  color:#fff;
+  font-size:10.5px;
+  font-weight:500;
+}
+.cert-file-info{
+  display:flex; flex-direction:column;
+  gap:3px;
+}
+.cert-file-info .name{
+  font-size:11.5px; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cert-file-info .meta{
+  font-size:10.5px; color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+}
+.cert-file-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+.btn-file{
+  background:#fff;
+  border:1.5px solid var(--gray2);
+  border-radius:8px;
+  padding:8px 10px;
+  font-size:11px; font-weight:500;
+  color:var(--txt);
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; justify-content:center; gap:5px;
+  transition:all .12s;
+}
+.btn-file:hover{border-color:var(--navy); background:var(--off);}
+.btn-file.primary{background:var(--navy); color:#fff; border-color:var(--navy);}
+.btn-file.primary:hover{background:var(--navy2);}
+.btn-file svg{width:11px; height:11px;}
+
+/* Timeline (status changes) */
+.timeline{
+  margin-top:11px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:9px;
+  padding:11px 13px;
+}
+.timeline-title{
+  font-size:9.5px;
+  text-transform:uppercase; letter-spacing:.5px;
+  color:var(--txt2);
+  font-weight:600;
+  margin-bottom:9px;
+}
+.timeline-list{
+  display:flex; flex-direction:column;
+  gap:8px;
+  position:relative;
+}
+.timeline-list::before{
+  content:''; position:absolute;
+  left:6px; top:6px; bottom:6px;
+  width:2px;
+  background:var(--gray2);
+}
+.tl-item{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:11px;
+  align-items:center;
+  position:relative;
+  z-index:1;
+}
+.tl-dot{
+  width:14px; height:14px; border-radius:50%;
+  background:var(--gray2);
+  border:3px solid #fff;
+  flex-shrink:0;
+}
+.tl-dot.green{background:var(--green);}
+.tl-dot.orange{background:var(--orange);}
+.tl-dot.danger{background:var(--danger);}
+.tl-dot.gray{background:var(--gray3);}
+
+.tl-text{
+  font-size:11px;
+  color:var(--txt);
+}
+.tl-text strong{font-weight:600;}
+.tl-time{
+  font-size:10px;
+  color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+}
+
+/* Rejeição alert */
+.rejection-alert{
+  background:var(--danger2);
+  border-left:3px solid var(--danger);
+  border-radius:9px;
+  padding:11px 13px;
+  margin-top:10px;
+}
+.rej-title{
+  font-size:11px;
+  font-weight:700;
+  color:var(--danger);
+  text-transform:uppercase; letter-spacing:.4px;
+  margin-bottom:4px;
+  display:flex; align-items:center; gap:6px;
+}
+.rej-text{
+  font-size:11.5px;
+  color:var(--txt);
+  line-height:1.5;
+}
+.rej-action{
+  margin-top:8px;
+  background:var(--danger);
+  color:#fff;
+  border:none;
+  padding:7px 13px;
+  border-radius:7px;
+  font-size:11px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.rej-action:hover{background:#A52A1F;}
+
+/* Reenvio link */
+.reupload-link{
+  background:#E8EFF8;
+  border-radius:9px;
+  padding:9px 13px;
+  margin-top:10px;
+  display:flex; align-items:center; gap:9px;
+  font-size:11px;
+  color:var(--txt);
+}
+.reupload-link strong{color:var(--navy); font-weight:600;}
+.reupload-link svg{width:14px; height:14px; color:var(--navy); flex-shrink:0;}
+
+/* ============= LGPD RIGHTS FOOTER ============= */
+.rights-card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  padding:18px 20px;
+  margin-top:24px;
+  border-top:3px solid var(--navy);
+}
+.rights-header{
+  display:flex; align-items:center;
+  gap:11px;
+  margin-bottom:14px;
+}
+.rights-header .icon{
+  width:38px; height:38px; border-radius:10px;
+  background:#E8EFF8;
+  color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.rights-header h3{
+  font-size:14px; font-weight:600;
+  letter-spacing:-.2px;
+}
+.rights-header p{
+  font-size:11.5px; color:var(--txt2);
+  margin-top:2px;
+}
+.rights-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:10px;
+}
+.right-action{
+  background:var(--off);
+  border:1px solid var(--gray2);
+  border-radius:9px;
+  padding:11px 13px;
+  display:flex; flex-direction:column;
+  gap:5px;
+  cursor:pointer; font-family:inherit;
+  text-align:left;
+  transition:all .12s;
+}
+.right-action:hover{
+  border-color:var(--navy);
+  background:#E8EFF8;
+}
+.right-action .ra-icon{
+  width:26px; height:26px; border-radius:7px;
+  background:#fff;
+  color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:3px;
+}
+.right-action .ra-icon svg{width:13px; height:13px;}
+.right-action .ra-title{
+  font-size:11.5px; font-weight:600;
+  color:var(--txt);
+}
+.right-action .ra-desc{
+  font-size:10.5px;
+  color:var(--txt2);
+  line-height:1.4;
+}
+
+/* ============= MODAL WIZARD ============= */
+.modal-overlay{
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(15,23,42,.6);
+  z-index:50;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation:fadeIn .2s;
+  padding:30px 16px;
+  overflow-y:auto;
+}
+.modal-overlay.show{display:flex; align-items:flex-start; justify-content:center;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.modal-card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-modal);
+  width:100%;
+  max-width:540px;
+  overflow:hidden;
+  animation:slideUp .25s;
+  margin:auto;
+}
+@keyframes slideUp{from{opacity:0; transform:translateY(20px);}to{opacity:1; transform:translateY(0);}}
+
+.modal-head{
+  padding:14px 18px;
+  border-bottom:1px solid var(--gray1);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.modal-head h3{font-size:14px; font-weight:600;}
+.modal-close{
+  background:transparent; border:none; cursor:pointer;
+  width:30px; height:30px; border-radius:7px;
+  color:var(--txt2);
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-close:hover{background:var(--off); color:var(--txt);}
+
+.wizard-progress{
+  padding:14px 18px 0;
+  background:linear-gradient(180deg, #fff, var(--off));
+}
+.wizard-bars{
+  display:flex; gap:6px;
+  margin-bottom:11px;
+}
+.wbar{
+  flex:1; height:5px;
+  background:var(--gray1); border-radius:3px;
+  position:relative; overflow:hidden;
+}
+.wbar.done{background:var(--green);}
+.wbar.current{background:var(--orange);}
+.wbar.current::after{
+  content:''; position:absolute; inset:0;
+  background:rgba(255,255,255,.3);
+  animation:shimmer 1.6s infinite;
+}
+@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.wmeta{
+  display:flex; justify-content:space-between;
+  font-size:10.5px; color:var(--txt2);
+  margin-bottom:11px;
+}
+.wmeta strong{color:var(--orange); font-weight:600; font-family:'JetBrains Mono',monospace;}
+
+.wizard-step-body{
+  padding:8px 22px 18px;
+}
+.wstep{display:none; animation:slideIn .25s;}
+.wstep.active{display:block;}
+@keyframes slideIn{from{opacity:0; transform:translateY(6px);}to{opacity:1; transform:translateY(0);}}
+
+.wstep-icon{
+  text-align:center;
+  margin-bottom:14px;
+}
+.wstep-icon-circle{
+  width:48px; height:48px; border-radius:13px;
+  margin:0 auto 9px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff;
+  background:linear-gradient(135deg, var(--orange), #D87013);
+  box-shadow:0 6px 14px rgba(245,131,31,.3);
+}
+.wstep-icon-circle svg{width:22px; height:22px;}
+.wstep-icon-circle.purple{background:linear-gradient(135deg, var(--purple), #5523A8); box-shadow:0 6px 14px rgba(109,40,217,.3);}
+.wstep-icon-circle.green{background:linear-gradient(135deg, var(--green), #15643A); box-shadow:0 6px 14px rgba(30,123,75,.3);}
+
+.wstep-title{
+  font-size:16px; font-weight:600;
+  text-align:center;
+  letter-spacing:-.2px;
+  margin-bottom:4px;
+}
+.wstep-sub{
+  font-size:12px; color:var(--txt2);
+  text-align:center;
+  padding:0 8px;
+  margin-bottom:14px;
+  line-height:1.5;
+}
+
+/* Upload area no modal */
+.modal-upload{
+  border:2.5px dashed var(--gray3);
+  border-radius:11px;
+  padding:24px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .15s;
+  background:linear-gradient(180deg, var(--off) 0%, #fff 100%);
+}
+.modal-upload:hover{
+  border-color:var(--orange);
+  background:linear-gradient(180deg, #FFF8EB 0%, #fff 100%);
+}
+.modal-upload.has-file{
+  border-style:solid;
+  border-color:var(--green);
+  background:linear-gradient(180deg, var(--green2) 0%, #fff 100%);
+}
+.upload-icon-modal{
+  width:48px; height:48px; border-radius:12px;
+  background:#fff;
+  margin:0 auto 11px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--orange);
+  box-shadow:0 3px 9px rgba(0,0,0,.06);
+}
+.modal-upload.has-file .upload-icon-modal{color:var(--green);}
+.modal-upload-text{
+  font-size:12.5px; font-weight:600;
+  margin-bottom:3px;
+}
+.modal-upload-sub{
+  font-size:11px; color:var(--txt2);
+}
+
+.modal-upload-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:11px;
+}
+.upload-btn-m{
+  padding:10px 12px;
+  background:#fff;
+  border:1.5px solid var(--gray2);
+  border-radius:8px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt);
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  transition:all .12s;
+}
+.upload-btn-m:hover{border-color:var(--navy); background:var(--off);}
+.upload-btn-m.primary{background:var(--navy); color:#fff; border-color:var(--navy);}
+.upload-btn-m.primary:hover{background:var(--navy2);}
+.upload-btn-m svg{width:13px; height:13px;}
+
+/* File preview modal */
+.modal-file-preview{
+  background:#000;
+  border-radius:11px;
+  overflow:hidden;
+  position:relative;
+  max-height:200px;
+  margin-bottom:10px;
+}
+.modal-file-preview img, .modal-file-preview svg{
+  width:100%; height:auto; display:block;
+  max-height:200px; object-fit:contain;
+}
+.mfp-quality{
+  position:absolute;
+  top:8px; right:8px;
+  background:rgba(30,123,75,.9);
+  color:#fff;
+  padding:4px 9px;
+  border-radius:8px;
+  font-size:10px;
+  font-weight:600;
+  display:flex; align-items:center; gap:4px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.mfp-quality .iq-dot{
+  width:5px; height:5px; border-radius:50%;
+  background:#fff;
+}
+
+.modal-file-info{
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:9px;
+  padding:11px 13px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:11px;
+  align-items:center;
+  margin-bottom:11px;
+}
+.mfi-icon{
+  width:34px; height:34px; border-radius:8px;
+  background:#FDECEA; color:var(--danger);
+  display:flex; align-items:center; justify-content:center;
+}
+.mfi-info{min-width:0;}
+.mfi-name{font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.mfi-size{font-size:10.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace;}
+.mfi-remove{
+  background:transparent; border:none; cursor:pointer;
+  color:var(--txt3); padding:5px;
+  border-radius:6px;
+}
+.mfi-remove:hover{color:var(--danger); background:var(--danger2);}
+
+.modal-proc-list{
+  display:flex; flex-direction:column;
+  gap:6px;
+  margin-bottom:8px;
+}
+.mproc{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:9px;
+  align-items:center;
+  padding:8px 11px;
+  background:var(--green2);
+  border-radius:8px;
+  border:1px solid var(--green);
+  font-size:11px;
+}
+.mproc-icon{
+  width:20px; height:20px; border-radius:50%;
+  background:var(--green); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.mproc-icon svg{width:10px; height:10px;}
+.mproc-text{
+  flex:1; min-width:0;
+  font-weight:500;
+  color:var(--green);
+}
+.mproc-detail{
+  font-size:10px; color:var(--txt2);
+  font-weight:400; margin-top:1px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.modal-compression{
+  background:#E8EFF8;
+  border-radius:8px;
+  padding:9px 12px;
+  display:flex; align-items:center; gap:11px;
+  font-size:11px;
+}
+.mc-icon{
+  width:26px; height:26px; border-radius:7px;
+  background:#fff; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+}
+.mc-text{flex:1;}
+.mc-main{font-weight:600; color:var(--navy);}
+.mc-sub{font-size:10px; color:var(--txt2); margin-top:1px;}
+.mc-saving{
+  background:#fff; padding:3px 8px; border-radius:7px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px; font-weight:700;
+  color:var(--green);
+}
+
+/* Form fields modal */
+.mfield{margin-bottom:11px;}
+.mlabel{
+  display:block;
+  font-size:11px; font-weight:500;
+  color:var(--txt);
+  margin-bottom:5px;
+}
+.mlabel .req{color:var(--danger); margin-left:2px;}
+.mfield-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.minput, .mselect, .mtextarea{
+  width:100%;
+  padding:9px 12px;
+  border:1.5px solid var(--gray2);
+  border-radius:8px;
+  font-size:12px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+}
+.minput:focus, .mselect:focus, .mtextarea:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+.mtextarea{resize:vertical; min-height:54px;}
+
+/* OCR card modal */
+.modal-ocr{
+  background:linear-gradient(135deg, #F0E6FA, #E5D4F8);
+  border-radius:9px;
+  padding:10px 12px;
+  margin-bottom:11px;
+  border-left:3px solid var(--purple);
+  display:flex; align-items:flex-start; gap:9px;
+}
+.mocr-icon{
+  width:26px; height:26px; border-radius:7px;
+  background:#fff; color:var(--purple);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.mocr-content{
+  flex:1; min-width:0;
+  font-size:11px;
+  line-height:1.5;
+  color:var(--txt);
+}
+.mocr-content strong{color:var(--purple); font-weight:600;}
+.mocr-pills{
+  margin-top:6px;
+  display:flex; gap:5px; flex-wrap:wrap;
+}
+.mocr-pill{
+  font-size:10px;
+  padding:2px 8px;
+  background:#fff;
+  border-radius:6px;
+  font-weight:600;
+  color:var(--txt);
+  display:inline-flex; align-items:center; gap:4px;
+}
+
+/* Sucesso modal */
+.success-modal{
+  text-align:center;
+  padding:8px 0;
+}
+.success-emoji{
+  font-size:46px;
+  margin-bottom:9px;
+  display:inline-block;
+  animation:bounce 0.7s ease-out;
+}
+@keyframes bounce{
+  0%{transform:scale(0); opacity:0;}
+  60%{transform:scale(1.15); opacity:1;}
+  100%{transform:scale(1);}
+}
+.success-protocol-m{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:5px 12px;
+  background:var(--green2);
+  color:var(--green);
+  border-radius:10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700;
+  margin:9px 0 14px;
+}
+
+.success-summary{
+  background:var(--off);
+  border-radius:9px;
+  padding:12px 14px;
+  margin-bottom:11px;
+  text-align:left;
+}
+.ssrow{
+  display:flex; justify-content:space-between;
+  padding:5px 0;
+  font-size:11px;
+  border-bottom:1px dashed var(--gray2);
+}
+.ssrow:last-child{border-bottom:none;}
+.ssrow .lbl{color:var(--txt2);}
+.ssrow .val{font-weight:600; color:var(--txt); text-align:right;}
+.ssrow .val.protocol{font-family:'JetBrains Mono',monospace; color:var(--orange);}
+
+.success-info{
+  background:#E8EFF8;
+  border-radius:9px;
+  padding:10px 12px;
+  display:flex; align-items:flex-start; gap:9px;
+  border-left:3px solid var(--navy);
+  text-align:left;
+  margin-bottom:11px;
+}
+.si-icon{
+  width:24px; height:24px; border-radius:7px;
+  background:#fff; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.si-text{
+  font-size:10.5px; color:var(--txt2);
+  line-height:1.5;
+}
+.si-text strong{color:var(--txt); font-weight:600;}
+
+/* Modal footer */
+.modal-foot{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:11px 18px 14px;
+  border-top:1px solid var(--gray1);
+  background:var(--off);
+  gap:8px;
+}
+.btn-back-m{
+  background:transparent;
+  border:none;
+  color:var(--txt2);
+  font-size:12px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+  padding:7px 10px;
+  display:inline-flex; align-items:center; gap:5px;
+  border-radius:7px;
+}
+.btn-back-m:hover{background:var(--gray1); color:var(--txt);}
+.btn-back-m:disabled{opacity:.4; cursor:not-allowed;}
+
+.btn-next-m{
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  padding:9px 16px;
+  border-radius:8px;
+  font-size:12px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+  box-shadow:0 4px 9px rgba(43,74,122,.25);
+}
+.btn-next-m:hover{background:var(--navy2);}
+.btn-next-m:disabled{opacity:.5; cursor:not-allowed; box-shadow:none;}
+.btn-next-m.orange{background:var(--orange); box-shadow:0 4px 9px rgba(245,131,31,.3);}
+.btn-next-m.orange:hover{background:#D87013;}
+.btn-next-m.green{background:var(--green); box-shadow:0 4px 9px rgba(30,123,75,.3);}
+.btn-next-m.green:hover{background:#15643A;}
+
+/* Empty filter result */
+.empty-state{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  padding:40px 22px;
+  text-align:center;
+}
+.empty-state .es-icon{
+  width:54px; height:54px; border-radius:14px;
+  background:var(--off);
+  color:var(--txt3);
+  margin:0 auto 11px;
+  display:flex; align-items:center; justify-content:center;
+}
+.empty-state .es-title{font-size:13px; font-weight:600; margin-bottom:4px;}
+.empty-state .es-sub{font-size:11.5px; color:var(--txt2);}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .stats-row{grid-template-columns:repeat(2, 1fr);}
+  .rights-grid{grid-template-columns:repeat(2, 1fr);}
+  .cert-body-grid{grid-template-columns:1fr;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 30px;}
+
+  .lgpd-card{grid-template-columns:auto; padding:11px 13px;}
+  .stats-row{grid-template-columns:1fr 1fr; gap:9px;}
+  .stat-card{padding:11px 13px;}
+  .stat-value{font-size:20px;}
+
+  .filters-bar{flex-direction:column; align-items:stretch;}
+  .filter-tabs{justify-content:center;}
+  .search-wrap{max-width:none;}
+
+  .cert-header{
+    grid-template-columns:auto 1fr auto;
+    grid-template-rows:auto auto;
+    gap:9px 11px;
+  }
+  .cert-days{grid-column:2; grid-row:2;}
+  .cert-status-pill{grid-column:3; grid-row:1;}
+  .cert-chevron{grid-column:3; grid-row:2; justify-self:end;}
+  .detail-row{grid-template-columns:1fr;}
+  .rights-grid{grid-template-columns:1fr;}
+
+  .page-header h1{font-size:18px;}
+  .modal-overlay{padding:14px;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Meu perfil</a>
+
+      <div class="sidebar-section">Documentos</div>
+      <a class="nav-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><circle cx="12" cy="14" r="3"/><path d="M12 11v3l1.5 1"/></svg>
+        Meus atestados
+        <span class="nav-badge">1</span>
+      </a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>Minhas movimentações</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Férias e folgas</a>
+
+      <div class="sidebar-section">Avaliação</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Minhas avaliações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        Minhas 1:1s
+      </a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedback e mural</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Documentos · <strong>Meus atestados</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info">
+        <span class="user-name">Fernanda Lima</span>
+        <span class="user-role">Analista Pleno · Labuta</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ============= PAGE HEADER ============= -->
+    <div class="page-header">
+      <div class="page-header-text">
+        <h1>Meus atestados</h1>
+        <p>Histórico completo dos seus atestados e documentos médicos. Você é a pessoa, junto ao DP, com acesso ao conteúdo destes documentos.</p>
+      </div>
+      <button class="btn-primary" onclick="openWizard()">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Enviar atestado
+      </button>
+    </div>
+
+    <!-- ============= LGPD INFO CARD ============= -->
+    <div class="lgpd-card">
+      <div class="icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="text">
+        <strong>Seus dados, seu controle.</strong> Atestados são dados sensíveis de saúde (LGPD Art. 11) com proteção reforçada. Apenas você, o DP do GPC e o RH da Labuta podem visualizar o conteúdo. Líderes podem encaminhar atestados em seu nome, mas não acessam o conteúdo. Como titular dos dados, você tem direito de acessar, baixar, retificar ou solicitar exclusão (após o período legal de retenção de 5 anos).
+      </div>
+    </div>
+
+    <!-- ============= STATS ROW ============= -->
+    <div class="stats-row">
+
+      <div class="stat-card navy">
+        <div class="stat-label">Atestados em 12 meses</div>
+        <div class="stat-value">6 <span class="unit">envios</span></div>
+        <div class="stat-sub">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12L21 12M21 12l-7-7M21 12l-7 7"/></svg>
+          desde mai/2025
+        </div>
+      </div>
+
+      <div class="stat-card green">
+        <div class="stat-label">Dias de afastamento em 2026</div>
+        <div class="stat-value">10 <span class="unit">dias</span></div>
+        <div class="stat-sub up">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          dentro do esperado
+        </div>
+      </div>
+
+      <div class="stat-card amber">
+        <div class="stat-label">Em validação</div>
+        <div class="stat-value">1 <span class="unit">protocolo</span></div>
+        <div class="stat-sub attention">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          ATD-2026-04-28-1A47B
+        </div>
+      </div>
+
+      <div class="stat-card purple">
+        <div class="stat-label">Próximo exame periódico</div>
+        <div class="stat-value">ago<span class="unit">/2026</span></div>
+        <div class="stat-sub">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          em 4 meses
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= FILTERS ============= -->
+    <div class="filters-bar">
+      <div class="filter-tabs">
+        <button class="tab active" onclick="filterCerts(this, 'all')">
+          Todos
+          <span class="count">6</span>
+        </button>
+        <button class="tab" onclick="filterCerts(this, 'processing')">
+          Em validação
+          <span class="count">1</span>
+        </button>
+        <button class="tab" onclick="filterCerts(this, 'archived')">
+          Validados
+          <span class="count">4</span>
+        </button>
+        <button class="tab" onclick="filterCerts(this, 'rejected')">
+          Rejeitados
+          <span class="count">1</span>
+        </button>
+      </div>
+
+      <div class="search-wrap">
+        <span class="search-icon">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </span>
+        <input class="search-input" placeholder="Buscar por médico, CID, protocolo..." id="searchInput">
+      </div>
+    </div>
+
+    <!-- ============= CERT LIST ============= -->
+    <div class="cert-list" id="certList">
+
+      <!-- 1. Em validação (recém-enviado pelo João) -->
+      <div class="cert-card processing open" data-status="processing">
+        <div class="cert-header" onclick="toggleCard(this.parentElement)">
+          <div class="cert-type-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><circle cx="12" cy="14" r="3"/><path d="M12 11v3l1.5 1"/></svg>
+          </div>
+          <div class="cert-info">
+            <div class="cert-title-row">
+              <span class="cert-title">Atestado médico</span>
+              <span class="cert-protocol">ATD-2026-04-28-1A47B</span>
+            </div>
+            <div class="cert-meta">
+              <span class="cert-meta-item">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                28/04 a 29/04/2026
+              </span>
+              <span>·</span>
+              <span class="cert-meta-item">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v6M12 22v-6M22 12h-6M2 12h6M19.07 4.93l-4.24 4.24M9.17 14.83l-4.24 4.24M19.07 19.07l-4.24-4.24M9.17 9.17L4.93 4.93"/></svg>
+                Dr. Carlos Mendes
+              </span>
+            </div>
+          </div>
+          <div class="cert-days"><span class="days-num">2</span> dias</div>
+          <div class="cert-status-pill processing">
+            <span class="dot"></span>
+            Em validação
+          </div>
+          <svg class="cert-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="cert-body">
+          <div class="cert-body-grid">
+            <div class="cert-details">
+              <div class="detail-row">
+                <div class="detail-block">
+                  <div class="detail-label">Médico</div>
+                  <div class="detail-value">Dr. Carlos Mendes</div>
+                </div>
+                <div class="detail-block">
+                  <div class="detail-label">CRM</div>
+                  <div class="detail-value">CRM-BA 12345</div>
+                </div>
+              </div>
+
+              <div class="detail-block">
+                <div class="detail-label">CID-10 (extraído pelo OCR · pendente confirmação DP)</div>
+                <div class="detail-value cid">
+                  <span class="cid-code">J06.9</span>
+                  <span class="cid-desc">Infecção aguda das vias aéreas superiores não especificada</span>
+                </div>
+              </div>
+
+              <div class="detail-row">
+                <div class="detail-block">
+                  <div class="detail-label">Período</div>
+                  <div class="detail-value">28/04 a 29/04/2026</div>
+                </div>
+                <div class="detail-block">
+                  <div class="detail-label">Tipo</div>
+                  <div class="detail-value">Atestado de afastamento</div>
+                </div>
+              </div>
+
+              <div class="detail-block">
+                <div class="detail-label">Enviado por</div>
+                <div class="submitted-by">
+                  <div class="sub-avatar" style="background:#3D5F95;">JC</div>
+                  <div class="sub-text">
+                    <strong>João Carvalho</strong>
+                    <span class="role">Líder · Cestão Loja 1 · em 28/04 às 09:23</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="cert-file-card">
+                <div class="cert-file-preview">
+                  <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="130" fill="#fff"/>
+                    <rect x="12" y="10" width="50" height="9" fill="#e8f0fe"/>
+                    <rect x="12" y="22" width="80" height="4" fill="#f1f3f4"/>
+                    <text x="100" y="42" font-family="serif" font-size="9" fill="#202124" text-anchor="middle" font-weight="bold">ATESTADO MÉDICO</text>
+                    <line x1="12" y1="48" x2="188" y2="48" stroke="#dadce0"/>
+                    <rect x="12" y="55" width="120" height="3" fill="#5f6368" opacity=".4"/>
+                    <rect x="12" y="62" width="100" height="3" fill="#5f6368" opacity=".4"/>
+                    <rect x="12" y="69" width="80" height="3" fill="#c5221f" opacity=".7"/>
+                    <rect x="12" y="76" width="110" height="3" fill="#5f6368" opacity=".4"/>
+                    <rect x="12" y="83" width="90" height="3" fill="#5f6368" opacity=".4"/>
+                    <line x1="120" y1="115" x2="180" y2="115" stroke="#5f6368" stroke-width="0.5"/>
+                  </svg>
+                  <div class="preview-overlay">
+                    <span class="preview-text">Visualização parcial</span>
+                  </div>
+                </div>
+                <div class="cert-file-info">
+                  <div class="name">atestado_2026-04-28.pdf</div>
+                  <div class="meta">487 KB · PDF · AES-256</div>
+                </div>
+                <div class="cert-file-actions">
+                  <button class="btn-file">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Ver
+                  </button>
+                  <button class="btn-file primary">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Baixar
+                  </button>
+                </div>
+              </div>
+
+              <div class="timeline">
+                <div class="timeline-title">Linha do tempo</div>
+                <div class="timeline-list">
+                  <div class="tl-item">
+                    <span class="tl-dot orange"></span>
+                    <span class="tl-text"><strong>Aguardando validação do DP</strong></span>
+                    <span class="tl-time">agora</span>
+                  </div>
+                  <div class="tl-item">
+                    <span class="tl-dot green"></span>
+                    <span class="tl-text">Documento processado e armazenado</span>
+                    <span class="tl-time">09:23</span>
+                  </div>
+                  <div class="tl-item">
+                    <span class="tl-dot green"></span>
+                    <span class="tl-text">Enviado por João Carvalho</span>
+                    <span class="tl-time">09:23</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Comprovante de consulta (arquivado) -->
+      <div class="cert-card archived" data-status="archived">
+        <div class="cert-header" onclick="toggleCard(this.parentElement)">
+          <div class="cert-type-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <div class="cert-info">
+            <div class="cert-title-row">
+              <span class="cert-title">Comprovante de consulta</span>
+              <span class="cert-protocol">ATD-2026-03-30-5E91C</span>
+            </div>
+            <div class="cert-meta">
+              <span class="cert-meta-item">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                30/03/2026
+              </span>
+              <span>·</span>
+              <span class="cert-meta-item">Dra. Mariana Fontes</span>
+            </div>
+          </div>
+          <div class="cert-days"><span class="days-num">0</span> dias</div>
+          <div class="cert-status-pill archived">
+            <span class="dot"></span>
+            Arquivado
+          </div>
+          <svg class="cert-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="cert-body">
+          <div class="cert-body-grid">
+            <div class="cert-details">
+              <div class="detail-row">
+                <div class="detail-block">
+                  <div class="detail-label">Médica</div>
+                  <div class="detail-value">Dra. Mariana Fontes</div>
+                </div>
+                <div class="detail-block">
+                  <div class="detail-label">CRM</div>
+                  <div class="detail-value">CRM-BA 23456</div>
+                </div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Especialidade</div>
+                <div class="detail-value">Ginecologia</div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-block">
+                  <div class="detail-label">Data da consulta</div>
+                  <div class="detail-value">30/03/2026 às 14:00</div>
+                </div>
+                <div class="detail-block">
+                  <div class="detail-label">Liberação no expediente</div>
+                  <div class="detail-value">3 horas (13h às 16h)</div>
+                </div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Enviado por</div>
+                <div class="submitted-by">
+                  <div class="sub-avatar" style="background:#3D5F95;">JC</div>
+                  <div class="sub-text">
+                    <strong>João Carvalho</strong>
+                    <span class="role">Líder · em 30/03 às 16:48</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="cert-file-card">
+                <div class="cert-file-preview">
+                  <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="130" fill="#fff"/>
+                    <text x="100" y="34" font-family="serif" font-size="8" fill="#202124" text-anchor="middle" font-weight="bold">DECLARAÇÃO DE COMPARECIMENTO</text>
+                    <line x1="20" y1="42" x2="180" y2="42" stroke="#dadce0"/>
+                    <rect x="20" y="50" width="120" height="3" fill="#5f6368" opacity=".4"/>
+                    <rect x="20" y="58" width="100" height="3" fill="#5f6368" opacity=".4"/>
+                    <rect x="20" y="66" width="80" height="3" fill="#5f6368" opacity=".4"/>
+                    <line x1="120" y1="105" x2="180" y2="105" stroke="#5f6368" stroke-width="0.5"/>
+                  </svg>
+                  <div class="preview-overlay"><span class="preview-text">Visualização parcial</span></div>
+                </div>
+                <div class="cert-file-info">
+                  <div class="name">consulta_ginecologia_30032026.pdf</div>
+                  <div class="meta">312 KB · PDF · AES-256</div>
+                </div>
+                <div class="cert-file-actions">
+                  <button class="btn-file">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Ver
+                  </button>
+                  <button class="btn-file primary">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Baixar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Atestado 3 dias (arquivado, autoenvio) -->
+      <div class="cert-card archived" data-status="archived">
+        <div class="cert-header" onclick="toggleCard(this.parentElement)">
+          <div class="cert-type-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><circle cx="12" cy="14" r="3"/><path d="M12 11v3l1.5 1"/></svg>
+          </div>
+          <div class="cert-info">
+            <div class="cert-title-row">
+              <span class="cert-title">Atestado médico</span>
+              <span class="cert-protocol">ATD-2026-02-15-7A88C</span>
+            </div>
+            <div class="cert-meta">
+              <span class="cert-meta-item">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                15/02 a 17/02/2026
+              </span>
+              <span>·</span>
+              <span class="cert-meta-item">Dr. Roberto Silva · CID B34.9</span>
+            </div>
+          </div>
+          <div class="cert-days"><span class="days-num">3</span> dias</div>
+          <div class="cert-status-pill archived">
+            <span class="dot"></span>
+            Arquivado
+          </div>
+          <svg class="cert-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="cert-body">
+          <div class="cert-body-grid">
+            <div class="cert-details">
+              <div class="detail-row">
+                <div class="detail-block">
+                  <div class="detail-label">Médico</div>
+                  <div class="detail-value">Dr. Roberto Silva</div>
+                </div>
+                <div class="detail-block">
+                  <div class="detail-label">CRM</div>
+                  <div class="detail-value">CRM-BA 34567</div>
+                </div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">CID-10</div>
+                <div class="detail-value cid">
+                  <span class="cid-code">B34.9</span>
+                  <span class="cid-desc">Infecção viral não especificada</span>
+                </div>
+              </div>
+              <div class="detail-row">
+                <div class="detail-block">
+                  <div class="detail-label">Período</div>
+                  <div class="detail-value">15/02 a 17/02/2026</div>
+                </div>
+                <div class="detail-block">
+                  <div class="detail-label">Validado pelo DP em</div>
+                  <div class="detail-value">16/02/2026 às 10:14</div>
+                </div>
+              </div>
+              <div class="detail-block">
+                <div class="detail-label">Enviado por</div>
+                <div class="submitted-by">
+                  <div class="sub-avatar" style="background:#E82227;">FL</div>
+                  <div class="sub-text">
+                    <strong>Você</strong>
+                    <span class="role">autoenvio · em 15/02 às 19:47</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="cert-file-card">
+                <div class="cert-file-preview">
+                  <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="130" fill="#fff"/>
+                    <rect x="12" y="10" width="50" height="9" fill="#e8f0fe"/>
+                    <text x="100" y="42" font-family="serif" font-size="9" fill="#202124" text-anchor="middle" font-weight="bold">ATESTADO MÉDICO</text>
+                    <line x1="12" y1="48" x2="188" y2="48" stroke="#dadce0"/>
+                    <rect x="12" y="55" width="120" height="3" fill="#5f6368" opacity=".4"/>
+                    <rect x="12" y="62" width="100" height="3" fill="#5f6368" opacity=".4"/>
+                    <rect x="12" y="69" width="80" height="3" fill="#c5221f" opacity=".7"/>
+                    <rect x="12" y="76" width="110" height="3" fill="#5f6368" opacity=".4"/>
+                  </svg>
+                  <div class="preview-overlay"><span class="preview-text">Visualização parcial</span></div>
+                </div>
+                <div class="cert-file-info">
+                  <div class="name">atestado_15022026.pdf</div>
+                  <div class="meta">528 KB · PDF · AES-256</div>
+                </div>
+                <div class="cert-file-actions">
+                  <button class="btn-file">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Ver
+                  </button>
+                  <button class="btn-file primary">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                    Baixar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Atestado rejeitado (autoenvio Nov 2025) -->
+      <div class="cert-card rejected" data-status="rejected">
+        <div class="cert-header" onclick="toggleCard(this.parentElement)">
+          <div class="cert-type-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+          </div>
+          <div class="cert-info">
+            <div class="cert-title-row">
+              <span class="cert-title">Atestado médico</span>
+              <span class="cert-protocol">ATD-2025-11-10-4D52B</span>
+            </div>
+            <div class="cert-meta">
+              <span class="cert-meta-item">10/11/2025</span>
+              <span>·</span>
+              <span class="cert-meta-item" style="color:var(--danger); font-weight:600;">Documento ilegível</span>
+            </div>
+          </div>
+          <div class="cert-days"><span class="days-num" style="color:var(--danger); font-size:11px;">rejeit.</span></div>
+          <div class="cert-status-pill rejected">
+            <span class="dot"></span>
+            Rejeitado
+          </div>
+          <svg class="cert-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="cert-body">
+          <div class="cert-body-grid">
+            <div class="cert-details">
+              <div class="rejection-alert">
+                <div class="rej-title">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                  Motivo da rejeição
+                </div>
+                <div class="rej-text">
+                  Documento de difícil leitura. Foto borrada e parcialmente cortada na lateral direita, impossibilitando identificar CID e período de afastamento. Solicitamos o reenvio com melhor iluminação e enquadramento completo do atestado.
+                </div>
+                <button class="rej-action" onclick="openWizard()">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Reenviar atestado
+                </button>
+              </div>
+
+              <div class="reupload-link">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.39 0 4.68.94 6.36 2.64"/></svg>
+                <div>
+                  <strong>Já reenviado:</strong> protocolo ATD-2025-11-11-9F33A foi aceito no dia seguinte.
+                </div>
+              </div>
+
+              <div class="detail-block">
+                <div class="detail-label">Enviado por</div>
+                <div class="submitted-by">
+                  <div class="sub-avatar" style="background:#E82227;">FL</div>
+                  <div class="sub-text">
+                    <strong>Você</strong>
+                    <span class="role">autoenvio · em 10/11/2025 às 22:14</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-block">
+                <div class="detail-label">Rejeitado por</div>
+                <div class="submitted-by">
+                  <div class="sub-avatar" style="background:#1E7B4B;">PM</div>
+                  <div class="sub-text">
+                    <strong>Patrícia Mello</strong>
+                    <span class="role">DP GPC · em 11/11/2025 às 08:42</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="cert-file-card">
+                <div class="cert-file-preview" style="background:#f1f3f4;">
+                  <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="opacity:.4;"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                  <div class="preview-overlay" style="background:rgba(192,57,43,.2);">
+                    <span class="preview-text" style="color:#fff;">Documento ilegível</span>
+                  </div>
+                </div>
+                <div class="cert-file-info">
+                  <div class="name">IMG_20251110_223547.jpg</div>
+                  <div class="meta">1,2 MB · JPG (não convertido)</div>
+                </div>
+                <div class="cert-file-actions">
+                  <button class="btn-file">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Ver original
+                  </button>
+                  <button class="btn-file primary" onclick="openWizard()">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    Reenviar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Atestado 5 dias (reenvio aceito) -->
+      <div class="cert-card archived" data-status="archived">
+        <div class="cert-header" onclick="toggleCard(this.parentElement)">
+          <div class="cert-type-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><circle cx="12" cy="14" r="3"/><path d="M12 11v3l1.5 1"/></svg>
+          </div>
+          <div class="cert-info">
+            <div class="cert-title-row">
+              <span class="cert-title">Atestado médico</span>
+              <span class="cert-protocol">ATD-2025-11-11-9F33A</span>
+            </div>
+            <div class="cert-meta">
+              <span class="cert-meta-item">10/11 a 14/11/2025</span>
+              <span>·</span>
+              <span class="cert-meta-item">Dra. Ana Beatriz · CID A09</span>
+            </div>
+          </div>
+          <div class="cert-days"><span class="days-num">5</span> dias</div>
+          <div class="cert-status-pill archived">
+            <span class="dot"></span>
+            Arquivado
+          </div>
+          <svg class="cert-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+      <!-- 6. Exame periódico (arquivado) -->
+      <div class="cert-card archived" data-status="archived">
+        <div class="cert-header" onclick="toggleCard(this.parentElement)">
+          <div class="cert-type-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="cert-info">
+            <div class="cert-title-row">
+              <span class="cert-title">Exame periódico (SESMT)</span>
+              <span class="cert-protocol">ATD-2025-08-22-2C71D</span>
+            </div>
+            <div class="cert-meta">
+              <span class="cert-meta-item">22/08/2025</span>
+              <span>·</span>
+              <span class="cert-meta-item" style="color:var(--green); font-weight:600;">Resultado: Apto</span>
+            </div>
+          </div>
+          <div class="cert-days"><span class="days-num">0</span> dias</div>
+          <div class="cert-status-pill archived">
+            <span class="dot"></span>
+            Arquivado
+          </div>
+          <svg class="cert-chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= LGPD RIGHTS ============= -->
+    <div class="rights-card">
+      <div class="rights-header">
+        <div class="icon">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <h3>Seus direitos como titular dos dados</h3>
+          <p>Garantidos pela Lei Geral de Proteção de Dados (LGPD Art. 18)</p>
+        </div>
+      </div>
+      <div class="rights-grid">
+        <button class="right-action">
+          <div class="ra-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          </div>
+          <div class="ra-title">Baixar tudo</div>
+          <div class="ra-desc">Exporte todos os seus atestados em PDF (portabilidade)</div>
+        </button>
+
+        <button class="right-action">
+          <div class="ra-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <div class="ra-title">Solicitar correção</div>
+          <div class="ra-desc">Pedir retificação de dados incorretos</div>
+        </button>
+
+        <button class="right-action">
+          <div class="ra-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+          </div>
+          <div class="ra-title">Quem acessou?</div>
+          <div class="ra-desc">Veja o log de quem visualizou seus atestados</div>
+        </button>
+
+        <button class="right-action">
+          <div class="ra-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+          </div>
+          <div class="ra-title">Solicitar exclusão</div>
+          <div class="ra-desc">Após período legal de 5 anos (CLT)</div>
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============= MODAL WIZARD DE ENVIO ============= -->
+<div class="modal-overlay" id="wizardModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3>Enviar atestado</h3>
+      <button class="modal-close" onclick="closeWizard()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="wizard-progress">
+      <div class="wizard-bars">
+        <div class="wbar current" id="wbar1"></div>
+        <div class="wbar" id="wbar2"></div>
+        <div class="wbar" id="wbar3"></div>
+      </div>
+      <div class="wmeta">
+        <span>Autoenvio · Fernanda Lima</span>
+        <span>Passo <strong id="wstepNum">1</strong> de 3</span>
+      </div>
+    </div>
+
+    <div class="wizard-step-body">
+
+      <!-- Step 1: Anexar -->
+      <div class="wstep active" data-wstep="1">
+        <div class="wstep-icon">
+          <div class="wstep-icon-circle">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </div>
+          <div class="wstep-title">Anexe o atestado</div>
+          <div class="wstep-sub">Tire uma foto do atestado físico ou anexe um PDF/imagem</div>
+        </div>
+
+        <div id="modalUploadEmpty">
+          <div class="modal-upload" onclick="modalSimulateUpload()">
+            <div class="upload-icon-modal">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            </div>
+            <div class="modal-upload-text">Toque para anexar</div>
+            <div class="modal-upload-sub">PDF, JPG, PNG ou HEIC · até 15 MB</div>
+          </div>
+
+          <div class="modal-upload-actions">
+            <button class="upload-btn-m primary" onclick="modalSimulateUpload()">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              Tirar foto
+            </button>
+            <button class="upload-btn-m" onclick="modalSimulateUpload()">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              Dispositivo
+            </button>
+          </div>
+        </div>
+
+        <div id="modalUploadFilled" style="display:none;">
+          <div class="modal-file-preview">
+            <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:200px; background:#fff;">
+              <rect width="400" height="200" fill="#fff"/>
+              <rect x="20" y="12" width="80" height="18" fill="#e8f0fe"/>
+              <text x="60" y="24" font-family="serif" font-size="9" fill="#1a73e8" text-anchor="middle">DR. CARLOS MENDES</text>
+              <text x="22" y="38" font-family="serif" font-size="6" fill="#5f6368">CRM-BA 12345</text>
+              <line x1="20" y1="46" x2="380" y2="46" stroke="#dadce0"/>
+              <text x="200" y="64" font-family="serif" font-size="12" fill="#202124" text-anchor="middle" font-weight="bold">ATESTADO MÉDICO</text>
+              <text x="20" y="86" font-family="serif" font-size="8" fill="#3c4043">Atesto, para os devidos fins, que o(a) Sr(a)</text>
+              <text x="20" y="100" font-family="serif" font-size="9" fill="#202124" font-weight="bold">FERNANDA LIMA DOS SANTOS</text>
+              <text x="20" y="116" font-family="serif" font-size="8" fill="#3c4043">CPF 11.456.789-12, esteve sob meus cuidados em</text>
+              <text x="20" y="130" font-family="serif" font-size="8" fill="#3c4043">consulta médica nesta data, necessitando de</text>
+              <text x="20" y="146" font-family="serif" font-size="10" fill="#c5221f" font-weight="bold">02 (DOIS) DIAS</text>
+              <text x="20" y="160" font-family="serif" font-size="8" fill="#3c4043">a partir de 28/04/2026, conforme CID-10:</text>
+              <text x="20" y="174" font-family="serif" font-size="9" fill="#202124" font-weight="bold">J06.9 - Infecção aguda das vias aéreas</text>
+              <line x1="240" y1="190" x2="370" y2="190" stroke="#5f6368" stroke-width="0.5"/>
+            </svg>
+            <div class="mfp-quality">
+              <span class="iq-dot"></span>
+              Qualidade: alta
+            </div>
+          </div>
+
+          <div class="modal-file-info">
+            <div class="mfi-icon">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            </div>
+            <div class="mfi-info">
+              <div class="mfi-name">atestado_28042026.jpg</div>
+              <div class="mfi-size">3,42 MB · 2880 × 2160 px</div>
+            </div>
+            <button class="mfi-remove" onclick="modalResetUpload()">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <div class="modal-proc-list">
+            <div class="mproc">
+              <div class="mproc-icon"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+              <div class="mproc-text">
+                Legibilidade verificada
+                <div class="mproc-detail">OCR detectou 247 palavras</div>
+              </div>
+            </div>
+            <div class="mproc">
+              <div class="mproc-icon"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+              <div class="mproc-text">
+                Convertido para PDF e compactado
+                <div class="mproc-detail">Qualidade legível preservada</div>
+              </div>
+            </div>
+            <div class="mproc">
+              <div class="mproc-icon"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+              <div class="mproc-text">
+                Armazenamento criptografado
+                <div class="mproc-detail">AES-256 · Supabase Storage</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-compression">
+            <div class="mc-icon">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            </div>
+            <div class="mc-text">
+              <div class="mc-main">3,42 MB → 487 KB</div>
+              <div class="mc-sub">PDF otimizado, qualidade preservada</div>
+            </div>
+            <div class="mc-saving">−86%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Confirmar -->
+      <div class="wstep" data-wstep="2">
+        <div class="wstep-icon">
+          <div class="wstep-icon-circle purple">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          </div>
+          <div class="wstep-title">Confirme as informações</div>
+          <div class="wstep-sub">Os dados foram extraídos automaticamente. Confira ou ajuste se necessário.</div>
+        </div>
+
+        <div class="modal-ocr">
+          <div class="mocr-icon">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="mocr-content">
+            <strong>Detectado automaticamente:</strong>
+            <div class="mocr-pills">
+              <span class="mocr-pill">2 dias</span>
+              <span class="mocr-pill">28/04/2026</span>
+              <span class="mocr-pill">Dr. Carlos Mendes</span>
+              <span class="mocr-pill">CID J06.9</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mfield">
+          <label class="mlabel">Tipo do documento <span class="req">*</span></label>
+          <select class="mselect">
+            <option selected>Atestado médico (afastamento)</option>
+            <option>Comprovante de consulta</option>
+            <option>Declaração de comparecimento</option>
+            <option>Atestado de acompanhamento</option>
+            <option>Exame periódico</option>
+          </select>
+        </div>
+
+        <div class="mfield-row">
+          <div class="mfield">
+            <label class="mlabel">Data de início <span class="req">*</span></label>
+            <input type="date" class="minput" value="2026-04-28">
+          </div>
+          <div class="mfield">
+            <label class="mlabel">Dias <span class="req">*</span></label>
+            <input type="number" class="minput" value="2" min="0" max="365">
+          </div>
+        </div>
+
+        <div class="mfield">
+          <label class="mlabel">Observações <span style="color:var(--txt3); font-weight:400;">(opcional)</span></label>
+          <textarea class="mtextarea" placeholder="Ex: Já avisei meu líder e a equipe está ciente."></textarea>
+        </div>
+      </div>
+
+      <!-- Step 3: Sucesso -->
+      <div class="wstep" data-wstep="3">
+        <div class="success-modal">
+          <span class="success-emoji">✅</span>
+          <div class="wstep-title">Atestado enviado</div>
+          <div class="wstep-sub">O DP recebeu seu documento e fará a validação em até 1 dia útil</div>
+
+          <div class="success-protocol-m">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            ATD-2026-04-28-1A47B
+          </div>
+
+          <div class="success-summary">
+            <div class="ssrow">
+              <span class="lbl">Tipo</span>
+              <span class="val">Atestado médico</span>
+            </div>
+            <div class="ssrow">
+              <span class="lbl">Período</span>
+              <span class="val">28/04 a 29/04 (2 dias)</span>
+            </div>
+            <div class="ssrow">
+              <span class="lbl">Tamanho final</span>
+              <span class="val">487 KB</span>
+            </div>
+            <div class="ssrow">
+              <span class="lbl">Direcionado para</span>
+              <span class="val">DP GPC + RH Labuta</span>
+            </div>
+            <div class="ssrow">
+              <span class="lbl">Seu líder será notificado</span>
+              <span class="val">João Carvalho</span>
+            </div>
+          </div>
+
+          <div class="success-info">
+            <div class="si-icon">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            </div>
+            <div class="si-text">
+              <strong>Próximos passos:</strong> assim que o DP validar (até 1 dia útil), uma movimentação de afastamento será criada automaticamente no sistema. Seu líder verá apenas o protocolo e status, sem acesso ao conteúdo.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn-back-m" id="wbtnBack" onclick="wgoBack()" disabled>
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+        Voltar
+      </button>
+      <button class="btn-next-m" id="wbtnNext" onclick="wgoNext()">
+        Continuar
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Toggle expand
+function toggleCard(card){
+  card.classList.toggle('open');
+}
+
+// Filter
+function filterCerts(btn, status){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.cert-card').forEach(c=>{
+    if(status === 'all') c.style.display = '';
+    else c.style.display = (c.dataset.status === status) ? '' : 'none';
+  });
+}
+
+// Search
+document.getElementById('searchInput').addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('.cert-card').forEach(card=>{
+    const text = card.textContent.toLowerCase();
+    const visible = !q || text.includes(q);
+    card.style.display = visible ? '' : 'none';
+  });
+});
+
+// Sidebar mobile
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// ============= WIZARD MODAL =============
+let wcurrent = 1;
+let whasFile = false;
+
+function openWizard(){
+  document.getElementById('wizardModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  wcurrent = 1;
+  whasFile = false;
+  document.getElementById('modalUploadEmpty').style.display = '';
+  document.getElementById('modalUploadFilled').style.display = 'none';
+  wshowStep(1);
+}
+
+function closeWizard(){
+  document.getElementById('wizardModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function wshowStep(n){
+  document.querySelectorAll('.wstep').forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.wstep) === n);
+  });
+  for(let i=1; i<=3; i++){
+    const bar = document.getElementById('wbar'+i);
+    bar.classList.remove('done', 'current');
+    if(i < n) bar.classList.add('done');
+    else if(i === n) bar.classList.add('current');
+  }
+  document.getElementById('wstepNum').textContent = n;
+  document.getElementById('wbtnBack').disabled = (n === 1);
+
+  const btn = document.getElementById('wbtnNext');
+  btn.classList.remove('orange', 'green');
+  if(n === 1){
+    btn.innerHTML = (whasFile ? 'Continuar' : 'Anexe o arquivo') + ' <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+    btn.disabled = !whasFile;
+  } else if(n === 2){
+    btn.innerHTML = 'Enviar para o DP <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    btn.classList.add('orange');
+    btn.disabled = false;
+  } else if(n === 3){
+    btn.innerHTML = 'Concluir';
+    btn.classList.add('green');
+    btn.disabled = false;
+    document.getElementById('wbtnBack').style.display = 'none';
+  }
+
+  if(n !== 3) document.getElementById('wbtnBack').style.display = '';
+}
+
+function wgoNext(){
+  if(wcurrent < 3){
+    wcurrent++;
+    wshowStep(wcurrent);
+  } else {
+    closeWizard();
+  }
+}
+
+function wgoBack(){
+  if(wcurrent > 1){
+    wcurrent--;
+    wshowStep(wcurrent);
+  }
+}
+
+function modalSimulateUpload(){
+  whasFile = true;
+  document.getElementById('modalUploadEmpty').style.display = 'none';
+  document.getElementById('modalUploadFilled').style.display = '';
+  wshowStep(wcurrent);
+}
+
+function modalResetUpload(){
+  whasFile = false;
+  document.getElementById('modalUploadEmpty').style.display = '';
+  document.getElementById('modalUploadFilled').style.display = 'none';
+  wshowStep(wcurrent);
+}
+
+// Close modal on overlay click
+document.getElementById('wizardModal').addEventListener('click', e=>{
+  if(e.target.id === 'wizardModal') closeWizard();
+});
+
+// Close on Escape
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape' && document.getElementById('wizardModal').classList.contains('show')){
+    closeWizard();
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Metas e Indicadores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#3D5F95,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1380px; margin:0 auto; padding:18px 22px 50px;}
+
+.page-header{display:flex; justify-content:space-between; align-items:flex-end; gap:14px; flex-wrap:wrap; margin-bottom:14px;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:3px; max-width:680px;}
+.header-actions{display:flex; gap:9px; flex-wrap:wrap;}
+
+.btn{padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:7px; border:1.5px solid; transition:all .12s; white-space:nowrap;}
+.btn svg{width:14px; height:14px;}
+.btn-primary{background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:0 3px 8px rgba(43,74,122,.2);}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--txt); border-color:var(--gray2);}
+.btn-secondary:hover{border-color:var(--navy); color:var(--navy);}
+.btn-ghost{background:transparent; color:var(--txt2); border-color:transparent;}
+.btn-ghost:hover{background:var(--off); color:var(--txt);}
+.btn-orange{background:var(--orange); color:#fff; border-color:var(--orange); box-shadow:0 3px 8px rgba(245,131,31,.25);}
+.btn-orange:hover{background:#D87013;}
+
+.kpi-row{display:grid; grid-template-columns:repeat(4, 1fr); gap:11px; margin-bottom:14px;}
+.kpi-card{background:#fff; border-radius:11px; padding:13px 16px; box-shadow:var(--shadow-card); border-bottom:3px solid var(--navy); position:relative;}
+.kpi-card.amber{border-bottom-color:var(--amber);}
+.kpi-card.purple{border-bottom-color:var(--purple);}
+.kpi-card.green{border-bottom-color:var(--green);}
+.kpi-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;}
+.kpi-icon{width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;}
+.kpi-icon svg{width:14px; height:14px;}
+.kpi-card .kpi-icon{background:#E8EFF8; color:var(--navy);}
+.kpi-card.amber .kpi-icon{background:var(--amber2); color:var(--amber);}
+.kpi-card.purple .kpi-icon{background:var(--purple2); color:var(--purple);}
+.kpi-card.green .kpi-icon{background:var(--green2); color:var(--green);}
+.kpi-pulse{width:8px; height:8px; border-radius:50%; background:var(--amber); position:relative;}
+.kpi-pulse::after{content:''; position:absolute; inset:-3px; border:2px solid var(--amber); border-radius:50%; opacity:.4; animation:pulse 1.8s infinite;}
+@keyframes pulse{0%{opacity:.4; transform:scale(1);} 70%{opacity:0; transform:scale(1.6);} 100%{opacity:0; transform:scale(1.6);}}
+.kpi-value{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:22px; color:var(--txt); letter-spacing:-.4px; line-height:1;}
+.kpi-value .currency{font-size:11px; font-weight:500; color:var(--txt2); font-family:'Sora',sans-serif;}
+.kpi-label{font-size:11px; color:var(--txt2); margin-top:5px;}
+.kpi-label strong{color:var(--txt); font-weight:600;}
+
+.filters-bar{background:#fff; border-radius:12px; padding:11px 14px; box-shadow:var(--shadow-card); margin-bottom:13px; display:flex; gap:9px; align-items:center; flex-wrap:wrap;}
+.flt-label{font-size:10.5px; color:var(--txt2); font-weight:600; text-transform:uppercase; letter-spacing:.4px;}
+.flt-chip{padding:6px 11px; background:var(--off); border:1px solid var(--gray2); border-radius:7px; font-size:11.5px; font-weight:500; color:var(--txt); cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:5px;}
+.flt-chip:hover{background:var(--gray1);}
+.flt-chip.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+.flt-chip .flt-count{font-family:'JetBrains Mono',monospace; font-size:9.5px; background:#fff; color:var(--txt); padding:0 5px; border-radius:4px; font-weight:700;}
+.flt-chip.active .flt-count{background:rgba(255,255,255,.25); color:#fff;}
+.flt-divider{width:1px; height:20px; background:var(--gray2); margin:0 3px;}
+.spacer{flex:1;}
+.search-box{position:relative; min-width:220px;}
+.search-box input{width:100%; padding:7px 11px 7px 30px; border:1px solid var(--gray2); border-radius:7px; font-size:12px; font-family:inherit; color:var(--txt);}
+.search-box input:focus{outline:none; border-color:var(--navy);}
+.search-box svg{position:absolute; left:9px; top:50%; transform:translateY(-50%); color:var(--txt3);}
+
+.goals-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(420px, 1fr)); gap:13px;}
+.goal-card{background:#fff; border-radius:13px; padding:15px 17px; box-shadow:var(--shadow-card); display:flex; flex-direction:column; gap:11px; border-left:4px solid var(--navy3); transition:all .15s;}
+.goal-card:hover{transform:translateY(-1px); box-shadow:var(--shadow-pop);}
+.goal-card.draft{border-left-color:var(--gray3);}
+.goal-card.active{border-left-color:var(--blue);}
+.goal-card.result_pending{border-left-color:var(--amber);}
+.goal-card.validation_pending{border-left-color:var(--orange);}
+.goal-card.validated{border-left-color:var(--green);}
+.goal-card.paid{border-left-color:var(--purple);}
+
+.gc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:9px;}
+.gc-title{flex:1; min-width:0;}
+.gc-title h3{font-size:13.5px; font-weight:600; color:var(--txt); margin-bottom:3px; line-height:1.3;}
+.gc-meta{display:flex; align-items:center; gap:7px; font-size:10.5px; color:var(--txt2); flex-wrap:wrap;}
+.gc-meta-item{display:inline-flex; align-items:center; gap:4px;}
+.gc-meta-item svg{width:11px; height:11px; color:var(--txt3);}
+
+.status-pill{display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:6px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.3px; white-space:nowrap;}
+.status-pill.draft{background:var(--gray1); color:var(--txt2);}
+.status-pill.active{background:var(--blue2); color:var(--blue);}
+.status-pill.result_pending{background:var(--amber2); color:var(--amber);}
+.status-pill.validation_pending{background:var(--orange2); color:var(--orange);}
+.status-pill.validated{background:var(--green2); color:var(--green);}
+.status-pill.paid{background:var(--purple2); color:var(--purple);}
+.status-pill .dot{width:6px; height:6px; border-radius:50%; background:currentColor;}
+
+.gc-indicators{display:flex; flex-direction:column; gap:6px; background:linear-gradient(180deg, var(--off), #fff); border-radius:8px; padding:9px 11px; border:1px solid var(--gray1);}
+.gc-indicators-head{display:flex; justify-content:space-between; align-items:center; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--txt2); font-weight:600;}
+.gc-ind-item{display:flex; justify-content:space-between; align-items:center; font-size:11.5px; gap:8px;}
+.gc-ind-name{color:var(--txt); font-weight:500; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.gc-ind-bar{flex:0 0 80px; height:5px; background:var(--gray2); border-radius:3px; overflow:hidden; position:relative;}
+.gc-ind-bar-fill{position:absolute; inset:0 auto 0 0; background:linear-gradient(90deg, var(--blue), var(--green)); border-radius:3px; transition:width .3s;}
+.gc-ind-bar-fill.below{background:linear-gradient(90deg, var(--amber), var(--orange));}
+.gc-ind-bar-fill.danger{background:linear-gradient(90deg, var(--red), #f87171);}
+.gc-ind-pct{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; flex:0 0 50px; text-align:right; color:var(--txt);}
+.gc-ind-pct.pending{color:var(--txt3); font-weight:500;}
+
+.gc-footer{display:flex; justify-content:space-between; align-items:center; padding-top:9px; border-top:1px dashed var(--gray2);}
+.gc-payout{display:flex; flex-direction:column; gap:2px;}
+.gc-payout-lbl{font-size:9.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--txt2); font-weight:600;}
+.gc-payout-val{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px; color:var(--orange);}
+.gc-payout-val.green{color:var(--green);}
+.gc-payout-val.purple{color:var(--purple);}
+.gc-payout-people{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+
+.gc-actions{display:flex; gap:5px;}
+.gc-btn{width:30px; height:30px; border-radius:7px; background:var(--off); border:1px solid var(--gray2); cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.gc-btn:hover{background:#fff; border-color:var(--navy); color:var(--navy);}
+.gc-btn svg{width:13px; height:13px;}
+.gc-btn.primary{background:var(--navy); color:#fff; border-color:var(--navy);}
+.gc-btn.primary:hover{background:var(--navy2); color:#fff;}
+.gc-btn.warn{background:var(--orange); color:#fff; border-color:var(--orange);}
+.gc-btn.warn:hover{background:#D87013; color:#fff;}
+
+.modal-overlay{position:fixed; inset:0; background:rgba(26,45,79,.55); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); z-index:100; display:none; align-items:flex-start; justify-content:center; padding:20px; overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff; border-radius:14px; width:100%; max-width:780px; margin:auto; box-shadow:0 20px 60px rgba(0,0,0,.25); display:flex; flex-direction:column; max-height:calc(100vh - 40px);}
+.modal-head{padding:18px 22px 14px; border-bottom:1px solid var(--gray1); display:flex; align-items:center; justify-content:space-between; gap:14px;}
+.modal-head-info h2{font-size:16px; font-weight:600; letter-spacing:-.2px; display:flex; align-items:center; gap:8px;}
+.modal-head-info h2 svg{width:16px; height:16px; color:var(--orange);}
+.modal-head-info p{font-size:11.5px; color:var(--txt2); margin-top:3px;}
+.modal-close{width:34px; height:34px; background:var(--off); border:none; border-radius:9px; cursor:pointer; color:var(--txt2); display:flex; align-items:center; justify-content:center;}
+.modal-close:hover{background:var(--gray1); color:var(--txt);}
+.modal-close svg{width:15px; height:15px;}
+.modal-body{padding:18px 22px; overflow-y:auto; flex:1;}
+
+.modal-section{margin-bottom:22px;}
+.modal-section:last-child{margin-bottom:0;}
+.ms-head{display:flex; align-items:center; gap:9px; padding-bottom:9px; margin-bottom:12px; border-bottom:1px solid var(--gray1);}
+.ms-num{width:24px; height:24px; border-radius:7px; background:var(--navy); color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center;}
+.ms-title{font-size:13px; font-weight:600; letter-spacing:-.1px;}
+.ms-helper{font-size:11px; color:var(--txt2); margin-left:auto;}
+
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:11px; margin-bottom:11px;}
+.field-row.three{grid-template-columns:1fr 1fr 1fr;}
+.field-row.uneven{grid-template-columns:2fr 1fr;}
+.field-row:last-child{margin-bottom:0;}
+.field-row.full{grid-template-columns:1fr;}
+.field{display:flex; flex-direction:column; gap:4px;}
+.field-label{font-size:10.5px; font-weight:600; color:var(--txt); display:flex; justify-content:space-between; align-items:center;}
+.field-label .helper{font-size:10px; color:var(--txt3); font-weight:400;}
+.field-input, .field-select, .field-textarea{width:100%; padding:8px 11px; border:1.5px solid var(--gray2); border-radius:7px; font-size:12.5px; font-family:inherit; color:var(--txt); background:#fff;}
+.field-input:focus, .field-select:focus, .field-textarea:focus{outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(43,74,122,.1);}
+.field-textarea{min-height:60px; resize:vertical;}
+.field-input.mono{font-family:'JetBrains Mono',monospace; font-weight:600;}
+.field-input-prefix{position:relative;}
+.field-input-prefix .prefix{position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:11.5px; color:var(--txt2); font-weight:500; pointer-events:none;}
+.field-input-prefix .field-input{padding-left:30px;}
+.field-input-prefix .suffix{position:absolute; right:11px; top:50%; transform:translateY(-50%); font-size:10.5px; color:var(--txt3); pointer-events:none;}
+
+.toggle{display:flex; align-items:center; justify-content:space-between; padding:9px 11px; background:var(--off); border-radius:8px; margin-bottom:6px; cursor:pointer; border:1px solid var(--gray1);}
+.toggle:last-child{margin-bottom:0;}
+.toggle.on{background:linear-gradient(135deg, var(--green2), #fff); border-color:var(--green);}
+.toggle-info{display:flex; flex-direction:column; gap:2px;}
+.toggle-label{font-size:11.5px; font-weight:600;}
+.toggle-desc{font-size:10.5px; color:var(--txt2);}
+.toggle-switch{width:36px; height:20px; background:var(--gray2); border-radius:10px; position:relative; flex-shrink:0; transition:all .15s;}
+.toggle-switch::after{content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:all .15s; box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle.on .toggle-switch{background:var(--green);}
+.toggle.on .toggle-switch::after{left:18px;}
+
+.dynamic-list{display:flex; flex-direction:column; gap:9px;}
+.dynamic-item{background:#fff; border:1.5px solid var(--gray1); border-radius:10px; padding:11px 13px; position:relative;}
+.dynamic-item .di-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:9px;}
+.di-num{display:inline-flex; align-items:center; gap:6px; font-size:10px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; color:var(--navy); background:#E8EFF8; padding:3px 9px; border-radius:5px;}
+.di-num.purple{background:var(--purple2); color:var(--purple);}
+.di-num.amber{background:var(--amber2); color:var(--amber);}
+.di-num.teal{background:var(--teal2); color:var(--teal);}
+.di-remove{width:24px; height:24px; background:transparent; border:none; border-radius:5px; cursor:pointer; color:var(--txt3); display:flex; align-items:center; justify-content:center;}
+.di-remove:hover{background:var(--red2); color:var(--red);}
+.di-remove svg{width:13px; height:13px;}
+.di-summary{font-size:10.5px; color:var(--txt2); margin-top:7px; display:flex; gap:11px; align-items:center; flex-wrap:wrap;}
+.di-summary strong{color:var(--txt); font-family:'JetBrains Mono',monospace; font-weight:700;}
+.di-summary .total-val{color:var(--orange);}
+
+.add-item-btn{padding:9px 12px; background:#fff; border:1.5px dashed var(--gray2); border-radius:9px; font-size:12px; font-weight:500; color:var(--txt2); cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; justify-content:center; gap:6px; width:100%; margin-top:9px;}
+.add-item-btn:hover{border-color:var(--navy); color:var(--navy); background:var(--off);}
+.add-item-btn svg{width:13px; height:13px;}
+
+.payout-summary{margin-top:12px; padding:12px 14px; background:linear-gradient(135deg, var(--orange2), #fff); border:1px solid var(--orange); border-radius:10px; display:flex; align-items:center; justify-content:space-between; gap:14px;}
+.ps-info{flex:1;}
+.ps-label{font-size:10.5px; font-weight:700; color:var(--orange); text-transform:uppercase; letter-spacing:.4px;}
+.ps-value{font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; color:var(--txt); letter-spacing:-.3px; margin-top:2px;}
+.ps-detail{font-size:10.5px; color:var(--txt2); margin-top:2px;}
+
+.modal-foot{padding:14px 22px; background:var(--off); border-top:1px solid var(--gray1); border-radius:0 0 14px 14px; display:flex; gap:9px; justify-content:flex-end; flex-wrap:wrap;}
+
+.clone-list{display:flex; flex-direction:column; gap:8px; max-height:50vh; overflow-y:auto;}
+.clone-item{background:linear-gradient(180deg, var(--off), #fff); border:1.5px solid var(--gray1); border-radius:10px; padding:11px 13px; cursor:pointer; transition:all .12s;}
+.clone-item:hover{border-color:var(--navy); background:#fff; box-shadow:var(--shadow-card);}
+.clone-item-head{display:flex; justify-content:space-between; align-items:flex-start; gap:9px; margin-bottom:6px;}
+.clone-item-title{font-size:12.5px; font-weight:600;}
+.clone-item-period{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); background:#fff; padding:2px 7px; border-radius:4px; border:1px solid var(--gray1); white-space:nowrap;}
+.clone-item-meta{font-size:10.5px; color:var(--txt2); display:flex; gap:11px; flex-wrap:wrap; align-items:center;}
+.clone-item-meta strong{color:var(--txt); font-family:'JetBrains Mono',monospace; font-weight:700;}
+.clone-item-status{margin-left:auto; font-weight:600; white-space:nowrap;}
+.clone-item-status.green{color:var(--green);}
+.clone-item-status.amber{color:var(--amber);}
+
+.toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--dark); color:#fff; padding:12px 18px; border-radius:10px; font-size:12.5px; font-weight:500; box-shadow:var(--shadow-pop); z-index:200; transition:transform .25s; display:flex; align-items:center; gap:9px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast svg{width:14px; height:14px; color:var(--green);}
+
+.empty{text-align:center; padding:50px 20px; color:var(--txt2);}
+.empty svg{width:50px; height:50px; opacity:.4; margin-bottom:11px;}
+.empty h3{font-size:14px; color:var(--txt); margin-bottom:5px;}
+
+@media (max-width: 1024px){
+  .kpi-row{grid-template-columns:repeat(2, 1fr);}
+  .goals-grid{grid-template-columns:1fr;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:13px 14px 30px;}
+  .page-header h1{font-size:18px;}
+  .field-row, .field-row.three, .field-row.uneven{grid-template-columns:1fr;}
+  .filters-bar{flex-direction:column; align-items:stretch;}
+  .modal{max-width:100%;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar, .modal-body::-webkit-scrollbar, .clone-list::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb, .clone-list::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <div class="sidebar-section">Desempenho</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <a class="nav-item active"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Metas e indicadores</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks</a>
+      <div class="sidebar-section">Folha &amp; custo</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Calc. de custo</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Folha por filial</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Desempenho · <strong>Metas e indicadores</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info">
+        <span class="user-name">Patrícia Mello</span>
+        <span class="user-role">RH GPC</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div>
+          <h1>Metas e indicadores</h1>
+          <p>Cadastre metas com indicadores e regras de pagamento por cargo, departamento ou colaborador específico. Acompanhe lançamento de resultado e validação.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="openCloneModal()">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Clonar de período anterior
+          </button>
+          <button class="btn btn-primary" onclick="openGoalModal()">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova meta
+          </button>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+          </div>
+          <div class="kpi-value" id="kpiActive">14</div>
+          <div class="kpi-label"><strong>metas ativas</strong> · 2º trimestre 2026</div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <span class="kpi-pulse"></span>
+          </div>
+          <div class="kpi-value" id="kpiPending">5</div>
+          <div class="kpi-label"><strong>aguardando lançamento</strong> · prazo médio: 3 dias</div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+          </div>
+          <div class="kpi-value" id="kpiValidation">3</div>
+          <div class="kpi-label"><strong>aguardando validação</strong> · gestor responsável</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-head">
+            <div class="kpi-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+          </div>
+          <div class="kpi-value"><span class="currency">R$</span> <span id="kpiTotal">142.380</span></div>
+          <div class="kpi-label"><strong>previsto a pagar</strong> · validado neste trimestre</div>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <span class="flt-label">Status:</span>
+        <button class="flt-chip active" data-filter="all" onclick="setStatusFilter('all', this)">Todas <span class="flt-count">14</span></button>
+        <button class="flt-chip" data-filter="active" onclick="setStatusFilter('active', this)">
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--blue);"></span>
+          Em curso <span class="flt-count">6</span>
+        </button>
+        <button class="flt-chip" data-filter="result_pending" onclick="setStatusFilter('result_pending', this)">
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--amber);"></span>
+          Aguarda lançamento <span class="flt-count">5</span>
+        </button>
+        <button class="flt-chip" data-filter="validation_pending" onclick="setStatusFilter('validation_pending', this)">
+          <span style="width:7px; height:7px; border-radius:50%; background:var(--orange);"></span>
+          Aguarda validação <span class="flt-count">3</span>
+        </button>
+        <div class="flt-divider"></div>
+        <span class="flt-label">Filial:</span>
+        <button class="flt-chip active">Todas</button>
+        <button class="flt-chip">ATP Varejo</button>
+        <button class="flt-chip">Cestão L1</button>
+        <button class="flt-chip">Cestão Inh.</button>
+        <div class="spacer"></div>
+        <div class="search-box">
+          <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar meta..." id="searchInput" oninput="renderGoals()">
+        </div>
+      </div>
+
+      <div class="goals-grid" id="goalsGrid"></div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL: NOVA / EDITAR META -->
+<div class="modal-overlay" id="goalModal" onclick="if(event.target === this) closeGoalModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+    <div class="modal-head">
+      <div class="modal-head-info">
+        <h2 id="goalModalTitle">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <span id="goalModalTitleText">Nova meta</span>
+        </h2>
+        <p>Cadastre indicadores e defina quem recebe quanto se a meta for atingida</p>
+      </div>
+      <button class="modal-close" onclick="closeGoalModal()" aria-label="Fechar">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Section 1 -->
+      <div class="modal-section">
+        <div class="ms-head">
+          <span class="ms-num">1</span>
+          <span class="ms-title">Informações gerais</span>
+        </div>
+        <div class="field-row full">
+          <div class="field">
+            <label class="field-label" for="f-goalName">Nome da meta</label>
+            <input type="text" class="field-input" id="f-goalName" placeholder="Ex: Rentabilidade Cestão Loja 1 · 2º trimestre 2026">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="f-goalStart">Início do período</label>
+            <input type="date" class="field-input" id="f-goalStart" value="2026-04-01">
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-goalEnd">Fim do período</label>
+            <input type="date" class="field-input" id="f-goalEnd" value="2026-06-30">
+          </div>
+        </div>
+        <div class="field-row three">
+          <div class="field">
+            <label class="field-label" for="f-goalPeriod">Periodicidade</label>
+            <select class="field-select" id="f-goalPeriod">
+              <option value="monthly">Mensal</option>
+              <option value="quarterly" selected>Trimestral</option>
+              <option value="semestral">Semestral</option>
+              <option value="annual">Anual</option>
+              <option value="custom">Customizada</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-goalUnit">Filial onde se aplica</label>
+            <select class="field-select" id="f-goalUnit">
+              <option value="">Todas as filiais</option>
+              <option value="cestao-l1" selected>Cestão Loja 1</option>
+              <option value="cestao-inh">Cestão Inhambupe</option>
+              <option value="atp-varejo">ATP Varejo</option>
+              <option value="atp-atacado">ATP Atacado</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-goalDept">Departamento <span class="helper">opcional</span></label>
+            <select class="field-select" id="f-goalDept">
+              <option value="">Todos</option>
+              <option value="frente">Frente de Loja</option>
+              <option value="acougue">Açougue</option>
+              <option value="padaria">Padaria</option>
+              <option value="estoque">Estoque</option>
+              <option value="adm" selected>Compras / Administrativo</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label" for="f-goalOwner">Gestor responsável pela validação</label>
+            <select class="field-select" id="f-goalOwner">
+              <option>João Carvalho · Gerente Cestão L1</option>
+              <option>Mariana Costa · Diretora Comercial</option>
+              <option>Renato Pinto · Diretor de Operações</option>
+              <option>Patrícia Mello · RH</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-goalReporter">Quem aponta o resultado</label>
+            <select class="field-select" id="f-goalReporter">
+              <option>Gestor responsável (mesmo da validação)</option>
+              <option selected>Líder do departamento</option>
+              <option>Colaborador específico</option>
+              <option>Auto-cálculo via integração (futuro)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row full">
+          <div class="field">
+            <label class="field-label" for="f-goalDesc">Descrição / observações</label>
+            <textarea class="field-textarea" id="f-goalDesc" placeholder="Contexto, metodologia de cálculo, fontes de dados..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Indicadores -->
+      <div class="modal-section">
+        <div class="ms-head">
+          <span class="ms-num">2</span>
+          <span class="ms-title">Indicadores</span>
+          <span class="ms-helper">cada meta pode ter um ou mais indicadores avaliados separadamente</span>
+        </div>
+        <div class="dynamic-list" id="indicatorsList"></div>
+        <button class="add-item-btn" onclick="addIndicator()">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar indicador
+        </button>
+      </div>
+
+      <!-- Section 3: Regras -->
+      <div class="modal-section">
+        <div class="ms-head">
+          <span class="ms-num">3</span>
+          <span class="ms-title">Regras de pagamento</span>
+          <span class="ms-helper">por cargo, departamento ou colaborador específico</span>
+        </div>
+        <div class="dynamic-list" id="payoutsList"></div>
+        <button class="add-item-btn" onclick="addPayout()">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Adicionar regra de pagamento
+        </button>
+        <div class="payout-summary">
+          <div class="ps-info">
+            <div class="ps-label">Total previsto se todos os indicadores forem atingidos a 100%</div>
+            <div class="ps-value" id="payoutSummaryValue">R$ 0,00</div>
+            <div class="ps-detail" id="payoutSummaryDetail">0 colaboradores · 0 regras</div>
+          </div>
+          <svg aria-hidden="true" width="32" height="32" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeGoalModal()">Cancelar</button>
+      <button class="btn btn-secondary" onclick="saveDraft()">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Salvar como rascunho
+      </button>
+      <button class="btn btn-orange" onclick="activateGoal()">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Ativar meta
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CLONAR -->
+<div class="modal-overlay" id="cloneModal" onclick="if(event.target === this) closeCloneModal()">
+  <div class="modal" style="max-width:560px;" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div class="modal-head-info">
+        <h2>
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Clonar meta de período anterior
+        </h2>
+        <p>Selecione uma meta histórica e copie indicadores + regras de pagamento. Você poderá editar valores antes de ativar.</p>
+      </div>
+      <button class="modal-close" onclick="closeCloneModal()" aria-label="Fechar">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box" style="margin-bottom:11px; max-width:none;">
+        <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Buscar metas dos últimos 12 meses..." style="width:100%;">
+      </div>
+      <div class="clone-list" id="cloneList"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeCloneModal()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+  <span id="toastMsg">Salvo</span>
+</div>
+
+<script>
+// ============= CATÁLOGOS =============
+const ROLES = [
+  { id:'gerente_loja', label:'Gerente de Loja', count:1 },
+  { id:'coord_compras', label:'Coordenador de Compras', count:1 },
+  { id:'comprador_pleno', label:'Comprador Pleno', count:3 },
+  { id:'comprador_senior', label:'Comprador Sênior', count:2 },
+  { id:'assistente_compras', label:'Assistente de Compras', count:2 },
+  { id:'aux_acougue', label:'Auxiliar de Açougue', count:8 },
+  { id:'aux_padaria', label:'Auxiliar de Padaria', count:6 },
+  { id:'frente_caixa', label:'Operador de Caixa', count:36 }
+];
+
+const DEPTS = [
+  { id:'compras_adm', label:'Compras / Administrativo', count:6 },
+  { id:'frente_loja', label:'Frente de Loja', count:36 },
+  { id:'acougue', label:'Açougue', count:8 },
+  { id:'padaria', label:'Padaria', count:6 },
+  { id:'estoque', label:'Estoque', count:8 }
+];
+
+const USERS = [
+  { id:'u1', label:'João Carvalho · Gerente Cestão L1' },
+  { id:'u2', label:'Fernanda Oliveira · Compradora Pleno' },
+  { id:'u3', label:'Diego Sampaio · Coord. Compras' },
+  { id:'u4', label:'Renato Pinto · Diretor Operações' },
+  { id:'u5', label:'Mariana Costa · Diretora Comercial' }
+];
+
+const UNITS_OPTS = ['R$ (reais)', '% (percentual)', 'un (unidades)', 'kg (quilogramas)', 'pontos'];
+const DIRECTIONS = ['Maior é melhor', 'Menor é melhor', 'Valor exato'];
+
+// ============= MOCK GOALS =============
+const GOALS = [
+  {
+    id:'g1',
+    name:'Rentabilidade Cestão Loja 1 · 2º tri 2026',
+    period:'abr-jun/2026',
+    unit:'Cestão Loja 1',
+    dept:'Compras / Adm',
+    owner:'João Carvalho',
+    status:'active',
+    statusLabel:'Em curso',
+    indicators:[
+      { name:'Rentabilidade líquida', target:280000, unit:'R$', current:null, pct:null }
+    ],
+    payoutTotal:3900,
+    peopleCount:6,
+    rulesCount:3,
+    deadline:'30/06/2026',
+    daysRemaining:62
+  },
+  {
+    id:'g2',
+    name:'Vendas Mensais ATP Varejo · maio/2026',
+    period:'01-31/05/2026',
+    unit:'ATP Varejo',
+    dept:'Frente de Loja',
+    owner:'Mariana Costa',
+    status:'result_pending',
+    statusLabel:'Aguarda lançamento',
+    indicators:[
+      { name:'Faturamento bruto', target:1850000, unit:'R$', current:null, pct:null },
+      { name:'Ticket médio', target:78, unit:'R$', current:null, pct:null }
+    ],
+    payoutTotal:8200,
+    peopleCount:14,
+    rulesCount:4,
+    deadline:'05/06/2026',
+    daysRemaining:5,
+    overdue:false
+  },
+  {
+    id:'g3',
+    name:'Redução de quebra Açougue · abril/2026',
+    period:'01-30/04/2026',
+    unit:'Cestão Loja 1',
+    dept:'Açougue',
+    owner:'João Carvalho',
+    status:'validation_pending',
+    statusLabel:'Aguarda validação',
+    indicators:[
+      { name:'Quebra (%)', target:5, unit:'%', current:4.2, pct:117, direction:'menor' }
+    ],
+    payoutTotal:2400,
+    peopleCount:8,
+    rulesCount:2,
+    deadline:'05/05/2026',
+    daysRemaining:0
+  },
+  {
+    id:'g4',
+    name:'NPS Cestão Inhambupe · 2º tri 2026',
+    period:'abr-jun/2026',
+    unit:'Cestão Inhambupe',
+    dept:'Frente de Loja',
+    owner:'Renato Pinto',
+    status:'active',
+    statusLabel:'Em curso',
+    indicators:[
+      { name:'NPS', target:65, unit:'pontos', current:null, pct:null }
+    ],
+    payoutTotal:4500,
+    peopleCount:32,
+    rulesCount:2,
+    deadline:'30/06/2026',
+    daysRemaining:62
+  },
+  {
+    id:'g5',
+    name:'Conversão de vendas atacado · maio/2026',
+    period:'01-31/05/2026',
+    unit:'ATP Atacado',
+    dept:'Vendas B2B',
+    owner:'Mariana Costa',
+    status:'validated',
+    statusLabel:'Validada',
+    indicators:[
+      { name:'Taxa de conversão', target:24, unit:'%', current:27, pct:113 }
+    ],
+    payoutTotal:5800,
+    peopleCount:4,
+    rulesCount:2,
+    deadline:'05/06/2026',
+    daysRemaining:0
+  },
+  {
+    id:'g6',
+    name:'Redução absenteísmo · abril/2026',
+    period:'01-30/04/2026',
+    unit:'Cestão L1',
+    dept:'Frente de Loja',
+    owner:'Patrícia Mello',
+    status:'paid',
+    statusLabel:'Pago',
+    indicators:[
+      { name:'Taxa absenteísmo', target:3, unit:'%', current:2.4, pct:120, direction:'menor' }
+    ],
+    payoutTotal:1800,
+    peopleCount:36,
+    rulesCount:1,
+    deadline:'05/05/2026',
+    daysRemaining:0
+  }
+];
+
+const CLONE_OPTIONS = [
+  { id:'rentab-q1', title:'Rentabilidade Cestão Loja 1 · 1º tri 2026', period:'jan-mar/2026', indicators:1, rules:3, people:6, total:'R$ 3.700,00', status:'✓ Validada · 105%', statusClass:'green' },
+  { id:'rentab-q4', title:'Rentabilidade Cestão Loja 1 · 4º tri 2025', period:'out-dez/2025', indicators:1, rules:3, people:5, total:'R$ 3.500,00', status:'✓ Validada · 92%', statusClass:'green' },
+  { id:'vendas-q1', title:'Vendas Mensais ATP Varejo · 1º tri 2026', period:'jan-mar/2026', indicators:2, rules:4, people:14, total:'R$ 8.200,00', status:'✓ Validada', statusClass:'green' },
+  { id:'quebra-q1', title:'Redução Quebra Açougue Cestão · 1º tri 2026', period:'jan-mar/2026', indicators:1, rules:2, people:8, total:'R$ 2.400,00', status:'⚠ 65% · gate 80%', statusClass:'amber' },
+  { id:'plr-2025', title:'PLR Anual GPC · 2025', period:'jan-dez/2025', indicators:4, rules:12, people:60, total:'R$ 184.000,00', status:'✓ Pago · mar/2026', statusClass:'green' }
+];
+
+// ============= STATE =============
+let currentStatusFilter = 'all';
+let indicatorCounter = 0;
+let payoutCounter = 0;
+
+// ============= UTILS =============
+function fmtBRL(n){
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtBRLShort(n){
+  if(n >= 1000000) return 'R$ ' + (n/1000000).toFixed(2).replace('.',',') + 'M';
+  if(n >= 1000) return 'R$ ' + (n/1000).toLocaleString('pt-BR', {maximumFractionDigits:0}) + 'k';
+  return 'R$ ' + n.toLocaleString('pt-BR');
+}
+function escapeHTML(str){
+  if(str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ============= RENDER GOALS =============
+function renderGoals(){
+  const grid = document.getElementById('goalsGrid');
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+
+  const filtered = GOALS.filter(g => {
+    if(currentStatusFilter !== 'all' && g.status !== currentStatusFilter) return false;
+    if(search && !g.name.toLowerCase().includes(search) && !g.unit.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  if(filtered.length === 0){
+    grid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/></svg>
+        <h3>Nenhuma meta encontrada</h3>
+        <p>Ajuste os filtros ou cadastre uma nova meta.</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = '';
+  filtered.forEach(g => {
+    const indicatorsHTML = g.indicators.map(ind => {
+      let barFill = '';
+      let pctText = '<span class="gc-ind-pct pending">aguardando</span>';
+      if(ind.pct != null){
+        let cls = 'gc-ind-bar-fill';
+        if(ind.pct < 80) cls += ' below';
+        if(ind.pct < 60) cls += ' danger';
+        const w = Math.min(100, ind.pct);
+        barFill = `<div class="gc-ind-bar"><div class="${cls}" style="width:${w}%;"></div></div>`;
+        pctText = `<span class="gc-ind-pct">${ind.pct}%</span>`;
+      } else {
+        barFill = `<div class="gc-ind-bar"></div>`;
+      }
+      const targetText = ind.unit === 'R$' ? fmtBRLShort(ind.target) : `${ind.target} ${ind.unit}`;
+      return `
+        <div class="gc-ind-item" title="Meta: ${escapeHTML(targetText)}">
+          <span class="gc-ind-name">${escapeHTML(ind.name)}</span>
+          ${barFill}
+          ${pctText}
+        </div>
+      `;
+    }).join('');
+
+    let payoutClass = '';
+    let actionBtn = '';
+    if(g.status === 'validated' || g.status === 'paid') payoutClass = 'green';
+    if(g.status === 'paid') payoutClass = 'purple';
+
+    if(g.status === 'result_pending'){
+      actionBtn = `<button class="gc-btn warn" onclick="event.stopPropagation(); showToast('Abrirá tela de lançamento de resultado')" title="Lançar resultado">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>`;
+    } else if(g.status === 'validation_pending'){
+      actionBtn = `<button class="gc-btn primary" onclick="event.stopPropagation(); showToast('Abrirá tela de validação')" title="Validar resultado">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+      </button>`;
+    }
+
+    html += `
+      <div class="goal-card ${g.status}" onclick="showToast('Abrirá detalhes da meta')">
+        <div class="gc-head">
+          <div class="gc-title">
+            <h3>${escapeHTML(g.name)}</h3>
+            <div class="gc-meta">
+              <span class="gc-meta-item">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                ${escapeHTML(g.period)}
+              </span>
+              <span>·</span>
+              <span class="gc-meta-item">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                ${escapeHTML(g.unit)}${g.dept ? ' · ' + escapeHTML(g.dept) : ''}
+              </span>
+            </div>
+          </div>
+          <span class="status-pill ${g.status}">
+            <span class="dot"></span>${escapeHTML(g.statusLabel)}
+          </span>
+        </div>
+
+        <div class="gc-indicators">
+          <div class="gc-indicators-head">
+            <span>${g.indicators.length} indicador${g.indicators.length > 1 ? 'es' : ''}</span>
+            <span>Responsável: <strong style="color:var(--txt);">${escapeHTML(g.owner)}</strong></span>
+          </div>
+          ${indicatorsHTML}
+        </div>
+
+        <div class="gc-footer">
+          <div class="gc-payout">
+            <span class="gc-payout-lbl">${g.status === 'paid' ? 'Pago' : 'Previsto'}</span>
+            <span class="gc-payout-val ${payoutClass}">${fmtBRL(g.payoutTotal)}</span>
+            <span class="gc-payout-people">${g.peopleCount} colab. · ${g.rulesCount} regra${g.rulesCount > 1 ? 's' : ''}</span>
+          </div>
+          <div class="gc-actions">
+            ${actionBtn}
+            <button class="gc-btn" onclick="event.stopPropagation(); openGoalModal('${g.id}')" title="Editar">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="gc-btn" onclick="event.stopPropagation(); cloneGoalById('${g.id}')" title="Clonar">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
+}
+
+function setStatusFilter(status, btn){
+  currentStatusFilter = status;
+  document.querySelectorAll('.flt-chip[data-filter]').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderGoals();
+}
+
+// ============= GOAL MODAL =============
+function openGoalModal(goalId){
+  document.getElementById('goalModalTitleText').textContent = goalId ? 'Editar meta' : 'Nova meta';
+  // reset
+  document.getElementById('indicatorsList').innerHTML = '';
+  document.getElementById('payoutsList').innerHTML = '';
+  indicatorCounter = 0;
+  payoutCounter = 0;
+
+  if(goalId){
+    // demo: pré-preencher com dados de uma meta existente
+    const g = GOALS.find(x => x.id === goalId);
+    document.getElementById('f-goalName').value = g?.name || '';
+    addIndicator({ name:'Rentabilidade líquida', target:'280.000', unit:'R$ (reais)', direction:'Maior é melhor', gate:80, proportional:true });
+    addPayout({ type:'role', target:'comprador_pleno', value:'500,00' });
+    addPayout({ type:'role', target:'assistente_compras', value:'200,00' });
+    addPayout({ type:'user', target:'u1', value:'2.000,00' });
+  } else {
+    document.getElementById('f-goalName').value = '';
+    document.getElementById('f-goalDesc').value = '';
+    addIndicator();
+    addPayout();
+  }
+
+  document.getElementById('goalModal').classList.add('open');
+  recalcPayoutSummary();
+}
+
+function closeGoalModal(){
+  document.getElementById('goalModal').classList.remove('open');
+}
+
+function addIndicator(preset){
+  indicatorCounter++;
+  const idx = indicatorCounter;
+  const list = document.getElementById('indicatorsList');
+  const div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.dataset.idx = idx;
+
+  const unitsOpts = UNITS_OPTS.map(u => `<option ${preset?.unit === u ? 'selected' : ''}>${u}</option>`).join('');
+  const dirOpts = DIRECTIONS.map(d => `<option ${preset?.direction === d ? 'selected' : ''}>${d}</option>`).join('');
+
+  div.innerHTML = `
+    <div class="di-head">
+      <span class="di-num">Indicador ${idx}</span>
+      <button class="di-remove" onclick="removeDynamicItem(this); recalcPayoutSummary();" aria-label="Remover indicador">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      </button>
+    </div>
+    <div class="field-row uneven">
+      <div class="field">
+        <label class="field-label">Nome do indicador</label>
+        <input type="text" class="field-input" value="${escapeHTML(preset?.name || '')}" placeholder="Ex: Rentabilidade líquida">
+      </div>
+      <div class="field">
+        <label class="field-label">Direção</label>
+        <select class="field-select">${dirOpts}</select>
+      </div>
+    </div>
+    <div class="field-row three">
+      <div class="field">
+        <label class="field-label">Valor alvo</label>
+        <div class="field-input-prefix">
+          <span class="prefix">R$</span>
+          <input type="text" class="field-input mono" value="${escapeHTML(preset?.target || '')}" placeholder="0,00">
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Unidade</label>
+        <select class="field-select">${unitsOpts}</select>
+      </div>
+      <div class="field">
+        <label class="field-label">Mín. para pagamento <span class="helper">gate</span></label>
+        <div class="field-input-prefix">
+          <input type="number" class="field-input mono" value="${preset?.gate ?? 80}" min="0" max="100" inputmode="numeric">
+          <span class="suffix">%</span>
+        </div>
+      </div>
+    </div>
+    <div class="toggle ${preset?.proportional !== false ? 'on' : ''}" role="checkbox" tabindex="0" aria-checked="${preset?.proportional !== false}" onclick="toggleSwitch(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+      <div class="toggle-info">
+        <span class="toggle-label">Pagamento proporcional ao atingimento</span>
+        <span class="toggle-desc">se ON, atingir 80% paga 80% do valor (após gate). Se OFF, é binário (atingiu = paga 100%)</span>
+      </div>
+      <div class="toggle-switch"></div>
+    </div>
+  `;
+  list.appendChild(div);
+}
+
+function toggleSwitch(el){
+  el.classList.toggle('on');
+  el.setAttribute('aria-checked', el.classList.contains('on'));
+}
+
+function removeDynamicItem(btn){
+  btn.closest('.dynamic-item').remove();
+}
+
+function addPayout(preset){
+  payoutCounter++;
+  const list = document.getElementById('payoutsList');
+  const div = document.createElement('div');
+  div.className = 'dynamic-item';
+  div.dataset.idx = payoutCounter;
+  div.dataset.type = preset?.type || 'role';
+
+  div.innerHTML = renderPayoutInner(preset);
+  list.appendChild(div);
+  recalcPayoutSummary();
+}
+
+function renderPayoutInner(preset){
+  const type = preset?.type || 'role';
+  const label = type === 'role' ? 'Por cargo' : (type === 'dept' ? 'Por departamento' : 'Colaborador específico');
+  const colorClass = type === 'role' ? 'purple' : (type === 'dept' ? 'teal' : 'amber');
+
+  let beneficiarySelect = '';
+  let summaryText = '';
+
+  if(type === 'role'){
+    const opts = ROLES.map(r => `<option value="${r.id}" data-count="${r.count}" ${preset?.target === r.id ? 'selected' : ''}>${r.label} (${r.count})</option>`).join('');
+    beneficiarySelect = `
+      <div class="field">
+        <label class="field-label">Cargo</label>
+        <select class="field-select" onchange="recalcPayoutItem(this)">${opts}</select>
+      </div>
+    `;
+  } else if(type === 'dept'){
+    const opts = DEPTS.map(d => `<option value="${d.id}" data-count="${d.count}" ${preset?.target === d.id ? 'selected' : ''}>${d.label} (${d.count})</option>`).join('');
+    beneficiarySelect = `
+      <div class="field">
+        <label class="field-label">Departamento</label>
+        <select class="field-select" onchange="recalcPayoutItem(this)">${opts}</select>
+      </div>
+    `;
+  } else {
+    const opts = USERS.map(u => `<option value="${u.id}" data-count="1" ${preset?.target === u.id ? 'selected' : ''}>${u.label}</option>`).join('');
+    beneficiarySelect = `
+      <div class="field">
+        <label class="field-label">Colaborador</label>
+        <select class="field-select" onchange="recalcPayoutItem(this)">${opts}</select>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="di-head">
+      <span class="di-num ${colorClass}">${label}</span>
+      <button class="di-remove" onclick="removeDynamicItem(this); recalcPayoutSummary();" aria-label="Remover regra">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      </button>
+    </div>
+    <div class="field-row three">
+      <div class="field">
+        <label class="field-label">Tipo</label>
+        <select class="field-select" onchange="changePayoutType(this)">
+          <option value="role" ${type === 'role' ? 'selected' : ''}>Cargo</option>
+          <option value="dept" ${type === 'dept' ? 'selected' : ''}>Departamento</option>
+          <option value="user" ${type === 'user' ? 'selected' : ''}>Colaborador específico</option>
+        </select>
+      </div>
+      ${beneficiarySelect}
+      <div class="field">
+        <label class="field-label">Valor ${type === 'user' ? '' : '(cada)'}</label>
+        <div class="field-input-prefix">
+          <span class="prefix">R$</span>
+          <input type="text" class="field-input mono" value="${escapeHTML(preset?.value || '0,00')}" oninput="recalcPayoutSummary()" inputmode="decimal">
+        </div>
+      </div>
+    </div>
+    <div class="di-summary">
+      <span class="summary-text">${type === 'user' ? 'Regra individual · valor único' : '<span class="people-count">0</span> colaboradores · Total da regra: <span class="total-val">R$ 0,00</span>'}</span>
+    </div>
+  `;
+}
+
+function changePayoutType(selectEl){
+  const item = selectEl.closest('.dynamic-item');
+  const newType = selectEl.value;
+  item.dataset.type = newType;
+  item.innerHTML = renderPayoutInner({ type: newType, value: '0,00' });
+  recalcPayoutSummary();
+}
+
+function parseBRL(str){
+  if(!str) return 0;
+  // "1.500,00" → 1500
+  const cleaned = String(str).replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? 0 : n;
+}
+
+function recalcPayoutItem(selectEl){
+  const item = selectEl.closest('.dynamic-item');
+  const type = item.dataset.type;
+  if(type === 'user') return;
+
+  const opt = selectEl.options[selectEl.selectedIndex];
+  const count = parseInt(opt?.dataset?.count || 1);
+  const valInput = item.querySelector('input.mono');
+  const val = parseBRL(valInput?.value);
+  const total = val * count;
+
+  const peopleCount = item.querySelector('.people-count');
+  const totalVal = item.querySelector('.total-val');
+  if(peopleCount) peopleCount.textContent = count;
+  if(totalVal) totalVal.textContent = fmtBRL(total);
+
+  recalcPayoutSummary();
+}
+
+function recalcPayoutSummary(){
+  const items = document.querySelectorAll('#payoutsList .dynamic-item');
+  let totalGlobal = 0;
+  let peopleGlobal = 0;
+  const userIds = new Set();
+
+  items.forEach(item => {
+    const type = item.dataset.type;
+    const valInput = item.querySelector('input.mono');
+    const val = parseBRL(valInput?.value);
+
+    if(type === 'user'){
+      const sel = item.querySelector('select.field-select:nth-of-type(2)') || item.querySelectorAll('select.field-select')[1];
+      const userId = sel?.value;
+      if(userId && !userIds.has(userId)){
+        userIds.add(userId);
+        peopleGlobal++;
+      }
+      totalGlobal += val;
+      const summaryText = item.querySelector('.summary-text');
+      if(summaryText) summaryText.innerHTML = 'Regra individual · valor: <strong style="color:var(--orange);">' + fmtBRL(val) + '</strong>';
+    } else {
+      const sel = item.querySelectorAll('select.field-select')[1];
+      const opt = sel?.options[sel.selectedIndex];
+      const count = parseInt(opt?.dataset?.count || 1);
+      const subtotal = val * count;
+      totalGlobal += subtotal;
+      peopleGlobal += count;
+
+      const peopleCount = item.querySelector('.people-count');
+      const totalVal = item.querySelector('.total-val');
+      if(peopleCount) peopleCount.textContent = count;
+      if(totalVal) totalVal.textContent = fmtBRL(subtotal);
+    }
+  });
+
+  document.getElementById('payoutSummaryValue').textContent = fmtBRL(totalGlobal);
+  const rulesCount = items.length;
+  const byRole = Array.from(items).filter(i => i.dataset.type === 'role').length;
+  const byDept = Array.from(items).filter(i => i.dataset.type === 'dept').length;
+  const byUser = Array.from(items).filter(i => i.dataset.type === 'user').length;
+  let breakdown = [];
+  if(byRole) breakdown.push(byRole + ' por cargo');
+  if(byDept) breakdown.push(byDept + ' por depto.');
+  if(byUser) breakdown.push(byUser + ' individual' + (byUser > 1 ? 'is' : ''));
+
+  document.getElementById('payoutSummaryDetail').textContent =
+    `${peopleGlobal} colaborador${peopleGlobal !== 1 ? 'es' : ''} beneficiado${peopleGlobal !== 1 ? 's' : ''} · ${rulesCount} regra${rulesCount !== 1 ? 's' : ''}` +
+    (breakdown.length ? ' (' + breakdown.join(' + ') + ')' : '');
+}
+
+function saveDraft(){
+  closeGoalModal();
+  showToast('Meta salva como rascunho');
+}
+
+function activateGoal(){
+  const name = document.getElementById('f-goalName').value.trim();
+  if(!name){
+    showToast('Informe um nome para a meta');
+    document.getElementById('f-goalName').focus();
+    return;
+  }
+  closeGoalModal();
+  showToast('Meta ativada · responsáveis foram notificados');
+}
+
+// ============= CLONE MODAL =============
+function openCloneModal(){
+  renderCloneList();
+  document.getElementById('cloneModal').classList.add('open');
+}
+
+function closeCloneModal(){
+  document.getElementById('cloneModal').classList.remove('open');
+}
+
+function renderCloneList(){
+  const html = CLONE_OPTIONS.map(opt => `
+    <div class="clone-item" onclick="selectClone('${opt.id}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'){selectClone('${opt.id}')}">
+      <div class="clone-item-head">
+        <div class="clone-item-title">${escapeHTML(opt.title)}</div>
+        <span class="clone-item-period">${escapeHTML(opt.period)}</span>
+      </div>
+      <div class="clone-item-meta">
+        <span><strong>${opt.indicators}</strong> indicador${opt.indicators > 1 ? 'es' : ''}</span>
+        <span><strong>${opt.rules}</strong> regras</span>
+        <span><strong>${opt.people}</strong> colab.</span>
+        <span>Total: <strong>${escapeHTML(opt.total)}</strong></span>
+        <span class="clone-item-status ${opt.statusClass}">${escapeHTML(opt.status)}</span>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('cloneList').innerHTML = html;
+}
+
+function selectClone(id){
+  closeCloneModal();
+  const opt = CLONE_OPTIONS.find(o => o.id === id);
+  showToast(`Clonando "${opt?.title || id}"...`);
+  setTimeout(() => {
+    openGoalModal('g1'); // demo: abre modal pré-preenchido
+    document.getElementById('f-goalName').value = (opt?.title || '').replace(/1º tri 2026|4º tri 2025|2025/, '2º tri 2026');
+    showToast('Meta clonada · ajuste os valores antes de ativar');
+  }, 350);
+}
+
+function cloneGoalById(goalId){
+  const g = GOALS.find(x => x.id === goalId);
+  if(!g) return;
+  showToast(`Clonando "${g.name}"...`);
+  setTimeout(() => {
+    openGoalModal(goalId);
+    document.getElementById('f-goalName').value = g.name + ' (cópia)';
+  }, 200);
+}
+
+// ============= UTILS =============
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// ESC para fechar modais
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape'){
+    if(document.getElementById('goalModal').classList.contains('open')) closeGoalModal();
+    else if(document.getElementById('cloneModal').classList.contains('open')) closeCloneModal();
+  }
+});
+
+// Init
+renderGoals();
+</script>
+</body>
+</html>

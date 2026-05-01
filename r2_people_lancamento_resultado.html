@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Lançar resultado de meta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#1E7B4B,#0F766E); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1100px; margin:0 auto; padding:18px 22px 50px;}
+
+/* BREADCRUMB */
+.breadcrumb{
+  display:flex; align-items:center; gap:6px;
+  font-size:11.5px; color:var(--txt2);
+  margin-bottom:11px;
+}
+.breadcrumb a{color:var(--txt2); text-decoration:none; cursor:pointer;}
+.breadcrumb a:hover{color:var(--navy);}
+.breadcrumb svg{width:11px; height:11px; opacity:.6;}
+.breadcrumb .crumb-current{color:var(--txt); font-weight:500;}
+
+/* HEADER */
+.page-header{
+  background:#fff;
+  border-radius:13px;
+  padding:18px 22px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:13px;
+  display:flex; gap:18px; align-items:flex-start;
+  flex-wrap:wrap;
+}
+.ph-info{flex:1; min-width:280px;}
+.ph-icon{
+  width:42px; height:42px; border-radius:11px;
+  background:linear-gradient(135deg, var(--amber2), #fff);
+  border:1px solid var(--amber);
+  color:var(--amber);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  margin-bottom:8px;
+}
+.ph-icon svg{width:19px; height:19px;}
+
+.page-header h1{
+  font-size:20px; font-weight:600;
+  letter-spacing:-.3px;
+  line-height:1.25;
+  margin-bottom:4px;
+}
+.page-header .ph-meta{
+  font-size:11.5px; color:var(--txt2);
+  display:flex; gap:11px; align-items:center; flex-wrap:wrap;
+  margin-bottom:9px;
+}
+.page-header .ph-meta strong{color:var(--txt); font-weight:600;}
+
+.deadline-strip{
+  margin-top:11px;
+  padding:11px 13px;
+  background:linear-gradient(135deg, var(--amber2), #fff);
+  border:1px solid var(--amber);
+  border-radius:10px;
+  display:flex; align-items:center; gap:11px;
+  flex-wrap:wrap;
+}
+.deadline-icon{
+  width:30px; height:30px; border-radius:8px;
+  background:var(--amber); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.deadline-icon svg{width:14px; height:14px;}
+.deadline-info{flex:1; min-width:200px; font-size:11.5px;}
+.deadline-info strong{color:var(--txt); font-weight:600;}
+.deadline-countdown{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:13px;
+  color:var(--amber);
+  white-space:nowrap;
+}
+
+/* INDICATOR ROW (form principal) */
+.indicators-section{
+  background:#fff;
+  border-radius:13px;
+  padding:16px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:13px;
+}
+.indicators-section .sec-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:13px;
+  padding-bottom:11px;
+  border-bottom:1px solid var(--gray1);
+}
+.indicators-section .sec-head h2{
+  font-size:14px; font-weight:600; letter-spacing:-.2px;
+  display:flex; align-items:center; gap:7px;
+}
+.indicators-section .sec-head h2 svg{width:14px; height:14px; color:var(--orange);}
+.indicators-section .sec-helper{
+  font-size:11px;
+  color:var(--txt2);
+}
+
+.ind-form-row{
+  border:1.5px solid var(--gray1);
+  border-radius:11px;
+  padding:14px 16px;
+  margin-bottom:11px;
+  transition:all .15s;
+  position:relative;
+}
+.ind-form-row:last-child{margin-bottom:0;}
+.ind-form-row.completed{
+  border-color:var(--green);
+  background:linear-gradient(180deg, var(--green2), #fff);
+}
+.ind-form-row.below-gate{
+  border-color:var(--amber);
+  background:linear-gradient(180deg, var(--amber2), #fff);
+}
+
+.ifr-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:11px;
+  gap:11px;
+}
+.ifr-name{
+  display:flex; align-items:center; gap:9px;
+  flex:1; min-width:0;
+}
+.ifr-num{
+  width:24px; height:24px; border-radius:7px;
+  background:var(--navy); color:#fff;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.ifr-name h3{
+  font-size:13.5px; font-weight:600;
+  letter-spacing:-.1px;
+}
+.ifr-name h3 .target-inline{
+  font-size:11px; color:var(--txt2); font-weight:500;
+  margin-left:6px;
+  font-family:'JetBrains Mono',monospace;
+}
+.ifr-direction{
+  font-size:10px; text-transform:uppercase; letter-spacing:.4px;
+  font-weight:700;
+  padding:3px 8px;
+  border-radius:5px;
+  background:var(--blue2); color:var(--blue);
+  white-space:nowrap;
+}
+.ifr-direction.lower{background:var(--purple2); color:var(--purple);}
+
+.ifr-grid{
+  display:grid;
+  grid-template-columns:1.2fr 1.5fr 1fr;
+  gap:13px;
+  margin-bottom:11px;
+}
+.ifr-block{
+  background:var(--off);
+  border-radius:9px;
+  padding:11px 13px;
+  border:1px solid var(--gray1);
+}
+.ifr-block.input-block{
+  background:#fff;
+  border-color:var(--navy);
+  border-width:1.5px;
+}
+.ifr-block-lbl{
+  font-size:9.5px; text-transform:uppercase;
+  letter-spacing:.4px; color:var(--txt2);
+  font-weight:700;
+  margin-bottom:5px;
+}
+.ifr-block-val{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:18px;
+  color:var(--txt);
+  letter-spacing:-.3px;
+  line-height:1;
+}
+.ifr-block-val .currency{
+  font-size:11px; font-weight:500; color:var(--txt2);
+  font-family:'Sora',sans-serif;
+}
+.ifr-block-detail{
+  font-size:10.5px; color:var(--txt2); margin-top:3px;
+}
+
+.ifr-input-wrap{
+  position:relative;
+}
+.ifr-input-wrap .prefix{
+  position:absolute;
+  left:11px; top:50%; transform:translateY(-50%);
+  font-size:13px;
+  color:var(--txt2);
+  font-weight:500;
+  pointer-events:none;
+}
+.ifr-input-wrap .suffix{
+  position:absolute;
+  right:11px; top:50%; transform:translateY(-50%);
+  font-size:11px;
+  color:var(--txt3);
+  pointer-events:none;
+}
+.ifr-input{
+  width:100%;
+  padding:11px 13px 11px 30px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:18px;
+  border:none;
+  background:transparent;
+  color:var(--txt);
+  outline:none;
+}
+.ifr-input.no-prefix{padding-left:13px;}
+
+.ifr-result-block{
+  background:linear-gradient(135deg, var(--gray1), #fff);
+  border-radius:9px;
+  padding:11px 13px;
+  border:1.5px solid var(--gray2);
+  text-align:center;
+}
+.ifr-result-block.success{
+  background:linear-gradient(135deg, var(--green2), #fff);
+  border-color:var(--green);
+}
+.ifr-result-block.below{
+  background:linear-gradient(135deg, var(--amber2), #fff);
+  border-color:var(--amber);
+}
+.ifr-result-block.danger{
+  background:linear-gradient(135deg, var(--red2), #fff);
+  border-color:var(--red);
+}
+.ifr-result-pct{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:24px;
+  letter-spacing:-.5px;
+  line-height:1;
+  color:var(--txt2);
+}
+.ifr-result-pct.success{color:var(--green);}
+.ifr-result-pct.below{color:var(--amber);}
+.ifr-result-pct.danger{color:var(--red);}
+.ifr-result-status{
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  margin-top:4px;
+  color:var(--txt2);
+}
+.ifr-result-block.success .ifr-result-status{color:var(--green);}
+.ifr-result-block.below .ifr-result-status{color:var(--amber);}
+.ifr-result-block.danger .ifr-result-status{color:var(--red);}
+
+/* Visual progress bar */
+.ifr-progress{
+  margin-top:9px;
+  height:8px;
+  background:var(--gray1);
+  border-radius:4px;
+  position:relative;
+  overflow:hidden;
+}
+.ifr-progress-fill{
+  position:absolute; inset:0 auto 0 0;
+  background:linear-gradient(90deg, var(--blue), var(--green));
+  border-radius:4px;
+  transition:width .3s;
+}
+.ifr-progress-fill.below{background:linear-gradient(90deg, var(--amber), var(--orange));}
+.ifr-progress-fill.danger{background:linear-gradient(90deg, var(--red), #f87171);}
+.ifr-progress-gate{
+  position:absolute;
+  top:-2px; bottom:-2px;
+  width:2px;
+  background:var(--orange);
+}
+.ifr-progress-gate::after{
+  content:''; position:absolute;
+  top:-3px; left:50%; transform:translateX(-50%);
+  width:0; height:0;
+  border-left:3px solid transparent;
+  border-right:3px solid transparent;
+  border-top:4px solid var(--orange);
+}
+.ifr-progress-labels{
+  display:flex; justify-content:space-between;
+  font-size:10px; color:var(--txt2);
+  margin-top:4px;
+}
+.ifr-progress-labels .gate-label{
+  color:var(--orange);
+  font-weight:600;
+}
+
+/* JUSTIFICATIVA */
+.ifr-extra{
+  margin-top:11px;
+  padding-top:11px;
+  border-top:1px dashed var(--gray2);
+}
+.ifr-extra-toggle{
+  background:transparent; border:none; padding:0;
+  font-size:11px; color:var(--navy); font-weight:600;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.ifr-extra-toggle svg{width:11px; height:11px; transition:transform .15s;}
+.ifr-extra.open .ifr-extra-toggle svg{transform:rotate(90deg);}
+.ifr-extra-content{
+  display:none;
+  margin-top:9px;
+}
+.ifr-extra.open .ifr-extra-content{display:block;}
+
+.ifr-field{
+  display:flex; flex-direction:column; gap:5px;
+  margin-bottom:9px;
+}
+.ifr-field:last-child{margin-bottom:0;}
+.ifr-field-label{
+  font-size:10.5px; font-weight:600;
+  color:var(--txt);
+}
+.ifr-field-textarea, .ifr-field-input{
+  width:100%;
+  padding:8px 11px;
+  border:1.5px solid var(--gray2);
+  border-radius:7px;
+  font-size:12px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+}
+.ifr-field-textarea{min-height:60px; resize:vertical;}
+.ifr-field-textarea:focus, .ifr-field-input:focus{
+  outline:none; border-color:var(--navy);
+}
+
+.ifr-attach{
+  display:flex; align-items:center; gap:7px;
+  padding:8px 11px;
+  background:var(--off);
+  border:1.5px dashed var(--gray2);
+  border-radius:7px;
+  font-size:11px;
+  color:var(--txt2);
+  cursor:pointer;
+}
+.ifr-attach:hover{border-color:var(--navy); color:var(--navy);}
+.ifr-attach svg{width:13px; height:13px;}
+
+/* PAYOUT PREVIEW */
+.payout-preview{
+  background:#fff;
+  border-radius:13px;
+  padding:16px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:13px;
+  border-top:3px solid var(--orange);
+}
+.payout-preview .sec-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:13px;
+}
+.payout-preview .sec-head h2{
+  font-size:14px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.payout-preview .sec-head h2 svg{width:14px; height:14px; color:var(--orange);}
+
+.preview-summary{
+  background:linear-gradient(135deg, var(--orange2), #fff);
+  border:1px solid var(--orange);
+  border-radius:11px;
+  padding:13px 16px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:13px;
+  margin-bottom:13px;
+}
+.ps-info{flex:1;}
+.ps-row{display:flex; align-items:baseline; gap:11px; flex-wrap:wrap;}
+.ps-original{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  color:var(--txt2);
+  text-decoration:line-through;
+}
+.ps-arrow{color:var(--txt3); font-size:14px;}
+.ps-final{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:21px;
+  color:var(--orange);
+  letter-spacing:-.4px;
+}
+.ps-pct{
+  font-size:10.5px;
+  font-weight:700;
+  background:var(--green);
+  color:#fff;
+  padding:2px 8px;
+  border-radius:4px;
+}
+.ps-pct.below{background:var(--amber);}
+.ps-pct.danger{background:var(--red);}
+.ps-detail{
+  font-size:11px; color:var(--txt2);
+  margin-top:4px;
+}
+
+/* Tabela payout breakdown */
+.payout-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+}
+.payout-table thead th{
+  text-align:left;
+  padding:8px 11px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  font-weight:700;
+  color:var(--txt2);
+  background:var(--off);
+  border-bottom:1px solid var(--gray2);
+}
+.payout-table thead th.right{text-align:right;}
+.payout-table tbody td{
+  padding:9px 11px;
+  border-bottom:1px solid var(--gray1);
+  font-size:11.5px;
+}
+.payout-table tbody tr:last-child td{border-bottom:none;}
+.payout-table tbody td.right{
+  text-align:right;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+}
+.payout-table tbody td.amount{
+  color:var(--orange);
+  font-weight:700;
+}
+.payout-table tbody td.amount.green{color:var(--green);}
+.payout-table tbody td.amount.muted{color:var(--txt3); text-decoration:line-through;}
+.payout-table tfoot td{
+  padding:11px;
+  border-top:2px solid var(--gray2);
+  font-weight:700;
+  font-size:12.5px;
+  background:linear-gradient(180deg, var(--off), #fff);
+}
+.payout-table tfoot td.right{
+  text-align:right;
+  color:var(--orange);
+  font-family:'JetBrains Mono',monospace;
+}
+.payout-table .rule-tag{
+  font-size:9.5px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  font-weight:700;
+  padding:2px 6px;
+  border-radius:4px;
+  background:var(--purple2);
+  color:var(--purple);
+}
+.payout-table .rule-tag.dept{background:var(--teal2); color:var(--teal);}
+.payout-table .rule-tag.user{background:var(--amber2); color:var(--amber);}
+
+/* Confirma */
+.confirm-strip{
+  background:linear-gradient(135deg, var(--blue2), #fff);
+  border:1px solid var(--blue);
+  border-radius:11px;
+  padding:13px 16px;
+  display:flex; align-items:flex-start; gap:11px;
+  margin-bottom:13px;
+}
+.confirm-icon{
+  width:32px; height:32px; border-radius:9px;
+  background:var(--blue); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.confirm-icon svg{width:14px; height:14px;}
+.confirm-text{flex:1; font-size:11.5px; line-height:1.5;}
+.confirm-text strong{color:var(--blue);}
+
+/* ACTIONS BAR (bottom) */
+.actions-bar{
+  position:sticky;
+  bottom:0;
+  background:#fff;
+  border-top:1px solid var(--gray2);
+  padding:14px 22px;
+  margin:0 -22px -50px;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+  box-shadow:0 -3px 12px rgba(26,45,79,.08);
+  z-index:10;
+}
+.actions-status{
+  font-size:11.5px; color:var(--txt2);
+  display:flex; align-items:center; gap:7px;
+}
+.actions-status svg{width:13px; height:13px; color:var(--green);}
+.actions-buttons{display:flex; gap:9px; flex-wrap:wrap;}
+
+.btn{
+  padding:10px 16px;
+  border-radius:8px;
+  font-size:12.5px; font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px;
+  border:1.5px solid;
+  transition:all .12s;
+  white-space:nowrap;
+}
+.btn svg{width:14px; height:14px;}
+.btn-primary{background:var(--navy); color:#fff; border-color:var(--navy); box-shadow:0 3px 8px rgba(43,74,122,.2);}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--txt); border-color:var(--gray2);}
+.btn-secondary:hover{border-color:var(--navy); color:var(--navy);}
+.btn-ghost{background:transparent; color:var(--txt2); border-color:transparent;}
+.btn-ghost:hover{background:var(--off); color:var(--txt);}
+.btn-orange{background:var(--orange); color:#fff; border-color:var(--orange); box-shadow:0 3px 8px rgba(245,131,31,.25);}
+.btn-orange:hover{background:#D87013;}
+
+.toast{position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--dark); color:#fff; padding:12px 18px; border-radius:10px; font-size:12.5px; font-weight:500; box-shadow:var(--shadow-pop); z-index:200; transition:transform .25s; display:flex; align-items:center; gap:9px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast svg{width:14px; height:14px;}
+
+@media (max-width: 1024px){
+  .ifr-grid{grid-template-columns:1fr 1fr;}
+  .ifr-result-block{grid-column:1 / -1;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:13px 14px 70px;}
+  .ifr-grid{grid-template-columns:1fr;}
+  .actions-bar{padding:11px 14px; margin:0 -14px -30px;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Gestão</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Painel do gestor</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Meu time</a>
+      <div class="sidebar-section">Desempenho</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <a class="nav-item active"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Metas e indicadores</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks</a>
+      <div class="sidebar-section">Operações</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>Aprovações</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Folha por filial</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Metas · <strong>Lançar resultado</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">JC</div>
+      <div class="user-info">
+        <span class="user-name">João Carvalho</span>
+        <span class="user-role">Gerente · Cestão Loja 1</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a>Metas</a>
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        <a>Quebra Açougue · abr/2026</a>
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        <span class="crumb-current">Lançar resultado</span>
+      </div>
+
+      <!-- HEADER -->
+      <div class="page-header">
+        <div class="ph-info">
+          <div class="ph-icon">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          </div>
+          <h1>Lançar resultado · Vendas Mensais ATP Varejo</h1>
+          <div class="ph-meta">
+            <span><strong>Período:</strong> 01 a 31/05/2026</span>
+            <span>·</span>
+            <span><strong>Filial:</strong> ATP Varejo</span>
+            <span>·</span>
+            <span><strong>Departamento:</strong> Frente de Loja</span>
+            <span>·</span>
+            <span><strong>2 indicadores</strong></span>
+          </div>
+          <div class="ph-meta">
+            <span><strong>Validação por:</strong> Mariana Costa · Diretora Comercial</span>
+            <span>·</span>
+            <span><strong>Beneficiados:</strong> 14 colaboradores</span>
+            <span>·</span>
+            <span><strong>Valor previsto:</strong> R$ 8.200,00 (a 100%)</span>
+          </div>
+
+          <div class="deadline-strip">
+            <div class="deadline-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div class="deadline-info">
+              <strong>Prazo para lançamento:</strong> 05/06/2026 ·
+              após esta data o gestor responsável receberá lembrete e poderá lançar diretamente.
+            </div>
+            <div class="deadline-countdown">5 dias restantes</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INDICADORES -->
+      <div class="indicators-section">
+        <div class="sec-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            Indicadores · informe o realizado
+          </h2>
+          <span class="sec-helper">2 de 2 indicadores · sem informação salva ainda</span>
+        </div>
+
+        <!-- INDICADOR 1: faturamento - já preenchido como exemplo -->
+        <div class="ind-form-row completed" id="ind1">
+          <div class="ifr-head">
+            <div class="ifr-name">
+              <span class="ifr-num">1</span>
+              <h3>Faturamento bruto <span class="target-inline">alvo: R$ 1.850.000,00</span></h3>
+            </div>
+            <span class="ifr-direction">Maior é melhor</span>
+          </div>
+
+          <div class="ifr-grid">
+            <div class="ifr-block">
+              <div class="ifr-block-lbl">Valor alvo</div>
+              <div class="ifr-block-val"><span class="currency">R$</span> 1.850.000</div>
+              <div class="ifr-block-detail">gate mín: 80% (R$ 1,48M) · proporcional</div>
+            </div>
+            <div class="ifr-block input-block">
+              <div class="ifr-block-lbl">Valor realizado</div>
+              <div class="ifr-input-wrap">
+                <span class="prefix">R$</span>
+                <input type="text" class="ifr-input" id="ind1Value" value="1.962.450" inputmode="decimal" oninput="recalcIndicator(1)">
+              </div>
+              <div class="ifr-block-detail">conforme DRE de maio · faturamento líquido</div>
+            </div>
+            <div class="ifr-result-block success" id="ind1Result">
+              <div class="ifr-result-pct success" id="ind1Pct">106%</div>
+              <div class="ifr-result-status">superou alvo</div>
+            </div>
+          </div>
+
+          <div class="ifr-progress">
+            <div class="ifr-progress-fill" style="width:100%;"></div>
+            <div class="ifr-progress-gate" style="left:80%;"></div>
+          </div>
+          <div class="ifr-progress-labels">
+            <span>0%</span>
+            <span class="gate-label">↑ gate 80%</span>
+            <span>100%</span>
+          </div>
+
+          <div class="ifr-extra open">
+            <button class="ifr-extra-toggle" onclick="this.parentElement.classList.toggle('open')">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+              Justificativa e evidências (opcional)
+            </button>
+            <div class="ifr-extra-content">
+              <div class="ifr-field">
+                <label class="ifr-field-label">Comentário sobre o resultado</label>
+                <textarea class="ifr-field-textarea" placeholder="Contexto, fatores que influenciaram o resultado...">Mês excepcional impulsionado pelo Dia das Mães e ações comerciais. Categoria de bebidas cresceu 18% vs. abril.</textarea>
+              </div>
+              <div class="ifr-field">
+                <label class="ifr-field-label">Fonte do dado</label>
+                <input type="text" class="ifr-field-input" value="DRE consolidado · sistema TOTVS · fechamento contábil 02/06/2026">
+              </div>
+              <button class="ifr-attach" type="button">
+                <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+                Anexar evidência (planilha, screenshot do TOTVS...)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- INDICADOR 2: ticket médio - vazio -->
+        <div class="ind-form-row" id="ind2">
+          <div class="ifr-head">
+            <div class="ifr-name">
+              <span class="ifr-num">2</span>
+              <h3>Ticket médio <span class="target-inline">alvo: R$ 78,00</span></h3>
+            </div>
+            <span class="ifr-direction">Maior é melhor</span>
+          </div>
+
+          <div class="ifr-grid">
+            <div class="ifr-block">
+              <div class="ifr-block-lbl">Valor alvo</div>
+              <div class="ifr-block-val"><span class="currency">R$</span> 78,00</div>
+              <div class="ifr-block-detail">gate mín: 90% (R$ 70,20) · binário</div>
+            </div>
+            <div class="ifr-block input-block">
+              <div class="ifr-block-lbl">Valor realizado</div>
+              <div class="ifr-input-wrap">
+                <span class="prefix">R$</span>
+                <input type="text" class="ifr-input" id="ind2Value" placeholder="0,00" inputmode="decimal" oninput="recalcIndicator(2)">
+              </div>
+              <div class="ifr-block-detail">média de tickets do mês · sistema PDV</div>
+            </div>
+            <div class="ifr-result-block" id="ind2Result">
+              <div class="ifr-result-pct" id="ind2Pct">--%</div>
+              <div class="ifr-result-status">aguarda valor</div>
+            </div>
+          </div>
+
+          <div class="ifr-progress">
+            <div class="ifr-progress-fill" style="width:0%;"></div>
+            <div class="ifr-progress-gate" style="left:90%;"></div>
+          </div>
+          <div class="ifr-progress-labels">
+            <span>0%</span>
+            <span class="gate-label">↑ gate 90% · binário</span>
+            <span>100%</span>
+          </div>
+
+          <div class="ifr-extra">
+            <button class="ifr-extra-toggle" onclick="this.parentElement.classList.toggle('open')">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+              Justificativa e evidências (opcional)
+            </button>
+            <div class="ifr-extra-content">
+              <div class="ifr-field">
+                <label class="ifr-field-label">Comentário sobre o resultado</label>
+                <textarea class="ifr-field-textarea" placeholder="Contexto, fatores que influenciaram..."></textarea>
+              </div>
+              <div class="ifr-field">
+                <label class="ifr-field-label">Fonte do dado</label>
+                <input type="text" class="ifr-field-input" placeholder="Ex: Relatório consolidado de PDV...">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PAYOUT PREVIEW -->
+      <div class="payout-preview">
+        <div class="sec-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Prévia do pagamento (após validação)
+          </h2>
+          <span class="sec-helper">cálculo em tempo real · sujeito a aprovação do gestor</span>
+        </div>
+
+        <div class="preview-summary">
+          <div class="ps-info">
+            <div class="ps-row">
+              <span class="ps-original">R$ 8.200,00</span>
+              <span class="ps-arrow">→</span>
+              <span class="ps-final" id="previewTotal">R$ 4.339,00</span>
+              <span class="ps-pct below" id="previewPct">53% médio</span>
+            </div>
+            <div class="ps-detail" id="previewDetail">
+              Faturamento: 106% (proporcional, capped em 100%) · Ticket: aguarda · 14 colaboradores beneficiados.
+            </div>
+          </div>
+          <svg aria-hidden="true" width="38" height="38" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>
+        </div>
+
+        <table class="payout-table">
+          <thead>
+            <tr>
+              <th>Beneficiário</th>
+              <th>Tipo</th>
+              <th class="right">Valor cheio</th>
+              <th class="right">Atingimento</th>
+              <th class="right">A pagar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Operador de Caixa <span style="color:var(--txt2); font-weight:500;">(8)</span></td>
+              <td><span class="rule-tag">Cargo</span></td>
+              <td class="right">R$ 250 × 8 = R$ 2.000</td>
+              <td class="right">53%</td>
+              <td class="right amount">R$ 1.058</td>
+            </tr>
+            <tr>
+              <td>Repositor <span style="color:var(--txt2); font-weight:500;">(4)</span></td>
+              <td><span class="rule-tag">Cargo</span></td>
+              <td class="right">R$ 200 × 4 = R$ 800</td>
+              <td class="right">53%</td>
+              <td class="right amount">R$ 423</td>
+            </tr>
+            <tr>
+              <td>Frente de Loja <span style="color:var(--txt2); font-weight:500;">(14)</span></td>
+              <td><span class="rule-tag dept">Depto.</span></td>
+              <td class="right">R$ 100 × 14 = R$ 1.400</td>
+              <td class="right">53%</td>
+              <td class="right amount">R$ 740</td>
+            </tr>
+            <tr>
+              <td>Mariana Costa</td>
+              <td><span class="rule-tag user">Individual</span></td>
+              <td class="right">R$ 4.000</td>
+              <td class="right">53%</td>
+              <td class="right amount">R$ 2.118</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">Total · 14 colaboradores · 4 regras</td>
+              <td class="right">R$ 8.200,00</td>
+              <td class="right">53% médio</td>
+              <td class="right">R$ 4.339,00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- CONFIRMA -->
+      <div class="confirm-strip">
+        <div class="confirm-icon">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="confirm-text">
+          <strong>Como funciona o envio:</strong> ao clicar em "Enviar para validação", a meta passa para o status <strong>Aguarda validação</strong> e Mariana Costa recebe notificação. Você ainda pode editar o resultado até ela validar. Após validação, os valores entram na próxima folha.
+        </div>
+      </div>
+
+      <!-- ACTIONS BAR -->
+      <div class="actions-bar">
+        <div class="actions-status" id="actionsStatus">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+          <span><strong>1 de 2</strong> indicadores preenchidos · 1 pendente</span>
+        </div>
+        <div class="actions-buttons">
+          <button class="btn btn-ghost" onclick="window.history.back()">Cancelar</button>
+          <button class="btn btn-secondary" onclick="saveDraft()">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+            Salvar progresso
+          </button>
+          <button class="btn btn-orange" onclick="submitForValidation()">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Enviar para validação
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast">
+  <svg aria-hidden="true" fill="none" stroke="var(--green)" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+  <span id="toastMsg">Salvo</span>
+</div>
+
+<script>
+// Configuração dos indicadores
+const INDICATORS = {
+  1: { target: 1850000, gate: 80, proportional: true, direction: 'higher' },
+  2: { target: 78, gate: 90, proportional: false, direction: 'higher' }
+};
+
+const PAYOUT_FULL = 8200; // valor total se 100% atingido
+
+function parseBRL(str){
+  if(!str) return 0;
+  const cleaned = String(str).replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(cleaned);
+  return isNaN(n) ? 0 : n;
+}
+
+function fmtBRL(n){
+  return 'R$ ' + n.toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+
+function fmtBRLShort(n){
+  if(n >= 1000000) return 'R$ ' + (n/1000000).toFixed(2).replace('.',',') + 'M';
+  if(n >= 1000) return 'R$ ' + (n/1000).toLocaleString('pt-BR', {maximumFractionDigits:0}) + 'k';
+  return 'R$ ' + n.toLocaleString('pt-BR', {minimumFractionDigits:2});
+}
+
+function recalcIndicator(idx){
+  const cfg = INDICATORS[idx];
+  if(!cfg) return;
+  const val = parseBRL(document.getElementById('ind' + idx + 'Value').value);
+  const row = document.getElementById('ind' + idx);
+  const pctEl = document.getElementById('ind' + idx + 'Pct');
+  const resultBlock = document.getElementById('ind' + idx + 'Result');
+  const progressFill = row.querySelector('.ifr-progress-fill');
+
+  if(val === 0){
+    pctEl.textContent = '--%';
+    pctEl.className = 'ifr-result-pct';
+    resultBlock.className = 'ifr-result-block';
+    resultBlock.querySelector('.ifr-result-status').textContent = 'aguarda valor';
+    progressFill.style.width = '0%';
+    progressFill.className = 'ifr-progress-fill';
+    row.classList.remove('completed', 'below-gate');
+    updateGlobalStatus();
+    updatePayoutPreview();
+    return;
+  }
+
+  // Cálculo de atingimento
+  let pct;
+  if(cfg.direction === 'higher'){
+    pct = (val / cfg.target) * 100;
+  } else {
+    // menor é melhor: alvo / realizado
+    pct = (cfg.target / val) * 100;
+  }
+
+  pctEl.textContent = Math.round(pct) + '%';
+
+  let cls = 'success';
+  let statusTxt = 'superou alvo';
+  if(pct < cfg.gate){
+    cls = 'danger';
+    statusTxt = 'abaixo do gate';
+  } else if(pct < 100){
+    cls = 'below';
+    statusTxt = 'abaixo do alvo · acima do gate';
+  } else if(pct >= 100 && pct < 110){
+    cls = 'success';
+    statusTxt = 'atingiu alvo';
+  }
+
+  pctEl.className = 'ifr-result-pct ' + cls;
+  resultBlock.className = 'ifr-result-block ' + cls;
+  resultBlock.querySelector('.ifr-result-status').textContent = statusTxt;
+
+  const progPct = Math.min(100, pct);
+  progressFill.style.width = progPct + '%';
+  progressFill.className = 'ifr-progress-fill ' + (pct < cfg.gate ? 'danger' : (pct < 100 ? 'below' : ''));
+
+  if(pct >= 100){
+    row.classList.add('completed');
+    row.classList.remove('below-gate');
+  } else if(pct >= cfg.gate){
+    row.classList.add('completed');
+    row.classList.remove('below-gate');
+  } else {
+    row.classList.add('below-gate');
+    row.classList.remove('completed');
+  }
+
+  updateGlobalStatus();
+  updatePayoutPreview();
+}
+
+function updateGlobalStatus(){
+  const v1 = parseBRL(document.getElementById('ind1Value').value);
+  const v2 = parseBRL(document.getElementById('ind2Value').value);
+  const filled = (v1 > 0 ? 1 : 0) + (v2 > 0 ? 1 : 0);
+  const status = document.getElementById('actionsStatus');
+  const helper = document.querySelector('.indicators-section .sec-helper');
+
+  if(filled === 0){
+    status.innerHTML = `<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> <span><strong>Nenhum</strong> indicador preenchido</span>`;
+    helper.textContent = '0 de 2 indicadores · sem informação salva';
+  } else if(filled === 2){
+    status.innerHTML = `<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> <span><strong>Tudo pronto.</strong> 2 de 2 indicadores preenchidos</span>`;
+    status.querySelector('svg').style.color = 'var(--green)';
+    helper.textContent = '2 de 2 indicadores preenchidos · pronto para validação';
+  } else {
+    status.innerHTML = `<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> <span><strong>${filled} de 2</strong> indicadores preenchidos · 1 pendente</span>`;
+    status.querySelector('svg').style.color = 'var(--amber)';
+    helper.textContent = filled + ' de 2 indicadores · 1 pendente';
+  }
+}
+
+function updatePayoutPreview(){
+  const v1 = parseBRL(document.getElementById('ind1Value').value);
+  const v2 = parseBRL(document.getElementById('ind2Value').value);
+
+  let pct1 = 0, pct2 = 0;
+  if(v1 > 0) pct1 = Math.min(100, (v1 / INDICATORS[1].target) * 100); // proporcional, capped
+  if(v2 > 0){
+    const raw2 = (v2 / INDICATORS[2].target) * 100;
+    // binário: se >= gate, paga 100%, senão 0%
+    pct2 = raw2 >= INDICATORS[2].gate ? 100 : 0;
+  }
+
+  // Se ainda falta lançar, considerar média entre o que foi lançado e 0 (pendente)
+  let mediaPct;
+  if(v1 > 0 && v2 > 0){
+    mediaPct = (pct1 + pct2) / 2;
+  } else if(v1 > 0){
+    mediaPct = pct1 / 2; // metade da meta ainda não foi lançada
+  } else if(v2 > 0){
+    mediaPct = pct2 / 2;
+  } else {
+    mediaPct = 0;
+  }
+
+  const totalApagar = PAYOUT_FULL * mediaPct / 100;
+
+  document.getElementById('previewTotal').textContent = fmtBRLShort(totalApagar).replace('R$ ', 'R$ ');
+  const pctEl = document.getElementById('previewPct');
+  pctEl.textContent = Math.round(mediaPct) + '% médio';
+  pctEl.className = 'ps-pct ' + (mediaPct >= 100 ? '' : (mediaPct >= 50 ? 'below' : 'danger'));
+
+  // Detail text
+  let parts = [];
+  parts.push('Faturamento: ' + (v1 > 0 ? Math.round(pct1) + '%' : 'aguarda'));
+  parts.push('Ticket: ' + (v2 > 0 ? (pct2 === 100 ? '✓ atingiu' : '✗ abaixo do gate') : 'aguarda'));
+  parts.push('14 colaboradores beneficiados');
+  document.getElementById('previewDetail').textContent = parts.join(' · ');
+
+  // Atualiza tabela (todas as linhas usam a mesma média)
+  const rows = document.querySelectorAll('.payout-table tbody tr');
+  const baseValues = [2000, 800, 1400, 4000];
+  rows.forEach((row, i) => {
+    const cells = row.querySelectorAll('td');
+    cells[3].textContent = Math.round(mediaPct) + '%';
+    const finalVal = baseValues[i] * mediaPct / 100;
+    cells[4].textContent = fmtBRL(finalVal).replace(',00','');
+  });
+
+  // Atualiza tfoot
+  const foot = document.querySelector('.payout-table tfoot tr');
+  const footCells = foot.querySelectorAll('td');
+  footCells[3].textContent = Math.round(mediaPct) + '% médio';
+  footCells[4].textContent = fmtBRL(totalApagar).replace(',00','');
+}
+
+function showToast(msg, color){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  if(color) t.querySelector('svg').style.color = color;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function saveDraft(){
+  showToast('Progresso salvo · você pode voltar mais tarde');
+}
+
+function submitForValidation(){
+  const v1 = parseBRL(document.getElementById('ind1Value').value);
+  const v2 = parseBRL(document.getElementById('ind2Value').value);
+
+  if(v1 === 0 || v2 === 0){
+    showToast('Preencha todos os indicadores antes de enviar', 'var(--red)');
+    return;
+  }
+
+  showToast('Enviado para validação · Mariana Costa foi notificada', 'var(--green)');
+  setTimeout(() => {
+    // simulação: depois de enviar, redirecionaria
+    showToast('Status atualizado: aguarda validação', 'var(--green)');
+  }, 1500);
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// Init: já vem com indicador 1 preenchido
+recalcIndicator(1);
+</script>
+</body>
+</html>

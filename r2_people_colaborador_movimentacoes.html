@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Minhas Movimentações</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.topbar-bell{
+  width:36px; height:36px; border-radius:50%;
+  background:var(--gray1); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt2); position:relative;
+}
+.topbar-bell:hover{background:var(--gray2);}
+.bell-badge{
+  position:absolute; top:5px; right:5px;
+  width:8px; height:8px; background:var(--orange);
+  border:2px solid #fff; border-radius:50%;
+}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--orange),#D87013); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+
+/* ============= PAGE HEADER ============= */
+.page-header{
+  margin-bottom:14px;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:14px; flex-wrap:wrap;
+}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+/* ============= LGPD BANNER ============= */
+.lgpd-banner{
+  background:linear-gradient(135deg, #E8EFF8 0%, #F4F7FC 100%);
+  border-left:3px solid var(--navy);
+  border-radius:9px;
+  padding:13px 16px;
+  margin-bottom:14px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:13px; align-items:center;
+}
+.lgpd-banner .icon{
+  width:34px; height:34px; border-radius:9px;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--navy);
+  flex-shrink:0;
+  box-shadow:0 1px 3px rgba(26,45,79,.08);
+}
+.lgpd-banner .text{font-size:12px; color:var(--txt2); line-height:1.55;}
+.lgpd-banner .text strong{color:var(--txt); font-weight:600;}
+.lgpd-banner .link{
+  font-size:11.5px; color:var(--navy); font-weight:600;
+  text-decoration:none; cursor:pointer;
+  display:inline-flex; align-items:center; gap:4px;
+  white-space:nowrap;
+}
+.lgpd-banner .link:hover{text-decoration:underline;}
+
+/* ============= STATUS SUMMARY (4 KPIs leves) ============= */
+.summary-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:12px;
+  margin-bottom:14px;
+}
+.summary-card{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:13px 15px;
+  border-left:3px solid var(--navy);
+  cursor:pointer;
+  transition:all .12s;
+}
+.summary-card:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(26,45,79,.1);}
+.summary-card.amber{border-left-color:var(--orange);}
+.summary-card.green{border-left-color:var(--green);}
+.summary-card.purple{border-left-color:var(--purple);}
+.summary-card.gray{border-left-color:var(--gray3);}
+.sc-icon-row{
+  display:flex; align-items:center; gap:9px;
+  margin-bottom:7px;
+}
+.sc-icon{
+  width:26px; height:26px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.sc-icon.amber{background:var(--amber2); color:var(--amber);}
+.sc-icon.green{background:var(--green2); color:var(--green);}
+.sc-icon.purple{background:#F0E6FA; color:var(--purple);}
+.sc-icon.gray{background:var(--gray1); color:var(--txt2);}
+.sc-label{
+  font-size:10px; color:var(--txt2); font-weight:500;
+  text-transform:uppercase; letter-spacing:.4px;
+}
+.sc-value{
+  font-size:22px; font-weight:600;
+  letter-spacing:-.5px;
+  font-family:'JetBrains Mono',monospace;
+}
+.sc-sub{
+  font-size:11px; color:var(--txt2);
+  margin-top:1px;
+}
+
+/* ============= TABS ============= */
+.tabs{
+  display:flex; gap:4px;
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:4px;
+  margin-bottom:14px;
+}
+.tab{
+  padding:9px 14px;
+  font-size:12px; font-weight:500;
+  color:var(--txt2);
+  background:transparent; border:none; cursor:pointer;
+  border-radius:7px;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.tab:hover{background:var(--off); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab .count{
+  background:rgba(255,255,255,.2); padding:1px 6px; border-radius:8px;
+  font-size:10px; font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+}
+.tab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+
+/* ============= LISTA DE MOVIMENTAÇÕES ============= */
+.movs-list{
+  display:flex; flex-direction:column; gap:11px;
+}
+
+.mov-card{
+  background:#fff; border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+  transition:all .12s;
+}
+.mov-card:hover{box-shadow:0 4px 14px rgba(26,45,79,.08);}
+
+.mov-card.in-progress{border-left:4px solid var(--orange);}
+.mov-card.approved{border-left:4px solid var(--green);}
+.mov-card.rejected{border-left:4px solid var(--danger);}
+.mov-card.canceled{border-left:4px solid var(--gray3);}
+
+/* Header do card */
+.mov-head{
+  padding:14px 18px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:13px; align-items:center;
+  cursor:pointer;
+}
+.mov-icon{
+  width:42px; height:42px; border-radius:11px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.mov-icon.promotion{background:#FCE6CD; color:var(--orange);}
+.mov-icon.salary{background:var(--green2); color:var(--green);}
+.mov-icon.transfer{background:#E8EFF8; color:var(--navy);}
+.mov-icon.dept{background:#F0E6FA; color:var(--purple);}
+.mov-icon.vacation{background:#FFF4D6; color:var(--amber);}
+.mov-icon.termination{background:var(--danger2); color:var(--danger);}
+
+.mov-info{min-width:0; flex:1;}
+.mov-title{
+  font-size:14px; font-weight:600;
+  margin-bottom:3px;
+  display:flex; align-items:center; gap:8px;
+  flex-wrap:wrap;
+}
+.mov-title .urgent-tag{
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:9.5px; padding:2px 7px; border-radius:8px;
+  background:var(--amber2); color:var(--amber);
+  font-weight:700; text-transform:uppercase; letter-spacing:.3px;
+}
+.mov-meta{
+  display:flex; align-items:center; gap:10px;
+  font-size:11.5px; color:var(--txt2);
+  flex-wrap:wrap;
+}
+.mov-meta-item{display:inline-flex; align-items:center; gap:4px;}
+.mov-meta-item svg{width:12px; height:12px;}
+
+.mov-status{
+  display:flex; flex-direction:column; align-items:flex-end;
+  gap:5px;
+  flex-shrink:0;
+}
+.status-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10.5px; padding:4px 10px; border-radius:11px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.3px;
+  white-space:nowrap;
+}
+.status-pill.pending{background:var(--amber2); color:var(--amber);}
+.status-pill.approved{background:var(--green2); color:var(--green);}
+.status-pill.rejected{background:var(--danger2); color:var(--danger);}
+.status-pill.canceled{background:var(--gray1); color:var(--txt2);}
+.status-pill .dot{
+  width:6px; height:6px; border-radius:50%;
+  background:currentColor;
+  flex-shrink:0;
+}
+.status-pill.pending .dot{animation:pulse 1.8s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.mov-time{
+  font-size:10.5px; color:var(--txt3);
+  font-family:'JetBrains Mono',monospace;
+}
+.mov-expand{
+  background:transparent; border:none;
+  width:28px; height:28px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt3); cursor:pointer;
+}
+.mov-expand:hover{background:var(--off); color:var(--txt);}
+.mov-expand svg{transition:transform .2s;}
+.mov-card.expanded .mov-expand svg{transform:rotate(180deg);}
+
+/* Detalhes expandidos */
+.mov-details{
+  display:none;
+  border-top:1px solid var(--gray1);
+  padding:16px 18px 18px;
+  background:linear-gradient(180deg, var(--off), #fff 30%);
+}
+.mov-card.expanded .mov-details{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* Detalhes da mudança (de → para) */
+.change-block{
+  background:#fff; border-radius:9px;
+  padding:12px 14px;
+  border:1px solid var(--gray2);
+  margin-bottom:13px;
+}
+.change-block-title{
+  font-size:10.5px; color:var(--txt2); font-weight:600;
+  text-transform:uppercase; letter-spacing:.4px;
+  margin-bottom:9px;
+}
+.change-row{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:11px; align-items:center;
+  padding:7px 0;
+  border-bottom:1px dashed var(--gray1);
+}
+.change-row:last-child{border-bottom:none;}
+.change-side{
+  font-size:12px;
+}
+.change-side .lbl{
+  font-size:10px; color:var(--txt3);
+  text-transform:uppercase; letter-spacing:.3px;
+  font-weight:500;
+  margin-bottom:2px;
+}
+.change-side .val{font-weight:500;}
+.change-side .val.muted{color:var(--txt2);}
+.change-arrow{
+  color:var(--orange); font-weight:700;
+  font-size:14px;
+}
+.change-side.new{
+  background:var(--green2); border-radius:7px;
+  padding:5px 9px;
+}
+.change-side.new .val{color:var(--green); font-weight:600;}
+.change-side.salary .val{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+}
+
+/* Justificativa */
+.justification{
+  background:#FFF8EB;
+  border-radius:9px;
+  padding:11px 13px;
+  margin-bottom:13px;
+  border-left:3px solid var(--orange);
+}
+.just-title{
+  font-size:10.5px; color:var(--orange); font-weight:600;
+  text-transform:uppercase; letter-spacing:.4px;
+  margin-bottom:5px;
+}
+.just-text{
+  font-size:12px; color:var(--txt);
+  line-height:1.55;
+}
+
+/* Workflow timeline */
+.workflow{
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:9px;
+  padding:13px 15px;
+}
+.wf-title{
+  font-size:11px; color:var(--txt2); font-weight:600;
+  text-transform:uppercase; letter-spacing:.4px;
+  margin-bottom:11px;
+}
+.wf-steps{
+  position:relative;
+}
+.wf-steps::before{
+  content:''; position:absolute;
+  left:11px; top:8px; bottom:8px;
+  width:2px; background:var(--gray2);
+}
+.wf-step{
+  position:relative;
+  padding-left:30px;
+  padding-bottom:13px;
+}
+.wf-step:last-child{padding-bottom:0;}
+.wf-dot{
+  position:absolute; left:5px; top:3px;
+  width:14px; height:14px; border-radius:50%;
+  background:#fff;
+  border:2.5px solid var(--gray2);
+  z-index:1;
+}
+.wf-step.done .wf-dot{
+  background:var(--green); border-color:var(--green);
+  display:flex; align-items:center; justify-content:center;
+}
+.wf-step.done .wf-dot::after{
+  content:''; width:5px; height:5px; background:#fff; border-radius:50%;
+}
+.wf-step.current .wf-dot{
+  background:#fff; border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(245,131,31,.18);
+  animation:pulseDot 2s infinite;
+}
+@keyframes pulseDot{
+  0%,100%{box-shadow:0 0 0 3px rgba(245,131,31,.18);}
+  50%{box-shadow:0 0 0 6px rgba(245,131,31,.05);}
+}
+.wf-step.rejected .wf-dot{
+  background:var(--danger); border-color:var(--danger);
+}
+.wf-step-name{
+  font-size:12px; font-weight:600;
+  color:var(--txt);
+  margin-bottom:1px;
+}
+.wf-step.pending .wf-step-name{color:var(--txt3); font-weight:500;}
+.wf-step-meta{
+  font-size:10.5px;
+  color:var(--txt2);
+  display:flex; align-items:center; gap:8px;
+  flex-wrap:wrap;
+}
+.wf-step-meta .actor-avatar{
+  width:18px; height:18px; border-radius:50%;
+  color:#fff; font-weight:600; font-size:9px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.wf-step-meta .actor-name{font-weight:500; color:var(--txt);}
+.wf-step-meta .time{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--txt3);
+}
+.wf-step-comment{
+  font-size:11.5px; color:var(--txt);
+  margin-top:5px;
+  padding:7px 9px;
+  background:var(--off); border-radius:6px;
+  font-style:italic;
+  line-height:1.5;
+}
+
+/* Ações disponíveis */
+.mov-actions{
+  display:flex; gap:8px;
+  margin-top:13px;
+  flex-wrap:wrap;
+}
+.mov-btn{
+  padding:8px 13px;
+  border-radius:7px;
+  font-size:11.5px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+  border:1px solid var(--gray2);
+  background:#fff; color:var(--txt);
+  display:inline-flex; align-items:center; gap:5px;
+}
+.mov-btn:hover{background:var(--off);}
+.mov-btn.primary{background:var(--navy); color:#fff; border-color:var(--navy);}
+.mov-btn.primary:hover{background:var(--navy2);}
+.mov-btn.danger{color:var(--danger); border-color:var(--danger2);}
+.mov-btn.danger:hover{background:var(--danger2);}
+
+/* Empty state para abas vazias */
+.empty-state{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--txt2);
+}
+.empty-state svg{
+  width:40px; height:40px;
+  color:var(--gray3);
+  margin-bottom:11px;
+}
+.empty-state h3{font-size:13.5px; font-weight:600; color:var(--txt); margin-bottom:5px;}
+.empty-state p{font-size:11.5px; line-height:1.5;}
+
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .summary-grid{grid-template-columns:repeat(2, 1fr);}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 30px;}
+
+  .lgpd-banner{grid-template-columns:auto 1fr; gap:10px; padding:11px 13px;}
+  .lgpd-banner .link{grid-column:1/-1; justify-self:flex-start; margin-top:5px;}
+
+  .mov-head{grid-template-columns:auto 1fr; gap:10px; padding:13px 14px;}
+  .mov-status{grid-column:1/-1; flex-direction:row; justify-content:space-between; align-items:center;}
+  .mov-expand{display:none;}
+
+  .change-row{grid-template-columns:1fr;}
+  .change-arrow{transform:rotate(90deg); margin:3px 0;}
+
+  .page-header h1{font-size:18px;}
+
+  .tab span:not(.count){display:none;}
+}
+@media (max-width: 420px){
+  .summary-grid{grid-template-columns:1fr 1fr; gap:9px;}
+  .sc-value{font-size:18px;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Minha home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Meu perfil</a>
+      <div class="sidebar-section">Avaliação</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Minhas avaliações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        Minhas 1:1s
+      </a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Ciclo 2026.1</a>
+      <div class="sidebar-section">Desenvolvimento</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedback e mural</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Meu PDI</a>
+      <div class="sidebar-section">Carreira</div>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>Minhas movimentações</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Minhas <strong>Movimentações</strong></div>
+    <div class="topbar-spacer"></div>
+    <button class="topbar-bell">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="bell-badge"></span>
+    </button>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info">
+        <span class="user-name">Fernanda Lima</span>
+        <span class="user-role">Analista Pleno</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Minhas movimentações</h1>
+        <p>Histórico completo das mudanças no seu vínculo · transparência LGPD Art. 18</p>
+      </div>
+    </div>
+
+    <!-- ============= LGPD BANNER ============= -->
+    <div class="lgpd-banner">
+      <div class="icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="text">
+        <strong>Direito de acompanhar suas decisões funcionais.</strong>
+        Aqui você vê todas as movimentações que envolvem você (promoções, transferências, reajustes, alterações de cargo). Isso inclui as que ainda estão em aprovação. Cada decisão é registrada com quem decidiu, quando e por quê.
+      </div>
+      <a class="link">
+        Saber mais
+        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </div>
+
+    <!-- ============= STATUS SUMMARY ============= -->
+    <div class="summary-grid">
+      <div class="summary-card amber" onclick="filterTab('pending')">
+        <div class="sc-icon-row">
+          <div class="sc-icon amber">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <span class="sc-label">Em aprovação</span>
+        </div>
+        <div class="sc-value">2</div>
+        <div class="sc-sub">Aguardando RH e gestor</div>
+      </div>
+      <div class="summary-card green" onclick="filterTab('approved')">
+        <div class="sc-icon-row">
+          <div class="sc-icon green">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <span class="sc-label">Aprovadas</span>
+        </div>
+        <div class="sc-value">6</div>
+        <div class="sc-sub">Histórico desde 2024</div>
+      </div>
+      <div class="summary-card purple">
+        <div class="sc-icon-row">
+          <div class="sc-icon purple">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>
+          </div>
+          <span class="sc-label">Tipos diferentes</span>
+        </div>
+        <div class="sc-value">5</div>
+        <div class="sc-sub">Promoção, salário, férias...</div>
+      </div>
+      <div class="summary-card gray">
+        <div class="sc-icon-row">
+          <div class="sc-icon gray">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+          </div>
+          <span class="sc-label">Rejeitadas/canceladas</span>
+        </div>
+        <div class="sc-value">1</div>
+        <div class="sc-sub">Com justificativa</div>
+      </div>
+    </div>
+
+    <!-- ============= TABS ============= -->
+    <div class="tabs">
+      <button class="tab active" data-tab="all">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg>
+        <span>Todas</span>
+        <span class="count">9</span>
+      </button>
+      <button class="tab" data-tab="pending">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>Em andamento</span>
+        <span class="count">2</span>
+      </button>
+      <button class="tab" data-tab="approved">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span>Aprovadas</span>
+        <span class="count">6</span>
+      </button>
+      <button class="tab" data-tab="rejected">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+        <span>Rejeitadas</span>
+        <span class="count">1</span>
+      </button>
+    </div>
+
+    <!-- ============= LISTA ============= -->
+    <div class="tab-panel active" data-panel="all">
+      <div class="movs-list">
+
+        <!-- ============= MOV 1: PROMOÇÃO PENDENTE (mais nova, expandida) ============= -->
+        <div class="mov-card in-progress expanded" id="mov1">
+          <div class="mov-head" onclick="toggleMov('mov1')">
+            <div class="mov-icon promotion">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">
+                Promoção · Analista Pleno → Sênior
+                <span class="urgent-tag">⚡ Aguardando RH</span>
+              </div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  Solicitada há 4 dias
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                  Por João Carvalho
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+                  Vinculada à avaliação 2026.1
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill pending">
+                <span class="dot"></span>
+                Em aprovação
+              </span>
+              <span class="mov-time">23/04/2026</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="mov-details">
+            <div class="change-block">
+              <div class="change-block-title">o que mudará no seu vínculo</div>
+
+              <div class="change-row">
+                <div class="change-side">
+                  <div class="lbl">Cargo atual</div>
+                  <div class="val muted">Analista Financeiro Pleno</div>
+                </div>
+                <div class="change-arrow">→</div>
+                <div class="change-side new">
+                  <div class="lbl">Novo cargo</div>
+                  <div class="val">Analista Financeiro Sênior</div>
+                </div>
+              </div>
+
+              <div class="change-row">
+                <div class="change-side salary">
+                  <div class="lbl">Salário atual</div>
+                  <div class="val muted">R$ 3.900,00</div>
+                </div>
+                <div class="change-arrow">→</div>
+                <div class="change-side salary new">
+                  <div class="lbl">Novo salário</div>
+                  <div class="val">R$ 4.300,00 <span style="font-size:10px; opacity:.7;">(+10,3%)</span></div>
+                </div>
+              </div>
+
+              <div class="change-row">
+                <div class="change-side">
+                  <div class="lbl">Departamento</div>
+                  <div class="val muted">Financeiro</div>
+                </div>
+                <div class="change-arrow">→</div>
+                <div class="change-side">
+                  <div class="lbl">Sem alteração</div>
+                  <div class="val muted">Financeiro</div>
+                </div>
+              </div>
+
+              <div class="change-row">
+                <div class="change-side">
+                  <div class="lbl">Data prevista</div>
+                  <div class="val">01/05/2026</div>
+                </div>
+                <div class="change-arrow">·</div>
+                <div class="change-side">
+                  <div class="lbl">Origem</div>
+                  <div class="val">Avaliação ciclo 2026.1</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="justification">
+              <div class="just-title">justificativa do solicitante</div>
+              <div class="just-text">
+                "Fernanda demonstrou neste ciclo capacidade técnica acima do esperado para o nível Pleno. Liderou de forma autônoma a conferência NF×folha da Labuta no fechamento de março, identificou divergências que outros tinham deixado passar, e tomou iniciativa na sugestão de automação. Recomendo promoção para Sênior com reajuste de 10,3% (mid-range da faixa Sênior)."
+              </div>
+            </div>
+
+            <div class="workflow">
+              <div class="wf-title">fluxo de aprovação</div>
+              <div class="wf-steps">
+                <div class="wf-step done">
+                  <div class="wf-dot"></div>
+                  <div class="wf-step-name">Solicitação criada</div>
+                  <div class="wf-step-meta">
+                    <span class="actor-avatar" style="background:#3D5F95;">JC</span>
+                    <span class="actor-name">João Carvalho</span>
+                    <span>·</span>
+                    <span class="time">23/04/2026 às 16:42</span>
+                  </div>
+                </div>
+                <div class="wf-step done">
+                  <div class="wf-dot"></div>
+                  <div class="wf-step-name">Aprovada pelo gestor</div>
+                  <div class="wf-step-meta">
+                    <span class="actor-avatar" style="background:#3D5F95;">JC</span>
+                    <span class="actor-name">João Carvalho</span>
+                    <span>·</span>
+                    <span class="time">23/04/2026 às 16:43</span>
+                  </div>
+                  <div class="wf-step-comment">"Aprovado. Vinculei a movimentação à avaliação 2026.1 dela. Por favor, considerar prioridade visto que ela já desempenha funções de Sênior."</div>
+                </div>
+                <div class="wf-step current">
+                  <div class="wf-dot"></div>
+                  <div class="wf-step-name">Análise do RH GPC <span style="color:var(--orange); font-weight:700; margin-left:4px;">⏳ você está aqui</span></div>
+                  <div class="wf-step-meta">
+                    <span class="actor-avatar" style="background:#6D28D9;">PM</span>
+                    <span class="actor-name">Patrícia Mello</span>
+                    <span>·</span>
+                    <span class="time">recebida há 4 dias</span>
+                  </div>
+                </div>
+                <div class="wf-step pending">
+                  <div class="wf-dot"></div>
+                  <div class="wf-step-name">RH da Labuta (prestadora)</div>
+                  <div class="wf-step-meta">
+                    <span style="color:var(--txt3);">aguardando aprovação anterior</span>
+                  </div>
+                </div>
+                <div class="wf-step pending">
+                  <div class="wf-dot"></div>
+                  <div class="wf-step-name">Efetivação no sistema</div>
+                  <div class="wf-step-meta">
+                    <span style="color:var(--txt3);">vigência prevista a partir de 01/05/2026</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mov-actions">
+              <button class="mov-btn primary">
+                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                Baixar comprovante (PDF)
+              </button>
+              <button class="mov-btn">
+                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Enviar dúvida ao RH
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============= MOV 2: FÉRIAS PENDENTE ============= -->
+        <div class="mov-card in-progress" id="mov2">
+          <div class="mov-head" onclick="toggleMov('mov2')">
+            <div class="mov-icon vacation">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">Programação de férias · 30 dias</div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                  10/01/2027 → 08/02/2027
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                  Solicitada por você
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill pending"><span class="dot"></span>Aguardando gestor</span>
+              <span class="mov-time">25/04/2026</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============= MOV 3: PROMOÇÃO ANTERIOR (jr→pleno) ============= -->
+        <div class="mov-card approved" id="mov3">
+          <div class="mov-head" onclick="toggleMov('mov3')">
+            <div class="mov-icon promotion">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">Promoção · Analista Júnior → Pleno</div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+                  Reajuste de R$ 3.650 → R$ 3.900 (+6,8%)
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                  Por João Carvalho
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill approved"><span class="dot"></span>Aprovada</span>
+              <span class="mov-time">15/03/2025</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============= MOV 4: REAJUSTE COLETIVO ============= -->
+        <div class="mov-card approved" id="mov4">
+          <div class="mov-head" onclick="toggleMov('mov4')">
+            <div class="mov-icon salary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">Reajuste de dissídio · Cat. Comércio Bahia</div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  +5,2% (CCT 2025/2026)
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                  Movimentação coletiva (Labuta)
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill approved"><span class="dot"></span>Aprovada</span>
+              <span class="mov-time">01/09/2025</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============= MOV 5: TROCA DE GESTOR (estrutural) ============= -->
+        <div class="mov-card approved" id="mov5">
+          <div class="mov-head" onclick="toggleMov('mov5')">
+            <div class="mov-icon transfer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">Mudança de gestor direto</div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5"/></svg>
+                  Beatriz Lopes → João Carvalho
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                  Reorganização do Financeiro
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill approved"><span class="dot"></span>Aprovada</span>
+              <span class="mov-time">10/06/2024</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============= MOV 6: TROCA DE TOMADOR ============= -->
+        <div class="mov-card approved" id="mov6">
+          <div class="mov-head" onclick="toggleMov('mov6')">
+            <div class="mov-icon dept">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">Mudança de filial · Cestão Inhambupe → Cestão L1</div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 22s-7-7-7-12a7 7 0 0114 0c0 5-7 12-7 12z"/></svg>
+                  Empregador inalterado: Labuta
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                  Por Sandra Gomes (gerente solicitante)
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill approved"><span class="dot"></span>Aprovada</span>
+              <span class="mov-time">15/01/2024</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============= MOV 7: REJEITADA ============= -->
+        <div class="mov-card rejected" id="mov7">
+          <div class="mov-head" onclick="toggleMov('mov7')">
+            <div class="mov-icon transfer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">Solicitação de transferência para GPC Matriz · Financeiro</div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                  Solicitada por você
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                  Não envolveria mudança de empregador
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill rejected"><span class="dot"></span>Rejeitada</span>
+              <span class="mov-time">22/11/2024</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ============= MOV 8: ADMISSÃO ============= -->
+        <div class="mov-card approved" id="mov8">
+          <div class="mov-head" onclick="toggleMov('mov8')">
+            <div class="mov-icon transfer">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+            </div>
+            <div class="mov-info">
+              <div class="mov-title">Admissão · Início do vínculo no GPC</div>
+              <div class="mov-meta">
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 22s-7-7-7-12a7 7 0 0114 0c0 5-7 12-7 12z"/></svg>
+                  Empregador Labuta · Tomador Cestão Inhambupe
+                </span>
+                <span class="mov-meta-item">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                  Cargo: Analista Financeiro Júnior
+                </span>
+              </div>
+            </div>
+            <div class="mov-status">
+              <span class="status-pill approved"><span class="dot"></span>Aprovada</span>
+              <span class="mov-time">15/01/2024</span>
+            </div>
+            <button class="mov-expand">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function toggleMov(id){
+  document.getElementById(id).classList.toggle('expanded');
+}
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    // Em produção: filtra a lista por status
+  });
+});
+
+function filterTab(status){
+  // Demo: ativa a aba correspondente
+  const map = {pending:'pending', approved:'approved'};
+  if(map[status]){
+    document.querySelectorAll('.tab').forEach(x=>{
+      x.classList.toggle('active', x.dataset.tab === map[status]);
+    });
+  }
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Acessos e Perfis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-modal:0 20px 60px rgba(26,45,79,.3);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; transition:all .15s; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500;}
+.icon-btn{width:36px; height:36px; background:transparent; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; color:var(--txt2);}
+.icon-btn:hover{background:var(--gray1);}
+.icon-btn .badge{position:absolute; top:6px; right:6px; width:16px; height:16px; background:var(--red); border-radius:50%; font-size:9.5px; font-weight:600; color:#fff; display:flex; align-items:center; justify-content:center; border:2px solid #fff;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-chip:hover{background:var(--gray1);}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+/* Botões */
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+
+/* Banner explicativo */
+.intro-banner{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+  background:linear-gradient(90deg, #E8EFF8, #F4F7FC);
+  border-left:3px solid var(--navy);
+  padding:14px 16px; border-radius:var(--radius);
+  margin-bottom:14px;
+}
+.intro-icon{
+  width:42px; height:42px; border-radius:10px;
+  background:var(--navy); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.intro-text{font-size:12.5px; color:var(--txt2); line-height:1.5;}
+.intro-text strong{color:var(--txt); font-weight:600;}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:14px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.green::before{background:var(--green);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:24px; font-weight:600; margin-top:5px; letter-spacing:-.5px;}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; background:#fff; padding:4px; border-radius:var(--radius); box-shadow:var(--shadow-card); margin-bottom:14px; overflow-x:auto;}
+.tab{padding:9px 16px; font-size:12.5px; font-weight:500; color:var(--txt2); background:transparent; border:none; cursor:pointer; border-radius:7px; font-family:inherit; transition:all .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
+.tab:hover{background:var(--gray1); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab svg{width:14px; height:14px;}
+.tab .count{background:rgba(255,255,255,.2); padding:1px 7px; border-radius:10px; font-size:10.5px; font-weight:600; font-family:'JetBrains Mono',monospace;}
+.tab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* Toolbar */
+.toolbar{display:flex; gap:9px; align-items:center; background:#fff; padding:10px 12px; border-radius:var(--radius); box-shadow:var(--shadow-card); margin-bottom:12px; flex-wrap:wrap;}
+.search-box{flex:1; min-width:200px; position:relative;}
+.search-box input{width:100%; padding:8px 12px 8px 34px; border:1px solid var(--gray2); border-radius:7px; font-size:12.5px; font-family:inherit; color:var(--txt); background:#fff;}
+.search-box input:focus{outline:none; border-color:var(--navy);}
+.search-box svg{position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--txt3);}
+.toolbar-filter{display:flex; align-items:center; gap:7px; padding:7px 11px; background:var(--gray1); border-radius:7px; font-size:12px; cursor:pointer;}
+.toolbar-filter:hover{background:var(--gray2);}
+.toolbar-filter .fl-label{color:var(--txt2);}
+.toolbar-filter strong{font-weight:600;}
+.toolbar-filter svg{width:13px; height:13px; color:var(--txt2);}
+
+/* ============= TABELA DE PERFIS ============= */
+.tbl-card{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); overflow:hidden;}
+.tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+.tbl thead{background:var(--off);}
+.tbl th{text-align:left; padding:11px 12px; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--txt2); border-bottom:1px solid var(--gray2); font-weight:600; white-space:nowrap;}
+.tbl th.center{text-align:center;}
+.tbl th.right{text-align:right;}
+.tbl td{padding:13px 12px; border-bottom:1px solid var(--gray1); color:var(--txt); vertical-align:middle;}
+.tbl td.center{text-align:center;}
+.tbl td.right{text-align:right;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr.row{cursor:pointer; transition:background .12s;}
+.tbl tr.row:hover{background:var(--off);}
+
+.profile-cell{display:flex; align-items:center; gap:11px;}
+.profile-icon{
+  width:38px; height:38px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; color:#fff; font-weight:600; font-size:13px;
+}
+.profile-info{min-width:0;}
+.profile-name{font-size:13px; font-weight:600; color:var(--txt);}
+.profile-name .system-tag{
+  display:inline-block; margin-left:6px;
+  font-size:9px; padding:1px 6px; border-radius:8px;
+  background:var(--navy); color:#fff; font-weight:500;
+  text-transform:uppercase; letter-spacing:.3px;
+  vertical-align:middle;
+}
+.profile-desc{font-size:11.5px; color:var(--txt2); margin-top:1px; max-width:340px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+/* Chips de escopo */
+.scope-chips{display:flex; gap:5px; flex-wrap:wrap;}
+.scope-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 8px; border-radius:11px;
+  font-size:10.5px; font-weight:500;
+  white-space:nowrap;
+}
+.sc-all{background:var(--green2); color:var(--green);}
+.sc-some{background:var(--amber2); color:var(--amber);}
+.sc-self{background:#E8EFF8; color:var(--navy);}
+.sc-none{background:var(--gray1); color:var(--txt2);}
+.scope-chip svg{width:11px; height:11px;}
+
+.tag{display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:11px; font-size:10.5px; font-weight:500; white-space:nowrap;}
+.tag-active{background:var(--green2); color:var(--green);}
+.tag-inactive{background:var(--gray1); color:var(--txt2);}
+.tag-blue{background:#E8EFF8; color:var(--navy);}
+.tag-purple{background:#F0E6FA; color:var(--purple);}
+.tag-orange{background:#FCE6CD; color:var(--amber);}
+.tag-amber{background:var(--amber2); color:var(--amber);}
+
+.row-actions{display:flex; gap:5px; justify-content:flex-end;}
+.btn-icon{width:30px; height:30px; border-radius:6px; background:var(--gray1); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.btn-icon:hover{background:var(--gray2); color:var(--txt);}
+.btn-icon.danger:hover{background:var(--danger2); color:var(--danger);}
+
+/* ============= ATRIBUIÇÕES ============= */
+.user-cell{display:flex; align-items:center; gap:10px;}
+.user-cell .av{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; color:#fff; flex-shrink:0;}
+.user-cell .info{min-width:0;}
+.user-cell .nm{font-size:12.5px; font-weight:500; color:var(--txt);}
+.user-cell .ml{font-size:11px; color:var(--txt2);}
+
+/* Badges para empregador/tomador */
+.dual-cell{display:flex; flex-direction:column; gap:2px;}
+.dual-line{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11.5px; color:var(--txt);
+}
+.dual-line svg{width:10px; height:10px; flex-shrink:0; color:var(--txt3);}
+.dual-tag{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9.5px; font-weight:600; padding:1px 6px; border-radius:8px;
+  text-transform:uppercase; letter-spacing:.3px;
+  margin-right:6px; flex-shrink:0;
+}
+.dt-emp{background:#F0E6FA; color:var(--purple);}
+.dt-tom{background:var(--green2); color:var(--green);}
+
+.override-flag{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10.5px; padding:2px 7px; border-radius:9px;
+  background:var(--amber2); color:var(--amber);
+  font-weight:500;
+}
+
+/* ============= MODAL ============= */
+.modal-overlay{display:none; position:fixed; inset:0; background:rgba(26,45,79,.55); z-index:100; align-items:center; justify-content:center; padding:20px; -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);}
+.modal-overlay.show{display:flex; animation:fadeIn .2s;}
+.modal{background:#fff; border-radius:var(--radius-lg); width:100%; max-width:760px; max-height:92vh; display:flex; flex-direction:column; box-shadow:var(--shadow-modal); overflow:hidden;}
+.modal-head{padding:18px 22px; border-bottom:1px solid var(--gray1); display:flex; align-items:center; justify-content:space-between;}
+.modal-title{font-size:15px; font-weight:600;}
+.modal-sub{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+.modal-close{width:32px; height:32px; border-radius:7px; background:var(--gray1); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.modal-close:hover{background:var(--gray2);}
+.modal-body{flex:1; overflow-y:auto; padding:18px 22px;}
+.modal-foot{padding:14px 22px; border-top:1px solid var(--gray1); display:flex; justify-content:space-between; align-items:center; gap:10px; background:var(--off);}
+.modal-foot-left{font-size:11.5px; color:var(--txt2);}
+
+/* Wizard steps */
+.wizard-steps{display:flex; align-items:center; gap:8px; padding:14px 22px; background:var(--off); border-bottom:1px solid var(--gray1);}
+.ws-step{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--txt3);}
+.ws-step.done{color:var(--green);}
+.ws-step.current{color:var(--navy); font-weight:600;}
+.ws-circle{width:22px; height:22px; border-radius:50%; background:var(--gray1); color:var(--txt3); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600;}
+.ws-step.done .ws-circle{background:var(--green); color:#fff;}
+.ws-step.current .ws-circle{background:var(--navy); color:#fff;}
+.ws-line{flex:1; height:2px; background:var(--gray1); border-radius:1px;}
+.ws-line.done{background:var(--green);}
+
+/* Form */
+.form-section{margin-bottom:18px;}
+.form-section-head{
+  margin-bottom:10px; padding-bottom:7px;
+  border-bottom:1px solid var(--gray1);
+}
+.form-section-head h4{font-size:12px; color:var(--txt); font-weight:600;}
+.form-section-head p{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+.field{margin-bottom:13px;}
+.field label{display:block; font-size:11.5px; color:var(--txt2); margin-bottom:5px; font-weight:500;}
+.field label .req{color:var(--danger);}
+.field input[type=text], .field input[type=date], .field input[type=number], .field select, .field textarea{width:100%; padding:9px 12px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit; color:var(--txt); background:#fff;}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--navy);}
+.field textarea{resize:vertical; min-height:60px;}
+.field-help{font-size:10.5px; color:var(--txt3); margin-top:4px;}
+.field-grid-2{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+
+/* Color/Icon picker */
+.color-picker{display:flex; gap:6px; flex-wrap:wrap;}
+.color-swatch{
+  width:28px; height:28px; border-radius:7px;
+  cursor:pointer; transition:transform .12s;
+  border:2px solid transparent;
+}
+.color-swatch:hover{transform:scale(1.1);}
+.color-swatch.selected{border-color:var(--txt); box-shadow:0 0 0 2px #fff inset;}
+
+/* Switch */
+.switch{display:inline-flex; align-items:center; gap:8px; cursor:pointer;}
+.switch-track{width:36px; height:20px; background:var(--gray2); border-radius:11px; position:relative; transition:background .2s; flex-shrink:0;}
+.switch-track::after{content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.switch input{display:none;}
+.switch input:checked + .switch-track{background:var(--green);}
+.switch input:checked + .switch-track::after{transform:translateX(16px);}
+.switch-label{font-size:12.5px; color:var(--txt);}
+
+/* ============= MATRIZ DE PERMISSÕES ============= */
+.perm-matrix{background:var(--off); border-radius:8px; overflow:hidden; border:1px solid var(--gray1);}
+.perm-row{
+  display:grid;
+  grid-template-columns:1fr 60px 60px 60px 60px 60px 60px;
+  gap:6px;
+  align-items:center;
+  padding:9px 12px;
+  font-size:11.5px;
+  border-bottom:1px solid var(--gray1);
+}
+.perm-row:last-child{border-bottom:none;}
+.perm-row.head{
+  background:var(--gray1);
+  font-size:9.5px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--txt2);
+  font-weight:600;
+}
+.perm-row.head .perm-page{color:var(--txt2); font-weight:600;}
+.perm-row .perm-page{font-size:12px; color:var(--txt); font-weight:500;}
+.perm-row .perm-page small{display:block; font-size:10px; color:var(--txt3); font-weight:400; margin-top:1px;}
+.perm-row .perm-cell{
+  display:flex; justify-content:center;
+  cursor:pointer;
+}
+.perm-cell input[type=checkbox]{
+  width:18px; height:18px;
+  cursor:pointer;
+  accent-color:var(--navy);
+}
+.perm-row.disabled-perm .perm-cell{opacity:.3;}
+
+/* ============= ESCOPO PICKERS ============= */
+.scope-section{
+  background:#fff; border:1px solid var(--gray2);
+  border-radius:8px; padding:12px 14px; margin-bottom:11px;
+}
+.scope-section-head{
+  display:flex; align-items:center; gap:9px; margin-bottom:9px;
+}
+.scope-section-icon{
+  width:30px; height:30px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700;
+}
+.ssi-emp{background:#F0E6FA; color:var(--purple);}
+.ssi-tom{background:var(--green2); color:var(--green);}
+.ssi-dpt{background:#E8EFF8; color:var(--navy);}
+.ssi-hier{background:#FCE6CD; color:var(--amber);}
+.scope-section-title{font-size:12.5px; font-weight:600;}
+.scope-section-sub{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.scope-options{display:flex; flex-direction:column; gap:5px;}
+.scope-option{
+  display:flex; align-items:flex-start; gap:9px;
+  padding:8px 10px; border:1px solid var(--gray2); border-radius:7px;
+  cursor:pointer; transition:all .15s;
+}
+.scope-option:hover{border-color:var(--navy3); background:var(--off);}
+.scope-option.selected{border-color:var(--navy); background:#E8EFF8;}
+.scope-option input[type=radio]{margin-top:2px; accent-color:var(--navy);}
+.scope-option .opt-text{flex:1;}
+.scope-option .opt-text strong{display:block; font-size:12px; font-weight:600;}
+.scope-option .opt-text span{display:block; font-size:10.5px; color:var(--txt2); margin-top:1px;}
+
+/* Multi-select chips */
+.multi-select{
+  margin-top:8px;
+  border:1px solid var(--gray2); border-radius:7px;
+  padding:8px 10px;
+  background:var(--off);
+  display:none;
+}
+.multi-select.show{display:block;}
+.ms-search{
+  width:100%; padding:6px 10px;
+  border:1px solid var(--gray2); border-radius:6px;
+  font-size:11.5px; font-family:inherit;
+  margin-bottom:7px; background:#fff;
+}
+.ms-options{max-height:140px; overflow-y:auto;}
+.ms-option{
+  display:flex; align-items:center; gap:8px;
+  padding:5px 8px; border-radius:5px;
+  cursor:pointer;
+  font-size:11.5px;
+}
+.ms-option:hover{background:#fff;}
+.ms-option input[type=checkbox]{accent-color:var(--navy);}
+.ms-option .ms-meta{margin-left:auto; font-size:10px; color:var(--txt3); font-family:'JetBrains Mono',monospace;}
+
+/* ============= REVIEW STEP ============= */
+.review-card{
+  background:var(--off); border:1px solid var(--gray1);
+  border-radius:8px; padding:12px 14px; margin-bottom:9px;
+}
+.review-head{
+  display:flex; align-items:center; gap:9px; margin-bottom:7px;
+}
+.review-icon{
+  width:24px; height:24px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.review-title{font-size:12px; font-weight:600;}
+.review-content{font-size:11.5px; color:var(--txt); line-height:1.5;}
+.review-content strong{font-weight:600;}
+.review-list{margin-top:5px;}
+.review-list li{margin-left:18px; font-size:11.5px;}
+
+.affect-banner{
+  background:linear-gradient(90deg, #FCE6CD, #FEF3E2);
+  border-left:3px solid var(--orange);
+  padding:10px 13px; border-radius:7px; margin-top:12px;
+  display:flex; align-items:center; gap:9px;
+}
+.affect-banner svg{color:var(--amber); flex-shrink:0;}
+.affect-banner strong{color:var(--txt); font-size:12.5px; font-weight:600;}
+.affect-banner span{font-size:11px; color:var(--txt2);}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .field-grid-2{grid-template-columns:1fr;}
+  .perm-row{grid-template-columns:1fr; gap:6px;}
+  .perm-row.head{display:none;}
+  .perm-row .perm-cell{justify-content:flex-start; padding-left:8px;}
+  .perm-row .perm-cell::before{content:attr(data-label) ': '; font-size:10.5px; color:var(--txt2); margin-right:6px;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .company-name, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 40px;}
+  .page-header h1{font-size:18px;}
+  .page-header{flex-direction:column; align-items:stretch;}
+
+  .intro-banner{grid-template-columns:auto 1fr; gap:10px;}
+
+  .tbl thead{display:none;}
+  .tbl, .tbl tbody, .tbl tr, .tbl td{display:block; width:100%;}
+  .tbl tr.row{padding:11px 13px; border-bottom:1px solid var(--gray1);}
+  .tbl tr.row:last-child{border-bottom:none;}
+  .tbl td{padding:3px 0; border:none;}
+  .tbl td[data-label]::before{content:attr(data-label) ': '; font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.3px; font-weight:600; margin-right:4px;}
+  .tbl td.cell-main::before{display:none;}
+  .tbl td.cell-actions{display:flex; justify-content:flex-end; padding-top:8px;}
+  .tbl td.cell-actions::before{display:none;}
+
+  .modal{max-height:100vh; height:100vh; max-width:100%; border-radius:0;}
+  .wizard-steps{padding:11px 14px; gap:6px;}
+  .ws-step span:not(.ws-circle){display:none;}
+}
+@media (max-width: 420px){
+  .tab span{display:none;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar, .modal-body::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+.tabs::-webkit-scrollbar{height:0;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>Meu perfil</a>
+      <div class="sidebar-section">Avaliações</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <div class="sidebar-section">Feedback</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks</a>
+      <div class="sidebar-section">Gestor</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Minha equipe</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>Movimentações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <div class="sidebar-section">Administração</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>Estrutura</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Acessos <strong>e Perfis</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+      <span class="badge">3</span>
+    </button>
+    <div class="user-chip">
+      <div class="user-avatar">RS</div>
+      <div class="user-info">
+        <span class="user-name">Ricardo Silva</span>
+        <span class="user-role">Super Admin</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Acessos e Perfis</h1>
+        <p>Configuração granular de quem vê o quê e pode fazer o quê</p>
+      </div>
+      <button class="btn-primary" onclick="openProfileWizard()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Novo perfil
+      </button>
+    </div>
+
+    <!-- Banner explicativo -->
+    <div class="intro-banner">
+      <div class="intro-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3"/><rect x="5" y="10" width="14" height="11" rx="2"/></svg>
+      </div>
+      <div class="intro-text">
+        Cada perfil combina <strong>permissões em páginas</strong> (o que pode fazer) com <strong>escopo de visibilidade</strong> em quatro dimensões:
+        <strong>empregador</strong> (CNPJ que paga a folha · útil para RH de prestadoras como Labuta),
+        <strong>tomador</strong> (filial onde a pessoa trabalha · útil para gerentes de loja),
+        <strong>departamento</strong> e <strong>hierarquia</strong>. Os filtros se combinam com AND lógico nas queries.
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Perfis ativos</div><div class="kpi-value">9</div><div class="kpi-sub">3 do sistema, 6 customizados</div></div>
+      <div class="kpi green"><div class="kpi-label">Usuários atribuídos</div><div class="kpi-value">367</div><div class="kpi-sub">100% com perfil definido</div></div>
+      <div class="kpi amber"><div class="kpi-label">Com override individual</div><div class="kpi-value">8</div><div class="kpi-sub">Permissões customizadas</div></div>
+      <div class="kpi purple"><div class="kpi-label">Última auditoria</div><div class="kpi-value">há 2d</div><div class="kpi-sub">Acessos validados pelo RH</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="perfis">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>
+        <span>Perfis</span>
+        <span class="count">9</span>
+      </button>
+      <button class="tab" data-tab="atrib">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        <span>Atribuições</span>
+        <span class="count">367</span>
+      </button>
+      <button class="tab" data-tab="paginas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+        <span>Páginas do sistema</span>
+        <span class="count">15</span>
+      </button>
+    </div>
+
+    <!-- ============= TAB: PERFIS ============= -->
+    <div class="tab-panel active" data-panel="perfis">
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar perfil..." oninput="filterProfiles(this.value)">
+        </div>
+        <div class="toolbar-filter"><span class="fl-label">Tipo:</span><strong>Todos</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="toolbar-filter"><span class="fl-label">Status:</span><strong>Ativos</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+      </div>
+
+      <div class="tbl-card">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Perfil</th>
+              <th>Escopo de visibilidade</th>
+              <th class="center">Páginas</th>
+              <th class="center">Usuários</th>
+              <th class="center">Status</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="profilesTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============= TAB: ATRIBUIÇÕES ============= -->
+    <div class="tab-panel" data-panel="atrib">
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar usuário..." oninput="filterAssignments(this.value)">
+        </div>
+        <div class="toolbar-filter"><span class="fl-label">Perfil:</span><strong>Todos</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="toolbar-filter"><span class="fl-label">Empregador:</span><strong>Todos</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        <div class="toolbar-filter"><span class="fl-label">Tomador:</span><strong>Todos</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+      </div>
+
+      <div class="tbl-card">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th>Empregador / Tomador</th>
+              <th>Departamento</th>
+              <th>Perfil</th>
+              <th class="center">Override</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="assignTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============= TAB: PÁGINAS DO SISTEMA ============= -->
+    <div class="tab-panel" data-panel="paginas">
+      <div class="intro-banner" style="margin-bottom:12px;">
+        <div class="intro-icon" style="background:var(--amber); color:#fff;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+        </div>
+        <div class="intro-text">
+          Catálogo das páginas do sistema. <strong>Esta visualização é apenas leitura</strong>. As permissões em cada página são configuradas dentro de cada perfil.
+        </div>
+      </div>
+      <div class="tbl-card">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Página</th>
+              <th>Categoria</th>
+              <th>Permissões disponíveis</th>
+              <th class="center">Sensível</th>
+            </tr>
+          </thead>
+          <tbody id="pagesTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============= MODAL: WIZARD DE PERFIL ============= -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal" style="max-width:780px;">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="pmTitle">Novo perfil de acesso</div>
+        <div class="modal-sub" id="pmSub">Configure permissões e escopo de visibilidade</div>
+      </div>
+      <button class="modal-close" onclick="closeProfileWizard()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="wizard-steps">
+      <div class="ws-step current" data-step="1"><div class="ws-circle">1</div><span>Identificação</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="2"><div class="ws-circle">2</div><span>Páginas</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="3"><div class="ws-circle">3</div><span>Escopo</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="4"><div class="ws-circle">4</div><span>Especiais</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="5"><div class="ws-circle">5</div><span>Revisão</span></div>
+    </div>
+
+    <div class="modal-body" id="pmBody"></div>
+
+    <div class="modal-foot">
+      <div class="modal-foot-left" id="pmFoot">Defina o nome e a identidade visual do perfil</div>
+      <div style="display:flex; gap:9px;">
+        <button class="btn-secondary" id="pmPrev" onclick="prevProfileStep()" style="display:none;">Voltar</button>
+        <button class="btn-primary" id="pmNext" onclick="nextProfileStep()">Avançar →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============= MOCK DATA ============= */
+
+// Filiais (units) · incluindo Labuta como prestadora
+const units = [
+  // Operacionais (tomadoras)
+  {id:'u1',  code:'GPC-MAT',  name:'GPC - Matriz Administrativa',  role:'administrative', cnpj:'12.345.678/0001-90'},
+  {id:'u2',  code:'ATP-VAR',  name:'ATP - Varejo',                 role:'operational',    cnpj:'12.345.678/0002-71'},
+  {id:'u3',  code:'ATP-ATA',  name:'ATP - Atacado',                role:'operational',    cnpj:'12.345.678/0003-52'},
+  {id:'u4',  code:'CES-L1',   name:'Cestão Loja 1',                role:'operational',    cnpj:'23.456.789/0001-80'},
+  {id:'u5',  code:'CES-INH',  name:'Cestão Inhambupe',             role:'operational',    cnpj:'23.456.789/0002-61'},
+  {id:'u6',  code:'ATP-SBF',  name:'ATP Sr. Bonfim',               role:'operational',    cnpj:'12.345.678/0004-33'},
+  {id:'u7',  code:'CD-FSA',   name:'CD Logística Feira',           role:'operational',    cnpj:'12.345.678/0005-14'},
+
+  // Prestadoras de serviço
+  {id:'u20', code:'LABUTA',   name:'Labuta Serviços LTDA',         role:'service_provider', cnpj:'34.567.890/0001-12', employees:247, allocatedAt:'ATP-Varejo, Cestão L1, Inhambupe'},
+  {id:'u21', code:'LIMPA',    name:'Limpactiva Conservação',       role:'service_provider', cnpj:'45.678.901/0001-23', employees:38,  allocatedAt:'Todas as lojas'},
+  {id:'u22', code:'SEGURE',   name:'Segure Vigilância',            role:'service_provider', cnpj:'56.789.012/0001-34', employees:22,  allocatedAt:'Todas as lojas'}
+];
+
+const depts = [
+  {id:'d1', name:'Diretoria'},
+  {id:'d2', name:'Comercial'},
+  {id:'d4', name:'Financeiro'},
+  {id:'d6', name:'RH / DP'},
+  {id:'d7', name:'TI / BI'},
+  {id:'d8', name:'Operações de Loja'},
+  {id:'d9', name:'CD / Logística'},
+  {id:'d10',name:'Prevenção de Perdas'}
+];
+
+// Páginas do sistema
+const systemPages = [
+  {code:'home',          name:'Home',                  category:'geral',     sensitive:false, perms:['view']},
+  {code:'meu_perfil',    name:'Meu perfil',            category:'geral',     sensitive:false, perms:['view','edit']},
+  {code:'avaliacoes',    name:'Avaliações',            category:'aval',      sensitive:true,  perms:['view','create','edit']},
+  {code:'feedbacks',     name:'Feedbacks',             category:'feedback',  sensitive:false, perms:['view','create']},
+  {code:'mural',         name:'Mural de elogios',      category:'feedback',  sensitive:false, perms:['view','create']},
+  {code:'minha_equipe',  name:'Minha equipe',          category:'gestor',    sensitive:false, perms:['view']},
+  {code:'movimentacoes', name:'Movimentações',         category:'gestor',    sensitive:true,  perms:['view','create','approve','reject']},
+  {code:'dashboard_rh',  name:'Dashboard RH',          category:'admin',     sensitive:true,  perms:['view','export']},
+  {code:'colaboradores', name:'Colaboradores',         category:'admin',     sensitive:true,  perms:['view','create','edit','delete','export']},
+  {code:'estrutura',     name:'Estrutura organizacional', category:'admin', sensitive:true,  perms:['view','create','edit','delete']},
+  {code:'ciclos',        name:'Ciclos de avaliação',   category:'admin',     sensitive:true,  perms:['view','create','edit','delete']},
+  {code:'acessos',       name:'Acessos e perfis',      category:'admin',     sensitive:true,  perms:['view','create','edit','delete']},
+  {code:'importacao',    name:'Importação de planilhas',category:'admin',    sensitive:true,  perms:['view','create']},
+  {code:'auditoria',     name:'Auditoria e logs',      category:'admin',     sensitive:true,  perms:['view','export']},
+  {code:'config',        name:'Configurações',         category:'admin',     sensitive:true,  perms:['view','edit']}
+];
+
+// Perfis pré-cadastrados
+const profiles = [
+  {
+    id:'pf1', name:'Super Admin', desc:'Acesso completo: configurações de sistema, auditoria, todas as empresas e tenants',
+    color:'#1A2D4F', icon:'⚡', isSystem:true, active:true, users:2,
+    pageCount:15,
+    scope:{employers:'all', units:'all', depts:'all', hierarchy:'all'},
+    special:['approve_movements','import_csv','export_sensitive','reset_passwords','manage_profiles','view_audit']
+  },
+  {
+    id:'pf2', name:'Admin RH Corporativo', desc:'Gestão completa de pessoas no grupo, sem acesso a configurações de sistema',
+    color:'#2B4A7A', icon:'⚛', isSystem:true, active:true, users:3,
+    pageCount:12,
+    scope:{employers:'all', units:'all', depts:'all', hierarchy:'all'},
+    special:['approve_movements','import_csv','export_sensitive','reset_passwords']
+  },
+  {
+    id:'pf3', name:'RH Prestadora · Labuta', desc:'Gere apenas funcionários da Labuta, independente de onde estão alocados',
+    color:'#6D28D9', icon:'⚙', isSystem:false, active:true, users:1,
+    pageCount:8,
+    scope:{employers:'specific:Labuta', units:'all', depts:'all', hierarchy:'all'},
+    special:['approve_movements','export_sensitive']
+  },
+  {
+    id:'pf4', name:'Diretor', desc:'Visão completa do grupo (todas as empresas e filiais), sem poder de administração',
+    color:'#854F0B', icon:'★', isSystem:false, active:true, users:3,
+    pageCount:9,
+    scope:{employers:'all', units:'all', depts:'all', hierarchy:'all'},
+    special:['export_sensitive','view_audit']
+  },
+  {
+    id:'pf5', name:'Gerente de Filial · Cestão L1', desc:'Vê todos que trabalham na filial Cestão Loja 1, independente do empregador',
+    color:'#E82227', icon:'⌂', isSystem:false, active:true, users:1,
+    pageCount:7,
+    scope:{employers:'all', units:'specific:Cestão L1', depts:'all', hierarchy:'all'},
+    special:['approve_movements']
+  },
+  {
+    id:'pf6', name:'Líder de Departamento', desc:'Vê apenas seu departamento dentro de sua filial de trabalho',
+    color:'#F5831F', icon:'◰', isSystem:false, active:true, users:18,
+    pageCount:7,
+    scope:{employers:'all', units:'self', depts:'self', hierarchy:'recursive'},
+    special:['approve_movements']
+  },
+  {
+    id:'pf7', name:'Coordenador', desc:'Vê apenas sua equipe direta e indireta na hierarquia',
+    color:'#1E7B4B', icon:'◇', isSystem:false, active:true, users:14,
+    pageCount:6,
+    scope:{employers:'all', units:'self', depts:'self', hierarchy:'recursive'},
+    special:[]
+  },
+  {
+    id:'pf8', name:'Colaborador', desc:'Acesso apenas ao próprio perfil, suas avaliações e o mural geral',
+    color:'#3D5F95', icon:'☉', isSystem:true, active:true, users:323,
+    pageCount:5,
+    scope:{employers:'all', units:'self', depts:'self', hierarchy:'self'},
+    special:[]
+  },
+  {
+    id:'pf9', name:'Auditor (somente leitura)', desc:'Vê tudo, não edita nada. Para auditoria interna ou externa',
+    color:'#5A7090', icon:'⌕', isSystem:false, active:true, users:2,
+    pageCount:14,
+    scope:{employers:'all', units:'all', depts:'all', hierarchy:'all'},
+    special:['view_audit','export_sensitive']
+  }
+];
+
+// Atribuições (sample)
+const assignments = [
+  {user:'Ricardo Silva',     initials:'RS', color:'#2B4A7A', empUnit:'GPC',    workUnit:'GPC Tecnologia',  dept:'TI / BI',         profile:'Super Admin',                override:false},
+  {user:'Maria Santos',      initials:'MS', color:'#6D28D9', empUnit:'GPC',    workUnit:'Matriz Adm.',     dept:'Diretoria',       profile:'Diretor',                    override:false},
+  {user:'Patrícia Mello',    initials:'PM', color:'#1E7B4B', empUnit:'GPC',    workUnit:'GPC RH',          dept:'RH / DP',         profile:'Admin RH Corporativo',       override:true},
+  {user:'Larissa Pereira',   initials:'LP', color:'#F5831F', empUnit:'Labuta', workUnit:'GPC RH',          dept:'RH / DP',         profile:'RH Prestadora · Labuta',     override:false},
+  {user:'Sandra Gomes',      initials:'SG', color:'#E82227', empUnit:'GPC',    workUnit:'Cestão L1',       dept:'Operações',       profile:'Gerente de Filial · Cestão L1', override:false},
+  {user:'João Carvalho',     initials:'JC', color:'#854F0B', empUnit:'GPC',    workUnit:'GPC Financeiro',  dept:'Financeiro',      profile:'Líder de Departamento',      override:false},
+  {user:'Roberto Almeida',   initials:'RA', color:'#3D5F95', empUnit:'GPC',    workUnit:'ATP - Varejo',    dept:'Operações',       profile:'Gerente de Filial',          override:false},
+  {user:'Carlos Eduardo',    initials:'CE', color:'#F5831F', empUnit:'Labuta', workUnit:'ATP - Varejo',    dept:'Compras',         profile:'Coordenador',                override:false},
+  {user:'Helena Cardoso',    initials:'HC', color:'#1F3A6B', empUnit:'GPC',    workUnit:'GPC Financeiro',  dept:'Tesouraria',      profile:'Coordenador',                override:false},
+  {user:'Fernanda Lima',     initials:'FL', color:'#E82227', empUnit:'Labuta', workUnit:'Cestão L1',       dept:'Financeiro',      profile:'Colaborador',                override:false},
+  {user:'Beatriz Lopes',     initials:'BL', color:'#2B4A7A', empUnit:'GPC',    workUnit:'GPC Financeiro',  dept:'Financeiro',      profile:'Colaborador',                override:false},
+  {user:'Felipe Oliveira',   initials:'FO', color:'#854F0B', empUnit:'Segure', workUnit:'Cestão L1',       dept:'Prev. Perdas',    profile:'Coordenador',                override:false}
+];
+
+/* ============= RENDER PROFILES ============= */
+let profileFilter = '';
+function filterProfiles(q){profileFilter = q.toLowerCase(); renderProfiles();}
+
+function scopeChipFor(label, value, type){
+  if(value==='all'){return `<span class="scope-chip sc-all"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>${label}: tudo</span>`;}
+  if(value==='self'){return `<span class="scope-chip sc-self"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/></svg>${label}: próprio</span>`;}
+  if(value==='recursive'){return `<span class="scope-chip sc-some"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M2 12h20"/></svg>${label}: hierarquia</span>`;}
+  if(value==='none'){return `<span class="scope-chip sc-none">${label}: nenhum</span>`;}
+  if(value.startsWith('specific:')){
+    const v = value.replace('specific:','');
+    return `<span class="scope-chip sc-some">${label}: ${v}</span>`;
+  }
+  return `<span class="scope-chip sc-some">${label}: ?</span>`;
+}
+
+function renderProfiles(){
+  const tbody = document.getElementById('profilesTbody');
+  const list = profiles.filter(p=>!profileFilter || p.name.toLowerCase().includes(profileFilter));
+
+  tbody.innerHTML = list.map(p=>`
+    <tr class="row" onclick="openProfileWizard('${p.id}')">
+      <td class="cell-main" data-label="Perfil">
+        <div class="profile-cell">
+          <div class="profile-icon" style="background:${p.color}">${p.icon}</div>
+          <div class="profile-info">
+            <div class="profile-name">${p.name} ${p.isSystem?'<span class="system-tag">sistema</span>':''}</div>
+            <div class="profile-desc">${p.desc}</div>
+          </div>
+        </div>
+      </td>
+      <td data-label="Escopo">
+        <div class="scope-chips">
+          ${scopeChipFor('Empregador', p.scope.employers, 'emp')}
+          ${scopeChipFor('Tomador', p.scope.units, 'tom')}
+          ${scopeChipFor('Depto', p.scope.depts, 'dpt')}
+        </div>
+      </td>
+      <td class="center" data-label="Páginas"><strong>${p.pageCount}</strong>/${systemPages.length}</td>
+      <td class="center" data-label="Usuários"><strong>${p.users}</strong></td>
+      <td class="center" data-label="Status"><span class="tag ${p.active?'tag-active':'tag-inactive'}">${p.active?'Ativo':'Inativo'}</span></td>
+      <td class="right cell-actions" data-label="Ações">
+        <div class="row-actions">
+          <button class="btn-icon" title="Editar" onclick="event.stopPropagation(); openProfileWizard('${p.id}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-icon" title="Duplicar" onclick="event.stopPropagation();">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          </button>
+          ${!p.isSystem ? `<button class="btn-icon danger" title="Excluir" onclick="event.stopPropagation();"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg></button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+/* ============= RENDER ASSIGNMENTS ============= */
+let assignFilter = '';
+function filterAssignments(q){assignFilter = q.toLowerCase(); renderAssignments();}
+
+function renderAssignments(){
+  const tbody = document.getElementById('assignTbody');
+  const list = assignments.filter(a=>!assignFilter || a.user.toLowerCase().includes(assignFilter));
+
+  tbody.innerHTML = list.map(a=>`
+    <tr class="row">
+      <td class="cell-main" data-label="Usuário">
+        <div class="user-cell">
+          <div class="av" style="background:${a.color}">${a.initials}</div>
+          <div class="info">
+            <div class="nm">${a.user}</div>
+            <div class="ml">${a.dept}</div>
+          </div>
+        </div>
+      </td>
+      <td data-label="Empregador / Tomador">
+        <div class="dual-cell">
+          <div class="dual-line"><span class="dual-tag dt-emp">EMP</span>${a.empUnit}</div>
+          <div class="dual-line"><span class="dual-tag dt-tom">TOM</span>${a.workUnit}</div>
+        </div>
+      </td>
+      <td data-label="Departamento"><div style="font-size:11.5px;">${a.dept}</div></td>
+      <td data-label="Perfil"><span class="tag tag-blue">${a.profile}</span></td>
+      <td class="center" data-label="Override">${a.override ? '<span class="override-flag"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>customizado</span>' : '<span style="color:var(--txt3); font-size:11px;">-</span>'}</td>
+      <td class="right cell-actions" data-label="Ações">
+        <div class="row-actions">
+          <button class="btn-icon" title="Editar atribuição">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+/* ============= RENDER PAGES ============= */
+const permLabels = {view:'Ver', create:'Criar', edit:'Editar', delete:'Excluir', export:'Exportar', approve:'Aprovar', reject:'Rejeitar'};
+const categoryLabels = {geral:'Geral', aval:'Avaliações', feedback:'Feedback', gestor:'Gestor', admin:'Administração'};
+
+function renderPages(){
+  document.getElementById('pagesTbody').innerHTML = systemPages.map(pg=>`
+    <tr class="row">
+      <td class="cell-main">
+        <div class="profile-cell">
+          <div class="profile-icon" style="background:${pg.sensitive?'#FDECEA':'#E8EFF8'}; color:${pg.sensitive?'#C0392B':'#2B4A7A'}; font-size:14px;">${pg.sensitive?'⚠':'⛁'}</div>
+          <div class="profile-info">
+            <div class="profile-name">${pg.name}</div>
+            <div class="profile-desc" style="font-family:'JetBrains Mono',monospace; font-size:11px;">${pg.code}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="tag tag-blue">${categoryLabels[pg.category]}</span></td>
+      <td>
+        <div style="display:flex; gap:5px; flex-wrap:wrap;">
+          ${pg.perms.map(p=>`<span class="tag tag-amber">${permLabels[p]||p}</span>`).join('')}
+        </div>
+      </td>
+      <td class="center">${pg.sensitive ? '<span class="tag" style="background:var(--danger2); color:var(--danger);">Sim</span>' : '<span style="color:var(--txt3);">não</span>'}</td>
+    </tr>
+  `).join('');
+}
+
+/* ============= TABS ============= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+/* ============= WIZARD ============= */
+let wizState = {step:1, profileId:null, name:'', desc:'', color:'#2B4A7A', icon:'⚙', pages:{}, scope:{employers:'all', units:'all', depts:'all', hierarchy:'all', specific:{employers:[], units:[], depts:[]}}, special:[]};
+
+function openProfileWizard(id){
+  if(id){
+    const p = profiles.find(x=>x.id===id);
+    wizState = {
+      step:1, profileId:id,
+      name:p.name, desc:p.desc, color:p.color, icon:p.icon,
+      pages:{}, // populado por defaults conceituais
+      scope:p.scope,
+      special:p.special
+    };
+    document.getElementById('pmTitle').textContent = `Editar perfil: ${p.name}`;
+    document.getElementById('pmSub').textContent = p.isSystem ? 'Perfil do sistema (algumas configurações são bloqueadas)' : 'Configure permissões e escopo de visibilidade';
+  } else {
+    wizState = {step:1, profileId:null, name:'', desc:'', color:'#2B4A7A', icon:'⚙', pages:{}, scope:{employers:'all', units:'all', depts:'all', hierarchy:'all', specific:{employers:[], units:[], depts:[]}}, special:[]};
+    document.getElementById('pmTitle').textContent = 'Novo perfil de acesso';
+    document.getElementById('pmSub').textContent = 'Configure permissões e escopo de visibilidade';
+  }
+  renderWizardStep();
+  document.getElementById('profileModal').classList.add('show');
+}
+function closeProfileWizard(){document.getElementById('profileModal').classList.remove('show');}
+
+function renderWizardStep(){
+  document.querySelectorAll('#profileModal .ws-step').forEach((el,i)=>{
+    el.classList.remove('current','done');
+    if(i+1 < wizState.step) el.classList.add('done');
+    if(i+1 === wizState.step) el.classList.add('current');
+  });
+  document.querySelectorAll('#profileModal .ws-line').forEach((el,i)=>{
+    el.classList.toggle('done', i+1 < wizState.step);
+  });
+  document.getElementById('pmPrev').style.display = wizState.step>1 ? 'inline-flex' : 'none';
+  document.getElementById('pmNext').textContent = wizState.step<5 ? 'Avançar →' : 'Salvar perfil';
+
+  const renderers = [renderWizStep1, renderWizStep2, renderWizStep3, renderWizStep4, renderWizStep5];
+  renderers[wizState.step-1]();
+}
+
+function renderWizStep1(){
+  document.getElementById('pmFoot').textContent = 'Defina nome, descrição e visual do perfil';
+  const colors = ['#1A2D4F','#2B4A7A','#3D5F95','#6D28D9','#1E7B4B','#F5831F','#854F0B','#E82227','#C0392B','#5A7090'];
+  const icons = ['⚡','⚛','⚙','★','⌂','◰','◇','☉','⌕','◉'];
+
+  document.getElementById('pmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Identificação do perfil</h4>
+        <p>Esses campos são exibidos nas listas e ajudam a identificar o perfil rapidamente.</p>
+      </div>
+      <div class="field">
+        <label>Nome do perfil <span class="req">*</span></label>
+        <input type="text" id="wfName" value="${wizState.name}" placeholder="Ex.: Líder de Departamento" oninput="wizState.name=this.value">
+      </div>
+      <div class="field">
+        <label>Descrição</label>
+        <textarea id="wfDesc" placeholder="Resumo do que esse perfil pode fazer e enxergar" oninput="wizState.desc=this.value">${wizState.desc}</textarea>
+      </div>
+      <div class="field-grid-2">
+        <div class="field">
+          <label>Cor do perfil</label>
+          <div class="color-picker">
+            ${colors.map(c=>`<div class="color-swatch ${c===wizState.color?'selected':''}" style="background:${c}" onclick="wizState.color='${c}'; renderWizStep1();"></div>`).join('')}
+          </div>
+        </div>
+        <div class="field">
+          <label>Ícone</label>
+          <div class="color-picker">
+            ${icons.map(ic=>`<div class="color-swatch ${ic===wizState.icon?'selected':''}" style="background:${wizState.color}; color:#fff; font-size:14px; display:flex; align-items:center; justify-content:center; font-weight:700;" onclick="wizState.icon='${ic}'; renderWizStep1();">${ic}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-head"><h4>Status</h4></div>
+      <label class="switch">
+        <input type="checkbox" checked>
+        <div class="switch-track"></div>
+        <span class="switch-label">Perfil ativo (pode ser atribuído a usuários)</span>
+      </label>
+    </div>
+  `;
+}
+
+function renderWizStep2(){
+  document.getElementById('pmFoot').textContent = 'Marque o que esse perfil pode fazer em cada página';
+
+  document.getElementById('pmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Permissões em cada página do sistema</h4>
+        <p>Para cada página, defina quais ações o usuário pode executar. Páginas sensíveis (marcadas com ⚠) exigem cuidado redobrado.</p>
+      </div>
+      <div class="perm-matrix">
+        <div class="perm-row head">
+          <div class="perm-page">Página</div>
+          <div class="perm-cell">Ver</div>
+          <div class="perm-cell">Criar</div>
+          <div class="perm-cell">Editar</div>
+          <div class="perm-cell">Excluir</div>
+          <div class="perm-cell">Exportar</div>
+          <div class="perm-cell">Aprovar</div>
+        </div>
+        ${systemPages.map(pg=>`
+          <div class="perm-row">
+            <div class="perm-page">
+              ${pg.name} ${pg.sensitive?'<span style="color:var(--danger);" title="Página sensível">⚠</span>':''}
+              <small>${categoryLabels[pg.category]} • ${pg.code}</small>
+            </div>
+            <div class="perm-cell ${!pg.perms.includes('view')?'disabled-perm':''}" data-label="Ver"><input type="checkbox" ${pg.perms.includes('view')?'':'disabled'} checked></div>
+            <div class="perm-cell ${!pg.perms.includes('create')?'disabled-perm':''}" data-label="Criar"><input type="checkbox" ${pg.perms.includes('create')?'':'disabled'}></div>
+            <div class="perm-cell ${!pg.perms.includes('edit')?'disabled-perm':''}" data-label="Editar"><input type="checkbox" ${pg.perms.includes('edit')?'':'disabled'}></div>
+            <div class="perm-cell ${!pg.perms.includes('delete')?'disabled-perm':''}" data-label="Excluir"><input type="checkbox" ${pg.perms.includes('delete')?'':'disabled'}></div>
+            <div class="perm-cell ${!pg.perms.includes('export')?'disabled-perm':''}" data-label="Exportar"><input type="checkbox" ${pg.perms.includes('export')?'':'disabled'}></div>
+            <div class="perm-cell ${!pg.perms.includes('approve')?'disabled-perm':''}" data-label="Aprovar"><input type="checkbox" ${pg.perms.includes('approve')?'':'disabled'}></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function renderWizStep3(){
+  document.getElementById('pmFoot').textContent = 'Defina o escopo de visibilidade em cada dimensão';
+
+  function scopeBlock(key, title, desc, options, currentValue, iconCls){
+    return `
+      <div class="scope-section">
+        <div class="scope-section-head">
+          <div class="scope-section-icon ${iconCls}">${title.charAt(0)}</div>
+          <div>
+            <div class="scope-section-title">${title}</div>
+            <div class="scope-section-sub">${desc}</div>
+          </div>
+        </div>
+        <div class="scope-options">
+          ${options.map(opt=>{
+            const isSel = opt.val.startsWith('specific:') ? currentValue.startsWith('specific:') : currentValue===opt.val;
+            return `
+              <label class="scope-option ${isSel?'selected':''}">
+                <input type="radio" name="scope_${key}" value="${opt.val}" ${isSel?'checked':''} onchange="wizState.scope.${key}='${opt.val}'; renderWizStep3();">
+                <div class="opt-text">
+                  <strong>${opt.label}</strong>
+                  <span>${opt.help}</span>
+                </div>
+              </label>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Multi-select para escopos específicos
+  const empUnits = units.filter(u=>u.role==='service_provider' || u.role==='operational' || u.role==='administrative');
+
+  document.getElementById('pmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Escopo de visibilidade</h4>
+        <p>Cada dimensão é independente. As regras se combinam com <strong>AND lógico</strong> nas queries (ex: vê quem está no Financeiro <em>E</em> trabalha no Cestão L1).</p>
+      </div>
+
+      ${scopeBlock('employers', 'Por empregador (CNPJ que paga a folha)',
+        'Útil para perfis como "RH da Labuta", que vê todos os funcionários da prestadora.',
+        [
+          {val:'all', label:'Todos os empregadores', help:'Vê funcionários de qualquer empresa empregadora (GPC, Labuta, Limpactiva, etc.)'},
+          {val:'specific:list', label:'Empregadores específicos', help:'Selecione quais empregadores este perfil pode enxergar'},
+          {val:'self', label:'Apenas seu próprio empregador', help:'Limitado ao CNPJ que registrou o usuário'}
+        ], wizState.scope.employers, 'ssi-emp')}
+
+      ${wizState.scope.employers==='specific:list' ? `
+      <div class="multi-select show">
+        <input class="ms-search" type="text" placeholder="Buscar empregador...">
+        <div class="ms-options">
+          ${empUnits.map(u=>`
+            <label class="ms-option">
+              <input type="checkbox" ${u.role==='service_provider'?'checked':''}>
+              ${u.name}
+              <span class="ms-meta">${u.cnpj}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>` : ''}
+
+      ${scopeBlock('units', 'Por tomador / filial de trabalho',
+        'Onde a pessoa está alocada operacionalmente. Útil para gerentes de loja.',
+        [
+          {val:'all', label:'Todos os tomadores', help:'Vê funcionários alocados em qualquer filial do grupo'},
+          {val:'specific:list', label:'Filiais específicas', help:'Selecione as filiais onde este perfil enxerga (ATP-Varejo, Cestão L1, etc.)'},
+          {val:'self', label:'Apenas sua filial de trabalho', help:'Limitado à filial onde o usuário está alocado'}
+        ], wizState.scope.units, 'ssi-tom')}
+
+      ${scopeBlock('depts', 'Por departamento',
+        'Área funcional (Financeiro, Operações, etc.). Pode incluir subdepartamentos recursivamente.',
+        [
+          {val:'all', label:'Todos os departamentos', help:'Vê funcionários de qualquer departamento dentro do escopo de filial/empregador'},
+          {val:'specific:list', label:'Departamentos específicos', help:'Selecione as áreas que este perfil enxerga'},
+          {val:'self', label:'Apenas seu departamento', help:'Limitado ao departamento do próprio usuário'}
+        ], wizState.scope.depts, 'ssi-dpt')}
+
+      ${scopeBlock('hierarchy', 'Por hierarquia humana',
+        'Cadeia de gestão (manager_id). Combina com as outras dimensões.',
+        [
+          {val:'all', label:'Toda a hierarquia', help:'Vê todos, independente de subordinação direta'},
+          {val:'recursive', label:'Cadeia recursiva (todos abaixo)', help:'Vê liderados diretos + indiretos (toda a árvore abaixo)'},
+          {val:'direct', label:'Apenas subordinados diretos', help:'Vê só quem tem o usuário como manager_id'},
+          {val:'self', label:'Somente o próprio usuário', help:'Não vê ninguém além de si mesmo'}
+        ], wizState.scope.hierarchy, 'ssi-hier')}
+    </div>
+  `;
+}
+
+function renderWizStep4(){
+  document.getElementById('pmFoot').textContent = 'Permissões especiais que vão além das páginas';
+
+  const specialPerms = [
+    {id:'approve_movements',  label:'Aprovar movimentações de pessoal',  desc:'Pode aprovar ou rejeitar solicitações de demissão, promoção, etc.', icon:'✓'},
+    {id:'import_csv',         label:'Importar planilhas CSV/Excel',      desc:'Pode fazer upload de arquivos para criação ou atualização em lote', icon:'⤓'},
+    {id:'export_sensitive',   label:'Exportar dados sensíveis',          desc:'Permite exportar relatórios contendo CPF, salário, dados médicos', icon:'⤒'},
+    {id:'reset_passwords',    label:'Resetar senhas de outros usuários', desc:'Pode gerar nova senha temporária para colaboradores',                icon:'⚿'},
+    {id:'manage_profiles',    label:'Gerenciar perfis de acesso',         desc:'Pode criar, editar e excluir perfis (alto risco)',                  icon:'⚙'},
+    {id:'view_audit',         label:'Ver logs de auditoria',              desc:'Acessa histórico completo de ações no sistema',                     icon:'⌕'},
+    {id:'override_scope',     label:'Override individual de escopo',      desc:'Pode atribuir permissões individuais que substituem o perfil',      icon:'★'},
+    {id:'manage_cycles',      label:'Iniciar e encerrar ciclos',          desc:'Controla o ciclo de vida das avaliações de desempenho',             icon:'⟳'}
+  ];
+
+  document.getElementById('pmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Permissões especiais</h4>
+        <p>Essas capacidades vão além das páginas individuais. São poderes administrativos transversais.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        ${specialPerms.map(sp=>{
+          const checked = wizState.special.includes(sp.id);
+          return `
+            <label class="scope-option ${checked?'selected':''}">
+              <input type="checkbox" ${checked?'checked':''} onchange="toggleSpecial('${sp.id}'); renderWizStep4();">
+              <div class="opt-text">
+                <strong>${sp.icon}  ${sp.label}</strong>
+                <span>${sp.desc}</span>
+              </div>
+            </label>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function toggleSpecial(id){
+  const i = wizState.special.indexOf(id);
+  if(i>=0) wizState.special.splice(i,1);
+  else wizState.special.push(id);
+}
+
+function renderWizStep5(){
+  document.getElementById('pmFoot').textContent = 'Revise e confirme as configurações';
+
+  function describeScope(key, val, dim){
+    if(val==='all')       return `<strong>Tudo:</strong> sem restrição em ${dim}`;
+    if(val==='self')      return `<strong>Próprio:</strong> apenas o ${dim} do usuário`;
+    if(val==='recursive') return `<strong>Recursivo:</strong> cadeia hierárquica abaixo`;
+    if(val==='direct')    return `<strong>Diretos:</strong> apenas subordinados diretos`;
+    if(val.startsWith('specific:')) return `<strong>Específicos:</strong> filtrado por seleção`;
+    return val;
+  }
+
+  document.getElementById('pmBody').innerHTML = `
+    <div class="affect-banner">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div>
+        <strong>Este perfil afetará novos usuários e pode ser atribuído a colaboradores existentes.</strong><br>
+        <span>Após salvar, você pode atribuí-lo na aba "Atribuições".</span>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head">
+        <div class="review-icon" style="background:${wizState.color}; color:#fff; font-weight:700;">${wizState.icon}</div>
+        <div class="review-title">${wizState.name || '<em style="color:var(--txt3);">sem nome</em>'}</div>
+      </div>
+      <div class="review-content">${wizState.desc || '<em style="color:var(--txt3);">sem descrição</em>'}</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head"><div class="review-icon" style="background:#E8EFF8; color:var(--navy);">⛁</div><div class="review-title">Páginas do sistema</div></div>
+      <div class="review-content">
+        <strong>${systemPages.length} páginas configuradas.</strong> Acessos a ${systemPages.filter(p=>p.sensitive).length} páginas sensíveis precisam de revisão.
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head"><div class="review-icon ssi-emp">E</div><div class="review-title">Escopo de empregador</div></div>
+      <div class="review-content">${describeScope('employers', wizState.scope.employers, 'empregador')}</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head"><div class="review-icon ssi-tom">T</div><div class="review-title">Escopo de tomador (filial)</div></div>
+      <div class="review-content">${describeScope('units', wizState.scope.units, 'filial de trabalho')}</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head"><div class="review-icon ssi-dpt">D</div><div class="review-title">Escopo de departamento</div></div>
+      <div class="review-content">${describeScope('depts', wizState.scope.depts, 'departamento')}</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head"><div class="review-icon ssi-hier">H</div><div class="review-title">Escopo hierárquico</div></div>
+      <div class="review-content">${describeScope('hierarchy', wizState.scope.hierarchy, 'hierarquia')}</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-head"><div class="review-icon" style="background:var(--amber); color:#fff;">★</div><div class="review-title">Permissões especiais (${wizState.special.length})</div></div>
+      <div class="review-content">
+        ${wizState.special.length>0 ? `<ul class="review-list">${wizState.special.map(s=>`<li>${s.replaceAll('_',' ')}</li>`).join('')}</ul>` : '<em style="color:var(--txt3);">Nenhuma permissão especial selecionada</em>'}
+      </div>
+    </div>
+  `;
+}
+
+function nextProfileStep(){
+  if(wizState.step===1 && !wizState.name.trim()){alert('Informe o nome do perfil'); return;}
+  if(wizState.step<5){wizState.step++; renderWizardStep();}
+  else{
+    alert('Perfil salvo com sucesso!\n\nEm produção, isto persistiria no Supabase e atualizaria a listagem.');
+    closeProfileWizard();
+  }
+}
+function prevProfileStep(){if(wizState.step>1){wizState.step--; renderWizardStep();}}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderProfiles();
+  renderAssignments();
+  renderPages();
+});
+</script>
+</body>
+</html>

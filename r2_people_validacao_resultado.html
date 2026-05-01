@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Validar resultado de meta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#BE185D,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1180px; margin:0 auto; padding:18px 22px 50px;}
+.breadcrumb{display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--txt2); margin-bottom:11px;}
+.breadcrumb a{color:var(--txt2); text-decoration:none; cursor:pointer;}
+.breadcrumb a:hover{color:var(--navy);}
+.breadcrumb svg{width:11px; height:11px; opacity:.6;}
+.breadcrumb .crumb-current{color:var(--txt); font-weight:500;}
+.page-header{background:#fff; border-radius:13px; padding:18px 22px; box-shadow:var(--shadow-card); margin-bottom:13px; border-left:4px solid var(--orange);}
+.ph-row{display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; margin-bottom:11px;}
+.ph-icon{width:44px; height:44px; border-radius:11px; background:linear-gradient(135deg, var(--orange2), #fff); border:1px solid var(--orange); color:var(--orange); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.ph-icon svg{width:20px; height:20px;}
+.ph-info{flex:1; min-width:280px;}
+.page-header h1{font-size:20px; font-weight:600; letter-spacing:-.3px; line-height:1.25; margin-bottom:4px;}
+.ph-meta{font-size:11.5px; color:var(--txt2); display:flex; gap:11px; align-items:center; flex-wrap:wrap;}
+.ph-meta strong{color:var(--txt); font-weight:600;}
+.who-strip{margin-top:11px; padding:11px 13px; background:var(--off); border-radius:10px; display:flex; gap:11px; align-items:center; flex-wrap:wrap; font-size:11.5px;}
+.who-strip svg{width:14px; height:14px; color:var(--green); flex-shrink:0;}
+.who-strip strong{color:var(--txt); font-weight:600;}
+.summary-row{display:grid; grid-template-columns:repeat(4, 1fr); gap:11px; margin-bottom:13px;}
+.sum-card{background:#fff; border-radius:11px; padding:13px 16px; box-shadow:var(--shadow-card); border-bottom:3px solid var(--navy);}
+.sum-card.green{border-bottom-color:var(--green);}
+.sum-card.amber{border-bottom-color:var(--amber);}
+.sum-card.orange{border-bottom-color:var(--orange);}
+.sum-lbl{font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--txt2); font-weight:600;}
+.sum-val{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:20px; color:var(--txt); letter-spacing:-.3px; margin-top:4px; line-height:1;}
+.sum-val .currency{font-size:11px; font-weight:500; color:var(--txt2); font-family:'Sora',sans-serif;}
+.sum-val.green{color:var(--green);}
+.sum-val.amber{color:var(--amber);}
+.sum-val.orange{color:var(--orange);}
+.sum-detail{font-size:10.5px; color:var(--txt2); margin-top:4px;}
+@media (max-width: 1024px){ .summary-row{grid-template-columns:repeat(2, 1fr);} }
+.section{background:#fff; border-radius:13px; padding:16px 20px; box-shadow:var(--shadow-card); margin-bottom:13px;}
+.sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:13px; padding-bottom:11px; border-bottom:1px solid var(--gray1);}
+.sec-head h2{font-size:14px; font-weight:600; display:flex; align-items:center; gap:7px; letter-spacing:-.2px;}
+.sec-head h2 svg{width:14px; height:14px; color:var(--orange);}
+.sec-helper{font-size:11px; color:var(--txt2);}
+.indicator-review{border:1.5px solid var(--gray1); border-radius:11px; padding:14px 16px; margin-bottom:11px; position:relative;}
+.indicator-review:last-child{margin-bottom:0;}
+.indicator-review.approved{border-color:var(--green); background:linear-gradient(180deg, var(--green2), #fff);}
+.indicator-review.contested{border-color:var(--red); background:linear-gradient(180deg, var(--red2), #fff);}
+.indicator-review.pending{border-color:var(--amber);}
+.ir-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:11px; gap:11px;}
+.ir-name{display:flex; align-items:center; gap:9px; flex:1; min-width:0;}
+.ir-num{width:24px; height:24px; border-radius:7px; background:var(--navy); color:#fff; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.ir-name h3{font-size:13.5px; font-weight:600; letter-spacing:-.1px;}
+.ir-status-chip{font-size:10px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; padding:4px 9px; border-radius:5px; background:var(--amber2); color:var(--amber);}
+.ir-status-chip.approved{background:var(--green2); color:var(--green);}
+.ir-status-chip.contested{background:var(--red2); color:var(--red);}
+.ir-grid{display:grid; grid-template-columns:1fr 1fr 1fr 1.2fr; gap:11px; margin-bottom:11px;}
+.ir-block{background:var(--off); border-radius:9px; padding:11px 13px; border:1px solid var(--gray1);}
+.ir-block-lbl{font-size:9.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--txt2); font-weight:700;}
+.ir-block-val{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:16px; margin-top:4px; color:var(--txt); letter-spacing:-.2px; line-height:1;}
+.ir-block-val .currency{font-size:10.5px; font-weight:500; color:var(--txt2); font-family:'Sora',sans-serif;}
+.ir-block-val.green{color:var(--green);}
+.ir-block-val.amber{color:var(--amber);}
+.ir-block-val.red{color:var(--red);}
+.ir-block-detail{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+.ir-result-block{background:linear-gradient(135deg, var(--green2), #fff); border:1.5px solid var(--green); text-align:center; display:flex; flex-direction:column; justify-content:center;}
+.ir-result-block.below{background:linear-gradient(135deg, var(--amber2), #fff); border-color:var(--amber);}
+.ir-result-pct{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:24px; color:var(--green); letter-spacing:-.5px; line-height:1;}
+.ir-result-pct.below{color:var(--amber);}
+.ir-result-status-txt{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-top:4px; color:var(--green);}
+.ir-result-status-txt.below{color:var(--amber);}
+.ir-justif{margin-top:11px; padding:11px 13px; background:#fff; border:1px solid var(--gray2); border-radius:9px;}
+.ir-justif-head{display:flex; align-items:center; gap:7px; font-size:10px; text-transform:uppercase; letter-spacing:.4px; color:var(--txt2); font-weight:700; margin-bottom:6px;}
+.ir-justif-head svg{width:11px; height:11px;}
+.ir-justif-text{font-size:12px; color:var(--txt); line-height:1.5;}
+.ir-justif-meta{font-size:10.5px; color:var(--txt2); margin-top:6px; padding-top:6px; border-top:1px dashed var(--gray2); display:flex; gap:11px; flex-wrap:wrap;}
+.ir-justif-meta svg{width:11px; height:11px; opacity:.6;}
+.ir-decision{margin-top:11px; padding-top:11px; border-top:1px dashed var(--gray2); display:flex; gap:9px; align-items:center; flex-wrap:wrap;}
+.ir-dec-label{font-size:11px; font-weight:600; color:var(--txt2);}
+.ir-dec-btn{padding:7px 12px; border-radius:7px; font-size:11.5px; font-weight:600; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:5px; border:1.5px solid; transition:all .12s;}
+.ir-dec-btn svg{width:12px; height:12px;}
+.ir-dec-btn.approve{background:#fff; color:var(--green); border-color:var(--green);}
+.ir-dec-btn.approve:hover, .ir-dec-btn.approve.active{background:var(--green); color:#fff;}
+.ir-dec-btn.contest{background:#fff; color:var(--red); border-color:var(--red2);}
+.ir-dec-btn.contest:hover, .ir-dec-btn.contest.active{background:var(--red); color:#fff; border-color:var(--red);}
+.ir-decision-msg{margin-top:9px; padding:9px 11px; background:var(--green2); border-left:3px solid var(--green); border-radius:6px; font-size:11px; color:var(--txt);}
+.ir-decision-msg.contested{background:var(--red2); border-left-color:var(--red);}
+.ir-contest-area{display:none; margin-top:9px;}
+.ir-contest-area.show{display:block;}
+.ir-contest-area textarea{width:100%; padding:8px 11px; border:1.5px solid var(--red2); border-radius:7px; font-size:12px; font-family:inherit; color:var(--txt); background:#fff; min-height:60px; resize:vertical;}
+.ir-contest-area textarea:focus{outline:none; border-color:var(--red);}
+.payout-section{background:#fff; border-radius:13px; padding:16px 20px; box-shadow:var(--shadow-card); margin-bottom:13px; border-top:3px solid var(--orange);}
+.payout-summary{background:linear-gradient(135deg, var(--orange2), #fff); border:1px solid var(--orange); border-radius:11px; padding:13px 16px; display:flex; align-items:center; justify-content:space-between; gap:13px; margin-bottom:13px;}
+.ps-info{flex:1;}
+.ps-row{display:flex; align-items:baseline; gap:11px; flex-wrap:wrap;}
+.ps-original{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--txt2); text-decoration:line-through;}
+.ps-arrow{color:var(--txt3); font-size:14px;}
+.ps-final{font-family:'JetBrains Mono',monospace; font-weight:700; font-size:21px; color:var(--orange); letter-spacing:-.4px;}
+.ps-pct{font-size:10.5px; font-weight:700; background:var(--green); color:#fff; padding:2px 8px; border-radius:4px;}
+.ps-detail{font-size:11px; color:var(--txt2); margin-top:4px;}
+.benef-table{width:100%; border-collapse:collapse; font-size:12px;}
+.benef-table thead th{text-align:left; padding:9px 11px; font-size:10px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; color:var(--txt2); background:var(--off); border-bottom:1px solid var(--gray2);}
+.benef-table thead th.right{text-align:right;}
+.benef-table thead th.center{text-align:center;}
+.benef-table tbody td{padding:10px 11px; border-bottom:1px solid var(--gray1); font-size:11.5px;}
+.benef-table tbody tr:last-child td{border-bottom:none;}
+.benef-table tbody tr:hover td{background:var(--off);}
+.benef-row-name{display:flex; align-items:center; gap:9px;}
+.benef-avatar{width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg, var(--navy3), var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:10.5px; flex-shrink:0;}
+.benef-name{font-weight:500; color:var(--txt);}
+.benef-cpf{font-size:10px; color:var(--txt3); font-family:'JetBrains Mono',monospace;}
+.benef-role{font-size:11px; color:var(--txt2);}
+.rule-tag{font-size:9.5px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; padding:2px 6px; border-radius:4px; background:var(--purple2); color:var(--purple); white-space:nowrap;}
+.rule-tag.dept{background:var(--teal2); color:var(--teal);}
+.rule-tag.user{background:var(--amber2); color:var(--amber);}
+.benef-table td.right{text-align:right; font-family:'JetBrains Mono',monospace; font-weight:600;}
+.benef-table td.full-amount{color:var(--txt2);}
+.benef-table td.final-amount{color:var(--orange); font-weight:700; font-size:12px;}
+.benef-table td.final-amount.green{color:var(--green);}
+.benef-table tfoot td{padding:11px; border-top:2px solid var(--gray2); font-weight:700; background:linear-gradient(180deg, var(--off), #fff);}
+.benef-table tfoot td.right{text-align:right; color:var(--orange); font-family:'JetBrains Mono',monospace; font-size:13px;}
+.final-strip{background:linear-gradient(135deg, var(--blue2), #fff); border:1px solid var(--blue); border-radius:11px; padding:13px 16px; display:flex; align-items:flex-start; gap:11px; margin-bottom:13px;}
+.fs-icon{width:32px; height:32px; border-radius:9px; background:var(--blue); color:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.fs-icon svg{width:14px; height:14px;}
+.fs-text{flex:1; font-size:11.5px; line-height:1.5;}
+.fs-text strong{color:var(--blue);}
+.actions-bar{position:sticky; bottom:0; background:#fff; border-top:1px solid var(--gray2); padding:14px 22px; margin:0 -22px -50px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; box-shadow:0 -3px 12px rgba(26,45,79,.08); z-index:10;}
+.actions-status{font-size:11.5px; color:var(--txt2); display:flex; align-items:center; gap:7px;}
+.actions-status svg{width:13px; height:13px;}
+.actions-buttons{display:flex; gap:9px; flex-wrap:wrap;}
+.btn{padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:600; font-family:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:7px; border:1.5px solid; transition:all .12s; white-space:nowrap;}
+.btn svg{width:14px; height:14px;}
+.btn-secondary{background:#fff; color:var(--txt); border-color:var(--gray2);}
+.btn-secondary:hover{border-color:var(--navy); color:var(--navy);}
+.btn-ghost{background:transparent; color:var(--txt2); border-color:transparent;}
+.btn-ghost:hover{background:var(--off); color:var(--txt);}
+.btn-green{background:var(--green); color:#fff; border-color:var(--green); box-shadow:0 3px 8px rgba(30,123,75,.25);}
+.btn-green:hover{background:#15643A;}
+.btn-danger{background:#fff; color:var(--red); border-color:var(--red2);}
+.btn-danger:hover{background:var(--red); color:#fff; border-color:var(--red);}
+.toast{position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--dark); color:#fff; padding:12px 18px; border-radius:10px; font-size:12.5px; font-weight:500; box-shadow:var(--shadow-pop); z-index:200; transition:transform .25s; display:flex; align-items:center; gap:9px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast svg{width:14px; height:14px;}
+@media (max-width: 1024px){ .ir-grid{grid-template-columns:1fr 1fr;} .ir-result-block{grid-column:1 / -1;} }
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:13px 14px 70px;}
+  .summary-row{grid-template-columns:1fr 1fr;}
+  .ir-grid{grid-template-columns:1fr;}
+  .actions-bar{padding:11px 14px; margin:0 -14px -30px;}
+  .benef-table{font-size:11px;}
+  .benef-table th:nth-child(3), .benef-table td:nth-child(3){display:none;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Diretoria</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Painel executivo</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Indicadores GPC</a>
+      <div class="sidebar-section">Aprovações</div>
+      <a class="nav-item active"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Metas a validar <span style="margin-left:auto; background:var(--orange); color:#fff; font-size:9.5px; padding:1px 6px; border-radius:9px; font-weight:700;">3</span></a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/></svg>Aprovações de RH</a>
+      <div class="sidebar-section">Operações</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Folha por filial</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Aprovações · <strong>Validar resultado</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">MC</div>
+      <div class="user-info">
+        <span class="user-name">Mariana Costa</span>
+        <span class="user-role">Diretora Comercial</span>
+      </div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="breadcrumb">
+        <a>Aprovações</a>
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        <a>Metas a validar</a>
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        <span class="crumb-current">Vendas Mensais ATP Varejo · maio/2026</span>
+      </div>
+      <div class="page-header">
+        <div class="ph-row">
+          <div class="ph-icon">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="ph-info">
+            <h1>Validar resultado · Vendas Mensais ATP Varejo</h1>
+            <div class="ph-meta">
+              <span><strong>Período:</strong> 01 a 31/05/2026</span>
+              <span>·</span>
+              <span><strong>Filial:</strong> ATP Varejo</span>
+              <span>·</span>
+              <span><strong>Departamento:</strong> Frente de Loja</span>
+              <span>·</span>
+              <span><strong>2 indicadores</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="who-strip">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+          <span>Resultado lançado por <strong>Bruno Lima · Líder Frente de Loja ATP Varejo</strong> em <strong>02/06/2026 às 14:32</strong></span>
+          <button style="margin-left:auto; background:transparent; border:1px solid var(--gray2); padding:5px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-family:inherit; color:var(--navy); font-weight:600;">Ver evidências</button>
+        </div>
+      </div>
+      <div class="summary-row">
+        <div class="sum-card green">
+          <div class="sum-lbl">Atingimento médio</div>
+          <div class="sum-val green">103%</div>
+          <div class="sum-detail">média ponderada dos 2 indicadores</div>
+        </div>
+        <div class="sum-card">
+          <div class="sum-lbl">Total previsto</div>
+          <div class="sum-val"><span class="currency">R$</span> 8.200</div>
+          <div class="sum-detail">se atingisse 100% em todos</div>
+        </div>
+        <div class="sum-card orange">
+          <div class="sum-lbl">A pagar (calculado)</div>
+          <div class="sum-val orange"><span class="currency">R$</span> 8.200</div>
+          <div class="sum-detail">com proporcional capped em 100%</div>
+        </div>
+        <div class="sum-card amber">
+          <div class="sum-lbl">Beneficiados</div>
+          <div class="sum-val amber">14</div>
+          <div class="sum-detail">colaboradores · 4 regras</div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="sec-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            Validação por indicador
+          </h2>
+          <span class="sec-helper">aprovar ou contestar individualmente · 2 indicadores</span>
+        </div>
+        <div class="indicator-review pending" id="ind1">
+          <div class="ir-head">
+            <div class="ir-name">
+              <span class="ir-num">1</span>
+              <h3>Faturamento bruto</h3>
+            </div>
+            <span class="ir-status-chip" id="ind1Status">Aguarda decisão</span>
+          </div>
+          <div class="ir-grid">
+            <div class="ir-block">
+              <div class="ir-block-lbl">Valor alvo</div>
+              <div class="ir-block-val"><span class="currency">R$</span> 1.850.000</div>
+              <div class="ir-block-detail">gate 80% · proporcional</div>
+            </div>
+            <div class="ir-block">
+              <div class="ir-block-lbl">Valor realizado</div>
+              <div class="ir-block-val green"><span class="currency">R$</span> 1.962.450</div>
+              <div class="ir-block-detail">superou em R$ 112.450</div>
+            </div>
+            <div class="ir-block">
+              <div class="ir-block-lbl">Diferença</div>
+              <div class="ir-block-val green">+6,1%</div>
+              <div class="ir-block-detail">acima do alvo</div>
+            </div>
+            <div class="ir-block ir-result-block">
+              <div class="ir-result-pct">106%</div>
+              <div class="ir-result-status-txt">superou alvo</div>
+            </div>
+          </div>
+          <div class="ir-justif">
+            <div class="ir-justif-head">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Justificativa do líder
+            </div>
+            <div class="ir-justif-text">
+              "Mês excepcional impulsionado pelo Dia das Mães e ações comerciais. Categoria de bebidas cresceu 18% vs. abril."
+            </div>
+            <div class="ir-justif-meta">
+              <span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 02/06/2026 14:32</span>
+              <span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg> Fonte: DRE consolidado · TOTVS · fechamento 02/06</span>
+              <span style="margin-left:auto;"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> 1 anexo: <a style="color:var(--navy); font-weight:600;">DRE_ATP_mai2026.pdf</a></span>
+            </div>
+          </div>
+          <div class="ir-decision">
+            <span class="ir-dec-label">Sua decisão:</span>
+            <button class="ir-dec-btn approve" onclick="decideIndicator(1, 'approve')">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Aprovar
+            </button>
+            <button class="ir-dec-btn contest" onclick="decideIndicator(1, 'contest')">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Contestar
+            </button>
+          </div>
+          <div class="ir-contest-area" id="contest1">
+            <textarea placeholder="Motivo da contestação · será enviado ao líder para revisar"></textarea>
+          </div>
+        </div>
+        <div class="indicator-review pending" id="ind2">
+          <div class="ir-head">
+            <div class="ir-name">
+              <span class="ir-num">2</span>
+              <h3>Ticket médio</h3>
+            </div>
+            <span class="ir-status-chip" id="ind2Status">Aguarda decisão</span>
+          </div>
+          <div class="ir-grid">
+            <div class="ir-block">
+              <div class="ir-block-lbl">Valor alvo</div>
+              <div class="ir-block-val"><span class="currency">R$</span> 78,00</div>
+              <div class="ir-block-detail">gate 90% · binário</div>
+            </div>
+            <div class="ir-block">
+              <div class="ir-block-lbl">Valor realizado</div>
+              <div class="ir-block-val amber"><span class="currency">R$</span> 75,80</div>
+              <div class="ir-block-detail">abaixo em R$ 2,20</div>
+            </div>
+            <div class="ir-block">
+              <div class="ir-block-lbl">Diferença</div>
+              <div class="ir-block-val amber">-2,8%</div>
+              <div class="ir-block-detail">abaixo do alvo · acima do gate</div>
+            </div>
+            <div class="ir-block ir-result-block below">
+              <div class="ir-result-pct below">97%</div>
+              <div class="ir-result-status-txt below">acima do gate · binário paga 100%</div>
+            </div>
+          </div>
+          <div class="ir-justif">
+            <div class="ir-justif-head">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Justificativa do líder
+            </div>
+            <div class="ir-justif-text">
+              "Mix de produtos pendeu pra itens de menor valor por causa de promoções. Ainda assim ficamos acima do gate de 90%."
+            </div>
+            <div class="ir-justif-meta">
+              <span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 02/06/2026 14:35</span>
+              <span><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg> Fonte: Sistema PDV · relatório ticket médio</span>
+            </div>
+          </div>
+          <div class="ir-decision">
+            <span class="ir-dec-label">Sua decisão:</span>
+            <button class="ir-dec-btn approve" onclick="decideIndicator(2, 'approve')">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+              Aprovar
+            </button>
+            <button class="ir-dec-btn contest" onclick="decideIndicator(2, 'contest')">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              Contestar
+            </button>
+          </div>
+          <div class="ir-contest-area" id="contest2">
+            <textarea placeholder="Motivo da contestação · será enviado ao líder para revisar"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="payout-section">
+        <div class="sec-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Cálculo por colaborador
+          </h2>
+          <span class="sec-helper">14 colaboradores · valores que entrarão na folha após sua aprovação</span>
+        </div>
+        <div class="payout-summary">
+          <div class="ps-info">
+            <div class="ps-row">
+              <span class="ps-original">R$ 8.200,00</span>
+              <span class="ps-arrow">→</span>
+              <span class="ps-final">R$ 8.200,00</span>
+              <span class="ps-pct">100% médio</span>
+            </div>
+            <div class="ps-detail">
+              Faturamento (proporcional): 106% capped em 100% · Ticket (binário): atingiu gate, paga 100% · Média: 100%.
+            </div>
+          </div>
+          <svg aria-hidden="true" width="38" height="38" fill="none" stroke="var(--orange)" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>
+        </div>
+        <table class="benef-table">
+          <thead>
+            <tr>
+              <th style="width:34%">Colaborador</th>
+              <th>Regra aplicada</th>
+              <th>CPF</th>
+              <th class="right">Valor cheio</th>
+              <th class="center">Atingimento</th>
+              <th class="right">A pagar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar">MC</div><div><div class="benef-name">Mariana Costa</div><div class="benef-role">Diretora Comercial</div></div></div></td>
+              <td><span class="rule-tag user">Individual</span></td>
+              <td><span class="benef-cpf">123.456.789-01</span></td>
+              <td class="right full-amount">R$ 4.000,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 4.000,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--green), var(--teal));">BL</div><div><div class="benef-name">Bruno Lima</div><div class="benef-role">Op. Caixa Sr · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Op. Caixa</td>
+              <td><span class="benef-cpf">234.567.890-12</span></td>
+              <td class="right full-amount">R$ 250,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--orange), var(--amber));">CS</div><div><div class="benef-name">Carla Santos</div><div class="benef-role">Op. Caixa · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Op. Caixa</td>
+              <td><span class="benef-cpf">345.678.901-23</span></td>
+              <td class="right full-amount">R$ 250,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--purple), var(--pink));">DA</div><div><div class="benef-name">Diego Almeida</div><div class="benef-role">Op. Caixa · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Op. Caixa</td>
+              <td><span class="benef-cpf">456.789.012-34</span></td>
+              <td class="right full-amount">R$ 250,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--blue), var(--navy));">EM</div><div><div class="benef-name">Eduarda Martins</div><div class="benef-role">Op. Caixa · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Op. Caixa</td>
+              <td><span class="benef-cpf">567.890.123-45</span></td>
+              <td class="right full-amount">R$ 250,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--red), var(--orange));">FR</div><div><div class="benef-name">Felipe Rocha</div><div class="benef-role">Op. Caixa · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Op. Caixa</td>
+              <td><span class="benef-cpf">678.901.234-56</span></td>
+              <td class="right full-amount">R$ 250,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--teal), var(--green));">GS</div><div><div class="benef-name">Gabriela Sousa</div><div class="benef-role">Op. Caixa · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Op. Caixa</td>
+              <td><span class="benef-cpf">789.012.345-67</span></td>
+              <td class="right full-amount">R$ 250,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--pink), var(--purple));">HC</div><div><div class="benef-name">Henrique Carvalho</div><div class="benef-role">Op. Caixa · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Op. Caixa</td>
+              <td><span class="benef-cpf">890.123.456-78</span></td>
+              <td class="right full-amount">R$ 250,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 250,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--amber), var(--orange));">IS</div><div><div class="benef-name">Igor Silva</div><div class="benef-role">Repositor · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Repositor</td>
+              <td><span class="benef-cpf">901.234.567-89</span></td>
+              <td class="right full-amount">R$ 200,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 200,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--navy), var(--teal));">JP</div><div><div class="benef-name">Júlia Pereira</div><div class="benef-role">Repositor · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Repositor</td>
+              <td><span class="benef-cpf">012.345.678-90</span></td>
+              <td class="right full-amount">R$ 200,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 200,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--purple), var(--blue));">LO</div><div><div class="benef-name">Lucas Oliveira</div><div class="benef-role">Repositor · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Repositor</td>
+              <td><span class="benef-cpf">112.233.445-66</span></td>
+              <td class="right full-amount">R$ 200,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 200,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--green), var(--blue));">MA</div><div><div class="benef-name">Mateus Alves</div><div class="benef-role">Repositor · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag">Cargo</span> Repositor</td>
+              <td><span class="benef-cpf">223.344.556-77</span></td>
+              <td class="right full-amount">R$ 200,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 200,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--orange), var(--red));">NF</div><div><div class="benef-name">Natália Ferreira</div><div class="benef-role">Frente de Loja · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag dept">Depto.</span> + cargo</td>
+              <td><span class="benef-cpf">334.455.667-88</span></td>
+              <td class="right full-amount">R$ 350,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 350,00</td>
+            </tr>
+            <tr>
+              <td><div class="benef-row-name"><div class="benef-avatar" style="background:linear-gradient(135deg, var(--teal), var(--purple));">OB</div><div><div class="benef-name">Otávio Barbosa</div><div class="benef-role">Frente de Loja · ATP Varejo</div></div></div></td>
+              <td><span class="rule-tag dept">Depto.</span></td>
+              <td><span class="benef-cpf">445.566.778-99</span></td>
+              <td class="right full-amount">R$ 100,00</td>
+              <td class="center">100%</td>
+              <td class="right final-amount green">R$ 100,00</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">Total · 14 colaboradores · 4 regras combinadas</td>
+              <td class="right">R$ 8.200,00</td>
+              <td class="center">100% médio</td>
+              <td class="right">R$ 8.200,00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="final-strip">
+        <div class="fs-icon">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="fs-text">
+          <strong>Após validar todos os indicadores:</strong> ao clicar em "Aprovar e fechar", os valores serão registrados como pagamento devido. A folha de junho/2026 receberá automaticamente os valores quando aberta. Os 14 colaboradores serão notificados. <strong>Esta ação não pode ser desfeita após a folha rodar.</strong>
+        </div>
+      </div>
+      <div class="actions-bar">
+        <div class="actions-status" id="actionsStatus">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--amber);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg>
+          <span><strong>0 de 2</strong> indicadores decididos</span>
+        </div>
+        <div class="actions-buttons">
+          <button class="btn btn-ghost" onclick="window.history.back()">Voltar</button>
+          <button class="btn btn-danger" onclick="contestAll()">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Contestar tudo
+          </button>
+          <button class="btn btn-secondary" onclick="approveAll()">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+            Aprovar todos
+          </button>
+          <button class="btn btn-green" onclick="finalizeValidation()" id="finalizeBtn" disabled style="opacity:.5;">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Aprovar e fechar
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<div class="toast" id="toast">
+  <svg aria-hidden="true" fill="none" stroke="var(--green)" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+  <span id="toastMsg">Pronto</span>
+</div>
+<script>
+const decisions = { 1: null, 2: null };
+
+function decideIndicator(idx, decision){
+  decisions[idx] = decision;
+  const row = document.getElementById('ind' + idx);
+  const status = document.getElementById('ind' + idx + 'Status');
+  const contestArea = document.getElementById('contest' + idx);
+
+  row.querySelectorAll('.ir-dec-btn').forEach(b => b.classList.remove('active'));
+  row.classList.remove('approved', 'contested', 'pending');
+
+  const existing = row.querySelector('.ir-decision-msg');
+  if(existing) existing.remove();
+
+  if(decision === 'approve'){
+    row.classList.add('approved');
+    status.textContent = 'Aprovado';
+    status.className = 'ir-status-chip approved';
+    row.querySelector('.ir-dec-btn.approve').classList.add('active');
+    contestArea.classList.remove('show');
+    const msg = document.createElement('div');
+    msg.className = 'ir-decision-msg';
+    msg.innerHTML = '<strong>Aprovado.</strong> O indicador entrará no cálculo final dos pagamentos.';
+    row.querySelector('.ir-decision').after(msg);
+  } else if(decision === 'contest'){
+    row.classList.add('contested');
+    status.textContent = 'Contestado';
+    status.className = 'ir-status-chip contested';
+    row.querySelector('.ir-dec-btn.contest').classList.add('active');
+    contestArea.classList.add('show');
+    contestArea.querySelector('textarea').focus();
+    const msg = document.createElement('div');
+    msg.className = 'ir-decision-msg contested';
+    msg.innerHTML = '<strong>Contestado.</strong> Bruno Lima receberá notificação para revisar e relançar.';
+    row.querySelector('.ir-decision').after(msg);
+  }
+
+  updateGlobalStatus();
+}
+
+function updateGlobalStatus(){
+  const decided = Object.values(decisions).filter(d => d !== null).length;
+  const status = document.getElementById('actionsStatus');
+  const finalizeBtn = document.getElementById('finalizeBtn');
+
+  if(decided === 0){
+    status.innerHTML = '<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--amber);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg> <span><strong>0 de 2</strong> indicadores decididos</span>';
+    finalizeBtn.disabled = true;
+    finalizeBtn.style.opacity = '.5';
+  } else if(decided === 2){
+    const allApproved = Object.values(decisions).every(d => d === 'approve');
+    if(allApproved){
+      status.innerHTML = '<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--green);"><path d="M5 12l5 5L20 7"/></svg> <span><strong>2 de 2 aprovados.</strong> Pronto para fechar e enviar para folha.</span>';
+    } else {
+      const c = Object.values(decisions).filter(d => d === 'contest').length;
+      status.innerHTML = '<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--amber);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg> <span>' + c + ' indicador' + (c > 1 ? 'es' : '') + ' contestado' + (c > 1 ? 's' : '') + ' · líder será notificado</span>';
+    }
+    finalizeBtn.disabled = false;
+    finalizeBtn.style.opacity = '1';
+  } else {
+    status.innerHTML = '<svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="color:var(--amber);"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg> <span><strong>' + decided + ' de 2</strong> indicadores decididos · 1 pendente</span>';
+    finalizeBtn.disabled = true;
+    finalizeBtn.style.opacity = '.5';
+  }
+}
+
+function approveAll(){ decideIndicator(1, 'approve'); decideIndicator(2, 'approve'); }
+function contestAll(){ decideIndicator(1, 'contest'); decideIndicator(2, 'contest'); }
+
+function finalizeValidation(){
+  const allApproved = Object.values(decisions).every(d => d === 'approve');
+  if(allApproved){
+    showToast('Validação aprovada · 14 colaboradores notificados · folha de junho atualizada', 'var(--green)');
+  } else {
+    showToast('Contestações enviadas · líder será notificado para revisar', 'var(--orange)');
+  }
+}
+
+function showToast(msg, color){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  if(color) t.querySelector('svg').style.stroke = color;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'a' && e.ctrlKey){ e.preventDefault(); approveAll(); }
+});
+</script>
+</body>
+</html>

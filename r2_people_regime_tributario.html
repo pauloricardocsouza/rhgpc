@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Regime tributário por unidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#3D5F95,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1300px; margin:0 auto; padding:18px 22px 50px;}
+
+/* HEADER */
+.page-header{margin-bottom:14px;}
+.page-header-row{
+  display:flex; justify-content:space-between; align-items:flex-end;
+  gap:14px; flex-wrap:wrap; margin-bottom:11px;
+}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:3px; max-width:680px;}
+
+.permission-pill{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:6px 12px;
+  background:linear-gradient(135deg, var(--red2), #fff);
+  border:1px solid var(--red);
+  border-radius:8px;
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--red);
+}
+.permission-pill svg{width:13px; height:13px;}
+
+/* BANNERS */
+.banner{
+  border-radius:9px;
+  padding:10px 13px;
+  display:flex; align-items:center; gap:10px;
+  font-size:11.5px;
+  line-height:1.55;
+  margin-bottom:11px;
+}
+.banner svg{flex-shrink:0;}
+.banner strong{font-weight:600;}
+.banner code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  background:#fff;
+  padding:1px 5px;
+  border-radius:4px;
+  border:1px solid var(--gray2);
+}
+.banner.legal{
+  background:linear-gradient(135deg, #E8EFF8, var(--off));
+  border-left:3px solid var(--navy);
+  color:var(--txt2);
+}
+.banner.legal svg, .banner.legal strong{color:var(--navy);}
+.banner.legal strong{color:var(--txt);}
+.banner.warn{
+  background:linear-gradient(135deg, var(--amber2), #fff);
+  border-left:3px solid var(--orange);
+  color:var(--txt);
+}
+.banner.warn svg{color:var(--orange);}
+
+/* KPIs */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:11px;
+  margin-bottom:14px;
+}
+.kpi-card{
+  background:#fff;
+  border-radius:11px;
+  padding:13px 15px;
+  box-shadow:var(--shadow-card);
+  display:flex; align-items:center; gap:11px;
+  border-bottom:3px solid var(--navy);
+}
+.kpi-card.green{border-bottom-color:var(--green);}
+.kpi-card.purple{border-bottom-color:var(--purple);}
+.kpi-card.orange{border-bottom-color:var(--orange);}
+
+.kpi-icon{
+  width:36px; height:36px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.kpi-icon svg{width:15px; height:15px;}
+.kpi-card .kpi-icon{background:#E8EFF8; color:var(--navy);}
+.kpi-card.green .kpi-icon{background:var(--green2); color:var(--green);}
+.kpi-card.purple .kpi-icon{background:var(--purple2); color:var(--purple);}
+.kpi-card.orange .kpi-icon{background:var(--orange2); color:var(--orange);}
+
+.kpi-text{display:flex; flex-direction:column; min-width:0;}
+.kpi-num{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:18px;
+  color:var(--txt);
+  line-height:1;
+}
+.kpi-lbl{
+  font-size:11px;
+  color:var(--txt2);
+  margin-top:3px;
+}
+
+/* SECTION */
+.section-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+}
+.section-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:13px;
+  flex-wrap:wrap; gap:8px;
+}
+.section-head h2{
+  font-size:14px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.section-head h2 svg{width:14px; height:14px; color:var(--orange);}
+.section-helper{
+  font-size:11px; color:var(--txt2);
+}
+
+/* FILTERS */
+.filter-bar{
+  display:flex; gap:10px; align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:13px;
+}
+.fb-search{
+  position:relative;
+  flex:1;
+  min-width:240px;
+  max-width:320px;
+}
+.fb-search input{
+  width:100%;
+  padding:8px 12px 8px 32px;
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  font-size:12px;
+  font-family:inherit;
+  color:var(--txt);
+}
+.fb-search input:focus{outline:none; border-color:var(--navy);}
+.fb-search svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--txt3);}
+
+.fb-chip{
+  padding:7px 11px;
+  background:var(--off);
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  font-size:11.5px;
+  font-weight:500;
+  color:var(--txt);
+  cursor:pointer;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.fb-chip:hover{background:var(--gray1);}
+.fb-chip.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+.fb-chip .fb-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  background:#fff;
+  color:var(--txt);
+  padding:0 5px;
+  border-radius:4px;
+  font-weight:700;
+}
+.fb-chip.active .fb-count{background:rgba(255,255,255,.25); color:#fff;}
+
+.spacer{flex:1;}
+
+.fb-action{
+  padding:7px 12px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  font-size:11.5px;
+  color:var(--txt);
+  cursor:pointer;
+  font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.fb-action:hover{background:var(--off); border-color:var(--navy);}
+.fb-action svg{width:13px; height:13px;}
+
+/* TABLE */
+.tbl-wrap{
+  overflow-x:auto;
+  margin:0 -20px -18px;
+}
+.tbl{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:1100px;
+}
+.tbl th{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--txt2);
+  font-weight:700;
+  padding:9px 11px;
+  text-align:left;
+  border-bottom:2px solid var(--gray1);
+  white-space:nowrap;
+  background:var(--off);
+}
+.tbl th.right{text-align:right;}
+.tbl th.center{text-align:center;}
+.tbl th:first-child{padding-left:20px;}
+.tbl th:last-child{padding-right:20px;}
+.tbl td{
+  padding:11px 11px;
+  border-bottom:1px solid var(--gray1);
+  vertical-align:middle;
+}
+.tbl td:first-child{padding-left:20px;}
+.tbl td:last-child{padding-right:20px;}
+.tbl td.right{text-align:right; font-family:'JetBrains Mono',monospace;}
+.tbl td.center{text-align:center;}
+.tbl tr:hover{background:#FBFCFE;}
+
+/* Unit cell */
+.unit-cell{display:flex; flex-direction:column; gap:2px;}
+.unit-name{font-weight:600; font-size:12.5px; color:var(--txt);}
+.unit-sub{
+  font-size:10.5px;
+  color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* Tags */
+.tag{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9.5px;
+  padding:3px 8px;
+  border-radius:5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  white-space:nowrap;
+}
+.tag.gpc{background:#E8EFF8; color:var(--navy);}
+.tag.lab{background:var(--purple2); color:var(--purple);}
+.tag.lim{background:var(--teal2); color:var(--teal);}
+.tag.seg{background:var(--amber2); color:var(--amber);}
+
+.regime-badge{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 10px;
+  border-radius:7px;
+  font-size:10.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  white-space:nowrap;
+  cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .12s;
+}
+.regime-badge svg{width:11px; height:11px;}
+.regime-badge.lucro{
+  background:linear-gradient(135deg, var(--purple2), #fff);
+  color:var(--purple);
+  border-color:var(--purple);
+}
+.regime-badge.simples{
+  background:linear-gradient(135deg, var(--green2), #fff);
+  color:var(--green);
+  border-color:var(--green);
+}
+.regime-badge.presumido{
+  background:linear-gradient(135deg, var(--blue2), #fff);
+  color:var(--blue);
+  border-color:var(--blue);
+}
+.regime-badge:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(26,45,79,.1);
+}
+
+/* Anexo / FAP / RAT cells */
+.fiscal-cell{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--txt);
+}
+.fiscal-cell.muted{color:var(--txt3);}
+.fiscal-cell .sub{
+  font-size:9.5px;
+  color:var(--txt2);
+  font-weight:500;
+  display:block;
+  margin-top:1px;
+  font-family:'Sora',sans-serif;
+}
+
+/* Action menu */
+.row-actions{
+  display:flex; gap:5px;
+}
+.action-btn{
+  width:28px; height:28px;
+  border-radius:7px;
+  background:var(--off);
+  border:1px solid var(--gray2);
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt2);
+  transition:all .12s;
+}
+.action-btn:hover{
+  background:#fff;
+  border-color:var(--navy);
+  color:var(--navy);
+}
+.action-btn svg{width:13px; height:13px;}
+.action-btn.danger:hover{
+  border-color:var(--red);
+  color:var(--red);
+}
+
+/* HC inline */
+.hc-cell{
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--off);
+  padding:3px 8px;
+  border-radius:5px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+  font-size:11px;
+  color:var(--txt);
+}
+.hc-cell svg{width:11px; height:11px; color:var(--txt2);}
+
+/* CNPJ */
+.cnpj{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--txt2);
+  background:#fff;
+  padding:2px 7px;
+  border-radius:4px;
+  border:1px solid var(--gray1);
+  display:inline-block;
+}
+
+/* AUDIT TIMELINE */
+.audit-list{
+  display:flex; flex-direction:column;
+  gap:8px;
+}
+.audit-item{
+  background:linear-gradient(180deg, var(--off), #fff);
+  border-radius:9px;
+  padding:11px 14px;
+  border-left:3px solid var(--navy);
+  display:flex; align-items:flex-start; gap:11px;
+}
+.audit-item.regime-change{border-left-color:var(--purple);}
+.audit-item.fap-change{border-left-color:var(--orange);}
+.audit-item.rat-change{border-left-color:var(--blue);}
+
+.audit-icon{
+  width:30px; height:30px;
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  background:#E8EFF8;
+  color:var(--navy);
+}
+.audit-item.regime-change .audit-icon{background:var(--purple2); color:var(--purple);}
+.audit-item.fap-change .audit-icon{background:var(--orange2); color:var(--orange);}
+.audit-item.rat-change .audit-icon{background:var(--blue2); color:var(--blue);}
+.audit-icon svg{width:13px; height:13px;}
+
+.audit-info{flex:1; min-width:0;}
+.audit-head{
+  display:flex; justify-content:space-between; align-items:center;
+  gap:9px; flex-wrap:wrap;
+  margin-bottom:3px;
+}
+.audit-title{
+  font-size:12px; font-weight:600;
+  color:var(--txt);
+}
+.audit-date{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--txt2);
+  white-space:nowrap;
+}
+.audit-desc{
+  font-size:11px;
+  color:var(--txt2);
+  line-height:1.5;
+}
+.audit-desc strong{color:var(--txt); font-weight:600;}
+.audit-desc code{
+  font-family:'JetBrains Mono',monospace;
+  background:#fff;
+  padding:1px 5px;
+  border-radius:4px;
+  font-size:10.5px;
+  border:1px solid var(--gray2);
+}
+.audit-from-to{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  background:#fff;
+  padding:2px 8px;
+  border-radius:5px;
+  border:1px solid var(--gray2);
+  margin-top:3px;
+}
+.audit-from-to .arrow{color:var(--txt3);}
+.audit-from-to .from{color:var(--red); text-decoration:line-through;}
+.audit-from-to .to{color:var(--green); font-weight:700;}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed; inset:0;
+  background:rgba(26,45,79,.55);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  z-index:100;
+  display:none;
+  align-items:center; justify-content:center;
+  padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:#fff;
+  border-radius:16px;
+  width:100%;
+  max-width:560px;
+  max-height:90vh;
+  overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.modal-head{
+  padding:18px 24px 14px;
+  border-bottom:1px solid var(--gray1);
+  background:linear-gradient(135deg, var(--orange2), #fff);
+  border-radius:16px 16px 0 0;
+}
+.modal-head-row{
+  display:flex; align-items:center; gap:11px;
+}
+.modal-icon{
+  width:38px; height:38px;
+  border-radius:10px;
+  background:var(--orange);
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.modal-icon svg{width:18px; height:18px;}
+.modal-title{
+  font-size:15px; font-weight:600;
+  color:var(--txt);
+}
+.modal-sub{
+  font-size:11.5px;
+  color:var(--txt2);
+  margin-top:2px;
+}
+
+.modal-body{
+  padding:18px 24px;
+}
+
+.change-summary{
+  background:linear-gradient(135deg, #E8EFF8, var(--off));
+  border-radius:9px;
+  padding:11px 13px;
+  margin-bottom:14px;
+  display:flex; flex-direction:column;
+  gap:7px;
+}
+.cs-row{
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:12px;
+}
+.cs-lbl{color:var(--txt2); font-weight:500;}
+.cs-val{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+  color:var(--txt);
+}
+.cs-val.before{color:var(--red); text-decoration:line-through;}
+.cs-val.after{color:var(--green); font-weight:700;}
+
+.impact-box{
+  background:linear-gradient(135deg, var(--amber2), #fff);
+  border:1.5px solid var(--orange);
+  border-radius:11px;
+  padding:13px 15px;
+  margin-bottom:14px;
+}
+.impact-head{
+  font-size:11px; font-weight:700;
+  color:var(--orange);
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  margin-bottom:5px;
+  display:flex; align-items:center; gap:5px;
+}
+.impact-head svg{width:11px; height:11px;}
+.impact-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:7px;
+}
+.impact-stat{
+  background:#fff;
+  border-radius:7px;
+  padding:9px 11px;
+  border:1px solid var(--orange2);
+}
+.impact-stat-lbl{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+  color:var(--txt2);
+  font-weight:600;
+  margin-bottom:2px;
+}
+.impact-stat-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;
+  font-weight:700;
+  color:var(--txt);
+}
+.impact-stat-val.up{color:var(--red);}
+.impact-stat-val.down{color:var(--green);}
+
+.confirm-checkbox{
+  display:flex; align-items:flex-start; gap:9px;
+  padding:11px 13px;
+  background:var(--off);
+  border-radius:9px;
+  cursor:pointer;
+  margin-bottom:14px;
+  border:1.5px solid var(--gray2);
+  transition:all .12s;
+}
+.confirm-checkbox.checked{
+  background:linear-gradient(135deg, var(--green2), #fff);
+  border-color:var(--green);
+}
+.confirm-checkbox input{
+  margin-top:2px;
+  flex-shrink:0;
+  cursor:pointer;
+}
+.confirm-text{
+  font-size:11.5px;
+  color:var(--txt);
+  line-height:1.5;
+}
+.confirm-text strong{font-weight:600;}
+
+.modal-foot{
+  padding:14px 24px;
+  background:var(--off);
+  border-top:1px solid var(--gray1);
+  border-radius:0 0 16px 16px;
+  display:flex; gap:9px; justify-content:flex-end;
+}
+.btn{
+  padding:10px 16px;
+  border-radius:8px;
+  font-size:12.5px; font-weight:600;
+  font-family:inherit;
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:6px;
+  transition:all .12s;
+  border:1.5px solid;
+}
+.btn svg{width:13px; height:13px;}
+.btn-cancel{
+  background:#fff;
+  color:var(--txt);
+  border-color:var(--gray2);
+}
+.btn-cancel:hover{background:var(--gray1);}
+.btn-primary{
+  background:var(--navy);
+  color:#fff;
+  border-color:var(--navy);
+}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.btn-warn{
+  background:var(--orange);
+  color:#fff;
+  border-color:var(--orange);
+  box-shadow:0 3px 8px rgba(245,131,31,.25);
+}
+.btn-warn:hover{background:#D87013;}
+
+/* RESPONSIVE */
+@media (max-width: 1024px){
+  .kpi-row{grid-template-columns:repeat(2, 1fr);}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0;}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:13px 14px 30px;}
+  .page-header h1{font-size:18px;}
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  .section-card{padding:14px 15px;}
+  .filter-bar{flex-direction:column; align-items:stretch;}
+  .fb-search{max-width:none;}
+  .impact-grid{grid-template-columns:1fr;}
+  .modal{max-width:100%;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <div class="sidebar-section">Folha &amp; custo</div>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Calc. de custo</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Folha por filial</a>
+      <div class="sidebar-section">Configurações</div>
+      <a class="nav-item active"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Regime tributário</a>
+      <a class="nav-item"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Configurações gerais</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Configurações · <strong>Regime tributário por unidade</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info">
+        <span class="user-name">Patrícia Mello</span>
+        <span class="user-role">RH GPC</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- HEADER -->
+      <div class="page-header">
+        <div class="page-header-row">
+          <div>
+            <h1>Regime tributário por unidade</h1>
+            <p>Gerencie o regime tributário e configurações fiscais (FAP, RAT, anexo Simples) de cada unidade. Mudanças impactam diretamente os cálculos de custo no módulo de Folha &amp; Custo.</p>
+          </div>
+          <span class="permission-pill">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Acesso restrito · administradores
+          </span>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-icon">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+          </div>
+          <div class="kpi-text">
+            <span class="kpi-num">14</span>
+            <span class="kpi-lbl">unidades cadastradas</span>
+          </div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-icon">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+          </div>
+          <div class="kpi-text">
+            <span class="kpi-num">5</span>
+            <span class="kpi-lbl">em Lucro Real</span>
+          </div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-icon">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+          </div>
+          <div class="kpi-text">
+            <span class="kpi-num">9</span>
+            <span class="kpi-lbl">em Simples Nacional</span>
+          </div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-icon">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+          </div>
+          <div class="kpi-text">
+            <span class="kpi-num">3</span>
+            <span class="kpi-lbl">alteradas em 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BANNER LEGAL -->
+      <div class="banner legal">
+        <svg aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+        <div>
+          <strong>Alterações afetam cálculos retroativos.</strong> Trocar regime tributário recalcula custos no módulo de Folha &amp; Custo. As referências legais (<code>legal_year</code>) preservam simulações antigas. Toda mudança gera registro em <code>audit_log</code> e exige confirmação dupla.
+        </div>
+      </div>
+
+      <!-- BANNER WARN -->
+      <div class="banner warn">
+        <svg aria-hidden="true" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        <div>
+          <strong>2 unidades próximas do teto Simples (R$ 4,8 mi anuais).</strong> Cestão Inhambupe e Sede ATP estão em Lucro Real, mas Labuta @ Cestão Inhambupe está perto do limite. Acompanhe o faturamento mensal.
+        </div>
+      </div>
+
+      <!-- TABELA PRINCIPAL -->
+      <div class="section-card">
+        <div class="section-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18M3 9h18M3 15h18M3 21h18"/></svg>
+            Configuração das unidades
+          </h2>
+          <span class="section-helper">clique no regime para alterar</span>
+        </div>
+
+        <div class="filter-bar">
+          <div class="fb-search">
+            <svg aria-hidden="true" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" placeholder="Buscar por nome, CNPJ ou empregador..." id="searchInput" oninput="filterTable()">
+          </div>
+          <button class="fb-chip active" data-filter="all">Todos <span class="fb-count">14</span></button>
+          <button class="fb-chip" data-filter="lucro">
+            <span style="width:7px; height:7px; border-radius:50%; background:var(--purple);"></span>
+            Lucro Real <span class="fb-count">5</span>
+          </button>
+          <button class="fb-chip" data-filter="simples">
+            <span style="width:7px; height:7px; border-radius:50%; background:var(--green);"></span>
+            Simples <span class="fb-count">9</span>
+          </button>
+          <div class="spacer"></div>
+          <button class="fb-action">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Exportar config.
+          </button>
+          <button class="fb-action" style="background:var(--navy); color:#fff; border-color:var(--navy);">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova unidade
+          </button>
+        </div>
+
+        <div class="tbl-wrap">
+          <table class="tbl" id="unitsTable">
+            <thead>
+              <tr>
+                <th>Unidade</th>
+                <th>CNPJ</th>
+                <th>Empregador</th>
+                <th class="center">Regime</th>
+                <th class="center">Anexo</th>
+                <th class="right">FAP</th>
+                <th class="right">RAT</th>
+                <th class="right">Headcount</th>
+                <th class="right">Faturam. anual</th>
+                <th class="center">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="unitsBody">
+              <!-- populado via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- AUDIT LOG -->
+      <div class="section-card">
+        <div class="section-head">
+          <h2>
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Histórico de alterações
+          </h2>
+          <span class="section-helper">últimos 6 eventos · audit_log</span>
+        </div>
+
+        <div class="audit-list">
+
+          <div class="audit-item regime-change">
+            <div class="audit-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+            </div>
+            <div class="audit-info">
+              <div class="audit-head">
+                <span class="audit-title">Regime alterado · Cestão Inhambupe</span>
+                <span class="audit-date">15/03/2026 · 14:22</span>
+              </div>
+              <div class="audit-desc">
+                <strong>Patrícia Mello</strong> alterou o regime tributário desta unidade após faturamento ultrapassar limite do Simples
+              </div>
+              <div class="audit-from-to">
+                <span class="from">Simples Nacional · Anexo I</span>
+                <span class="arrow">→</span>
+                <span class="to">Lucro Real</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-item fap-change">
+            <div class="audit-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="audit-info">
+              <div class="audit-head">
+                <span class="audit-title">FAP atualizado · ATP Varejo</span>
+                <span class="audit-date">02/02/2026 · 09:15</span>
+              </div>
+              <div class="audit-desc">
+                <strong>Ricardo Silva</strong> aplicou novo FAP publicado pela Previdência Social via portaria anual. Reduz contribuição RAT.
+              </div>
+              <div class="audit-from-to">
+                <span class="from">FAP 1,12</span>
+                <span class="arrow">→</span>
+                <span class="to">FAP 0,89</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-item rat-change">
+            <div class="audit-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="audit-info">
+              <div class="audit-head">
+                <span class="audit-title">RAT reclassificado · Labuta @ Cestão L1</span>
+                <span class="audit-date">28/01/2026 · 16:48</span>
+              </div>
+              <div class="audit-desc">
+                Reclassificação de grau de risco aplicada pela Receita Federal · CNAE 4711-3/02 (atividade auxiliar comércio varejista)
+              </div>
+              <div class="audit-from-to">
+                <span class="from">RAT 2% (médio)</span>
+                <span class="arrow">→</span>
+                <span class="to">RAT 1% (baixo)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-item regime-change">
+            <div class="audit-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+            </div>
+            <div class="audit-info">
+              <div class="audit-head">
+                <span class="audit-title">Regime alterado · Sede ATP</span>
+                <span class="audit-date">15/01/2026 · 11:03</span>
+              </div>
+              <div class="audit-desc">
+                <strong>Patrícia Mello</strong> alterou regime após reorganização contábil para o ano fiscal 2026
+              </div>
+              <div class="audit-from-to">
+                <span class="from">Lucro Presumido</span>
+                <span class="arrow">→</span>
+                <span class="to">Lucro Real</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-item">
+            <div class="audit-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="audit-info">
+              <div class="audit-head">
+                <span class="audit-title">Unidade criada · Limpactiva @ Sede</span>
+                <span class="audit-date">10/01/2026 · 08:30</span>
+              </div>
+              <div class="audit-desc">
+                <strong>Patrícia Mello</strong> cadastrou nova unidade tomadora · CNPJ <code>23.456.789/0010-44</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="audit-item fap-change">
+            <div class="audit-icon">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="audit-info">
+              <div class="audit-head">
+                <span class="audit-title">FAP em massa · 4 unidades GPC</span>
+                <span class="audit-date">02/01/2026 · 07:45</span>
+              </div>
+              <div class="audit-desc">
+                Aplicação automática do novo FAP anual publicado pela Previdência Social em todas as unidades em <strong>Lucro Real</strong>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ============= MODAL DE CONFIRMAÇÃO ============= -->
+<div class="modal-overlay" id="confirmModal" onclick="if(event.target === this) closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-row">
+        <div class="modal-icon">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+        </div>
+        <div>
+          <div class="modal-title">Confirmar alteração de regime</div>
+          <div class="modal-sub" id="modalUnit">ATP Varejo · CNPJ 12.345.678/0001-90</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="change-summary">
+        <div class="cs-row">
+          <span class="cs-lbl">Regime atual:</span>
+          <span class="cs-val before" id="modalBefore">Lucro Real</span>
+        </div>
+        <div class="cs-row">
+          <span class="cs-lbl">Novo regime:</span>
+          <span class="cs-val after" id="modalAfter">Simples Nacional · Anexo I</span>
+        </div>
+        <div class="cs-row">
+          <span class="cs-lbl">Vigência a partir de:</span>
+          <span class="cs-val">01/05/2026</span>
+        </div>
+      </div>
+
+      <div class="impact-box">
+        <div class="impact-head">
+          <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+          Impacto estimado
+        </div>
+        <div class="impact-grid">
+          <div class="impact-stat">
+            <div class="impact-stat-lbl">Colaboradores afetados</div>
+            <div class="impact-stat-val" id="modalHC">48 colab.</div>
+          </div>
+          <div class="impact-stat">
+            <div class="impact-stat-lbl">Encargos atuais</div>
+            <div class="impact-stat-val">~67% folha</div>
+          </div>
+          <div class="impact-stat">
+            <div class="impact-stat-lbl">Novos encargos</div>
+            <div class="impact-stat-val down">~30% folha</div>
+          </div>
+          <div class="impact-stat">
+            <div class="impact-stat-lbl">Economia mensal estimada</div>
+            <div class="impact-stat-val down" id="modalEconomia">-R$ 56.880</div>
+          </div>
+        </div>
+        <div style="font-size:10.5px; color:var(--txt2); margin-top:9px; line-height:1.5;">
+          Cálculo baseado nos colaboradores ativos e salários atuais. Mudanças efetivas dependem de validação contábil e fiscal antes da virada.
+        </div>
+      </div>
+
+      <label class="confirm-checkbox" id="confirm1Box">
+        <input type="checkbox" id="confirm1" onchange="updateConfirmState()">
+        <span class="confirm-text">
+          Confirmo que esta alteração foi <strong>aprovada pela contabilidade</strong> e que a unidade atende aos requisitos legais do novo regime (faturamento, atividade principal, sócios).
+        </span>
+      </label>
+
+      <label class="confirm-checkbox" id="confirm2Box">
+        <input type="checkbox" id="confirm2" onchange="updateConfirmState()">
+        <span class="confirm-text">
+          Entendo que esta alteração <strong>recalcula o custo de pessoal</strong> a partir da data de vigência e gera registro permanente no histórico de auditoria.
+        </span>
+      </label>
+
+    </div>
+
+    <div class="modal-foot">
+      <button class="btn btn-cancel" onclick="closeModal()">
+        Cancelar
+      </button>
+      <button class="btn btn-warn" id="btnConfirm" disabled onclick="confirmChange()">
+        <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        Aplicar alteração
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============= MOCK DATA =============
+const UNITS = [
+  // GPC - Lucro Real
+  { id:'atp-varejo',     name:'ATP Varejo',           cnpj:'12.345.678/0001-90', employer:'GPC',        emptag:'gpc', regime:'lucro',   anexo:null,        fap:0.89, rat:2, hc:13,  faturam:18500000 },
+  { id:'atp-atacado',    name:'ATP Atacado',          cnpj:'12.345.678/0002-71', employer:'GPC',        emptag:'gpc', regime:'lucro',   anexo:null,        fap:0.92, rat:2, hc:10,  faturam:24800000 },
+  { id:'cestao-l1',      name:'Cestão Loja 1',        cnpj:'12.345.678/0003-52', employer:'GPC',        emptag:'gpc', regime:'lucro',   anexo:null,        fap:1.00, rat:2, hc:17,  faturam:21200000 },
+  { id:'cestao-inh',     name:'Cestão Inhambupe',     cnpj:'12.345.678/0004-33', employer:'GPC',        emptag:'gpc', regime:'lucro',   anexo:null,        fap:1.00, rat:2, hc:14,  faturam:14600000 },
+  { id:'sede-atp',       name:'Sede Administrativa',  cnpj:'12.345.678/0005-14', employer:'GPC',        emptag:'gpc', regime:'lucro',   anexo:null,        fap:0.95, rat:1, hc:6,  faturam:0 },
+  // Labuta - Simples
+  { id:'lab-atp-varejo', name:'Labuta @ ATP Varejo',  cnpj:'34.567.890/0001-22', employer:'Labuta',     emptag:'lab', regime:'simples', anexo:'III', fap:1.00, rat:1, hc:32,  faturam:1800000 },
+  { id:'lab-atp-atacado',name:'Labuta @ ATP Atacado', cnpj:'34.567.890/0002-03', employer:'Labuta',     emptag:'lab', regime:'simples', anexo:'III', fap:1.00, rat:1, hc:42,  faturam:2350000 },
+  { id:'lab-cestao-l1',  name:'Labuta @ Cestão L1',   cnpj:'34.567.890/0003-83', employer:'Labuta',     emptag:'lab', regime:'simples', anexo:'III', fap:1.00, rat:1, hc:78,  faturam:4250000 },
+  { id:'lab-cestao-inh', name:'Labuta @ Cestão Inh.', cnpj:'34.567.890/0004-64', employer:'Labuta',     emptag:'lab', regime:'simples', anexo:'III', fap:1.00, rat:1, hc:65,  faturam:4640000 },
+  { id:'lab-sede',       name:'Labuta @ Sede',        cnpj:'34.567.890/0005-45', employer:'Labuta',     emptag:'lab', regime:'simples', anexo:'III', fap:1.00, rat:1, hc:30,  faturam:1430000 },
+  // Limpactiva - Simples
+  { id:'lim-stores',     name:'Limpactiva @ Lojas',   cnpj:'45.678.901/0001-55', employer:'Limpactiva', emptag:'lim', regime:'simples', anexo:'IV',  fap:1.00, rat:2, hc:28,  faturam:980000 },
+  { id:'lim-sede',       name:'Limpactiva @ Sede',    cnpj:'45.678.901/0002-36', employer:'Limpactiva', emptag:'lim', regime:'simples', anexo:'IV',  fap:1.00, rat:2, hc:10,  faturam:380000 },
+  // Segure - Simples
+  { id:'seg-stores',     name:'Segure @ Lojas',       cnpj:'56.789.012/0001-88', employer:'Segure',     emptag:'seg', regime:'simples', anexo:'IV',  fap:1.00, rat:3, hc:18,  faturam:740000 },
+  { id:'seg-sede',       name:'Segure @ Sede',        cnpj:'56.789.012/0002-69', employer:'Segure',     emptag:'seg', regime:'simples', anexo:'IV',  fap:1.00, rat:3, hc:4,   faturam:160000 }
+];
+
+const REGIMES = {
+  lucro:    { label:'Lucro Real',         class:'lucro',    encargo:0.358, totalEnc:0.67 },
+  presumido:{ label:'Lucro Presumido',    class:'presumido',encargo:0.358, totalEnc:0.67 },
+  simples:  { label:'Simples Nacional',   class:'simples',  encargo:0.08,  totalEnc:0.30 }
+};
+
+let currentFilter = 'all';
+
+// ============= UI =============
+function fmt(n){ return n.toLocaleString('pt-BR', { maximumFractionDigits: 0 }); }
+function fmtBRL(n){ return 'R$ ' + fmt(n); }
+function fmtBRLShort(n){
+  if(n >= 1000000) return 'R$ ' + (n/1000000).toFixed(2).replace('.',',') + 'M';
+  if(n >= 1000) return 'R$ ' + (n/1000).toFixed(0) + 'k';
+  return 'R$ ' + fmt(n);
+}
+
+function renderTable(){
+  let html = '';
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+
+  UNITS.forEach(u => {
+    // Filtros
+    if(currentFilter !== 'all' && u.regime !== currentFilter) return;
+    if(search && !u.name.toLowerCase().includes(search) && !u.cnpj.includes(search) && !u.employer.toLowerCase().includes(search)) return;
+
+    const reg = REGIMES[u.regime];
+
+    // Validação: faturamento próximo do teto Simples?
+    const closeToCap = u.regime === 'simples' && u.faturam > 4000000;
+
+    html += `
+      <tr data-regime="${u.regime}" data-id="${u.id}">
+        <td>
+          <div class="unit-cell">
+            <span class="unit-name">${u.name}</span>
+            <span class="unit-sub">${u.id}</span>
+          </div>
+        </td>
+        <td><span class="cnpj">${u.cnpj}</span></td>
+        <td><span class="tag ${u.emptag}">${u.employer}</span></td>
+        <td class="center">
+          <button class="regime-badge ${reg.class}" onclick="openConfirmModal('${u.id}')">
+            ${reg.label}
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </td>
+        <td class="center">
+          <span class="fiscal-cell ${u.anexo ? '' : 'muted'}">
+            ${u.anexo ? `Anexo ${u.anexo}` : '-'}
+          </span>
+        </td>
+        <td class="right">
+          <span class="fiscal-cell">${u.fap.toFixed(2).replace('.', ',')}</span>
+        </td>
+        <td class="right">
+          <span class="fiscal-cell">${u.rat}%
+            <span class="sub">${u.rat === 1 ? 'baixo' : u.rat === 2 ? 'médio' : 'alto'}</span>
+          </span>
+        </td>
+        <td class="right">
+          <span class="hc-cell">
+            <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            ${u.hc}
+          </span>
+        </td>
+        <td class="right">
+          <span class="fiscal-cell ${closeToCap ? '' : ''}" style="${closeToCap ? 'color:var(--orange);' : ''}">${fmtBRLShort(u.faturam)}
+            ${closeToCap ? '<span class="sub" style="color:var(--orange);">próx. teto Simples</span>' : ''}
+          </span>
+        </td>
+        <td class="center">
+          <div class="row-actions">
+            <button class="action-btn" title="Editar configurações fiscais">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="action-btn" title="Ver histórico desta unidade">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+            <button class="action-btn danger" title="Desativar unidade">
+              <svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById('unitsBody').innerHTML = html;
+}
+
+function filterTable(){
+  renderTable();
+}
+
+// Filter chips
+document.querySelectorAll('.fb-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.fb-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.filter;
+    renderTable();
+  });
+});
+
+// ============= MODAL =============
+let currentUnitId = null;
+
+function openConfirmModal(unitId){
+  const unit = UNITS.find(u => u.id === unitId);
+  if(!unit) return;
+  currentUnitId = unitId;
+
+  document.getElementById('modalUnit').textContent = `${unit.name} · CNPJ ${unit.cnpj}`;
+
+  // Calcula impacto estimado (toggle entre os 2 regimes possíveis)
+  const currentReg = REGIMES[unit.regime];
+  const newRegime = unit.regime === 'lucro' ? 'simples' : 'lucro';
+  const newReg = REGIMES[newRegime];
+
+  document.getElementById('modalBefore').textContent = currentReg.label + (unit.anexo ? ` · Anexo ${unit.anexo}` : '');
+  document.getElementById('modalAfter').textContent = newReg.label + (newRegime === 'simples' ? ' · Anexo III' : '');
+
+  document.getElementById('modalHC').textContent = `${unit.hc} colab.`;
+
+  // Estima salário médio · headcount · diferença de encargos
+  // Tomando salário médio aproximado por regime atual
+  const salarioEstimado = unit.regime === 'lucro' ? 3500 : 2100;
+  const folhaTotal = salarioEstimado * unit.hc;
+  const deltaEncargo = (currentReg.totalEnc - newReg.totalEnc) * folhaTotal;
+  // Se mudando de Lucro->Simples, economia (positivo) = sinal negativo na exibição
+  const sign = deltaEncargo > 0 ? '-' : '+';
+  document.getElementById('modalEconomia').textContent = sign + 'R$ ' + Math.abs(Math.round(deltaEncargo)).toLocaleString('pt-BR');
+  document.getElementById('modalEconomia').className = 'impact-stat-val ' + (deltaEncargo > 0 ? 'down' : 'up');
+
+  // Reset checkboxes
+  document.getElementById('confirm1').checked = false;
+  document.getElementById('confirm2').checked = false;
+  document.getElementById('confirm1Box').classList.remove('checked');
+  document.getElementById('confirm2Box').classList.remove('checked');
+  document.getElementById('btnConfirm').disabled = true;
+
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('confirmModal').classList.remove('open');
+  currentUnitId = null;
+}
+
+function updateConfirmState(){
+  const c1 = document.getElementById('confirm1').checked;
+  const c2 = document.getElementById('confirm2').checked;
+  document.getElementById('confirm1Box').classList.toggle('checked', c1);
+  document.getElementById('confirm2Box').classList.toggle('checked', c2);
+  document.getElementById('btnConfirm').disabled = !(c1 && c2);
+}
+
+function confirmChange(){
+  const unit = UNITS.find(u => u.id === currentUnitId);
+  if(!unit) return;
+  // Toggle regime (mock simples)
+  unit.regime = unit.regime === 'lucro' ? 'simples' : 'lucro';
+  unit.anexo = unit.regime === 'simples' ? 'III' : null;
+  closeModal();
+  renderTable();
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// Init
+renderTable();
+</script>
+</body>
+</html>

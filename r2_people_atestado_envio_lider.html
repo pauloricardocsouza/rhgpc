@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Enviar atestado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#3D5F95,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+
+/* ============= PAGE HEADER ============= */
+.page-header{
+  margin-bottom:16px;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:14px; flex-wrap:wrap;
+}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:3px; max-width:580px;}
+
+/* ============= PRIVACY BANNER (importante!) ============= */
+.privacy-banner{
+  background:linear-gradient(135deg, #E8EFF8 0%, #F4F7FC 100%);
+  border-left:3px solid var(--navy);
+  border-radius:9px;
+  padding:13px 16px;
+  margin-bottom:18px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:13px;
+  align-items:flex-start;
+}
+.privacy-banner .icon{
+  width:34px; height:34px; border-radius:9px;
+  background:#fff;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--navy);
+  flex-shrink:0;
+  box-shadow:0 1px 3px rgba(26,45,79,.08);
+}
+.privacy-banner .text{font-size:12px; color:var(--txt2); line-height:1.6;}
+.privacy-banner .text strong{color:var(--txt); font-weight:600;}
+
+/* ============= LAYOUT 2 COLUNAS ============= */
+.layout-grid{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:18px;
+}
+
+/* ============= WIZARD CARD (esquerda) ============= */
+.wizard-card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+}
+
+.wizard-header{
+  padding:18px 22px 0;
+  background:linear-gradient(180deg, #fff, var(--off));
+}
+.wizard-steps{
+  display:flex; gap:8px;
+  margin-bottom:14px;
+}
+.wizard-step{
+  flex:1; height:5px;
+  background:var(--gray1); border-radius:3px;
+  position:relative; overflow:hidden;
+  transition:background .25s;
+}
+.wizard-step.done{background:var(--green);}
+.wizard-step.current{background:var(--orange);}
+.wizard-step.current::after{
+  content:''; position:absolute; inset:0;
+  background:rgba(255,255,255,.3);
+  animation:shimmer 1.6s infinite;
+}
+@keyframes shimmer{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(100%);}
+}
+.wizard-meta{
+  display:flex; justify-content:space-between;
+  font-size:11px; color:var(--txt2);
+  margin-bottom:11px;
+}
+.wizard-meta strong{color:var(--orange); font-weight:600; font-family:'JetBrains Mono',monospace;}
+
+.wizard-body{
+  padding:8px 28px 22px;
+  min-height:380px;
+}
+
+.step-content{display:none; animation:slideIn .3s;}
+.step-content.active{display:block;}
+@keyframes slideIn{from{opacity:0; transform:translateY(8px);}to{opacity:1; transform:translateY(0);}}
+
+/* Step icon + title */
+.step-icon-area{
+  text-align:center;
+  margin-bottom:18px;
+}
+.step-icon{
+  width:54px; height:54px; border-radius:14px;
+  margin:0 auto 11px;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff;
+  background:linear-gradient(135deg, var(--orange), #D87013);
+  box-shadow:0 6px 14px rgba(245,131,31,.3);
+}
+.step-icon svg{width:24px; height:24px;}
+.step-icon.purple{background:linear-gradient(135deg, var(--purple), #5523A8); box-shadow:0 6px 14px rgba(109,40,217,.3);}
+.step-icon.green{background:linear-gradient(135deg, var(--green), #15643A); box-shadow:0 6px 14px rgba(30,123,75,.3);}
+.step-icon.navy{background:linear-gradient(135deg, var(--navy), var(--navy2)); box-shadow:0 6px 14px rgba(43,74,122,.3);}
+
+.step-title{
+  font-size:18px; font-weight:600; letter-spacing:-.3px;
+  margin-bottom:5px;
+}
+.step-subtitle{
+  font-size:12.5px; color:var(--txt2); line-height:1.5;
+  padding:0 10px;
+}
+
+/* ============= STEP 1: Identificar colaborador ============= */
+.search-wrapper{
+  position:relative;
+  margin-bottom:13px;
+}
+.search-input{
+  width:100%;
+  padding:13px 14px 13px 42px;
+  border:1.5px solid var(--gray2);
+  border-radius:10px;
+  font-size:14px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+  transition:border-color .15s, box-shadow .15s;
+}
+.search-input:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+.search-icon{
+  position:absolute; left:14px; top:50%; transform:translateY(-50%);
+  color:var(--txt3);
+  pointer-events:none;
+}
+
+/* Lista de subordinados */
+.team-list{
+  display:flex; flex-direction:column; gap:7px;
+}
+.team-item{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:11px; align-items:center;
+  padding:11px 13px;
+  background:var(--off);
+  border-radius:9px;
+  cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .12s;
+}
+.team-item:hover{border-color:var(--navy3); background:#E8EFF8;}
+.team-item.selected{
+  border-color:var(--navy);
+  background:#E8EFF8;
+}
+.team-avatar{
+  width:38px; height:38px; border-radius:50%;
+  color:#fff; font-weight:600; font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.team-info{min-width:0;}
+.team-name{font-size:13px; font-weight:600;}
+.team-meta{
+  font-size:11px; color:var(--txt2);
+  display:flex; gap:7px; align-items:center;
+  margin-top:1px;
+  flex-wrap:wrap;
+}
+.team-tag{
+  font-size:9.5px; padding:1px 7px; border-radius:7px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.3px;
+}
+.team-tag.emp{background:#F0E6FA; color:var(--purple);}
+.team-tag.tom{background:var(--green2); color:var(--green);}
+.team-check{
+  width:24px; height:24px; border-radius:50%;
+  background:#fff;
+  border:2px solid var(--gray2);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  transition:all .15s;
+}
+.team-item.selected .team-check{
+  background:var(--navy); border-color:var(--navy);
+}
+.team-item.selected .team-check::after{
+  content:''; width:9px; height:5px;
+  border-left:2px solid #fff; border-bottom:2px solid #fff;
+  transform:rotate(-45deg); margin-bottom:2px;
+}
+
+/* ============= STEP 2: Anexar documento ============= */
+.upload-area{
+  border:2.5px dashed var(--gray3);
+  border-radius:13px;
+  padding:30px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .15s;
+  background:linear-gradient(180deg, var(--off) 0%, #fff 100%);
+  position:relative;
+}
+.upload-area:hover{
+  border-color:var(--orange);
+  background:linear-gradient(180deg, #FFF8EB 0%, #fff 100%);
+}
+.upload-area.dragging{
+  border-color:var(--orange);
+  border-style:solid;
+  background:#FFF8EB;
+  transform:scale(1.01);
+}
+.upload-area.has-file{
+  border-style:solid;
+  border-color:var(--green);
+  background:linear-gradient(180deg, var(--green2) 0%, #fff 100%);
+  cursor:default;
+}
+.upload-icon-big{
+  width:56px; height:56px; border-radius:14px;
+  background:#fff;
+  margin:0 auto 13px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--orange);
+  box-shadow:0 4px 11px rgba(0,0,0,.06);
+}
+.upload-area.has-file .upload-icon-big{color:var(--green);}
+.upload-text-main{
+  font-size:13.5px; font-weight:600;
+  margin-bottom:4px;
+}
+.upload-text-sub{
+  font-size:11.5px; color:var(--txt2);
+}
+.upload-formats{
+  margin-top:12px;
+  display:flex; gap:6px; justify-content:center;
+  flex-wrap:wrap;
+}
+.format-chip{
+  font-size:9.5px; padding:2px 9px;
+  background:#fff; border:1px solid var(--gray2);
+  border-radius:9px;
+  color:var(--txt2);
+  font-weight:600; text-transform:uppercase; letter-spacing:.3px;
+}
+
+/* Action buttons (camera/upload) */
+.upload-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:13px;
+}
+.upload-btn{
+  padding:11px 14px;
+  background:#fff;
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:12px; font-weight:500;
+  color:var(--txt);
+  display:inline-flex; align-items:center; justify-content:center; gap:7px;
+  transition:all .12s;
+}
+.upload-btn:hover{
+  border-color:var(--navy);
+  background:var(--off);
+}
+.upload-btn.primary{
+  background:var(--navy); color:#fff; border-color:var(--navy);
+}
+.upload-btn.primary:hover{background:var(--navy2);}
+.upload-btn svg{width:14px; height:14px;}
+
+/* File preview after upload */
+.file-preview{
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:11px;
+  padding:14px 16px;
+  margin-top:13px;
+}
+.fp-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:center;
+  margin-bottom:11px;
+}
+.fp-icon{
+  width:42px; height:42px; border-radius:10px;
+  background:#FDECEA; color:var(--danger);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.fp-info{min-width:0;}
+.fp-name{
+  font-size:12.5px; font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.fp-size{
+  font-size:11px; color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+  margin-top:1px;
+}
+.fp-remove{
+  background:transparent; border:none; cursor:pointer;
+  color:var(--txt3); padding:6px;
+  border-radius:6px;
+  display:flex;
+}
+.fp-remove:hover{color:var(--danger); background:var(--danger2);}
+
+/* ============= PROCESSAMENTO AUTOMÁTICO ============= */
+.processing-list{
+  display:flex; flex-direction:column; gap:8px;
+}
+.proc-item{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  background:var(--off);
+  border-radius:9px;
+  border:1px solid var(--gray2);
+  font-size:12px;
+}
+.proc-item.checking{
+  background:linear-gradient(90deg, #FFF8EB, #FCE6CD, #FFF8EB);
+  background-size:200% 100%;
+  animation:shimmerBg 1.6s infinite;
+  border-color:var(--orange);
+}
+@keyframes shimmerBg{
+  0%{background-position:200% 0;}
+  100%{background-position:-200% 0;}
+}
+.proc-item.success{background:var(--green2); border-color:var(--green);}
+.proc-item.warning{background:var(--amber2); border-color:var(--orange);}
+.proc-item.error{background:var(--danger2); border-color:var(--danger);}
+
+.proc-icon{
+  width:24px; height:24px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.proc-item.pending .proc-icon{background:var(--gray2); color:var(--txt3);}
+.proc-item.checking .proc-icon{background:var(--orange); color:#fff;}
+.proc-item.success .proc-icon{background:var(--green); color:#fff;}
+.proc-item.warning .proc-icon{background:var(--orange); color:#fff;}
+.proc-item.error .proc-icon{background:var(--danger); color:#fff;}
+.proc-icon svg{width:12px; height:12px;}
+.proc-icon .spinner{
+  width:11px; height:11px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:rotate 0.7s linear infinite;
+}
+@keyframes rotate{to{transform:rotate(360deg);}}
+
+.proc-text{
+  flex:1; min-width:0;
+  font-weight:500;
+}
+.proc-text .proc-detail{
+  font-size:10.5px; color:var(--txt2);
+  font-weight:400; margin-top:1px;
+  font-family:'JetBrains Mono',monospace;
+}
+.proc-item.success .proc-text{color:var(--green);}
+.proc-item.warning .proc-text{color:var(--amber);}
+.proc-item.error .proc-text{color:var(--danger);}
+
+.proc-action{
+  font-size:11px; color:var(--orange);
+  font-weight:600;
+  cursor:pointer;
+  background:transparent; border:none;
+  font-family:inherit;
+  white-space:nowrap;
+}
+.proc-action:hover{text-decoration:underline;}
+
+/* Resultado da compactação */
+.compression-result{
+  background:#E8EFF8;
+  border-radius:9px;
+  padding:11px 13px;
+  margin-top:11px;
+  display:flex; align-items:center; gap:13px;
+  font-size:11.5px;
+}
+.cr-icon{
+  width:30px; height:30px; border-radius:8px;
+  background:#fff; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.cr-text{flex:1; min-width:0;}
+.cr-main{font-weight:600; color:var(--navy);}
+.cr-sub{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.cr-saving{
+  background:#fff; padding:4px 10px; border-radius:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; font-weight:700;
+  color:var(--green);
+  white-space:nowrap;
+}
+
+/* ============= STEP 3: Detalhes do atestado ============= */
+.field-group{
+  margin-bottom:14px;
+}
+.field-label{
+  display:block;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt);
+  margin-bottom:6px;
+}
+.field-label .required{color:var(--danger); margin-left:2px;}
+.field-input, .field-select, .field-textarea{
+  width:100%;
+  padding:11px 14px;
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  font-size:13px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field-input:focus, .field-select:focus, .field-textarea:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+.field-textarea{
+  resize:vertical;
+  min-height:60px;
+  font-family:inherit;
+}
+
+.field-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:11px;
+}
+
+/* Sugestões automáticas (OCR) */
+.ocr-suggestions{
+  background:linear-gradient(135deg, #F0E6FA, #E5D4F8);
+  border-radius:10px;
+  padding:11px 13px;
+  margin-bottom:13px;
+  border-left:3px solid var(--purple);
+  display:flex; align-items:flex-start; gap:11px;
+}
+.ocr-icon{
+  width:30px; height:30px; border-radius:8px;
+  background:#fff; color:var(--purple);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.ocr-content{
+  flex:1; min-width:0;
+  font-size:11.5px;
+  line-height:1.55;
+  color:var(--txt);
+}
+.ocr-content strong{color:var(--purple); font-weight:600;}
+.ocr-content .extracted-data{
+  margin-top:7px;
+  display:flex; gap:6px; flex-wrap:wrap;
+}
+.ocr-pill{
+  font-size:10.5px;
+  padding:3px 10px;
+  background:#fff;
+  border-radius:8px;
+  font-weight:600;
+  color:var(--txt);
+  display:inline-flex; align-items:center; gap:4px;
+}
+.ocr-pill svg{width:10px; height:10px; color:var(--purple);}
+
+/* ============= STEP 4: Confirmação (sucesso) ============= */
+.success-display{
+  text-align:center;
+  padding:14px 0;
+}
+.success-emoji{
+  font-size:54px;
+  margin-bottom:13px;
+  display:inline-block;
+  animation:bounce 0.7s ease-out;
+}
+@keyframes bounce{
+  0%{transform:scale(0); opacity:0;}
+  60%{transform:scale(1.15); opacity:1;}
+  100%{transform:scale(1);}
+}
+.success-protocol{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px;
+  background:var(--green2);
+  color:var(--green);
+  border-radius:11px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px; font-weight:700;
+  margin:11px 0 18px;
+}
+
+/* Card de resumo do envio */
+.summary-card{
+  background:var(--off);
+  border-radius:11px;
+  padding:14px 16px;
+  margin-bottom:14px;
+  text-align:left;
+}
+.sc-row{
+  display:flex; justify-content:space-between;
+  padding:6px 0;
+  font-size:11.5px;
+  border-bottom:1px dashed var(--gray2);
+}
+.sc-row:last-child{border-bottom:none;}
+.sc-row .lbl{color:var(--txt2);}
+.sc-row .val{font-weight:600; color:var(--txt); text-align:right;}
+.sc-row .val.protocol{font-family:'JetBrains Mono',monospace; color:var(--orange);}
+
+/* Privacy reminder no sucesso */
+.privacy-reminder{
+  background:linear-gradient(135deg, #E8EFF8, var(--off));
+  border-radius:10px;
+  padding:11px 13px;
+  margin-bottom:14px;
+  display:flex; align-items:flex-start; gap:11px;
+  border-left:3px solid var(--navy);
+  text-align:left;
+}
+.pr-icon-2{
+  width:28px; height:28px; border-radius:8px;
+  background:#fff; color:var(--navy);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.pr-text{
+  flex:1; min-width:0;
+  font-size:11px; color:var(--txt2);
+  line-height:1.55;
+}
+.pr-text strong{color:var(--txt); font-weight:600;}
+
+/* ============= FOOTER COM BOTÕES ============= */
+.wizard-footer{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:13px 22px 16px;
+  border-top:1px solid var(--gray1);
+  background:var(--off);
+  gap:9px;
+}
+.btn-back{
+  background:transparent;
+  border:none;
+  color:var(--txt2);
+  font-size:12.5px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+  padding:8px 11px;
+  display:inline-flex; align-items:center; gap:5px;
+  border-radius:7px;
+}
+.btn-back:hover{background:var(--gray1); color:var(--txt);}
+.btn-back:disabled{opacity:.4; cursor:not-allowed;}
+
+.btn-next{
+  background:var(--navy);
+  color:#fff;
+  border:none;
+  padding:11px 19px;
+  border-radius:9px;
+  font-size:12.5px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px;
+  box-shadow:0 4px 10px rgba(43,74,122,.25);
+  transition:all .15s;
+}
+.btn-next:hover{background:var(--navy2); transform:translateY(-1px); box-shadow:0 6px 13px rgba(43,74,122,.35);}
+.btn-next:disabled{opacity:.5; cursor:not-allowed; transform:none; box-shadow:none;}
+.btn-next.orange{background:var(--orange); box-shadow:0 4px 10px rgba(245,131,31,.3);}
+.btn-next.orange:hover{background:#D87013;}
+.btn-next.green{background:var(--green); box-shadow:0 4px 10px rgba(30,123,75,.3);}
+.btn-next.green:hover{background:#15643A;}
+
+/* ============= SIDEBAR DIREITA: histórico de envios ============= */
+.history-card{
+  background:#fff;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-card);
+  height:fit-content;
+  position:sticky;
+  top:0;
+}
+.history-header{
+  padding:14px 17px;
+  border-bottom:1px solid var(--gray1);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.history-header h3{
+  font-size:13px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.history-count{
+  background:var(--gray1);
+  color:var(--txt2);
+  font-size:10.5px;
+  padding:2px 8px;
+  border-radius:9px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+}
+
+.history-list{
+  padding:6px 0;
+  max-height:560px;
+  overflow-y:auto;
+}
+.history-item{
+  padding:11px 17px;
+  border-bottom:1px solid var(--gray1);
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;
+  align-items:center;
+}
+.history-item:last-child{border-bottom:none;}
+.history-item:hover{background:var(--off);}
+.hist-status-dot{
+  width:9px; height:9px; border-radius:50%;
+  flex-shrink:0;
+}
+.hist-status-dot.processing{background:var(--orange); animation:pulse 1.5s infinite;}
+.hist-status-dot.received{background:var(--green);}
+.hist-status-dot.archived{background:var(--gray3);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+.hist-info{min-width:0;}
+.hist-protocol{
+  font-size:11px; font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--txt);
+}
+.hist-meta{
+  font-size:10.5px; color:var(--txt2);
+  margin-top:1px;
+  display:flex; gap:6px; align-items:center;
+}
+.hist-time{
+  font-size:10px; color:var(--txt3);
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.hist-status-pill{
+  font-size:9px; padding:1px 6px; border-radius:6px;
+  font-weight:700; text-transform:uppercase; letter-spacing:.3px;
+}
+.hist-status-pill.processing{background:var(--amber2); color:var(--amber);}
+.hist-status-pill.received{background:var(--green2); color:var(--green);}
+.hist-status-pill.archived{background:var(--gray1); color:var(--txt2);}
+
+/* Help footer */
+.help-footer{
+  padding:11px 17px;
+  background:var(--off);
+  border-top:1px solid var(--gray1);
+  font-size:10.5px;
+  color:var(--txt2);
+  line-height:1.5;
+  border-radius:0 0 var(--radius-lg) var(--radius-lg);
+}
+.help-footer a{
+  color:var(--navy);
+  font-weight:500;
+  text-decoration:none;
+  cursor:pointer;
+}
+.help-footer a:hover{text-decoration:underline;}
+
+/* Image preview area */
+.image-preview-wrap{
+  margin-top:12px;
+  background:#000;
+  border-radius:11px;
+  overflow:hidden;
+  position:relative;
+  max-height:280px;
+}
+.image-preview-wrap img{
+  width:100%; height:auto; display:block;
+  max-height:280px; object-fit:contain;
+}
+.image-quality-overlay{
+  position:absolute;
+  top:9px; right:9px;
+  background:rgba(0,0,0,.75);
+  color:#fff;
+  padding:5px 10px;
+  border-radius:9px;
+  font-size:10.5px;
+  font-weight:600;
+  display:flex; align-items:center; gap:5px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.image-quality-overlay.good{background:rgba(30,123,75,.92);}
+.image-quality-overlay.poor{background:rgba(192,57,43,.92);}
+.image-quality-overlay .iq-dot{
+  width:6px; height:6px; border-radius:50%;
+  background:#fff;
+}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .layout-grid{grid-template-columns:1fr;}
+  .history-card{position:relative;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 30px;}
+
+  .privacy-banner{grid-template-columns:auto; padding:11px 13px;}
+  .privacy-banner .icon{margin-bottom:6px;}
+
+  .wizard-body{padding:8px 16px 18px; min-height:340px;}
+  .wizard-header{padding:14px 16px 0;}
+  .wizard-footer{padding:11px 16px 14px;}
+  .step-icon{width:46px; height:46px;}
+  .step-title{font-size:16px;}
+  .upload-area{padding:24px 16px;}
+  .upload-actions{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+
+  .page-header h1{font-size:18px;}
+}
+@media (max-width: 420px){
+  .sc-row{flex-direction:column; gap:2px;}
+  .sc-row .val{text-align:left;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar, .history-list::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+.history-list::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Meu perfil</a>
+      <div class="sidebar-section">Equipe</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Minha equipe</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>Movimentações</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><circle cx="12" cy="14" r="3"/><path d="M12 11v3l1.5 1"/></svg>Atestados</a>
+      <div class="sidebar-section">Avaliação</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedback e mural</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Atestados · <strong>Enviar</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">JC</div>
+      <div class="user-info">
+        <span class="user-name">João Carvalho</span>
+        <span class="user-role">Líder Financeiro</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Enviar atestado</h1>
+        <p>Encaminhe o atestado médico de um membro da sua equipe diretamente para o departamento pessoal. O DP recebe, valida e arquiva.</p>
+      </div>
+    </div>
+
+    <!-- ============= PRIVACY BANNER ============= -->
+    <div class="privacy-banner">
+      <div class="icon">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="text">
+        <strong>Atenção sobre privacidade.</strong> Atestados contêm dados sensíveis de saúde (LGPD Art. 11). Você como líder pode <strong>encaminhar o documento</strong>, mas <strong>não terá acesso a ele depois do envio</strong>. Apenas o DP/RH e o próprio colaborador conseguem visualizá-lo. Você verá apenas o protocolo e o status (recebido, validado, arquivado).
+      </div>
+    </div>
+
+    <!-- ============= LAYOUT 2 COLUNAS ============= -->
+    <div class="layout-grid">
+
+      <!-- Wizard principal -->
+      <div class="wizard-card">
+
+        <div class="wizard-header">
+          <div class="wizard-steps">
+            <div class="wizard-step current" id="bar1"></div>
+            <div class="wizard-step" id="bar2"></div>
+            <div class="wizard-step" id="bar3"></div>
+            <div class="wizard-step" id="bar4"></div>
+          </div>
+          <div class="wizard-meta">
+            <span>Envio de atestado</span>
+            <span>Passo <strong id="stepNum">1</strong> de 4</span>
+          </div>
+        </div>
+
+        <div class="wizard-body">
+
+          <!-- ============= STEP 1: Identificar colaborador ============= -->
+          <div class="step-content active" data-step="1">
+            <div class="step-icon-area">
+              <div class="step-icon navy">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+              </div>
+              <h2 class="step-title">De qual colaborador?</h2>
+              <p class="step-subtitle">Selecione a pessoa da sua equipe a quem o atestado pertence</p>
+            </div>
+
+            <div class="search-wrapper">
+              <span class="search-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              </span>
+              <input class="search-input" placeholder="Buscar pelo nome do colaborador..." id="searchInput">
+            </div>
+
+            <div class="team-list" id="teamList">
+
+              <div class="team-item" data-name="Beatriz Lopes" onclick="selectMember(this)">
+                <div class="team-avatar" style="background:#3D5F95;">BL</div>
+                <div class="team-info">
+                  <div class="team-name">Beatriz Lopes Almeida</div>
+                  <div class="team-meta">
+                    <span>Analista Sr. Financeiro</span>
+                    <span class="team-tag emp">EMP GPC</span>
+                  </div>
+                </div>
+                <div class="team-check"></div>
+              </div>
+
+              <div class="team-item" data-name="Helena Cardoso" onclick="selectMember(this)">
+                <div class="team-avatar" style="background:#1E7B4B;">HC</div>
+                <div class="team-info">
+                  <div class="team-name">Helena Cardoso</div>
+                  <div class="team-meta">
+                    <span>Analista Sr. Financeiro · Em férias</span>
+                    <span class="team-tag emp">EMP GPC</span>
+                  </div>
+                </div>
+                <div class="team-check"></div>
+              </div>
+
+              <div class="team-item selected" data-name="Fernanda Lima" onclick="selectMember(this)">
+                <div class="team-avatar" style="background:#E82227;">FL</div>
+                <div class="team-info">
+                  <div class="team-name">Fernanda Lima dos Santos</div>
+                  <div class="team-meta">
+                    <span>Analista Pleno</span>
+                    <span class="team-tag emp">EMP Labuta</span>
+                    <span class="team-tag tom">TOM Cestão L1</span>
+                  </div>
+                </div>
+                <div class="team-check"></div>
+              </div>
+
+              <div class="team-item" data-name="Daniela Vieira" onclick="selectMember(this)">
+                <div class="team-avatar" style="background:#6D28D9;">DV</div>
+                <div class="team-info">
+                  <div class="team-name">Daniela Vieira Matos</div>
+                  <div class="team-meta">
+                    <span>Analista Júnior</span>
+                    <span class="team-tag emp">EMP Labuta</span>
+                    <span class="team-tag tom">TOM Cestão L1</span>
+                  </div>
+                </div>
+                <div class="team-check"></div>
+              </div>
+
+              <div class="team-item" data-name="Gabriel Pinto" onclick="selectMember(this)">
+                <div class="team-avatar" style="background:#854F0B;">GP</div>
+                <div class="team-info">
+                  <div class="team-name">Gabriel Pinto Souza</div>
+                  <div class="team-meta">
+                    <span>Estagiário</span>
+                    <span class="team-tag emp">EMP Labuta</span>
+                    <span class="team-tag tom">TOM Cestão L1</span>
+                  </div>
+                </div>
+                <div class="team-check"></div>
+              </div>
+
+              <div class="team-item" data-name="Natália Ferreira" onclick="selectMember(this)">
+                <div class="team-avatar" style="background:#F5831F;">NF</div>
+                <div class="team-info">
+                  <div class="team-name">Natália Ferreira</div>
+                  <div class="team-meta">
+                    <span>Auxiliar Financeiro</span>
+                    <span class="team-tag emp">EMP Labuta</span>
+                    <span class="team-tag tom">TOM Financeiro</span>
+                  </div>
+                </div>
+                <div class="team-check"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ============= STEP 2: Anexar documento ============= -->
+          <div class="step-content" data-step="2">
+            <div class="step-icon-area">
+              <div class="step-icon">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+              </div>
+              <h2 class="step-title">Anexe o atestado</h2>
+              <p class="step-subtitle">Tire foto da via física ou anexe um arquivo digital</p>
+            </div>
+
+            <div id="uploadStateEmpty">
+              <div class="upload-area" id="uploadArea" onclick="simulateUpload()">
+                <div class="upload-icon-big">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                </div>
+                <div class="upload-text-main">Arraste o arquivo aqui</div>
+                <div class="upload-text-sub">ou use os botões abaixo</div>
+                <div class="upload-formats">
+                  <span class="format-chip">PDF</span>
+                  <span class="format-chip">JPG</span>
+                  <span class="format-chip">PNG</span>
+                  <span class="format-chip">HEIC</span>
+                  <span class="format-chip">até 15 MB</span>
+                </div>
+              </div>
+
+              <div class="upload-actions">
+                <button class="upload-btn primary" onclick="simulateUpload()">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  Tirar foto
+                </button>
+                <button class="upload-btn" onclick="simulateUpload()">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                  Escolher do dispositivo
+                </button>
+              </div>
+            </div>
+
+            <div id="uploadStateFilled" style="display:none;">
+
+              <!-- Preview da imagem -->
+              <div class="image-preview-wrap">
+                <!-- Mock SVG simulando atestado -->
+                <svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:280px; background:#fff;">
+                  <rect width="400" height="280" fill="#fff"/>
+                  <rect x="20" y="15" width="80" height="20" fill="#e8f0fe"/>
+                  <text x="60" y="29" font-family="serif" font-size="10" fill="#1a73e8" text-anchor="middle">DR. CARLOS MENDES</text>
+                  <rect x="20" y="38" width="120" height="10" fill="#f1f3f4"/>
+                  <text x="22" y="45" font-family="serif" font-size="7" fill="#5f6368">CRM-BA 12345 · Clínica Santa Mônica</text>
+                  <line x1="20" y1="60" x2="380" y2="60" stroke="#dadce0" stroke-width="1"/>
+                  <text x="200" y="80" font-family="serif" font-size="14" fill="#202124" text-anchor="middle" font-weight="bold">ATESTADO MÉDICO</text>
+                  <text x="20" y="105" font-family="serif" font-size="9" fill="#3c4043">Atesto, para os devidos fins, que o(a) Sr(a)</text>
+                  <text x="20" y="120" font-family="serif" font-size="10" fill="#202124" font-weight="bold">FERNANDA LIMA DOS SANTOS</text>
+                  <text x="20" y="135" font-family="serif" font-size="9" fill="#3c4043">CPF 11.456.789-12, esteve sob meus cuidados em</text>
+                  <text x="20" y="150" font-family="serif" font-size="9" fill="#3c4043">consulta médica nesta data, necessitando de</text>
+                  <text x="20" y="165" font-family="serif" font-size="9" fill="#3c4043">afastamento de suas atividades laborais por</text>
+                  <text x="20" y="180" font-family="serif" font-size="11" fill="#c5221f" font-weight="bold">02 (DOIS) DIAS</text>
+                  <text x="20" y="195" font-family="serif" font-size="9" fill="#3c4043">a partir de 28/04/2026, conforme CID-10:</text>
+                  <text x="20" y="210" font-family="serif" font-size="10" fill="#202124" font-weight="bold">J06.9 - Infecção aguda das vias aéreas</text>
+                  <line x1="240" y1="248" x2="370" y2="248" stroke="#5f6368" stroke-width="0.5"/>
+                  <text x="305" y="259" font-family="serif" font-size="7" fill="#5f6368" text-anchor="middle">Assinatura e carimbo</text>
+                  <text x="20" y="265" font-family="serif" font-size="7" fill="#5f6368">Salvador, 28 de abril de 2026</text>
+                </svg>
+                <div class="image-quality-overlay good">
+                  <span class="iq-dot"></span>
+                  Qualidade: alta
+                </div>
+              </div>
+
+              <div class="file-preview" style="margin-top:11px;">
+                <div class="fp-row">
+                  <div class="fp-icon">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                  </div>
+                  <div class="fp-info">
+                    <div class="fp-name">atestado_consulta_28042026.jpg</div>
+                    <div class="fp-size">3,42 MB · 2880 × 2160 px · 28/04/2026 09:17</div>
+                  </div>
+                  <button class="fp-remove" onclick="resetUpload()" title="Remover">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Lista de processamento automático -->
+              <div style="margin-top:14px;">
+                <div style="font-size:10.5px; color:var(--txt2); font-weight:600; text-transform:uppercase; letter-spacing:.4px; margin-bottom:8px;">
+                  Processamento automático
+                </div>
+
+                <div class="processing-list">
+                  <div class="proc-item success" id="proc1">
+                    <div class="proc-icon">
+                      <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                    </div>
+                    <div class="proc-text">
+                      Verificação de legibilidade
+                      <div class="proc-detail">OCR detectou 247 palavras · documento nítido</div>
+                    </div>
+                  </div>
+
+                  <div class="proc-item success" id="proc2">
+                    <div class="proc-icon">
+                      <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                    </div>
+                    <div class="proc-text">
+                      Validação do tipo de documento
+                      <div class="proc-detail">Identificado como atestado médico</div>
+                    </div>
+                  </div>
+
+                  <div class="proc-item success" id="proc3">
+                    <div class="proc-icon">
+                      <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                    </div>
+                    <div class="proc-text">
+                      Compactação inteligente
+                      <div class="proc-detail">PDF gerado · qualidade preservada</div>
+                    </div>
+                  </div>
+
+                  <div class="proc-item success" id="proc4">
+                    <div class="proc-icon">
+                      <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                    </div>
+                    <div class="proc-text">
+                      Armazenamento criptografado
+                      <div class="proc-detail">AES-256 · Supabase Storage</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Resultado da compactação -->
+                <div class="compression-result">
+                  <div class="cr-icon">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/></svg>
+                  </div>
+                  <div class="cr-text">
+                    <div class="cr-main">3,42 MB → 487 KB</div>
+                    <div class="cr-sub">PDF otimizado, qualidade legível preservada</div>
+                  </div>
+                  <div class="cr-saving">−86%</div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ============= STEP 3: Detalhes do atestado ============= -->
+          <div class="step-content" data-step="3">
+            <div class="step-icon-area">
+              <div class="step-icon purple">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+              </div>
+              <h2 class="step-title">Confirme as informações</h2>
+              <p class="step-subtitle">Os dados foram extraídos automaticamente. Confirme ou ajuste se necessário.</p>
+            </div>
+
+            <!-- OCR suggestions -->
+            <div class="ocr-suggestions">
+              <div class="ocr-icon">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+              </div>
+              <div class="ocr-content">
+                <strong>Detectado automaticamente:</strong> identificamos as principais informações do atestado. Confira abaixo.
+                <div class="extracted-data">
+                  <span class="ocr-pill">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    2 dias de afastamento
+                  </span>
+                  <span class="ocr-pill">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4"/></svg>
+                    Início: 28/04/2026
+                  </span>
+                  <span class="ocr-pill">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                    Dr. Carlos Mendes (CRM-BA 12345)
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Tipo do documento <span class="required">*</span></label>
+              <select class="field-select">
+                <option selected>Atestado médico (afastamento)</option>
+                <option>Comprovante de consulta</option>
+                <option>Declaração de comparecimento</option>
+                <option>Atestado de acompanhamento</option>
+                <option>Exame médico admissional</option>
+                <option>Exame periódico</option>
+              </select>
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label class="field-label">Data de início <span class="required">*</span></label>
+                <input type="date" class="field-input" value="2026-04-28">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Dias de afastamento <span class="required">*</span></label>
+                <input type="number" class="field-input" value="2" min="0" max="365">
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Observações para o DP <span style="color:var(--txt3); font-weight:400;">(opcional)</span></label>
+              <textarea class="field-textarea" placeholder="Ex: Fernanda já avisou a equipe. Sandra (gerente Cestão L1) está ciente. Tarefas em andamento foram redistribuídas para Carlos Eduardo."></textarea>
+            </div>
+          </div>
+
+          <!-- ============= STEP 4: Confirmação ============= -->
+          <div class="step-content" data-step="4">
+            <div class="success-display">
+              <span class="success-emoji">✅</span>
+              <h2 class="step-title">Atestado enviado com sucesso</h2>
+              <p class="step-subtitle">O DP recebeu o documento e fará a validação em até 1 dia útil</p>
+
+              <div class="success-protocol">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                Protocolo: ATD-2026-04-28-1A47B
+              </div>
+
+              <div class="summary-card">
+                <div class="sc-row">
+                  <span class="lbl">Colaborador</span>
+                  <span class="val">Fernanda Lima dos Santos</span>
+                </div>
+                <div class="sc-row">
+                  <span class="lbl">Tipo</span>
+                  <span class="val">Atestado médico (afastamento)</span>
+                </div>
+                <div class="sc-row">
+                  <span class="lbl">Período</span>
+                  <span class="val">28/04 a 29/04 (2 dias)</span>
+                </div>
+                <div class="sc-row">
+                  <span class="lbl">Tamanho final</span>
+                  <span class="val">487 KB</span>
+                </div>
+                <div class="sc-row">
+                  <span class="lbl">Enviado em</span>
+                  <span class="val">28/04/2026 às 09:23</span>
+                </div>
+                <div class="sc-row">
+                  <span class="lbl">Direcionado para</span>
+                  <span class="val">DP GPC + RH Labuta</span>
+                </div>
+                <div class="sc-row">
+                  <span class="lbl">Protocolo</span>
+                  <span class="val protocol">ATD-2026-04-28-1A47B</span>
+                </div>
+              </div>
+
+              <div class="privacy-reminder">
+                <div class="pr-icon-2">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="pr-text">
+                  <strong>O documento já não está acessível para você.</strong> A partir deste momento, apenas o DP, o RH da Labuta e a Fernanda Lima podem visualizar o atestado. Você continuará vendo o status dele no histórico ao lado: aguardando validação, recebido, arquivado.
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer com botões -->
+        <div class="wizard-footer">
+          <button class="btn-back" id="btnBack" onclick="goBack()" disabled>
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+            Voltar
+          </button>
+          <button class="btn-next" id="btnNext" onclick="goNext()">
+            Continuar
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Sidebar direita: histórico -->
+      <aside class="history-card">
+        <div class="history-header">
+          <h3>
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Meus envios recentes
+          </h3>
+          <span class="history-count">7</span>
+        </div>
+
+        <div class="history-list">
+
+          <div class="history-item">
+            <span class="hist-status-dot processing"></span>
+            <div class="hist-info">
+              <div class="hist-protocol">ATD-2026-04-28-1A47B</div>
+              <div class="hist-meta">
+                <span class="hist-status-pill processing">Aguardando</span>
+                <span>· F. Lima · atestado 2d</span>
+              </div>
+            </div>
+            <span class="hist-time">agora</span>
+          </div>
+
+          <div class="history-item">
+            <span class="hist-status-dot received"></span>
+            <div class="hist-info">
+              <div class="hist-protocol">ATD-2026-04-22-9C32D</div>
+              <div class="hist-meta">
+                <span class="hist-status-pill received">Recebido</span>
+                <span>· G. Pinto · consulta</span>
+              </div>
+            </div>
+            <span class="hist-time">há 6d</span>
+          </div>
+
+          <div class="history-item">
+            <span class="hist-status-dot archived"></span>
+            <div class="hist-info">
+              <div class="hist-protocol">ATD-2026-04-15-7B25E</div>
+              <div class="hist-meta">
+                <span class="hist-status-pill archived">Arquivado</span>
+                <span>· D. Vieira · atestado 1d</span>
+              </div>
+            </div>
+            <span class="hist-time">há 13d</span>
+          </div>
+
+          <div class="history-item">
+            <span class="hist-status-dot archived"></span>
+            <div class="hist-info">
+              <div class="hist-protocol">ATD-2026-04-08-3F18A</div>
+              <div class="hist-meta">
+                <span class="hist-status-pill archived">Arquivado</span>
+                <span>· N. Ferreira · atestado 3d</span>
+              </div>
+            </div>
+            <span class="hist-time">há 20d</span>
+          </div>
+
+          <div class="history-item">
+            <span class="hist-status-dot archived"></span>
+            <div class="hist-info">
+              <div class="hist-protocol">ATD-2026-03-30-5E91C</div>
+              <div class="hist-meta">
+                <span class="hist-status-pill archived">Arquivado</span>
+                <span>· F. Lima · consulta</span>
+              </div>
+            </div>
+            <span class="hist-time">há 29d</span>
+          </div>
+
+          <div class="history-item">
+            <span class="hist-status-dot archived"></span>
+            <div class="hist-info">
+              <div class="hist-protocol">ATD-2026-03-22-2D74F</div>
+              <div class="hist-meta">
+                <span class="hist-status-pill archived">Arquivado</span>
+                <span>· B. Lopes · atestado 5d</span>
+              </div>
+            </div>
+            <span class="hist-time">há 37d</span>
+          </div>
+
+        </div>
+
+        <div class="help-footer">
+          🔒 Você só vê o protocolo e status. O conteúdo dos atestados <strong>não fica acessível</strong> para o líder após o envio. <a>Saiba por quê</a>
+        </div>
+      </aside>
+
+    </div>
+
+  </main>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 4;
+let selectedMember = 'Fernanda Lima';
+let hasFile = false;
+
+function updateBars(){
+  for(let i = 1; i <= totalSteps; i++){
+    const bar = document.getElementById('bar' + i);
+    bar.classList.remove('done', 'current');
+    if(i < currentStep) bar.classList.add('done');
+    else if(i === currentStep) bar.classList.add('current');
+  }
+  document.getElementById('stepNum').textContent = currentStep;
+}
+
+function showStep(n){
+  document.querySelectorAll('.step-content').forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.step) === n);
+  });
+
+  document.getElementById('btnBack').disabled = (n === 1);
+
+  const btnNext = document.getElementById('btnNext');
+  btnNext.classList.remove('orange', 'green');
+  btnNext.style.display = '';
+
+  if(n === 1){
+    btnNext.innerHTML = 'Continuar <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+  } else if(n === 2){
+    btnNext.innerHTML = (hasFile ? 'Continuar' : 'Anexe um arquivo') + ' <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+    btnNext.disabled = !hasFile;
+  } else if(n === 3){
+    btnNext.innerHTML = 'Enviar para o DP <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    btnNext.classList.add('orange');
+  } else if(n === 4){
+    btnNext.innerHTML = 'Enviar outro atestado <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>';
+    btnNext.classList.add('green');
+    document.getElementById('btnBack').style.display = 'none';
+  } else {
+    document.getElementById('btnBack').style.display = '';
+    btnNext.disabled = false;
+  }
+
+  if(n !== 4) document.getElementById('btnBack').style.display = '';
+
+  updateBars();
+  document.querySelector('.wizard-body').scrollTop = 0;
+}
+
+function goNext(){
+  if(currentStep < totalSteps){
+    currentStep++;
+    showStep(currentStep);
+  } else {
+    // Reset para novo envio
+    currentStep = 1;
+    hasFile = false;
+    document.getElementById('uploadStateEmpty').style.display = '';
+    document.getElementById('uploadStateFilled').style.display = 'none';
+    showStep(1);
+  }
+}
+
+function goBack(){
+  if(currentStep > 1){
+    currentStep--;
+    showStep(currentStep);
+  }
+}
+
+function selectMember(el){
+  document.querySelectorAll('.team-item').forEach(x=>x.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMember = el.dataset.name;
+}
+
+function simulateUpload(){
+  hasFile = true;
+  document.getElementById('uploadStateEmpty').style.display = 'none';
+  document.getElementById('uploadStateFilled').style.display = '';
+  // Atualiza botão next
+  showStep(currentStep);
+}
+
+function resetUpload(){
+  hasFile = false;
+  document.getElementById('uploadStateEmpty').style.display = '';
+  document.getElementById('uploadStateFilled').style.display = 'none';
+  showStep(currentStep);
+}
+
+// Search filter
+document.getElementById('searchInput')?.addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  document.querySelectorAll('.team-item').forEach(item=>{
+    const match = item.dataset.name.toLowerCase().includes(q);
+    item.style.display = match ? '' : 'none';
+  });
+});
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// Inicializa
+showStep(1);
+</script>
+</body>
+</html>

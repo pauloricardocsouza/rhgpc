@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Cadastro de Colaborador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; transition:all .15s; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.breadcrumb{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--txt2);}
+.breadcrumb a{color:var(--txt2); text-decoration:none; cursor:pointer;}
+.breadcrumb a:hover{color:var(--navy);}
+.breadcrumb .sep{color:var(--gray3);}
+.breadcrumb strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.icon-btn{width:36px; height:36px; background:transparent; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; color:var(--txt2);}
+.icon-btn:hover{background:var(--gray1);}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-chip:hover{background:var(--gray1);}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:0 0 40px; overflow-x:hidden;}
+
+/* Botões */
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-danger{background:#fff; color:var(--danger); border:1px solid var(--danger2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-danger:hover{background:var(--danger2);}
+
+/* ============= STICKY HEADER DO COLABORADOR ============= */
+.emp-header{
+  position:sticky; top:0;
+  background:#fff;
+  border-bottom:1px solid var(--gray1);
+  padding:18px 22px;
+  z-index:15;
+  box-shadow:0 2px 8px rgba(26,45,79,.04);
+}
+.emp-header-content{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:18px;
+  align-items:center;
+}
+.emp-photo{
+  width:78px; height:78px; border-radius:50%;
+  background:linear-gradient(135deg, var(--navy), var(--purple));
+  color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:600; font-size:26px;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+.emp-photo .change-photo{
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:9.5px;
+  padding:4px 0;
+  text-align:center;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .15s;
+}
+.emp-photo:hover .change-photo{opacity:1;}
+
+.emp-info h1{font-size:22px; font-weight:600; letter-spacing:-.3px; margin-bottom:3px;}
+.emp-meta{font-size:13px; color:var(--txt2); display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.emp-meta .sep{color:var(--gray3);}
+.emp-meta strong{color:var(--txt); font-weight:500;}
+
+.emp-vinculo-badges{
+  display:inline-flex; gap:6px;
+  margin-top:7px;
+  flex-wrap:wrap;
+}
+.dual-badge{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 10px; border-radius:14px;
+  font-size:11.5px; font-weight:500;
+}
+.dual-badge .lab{
+  font-size:9.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.4px;
+  padding:2px 6px; border-radius:8px;
+}
+.db-emp{background:#F0E6FA; color:var(--purple);}
+.db-emp .lab{background:var(--purple); color:#fff;}
+.db-tom{background:var(--green2); color:var(--green);}
+.db-tom .lab{background:var(--green); color:#fff;}
+.db-mgr{background:#E8EFF8; color:var(--navy);}
+.db-mgr .lab{background:var(--navy); color:#fff;}
+
+.emp-status-block{display:flex; flex-direction:column; align-items:flex-end; gap:7px;}
+.emp-status{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px;
+  border-radius:14px;
+  font-size:11.5px; font-weight:600;
+}
+.emp-status .dot{width:7px; height:7px; border-radius:50%; background:currentColor;}
+.es-active{background:var(--green2); color:var(--green);}
+.es-vacation{background:var(--amber2); color:var(--amber);}
+.es-leave{background:#E8EFF8; color:var(--navy);}
+.es-inactive{background:var(--gray1); color:var(--txt2);}
+.emp-actions{display:flex; gap:7px;}
+
+/* ============= TABS STICKY ============= */
+.tabs-sticky{
+  position:sticky; top:115px;
+  background:var(--off);
+  padding:14px 22px 0;
+  z-index:14;
+  border-bottom:1px solid var(--gray1);
+}
+.tabs{
+  display:flex; gap:2px;
+  background:#fff; padding:4px; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  overflow-x:auto;
+}
+.tab{
+  padding:9px 16px;
+  font-size:12.5px; font-weight:500; color:var(--txt2);
+  background:transparent; border:none; cursor:pointer;
+  border-radius:7px; font-family:inherit;
+  display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+}
+.tab:hover{background:var(--gray1); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab svg{width:14px; height:14px;}
+
+.tab-panel{display:none; padding:18px 22px;}
+.tab-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* ============= CARDS DE FORM ============= */
+.form-row{display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; margin-bottom:14px;}
+.form-row.r-1{grid-template-columns:1fr;}
+.form-row.r-3{grid-template-columns:repeat(3, 1fr);}
+
+.form-card{
+  background:#fff; border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  padding:16px 18px;
+}
+.fc-head{
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:13px;
+  padding-bottom:9px;
+  border-bottom:1px solid var(--gray1);
+}
+.fc-icon{
+  width:34px; height:34px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.fc-icon.purple{background:#F0E6FA; color:var(--purple);}
+.fc-icon.green{background:var(--green2); color:var(--green);}
+.fc-icon.navy{background:#E8EFF8; color:var(--navy);}
+.fc-icon.amber{background:var(--amber2); color:var(--amber);}
+.fc-icon.orange{background:#FCE6CD; color:var(--orange);}
+.fc-icon.red{background:var(--danger2); color:var(--danger);}
+.fc-icon svg{width:16px; height:16px;}
+.fc-title{font-size:13.5px; font-weight:600;}
+.fc-sub{font-size:11px; color:var(--txt2); margin-top:1px;}
+
+/* Form fields */
+.field{margin-bottom:13px;}
+.field:last-child{margin-bottom:0;}
+.field label{display:block; font-size:11.5px; color:var(--txt2); margin-bottom:5px; font-weight:500;}
+.field label .req{color:var(--danger);}
+.field input[type=text], .field input[type=date], .field input[type=number], .field input[type=email], .field input[type=tel], .field select, .field textarea{
+  width:100%; padding:9px 12px;
+  border:1px solid var(--gray2); border-radius:7px;
+  font-size:13px; font-family:inherit; color:var(--txt); background:#fff;
+  transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--navy);}
+.field input:disabled{background:var(--gray1); color:var(--txt2);}
+.field textarea{resize:vertical; min-height:60px;}
+.field-help{font-size:10.5px; color:var(--txt3); margin-top:4px;}
+.field-help.warn{color:var(--amber);}
+
+/* ============= NICKNAME ENHANCED COMPONENT ============= */
+.searchable-badge{
+  display:inline-flex; align-items:center; gap:4px;
+  background:var(--orange-bg, #FFF8EB);
+  color:#F5831F;
+  font-size:9.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  padding:2px 7px;
+  border-radius:6px;
+  margin-left:7px;
+  vertical-align:middle;
+}
+.searchable-badge svg{width:9px; height:9px;}
+
+.nickname-input-wrap{
+  position:relative;
+  display:flex; align-items:center;
+}
+.nickname-prefix{
+  position:absolute;
+  left:11px; top:50%;
+  transform:translateY(-50%);
+  color:#F5831F;
+  font-family:'JetBrains Mono', monospace;
+  font-weight:700;
+  font-size:13px;
+  pointer-events:none;
+  z-index:2;
+}
+.nickname-input-wrap input{
+  padding-left:25px !important;
+  padding-right:55px !important;
+  font-family:'JetBrains Mono', monospace !important;
+  font-weight:600;
+  letter-spacing:.3px;
+}
+.nickname-counter{
+  position:absolute;
+  right:11px; top:50%;
+  transform:translateY(-50%);
+  font-family:'JetBrains Mono', monospace;
+  font-size:10.5px;
+  color:var(--txt3);
+  font-weight:600;
+  pointer-events:none;
+}
+.nickname-counter.warn{color:var(--amber);}
+.nickname-counter.danger{color:var(--danger);}
+
+.nickname-suggestions{
+  display:flex; gap:6px; align-items:center;
+  margin-top:7px;
+  flex-wrap:wrap;
+}
+.nick-sugg-label{
+  font-size:10px;
+  color:var(--txt3);
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  font-weight:600;
+}
+.nick-sugg{
+  background:#fff;
+  border:1px dashed var(--gray2);
+  color:var(--txt2);
+  font-family:'JetBrains Mono', monospace;
+  font-size:11px;
+  font-weight:600;
+  padding:3px 9px;
+  border-radius:7px;
+  cursor:pointer;
+  transition:all .12s;
+}
+.nick-sugg:hover{
+  background:#FFF8EB;
+  border-color:#F5831F;
+  border-style:solid;
+  color:#F5831F;
+}
+.nick-sugg.active{
+  background:#F5831F;
+  border-color:#F5831F;
+  border-style:solid;
+  color:#fff;
+}
+
+.nickname-preview-card{
+  margin-top:10px;
+  background:linear-gradient(135deg, #F4F7FC, #fff);
+  border:1px dashed var(--gray2);
+  border-radius:9px;
+  padding:10px 12px;
+}
+.np-label{
+  font-size:9.5px;
+  color:var(--txt3);
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  font-weight:600;
+  margin-bottom:7px;
+  display:flex; align-items:center; gap:5px;
+}
+.np-label svg{width:11px; height:11px; color:var(--navy);}
+.np-row{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:10px;
+  align-items:center;
+}
+.np-avatar{
+  width:30px; height:30px; border-radius:50%;
+  background:linear-gradient(135deg, #E82227, #C0392B);
+  color:#fff;
+  font-weight:600; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+}
+.np-info{min-width:0;}
+.np-name{
+  font-size:12.5px; font-weight:600; color:var(--txt);
+  display:flex; align-items:center; gap:7px;
+  flex-wrap:wrap;
+}
+.np-pill{
+  background:#FFF8EB;
+  color:#F5831F;
+  font-family:'JetBrains Mono', monospace;
+  font-size:10.5px;
+  font-weight:600;
+  padding:1px 8px;
+  border-radius:7px;
+  white-space:nowrap;
+}
+.np-pill.empty{
+  background:var(--gray1);
+  color:var(--txt3);
+  font-style:italic;
+}
+.np-meta{
+  font-size:10.5px;
+  color:var(--txt2);
+  margin-top:1px;
+}
+
+.nickname-toggle{
+  display:flex; align-items:center; gap:8px;
+  margin-top:9px;
+  cursor:pointer;
+  font-size:11.5px;
+  color:var(--txt);
+}
+.nickname-toggle .switch-track{flex-shrink:0;}
+.nickname-toggle.disabled{opacity:.5;}
+
+.nickname-validation{
+  margin-top:5px;
+  font-size:10.5px;
+  display:flex; align-items:center; gap:5px;
+  color:var(--green);
+}
+.nickname-validation svg{width:11px; height:11px;}
+.nickname-validation.error{color:var(--danger);}
+.field-grid-2{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+.field-grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:11px;}
+.field-grid-2-1{display:grid; grid-template-columns:2fr 1fr; gap:11px;}
+.field-grid-1-2{display:grid; grid-template-columns:1fr 2fr; gap:11px;}
+.field-grid-1-1-2{display:grid; grid-template-columns:1fr 1fr 2fr; gap:11px;}
+
+/* Switch */
+.switch{display:inline-flex; align-items:center; gap:8px; cursor:pointer;}
+.switch-track{width:36px; height:20px; background:var(--gray2); border-radius:11px; position:relative; flex-shrink:0;}
+.switch-track::after{content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.switch input{display:none;}
+.switch input:checked + .switch-track{background:var(--green);}
+.switch input:checked + .switch-track::after{transform:translateX(16px);}
+.switch-label{font-size:12.5px;}
+
+/* ============= VÍNCULO: BLOCO ESPECIAL EMPREGADOR/TOMADOR ============= */
+.vinculo-grid{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  gap:14px;
+  align-items:stretch;
+  margin-bottom:14px;
+}
+.vinculo-card{
+  background:#fff; border-radius:var(--radius);
+  border:2px solid var(--gray2);
+  padding:14px 16px;
+  position:relative;
+}
+.vinculo-card.emp{border-color:#D8C4ED;}
+.vinculo-card.tom{border-color:#A6D6BD;}
+.vinculo-card-tag{
+  position:absolute; top:-9px; left:14px;
+  font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.5px;
+  padding:3px 9px; border-radius:9px;
+  background:#fff;
+}
+.vinculo-card.emp .vinculo-card-tag{color:var(--purple); border:2px solid #D8C4ED;}
+.vinculo-card.tom .vinculo-card-tag{color:var(--green); border:2px solid #A6D6BD;}
+.vinculo-card-title{
+  font-size:13.5px; font-weight:600; margin:6px 0 4px;
+  display:flex; align-items:center; gap:8px;
+}
+.vinculo-card-title .ic{
+  width:30px; height:30px; border-radius:7px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:13px;
+}
+.vinculo-card.emp .vinculo-card-title .ic{background:#F0E6FA; color:var(--purple);}
+.vinculo-card.tom .vinculo-card-title .ic{background:var(--green2); color:var(--green);}
+.vinculo-card-sub{font-size:10.5px; color:var(--txt2); line-height:1.45; margin-bottom:9px;}
+
+.vinculo-arrow{
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px; color:var(--orange);
+  font-weight:700;
+  align-self:center;
+  flex-shrink:0;
+  width:36px;
+}
+
+/* ============= TIMELINE / HISTÓRICO ============= */
+.timeline{position:relative; padding-left:28px;}
+.timeline::before{content:''; position:absolute; left:9px; top:5px; bottom:5px; width:2px; background:var(--gray2);}
+.tl-item{position:relative; margin-bottom:14px;}
+.tl-item:last-child{margin-bottom:0;}
+.tl-dot{
+  position:absolute; left:-23px; top:1px;
+  width:20px; height:20px; border-radius:50%;
+  background:#fff; border:2px solid var(--gray3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:700;
+}
+.tl-dot.green{background:var(--green); border-color:var(--green); color:#fff;}
+.tl-dot.amber{background:var(--amber); border-color:var(--amber); color:#fff;}
+.tl-dot.purple{background:var(--purple); border-color:var(--purple); color:#fff;}
+.tl-dot.orange{background:var(--orange); border-color:var(--orange); color:#fff;}
+.tl-dot.red{background:var(--danger); border-color:var(--danger); color:#fff;}
+.tl-dot.navy{background:var(--navy); border-color:var(--navy); color:#fff;}
+.tl-content{
+  background:var(--off); padding:11px 14px; border-radius:8px;
+  border:1px solid var(--gray1);
+}
+.tl-head{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;}
+.tl-title{font-size:12.5px; font-weight:600;}
+.tl-date{font-size:10.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace; white-space:nowrap;}
+.tl-desc{font-size:11.5px; color:var(--txt2); line-height:1.45;}
+.tl-changes{
+  display:flex; align-items:center; gap:8px;
+  margin-top:7px;
+  flex-wrap:wrap;
+}
+.tl-changes .from{
+  padding:3px 9px; border-radius:6px;
+  background:var(--danger2); color:var(--danger);
+  font-size:11px; font-weight:500;
+  text-decoration:line-through; text-decoration-color:rgba(192,57,43,.4);
+}
+.tl-changes .to{
+  padding:3px 9px; border-radius:6px;
+  background:var(--green2); color:var(--green);
+  font-size:11px; font-weight:600;
+}
+.tl-changes .arrow{color:var(--orange); font-weight:700;}
+
+/* Tipo de contrato badge */
+.contract-type{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:11px;
+  font-size:11px; font-weight:500;
+}
+.ct-clt{background:var(--green2); color:var(--green);}
+.ct-pj{background:#E8EFF8; color:var(--navy);}
+.ct-est{background:var(--amber2); color:var(--amber);}
+.ct-apr{background:#FCE6CD; color:var(--orange);}
+.ct-ter{background:#F0E6FA; color:var(--purple);}
+
+/* Banner tipo "info" */
+.banner{
+  display:flex; gap:11px;
+  align-items:flex-start;
+  padding:11px 13px; border-radius:8px;
+  margin-bottom:14px;
+  font-size:12px; line-height:1.5;
+}
+.banner.info{background:#E8EFF8; border-left:3px solid var(--navy); color:var(--txt2);}
+.banner.warn{background:var(--amber2); border-left:3px solid var(--amber); color:var(--txt);}
+.banner.success{background:var(--green2); border-left:3px solid var(--green); color:var(--txt);}
+.banner svg{flex-shrink:0; margin-top:1px;}
+.banner strong{color:var(--txt); font-weight:600;}
+
+/* Form footer */
+.form-footer{
+  position:sticky; bottom:0;
+  background:#fff;
+  border-top:1px solid var(--gray1);
+  padding:12px 22px;
+  display:flex; justify-content:space-between; align-items:center;
+  margin:0 -22px -40px;
+  box-shadow:0 -2px 8px rgba(26,45,79,.04);
+}
+.ff-info{font-size:11.5px; color:var(--txt2);}
+.ff-info svg{vertical-align:middle; color:var(--green); margin-right:4px;}
+.ff-actions{display:flex; gap:9px;}
+
+/* Stats cards no histórico */
+.stats-row{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;
+  margin-bottom:14px;
+}
+.stat-mini{
+  background:#fff; border-radius:8px;
+  padding:11px 13px; box-shadow:var(--shadow-card);
+  text-align:center;
+}
+.stat-mini .v{font-size:22px; font-weight:600; color:var(--txt);}
+.stat-mini .l{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px; margin-top:2px;}
+
+/* Documentos: lista de anexos */
+.doc-item{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 11px;
+  background:var(--off); border-radius:7px;
+  margin-bottom:7px;
+  cursor:pointer;
+  transition:background .12s;
+}
+.doc-item:hover{background:var(--gray1);}
+.doc-icon{
+  width:34px; height:34px; border-radius:7px;
+  background:#fff; border:1px solid var(--gray2);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--navy);
+  flex-shrink:0;
+}
+.doc-info{flex:1; min-width:0;}
+.doc-name{font-size:12.5px; font-weight:500;}
+.doc-meta{font-size:10.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace;}
+
+/* Salário display especial */
+.salary-display{
+  background:linear-gradient(90deg, var(--green2), #E8F3EC);
+  padding:11px 14px; border-radius:8px;
+  display:flex; align-items:center; gap:11px;
+}
+.salary-display svg{color:var(--green); flex-shrink:0;}
+.salary-display strong{font-size:16px; font-weight:600; color:var(--green); font-family:'Sora',sans-serif;}
+.salary-display span{font-size:11px; color:var(--txt2);}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 1100px){
+  .form-row, .form-row.r-3{grid-template-columns:1fr;}
+  .vinculo-grid{grid-template-columns:1fr; gap:10px;}
+  .vinculo-arrow{transform:rotate(90deg); align-self:center; width:auto;}
+  .field-grid-3, .field-grid-2-1, .field-grid-1-2, .field-grid-1-1-2{grid-template-columns:1fr;}
+  .stats-row{grid-template-columns:repeat(2, 1fr);}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .breadcrumb a:not(.bc-current){display:none;}
+  .breadcrumb .sep{display:none;}
+  .user-info{display:none;}
+  .user-chip{padding:0;}
+
+  .emp-header{padding:14px 14px;}
+  .emp-header-content{grid-template-columns:auto 1fr; gap:12px;}
+  .emp-photo{width:60px; height:60px; font-size:20px;}
+  .emp-info h1{font-size:18px;}
+  .emp-meta{font-size:12px;}
+  .emp-status-block{grid-column:1/-1; flex-direction:row; justify-content:space-between; align-items:center; margin-top:10px;}
+  .emp-actions .btn-secondary span, .emp-actions .btn-danger span{display:none;}
+
+  .tabs-sticky{top:auto; padding:14px 14px 0;}
+  .tab-panel{padding:14px;}
+
+  .stats-row{grid-template-columns:repeat(2, 1fr);}
+  .form-footer{padding:10px 14px;}
+}
+@media (max-width: 420px){
+  .tab span{display:none;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+.tabs::-webkit-scrollbar{height:0;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>Meu perfil</a>
+      <div class="sidebar-section">Avaliações</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <div class="sidebar-section">Feedback</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks</a>
+      <div class="sidebar-section">Gestor</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Minha equipe</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>Movimentações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <div class="sidebar-section">Administração</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18"/></svg>Estrutura</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="breadcrumb">
+      <a>Colaboradores</a>
+      <span class="sep">/</span>
+      <a class="bc-current"><strong>Fernanda Lima</strong></a>
+    </div>
+    <div class="topbar-spacer"></div>
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+    </button>
+    <div class="user-chip">
+      <div class="user-avatar">RS</div>
+      <div class="user-info">
+        <span class="user-name">Ricardo Silva</span>
+        <span class="user-role">Admin RH</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- ============= STICKY HEADER DO COLABORADOR ============= -->
+    <div class="emp-header">
+      <div class="emp-header-content">
+        <div class="emp-photo">
+          FL
+          <div class="change-photo">Trocar foto</div>
+        </div>
+        <div class="emp-info">
+          <h1>Fernanda Lima dos Santos</h1>
+          <div class="emp-meta">
+            <strong>Analista Financeiro Pleno</strong>
+            <span class="sep">•</span>
+            <span>Departamento Financeiro</span>
+            <span class="sep">•</span>
+            <span>Matrícula <strong style="font-family:'JetBrains Mono',monospace;">038412</strong></span>
+          </div>
+          <div class="emp-vinculo-badges">
+            <span class="dual-badge db-emp"><span class="lab">EMP</span> Labuta Serviços LTDA</span>
+            <span class="dual-badge db-tom"><span class="lab">TOM</span> Cestão Loja 1</span>
+            <span class="dual-badge db-mgr"><span class="lab">GES</span> João Carvalho</span>
+          </div>
+        </div>
+        <div class="emp-status-block">
+          <div class="emp-status es-active">
+            <span class="dot"></span>
+            Ativa
+          </div>
+          <div class="emp-actions">
+            <button class="btn-secondary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+              <span>Movimentar</span>
+            </button>
+            <button class="btn-danger">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+              <span>Desligar</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============= TABS STICKY ============= -->
+    <div class="tabs-sticky">
+      <div class="tabs">
+        <button class="tab active" data-tab="geral">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>
+          <span>Geral</span>
+        </button>
+        <button class="tab" data-tab="vinculo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          <span>Vínculo</span>
+        </button>
+        <button class="tab" data-tab="docs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+          <span>Documentos</span>
+        </button>
+        <button class="tab" data-tab="bancario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          <span>Bancário</span>
+        </button>
+        <button class="tab" data-tab="historico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+          <span>Histórico</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============= TAB: GERAL ============= -->
+    <div class="tab-panel active" data-panel="geral">
+
+      <div class="form-row">
+        <!-- Dados pessoais -->
+        <div class="form-card">
+          <div class="fc-head">
+            <div class="fc-icon navy">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>
+            </div>
+            <div>
+              <div class="fc-title">Dados pessoais</div>
+              <div class="fc-sub">Informações de identificação</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nome completo <span class="req">*</span></label>
+            <input type="text" value="Fernanda Lima dos Santos">
+          </div>
+
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Nome social</label>
+              <input type="text" placeholder="Caso aplicável">
+              <div class="field-help">Como a pessoa prefere ser identificada formalmente.</div>
+            </div>
+            <div class="field">
+              <label>
+                Apelido
+                <span class="searchable-badge">
+                  <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  Buscável
+                </span>
+              </label>
+              <div class="nickname-input-wrap">
+                <span class="nickname-prefix">@</span>
+                <input type="text" id="nicknameInput" value="Fê" maxlength="20" oninput="updateNicknameUI()">
+                <span class="nickname-counter" id="nicknameCounter">2/20</span>
+              </div>
+
+              <div class="nickname-suggestions">
+                <span class="nick-sugg-label">Sugestões:</span>
+                <button type="button" class="nick-sugg active" onclick="setNickname('Fê', this)">Fê</button>
+                <button type="button" class="nick-sugg" onclick="setNickname('Fer', this)">Fer</button>
+                <button type="button" class="nick-sugg" onclick="setNickname('Nanda', this)">Nanda</button>
+                <button type="button" class="nick-sugg" onclick="setNickname('Lima', this)">Lima</button>
+              </div>
+
+              <div class="nickname-preview-card">
+                <div class="np-label">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  Como aparece nas buscas
+                </div>
+                <div class="np-row">
+                  <div class="np-avatar">FL</div>
+                  <div class="np-info">
+                    <div class="np-name">
+                      Fernanda Lima dos Santos
+                      <span class="np-pill" id="nicknamePreviewPill">@<span id="nicknamePreview">Fê</span></span>
+                    </div>
+                    <div class="np-meta">Analista Pleno · EMP Labuta · TOM Cestão Loja 1</div>
+                  </div>
+                </div>
+              </div>
+
+              <label class="nickname-toggle">
+                <input type="checkbox" checked id="nicknameSearchable" onchange="toggleSearchable(this)">
+                <span class="switch-track"></span>
+                <span>Permitir busca pelo apelido</span>
+              </label>
+
+              <div class="nickname-validation" id="nicknameValidation">
+                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                Apelido válido. Disponível.
+              </div>
+            </div>
+          </div>
+
+          <div class="field-grid-2-1">
+            <div class="field">
+              <label>CPF <span class="req">*</span></label>
+              <input type="text" value="042.815.392-67">
+            </div>
+            <div class="field">
+              <label>Data de nascimento <span class="req">*</span></label>
+              <input type="date" value="1992-08-15">
+            </div>
+          </div>
+
+          <div class="field-grid-1-1-2">
+            <div class="field">
+              <label>RG</label>
+              <input type="text" value="14.382.945-3">
+            </div>
+            <div class="field">
+              <label>UF</label>
+              <select><option>BA</option><option>SP</option><option>RJ</option></select>
+            </div>
+            <div class="field">
+              <label>Órgão emissor</label>
+              <input type="text" value="SSP-BA">
+            </div>
+          </div>
+
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Sexo</label>
+              <select><option>Feminino</option><option>Masculino</option><option>Outro</option><option>Prefiro não informar</option></select>
+            </div>
+            <div class="field">
+              <label>Estado civil</label>
+              <select><option>Solteira</option><option>Casada</option><option>Divorciada</option><option>Viúva</option><option>União estável</option></select>
+            </div>
+          </div>
+
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Nacionalidade</label>
+              <input type="text" value="Brasileira">
+            </div>
+            <div class="field">
+              <label>Naturalidade</label>
+              <input type="text" value="Feira de Santana - BA">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Nome da mãe</label>
+            <input type="text" value="Marta Lima dos Santos">
+          </div>
+        </div>
+
+        <!-- Contato + Acesso -->
+        <div>
+          <div class="form-card" style="margin-bottom:14px;">
+            <div class="fc-head">
+              <div class="fc-icon orange">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+              </div>
+              <div>
+                <div class="fc-title">Contato</div>
+                <div class="fc-sub">Como falar com a colaboradora</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>E-mail pessoal</label>
+              <input type="email" value="fernanda.lima.fs@gmail.com">
+              <div class="field-help">E-mail para envio de holerites e comunicações.</div>
+            </div>
+            <div class="field-grid-2">
+              <div class="field">
+                <label>Celular <span class="req">*</span></label>
+                <input type="tel" value="(75) 9 9847-2185">
+              </div>
+              <div class="field">
+                <label>Telefone alternativo</label>
+                <input type="tel" placeholder="(00) 0000-0000">
+              </div>
+            </div>
+            <div class="field">
+              <label>Endereço completo</label>
+              <input type="text" value="Rua das Acácias, 482, Sobradinho">
+            </div>
+            <div class="field-grid-3">
+              <div class="field">
+                <label>CEP</label>
+                <input type="text" value="44085-220">
+              </div>
+              <div class="field">
+                <label>Cidade</label>
+                <input type="text" value="Feira de Santana">
+              </div>
+              <div class="field">
+                <label>UF</label>
+                <select><option>BA</option></select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="fc-head">
+              <div class="fc-icon purple">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>
+              </div>
+              <div>
+                <div class="fc-title">Acesso ao sistema</div>
+                <div class="fc-sub">Login, perfil e status</div>
+              </div>
+            </div>
+            <div class="field-grid-2">
+              <div class="field">
+                <label>Usuário (login) <span class="req">*</span></label>
+                <input type="text" value="fernanda.lima">
+                <div class="field-help">Sem espaços, ponto entre nome e sobrenome.</div>
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <select>
+                  <option>Ativa</option>
+                  <option>Em férias</option>
+                  <option>Licença médica</option>
+                  <option>Licença maternidade</option>
+                  <option>Afastada (INSS)</option>
+                  <option>Suspensa</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Perfil de acesso <span class="req">*</span></label>
+              <select>
+                <option>Colaborador</option>
+                <option>Líder de Departamento</option>
+                <option>Coordenador</option>
+                <option>Gerente de Filial</option>
+                <option>Admin RH Corporativo</option>
+              </select>
+              <div class="field-help">Define o que vê e o que pode fazer no sistema.</div>
+            </div>
+            <div class="field" style="margin-top:9px;">
+              <label class="switch">
+                <input type="checkbox">
+                <div class="switch-track"></div>
+                <span class="switch-label">Forçar troca de senha no próximo acesso</span>
+              </label>
+            </div>
+            <div class="field" style="margin-top:6px;">
+              <button class="btn-secondary" style="width:100%; justify-content:center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/></svg>
+                Gerar nova senha temporária
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: VÍNCULO ============= -->
+    <div class="tab-panel" data-panel="vinculo">
+
+      <div class="banner info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>
+          <strong>Vínculo empregatício separado em duas dimensões.</strong>
+          A empresa empregadora é quem assina a CTPS e paga a folha (CNPJ legal). O tomador é a filial onde a colaboradora efetivamente trabalha. Os dois podem ser diferentes: esse é o caso da Fernanda, registrada na Labuta mas alocada operacionalmente no Cestão Loja 1.
+        </div>
+      </div>
+
+      <!-- Bloco visual: Empregador → Tomador -->
+      <div class="vinculo-grid">
+        <div class="vinculo-card emp">
+          <span class="vinculo-card-tag">Empregador</span>
+          <div class="vinculo-card-title">
+            <div class="ic">⚛</div>
+            <span>Labuta Serviços LTDA</span>
+          </div>
+          <div class="vinculo-card-sub">
+            CNPJ que assina a CTPS, processa a folha e responde legalmente pelo vínculo trabalhista.
+          </div>
+          <div class="field">
+            <label>Empresa empregadora <span class="req">*</span></label>
+            <select>
+              <option>Labuta Serviços LTDA · 34.567.890/0001-12</option>
+              <option>GPC Holding · 12.345.678/0001-90</option>
+              <option>ATP Comércio · 12.345.678/0002-71</option>
+              <option>Cestão Comércio · 23.456.789/0001-80</option>
+              <option>Limpactiva Conservação · 45.678.901/0001-23</option>
+              <option>Segure Vigilância · 56.789.012/0001-34</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Tipo de contrato <span class="req">*</span></label>
+            <select>
+              <option>Terceirizada (prestadora de serviço)</option>
+              <option>CLT (próprio)</option>
+              <option>PJ</option>
+              <option>Estágio</option>
+              <option>Aprendiz</option>
+              <option>Trainee</option>
+              <option>Temporário</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Matrícula no empregador</label>
+            <input type="text" value="LB-038412">
+            <div class="field-help">Código gerado pelo sistema do empregador (ex: TOTVS WinThor, Domínio).</div>
+          </div>
+        </div>
+
+        <div class="vinculo-arrow">→</div>
+
+        <div class="vinculo-card tom">
+          <span class="vinculo-card-tag">Tomador / Alocação</span>
+          <div class="vinculo-card-title">
+            <div class="ic">⌂</div>
+            <span>Cestão Loja 1</span>
+          </div>
+          <div class="vinculo-card-sub">
+            Filial operacional onde a colaboradora trabalha de fato. Essa é a referência usada para gestão local e dashboards do gerente da loja.
+          </div>
+          <div class="field">
+            <label>Filial de trabalho <span class="req">*</span></label>
+            <select>
+              <option>Cestão Loja 1</option>
+              <option>ATP - Varejo</option>
+              <option>ATP - Atacado</option>
+              <option>Cestão Inhambupe</option>
+              <option>ATP Sr. Bonfim</option>
+              <option>CD Logística Feira</option>
+              <option>GPC Matriz Administrativa</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Início na alocação atual</label>
+            <input type="date" value="2025-03-01">
+            <div class="field-help">Pode ser diferente da data de admissão se houve transferência interna.</div>
+          </div>
+          <div class="field">
+            <label>Centro de custo</label>
+            <input type="text" value="CES-L1-FIN">
+            <div class="field-help">Para alocação contábil das despesas de pessoal.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cargo, departamento, hierarquia -->
+      <div class="form-row">
+        <div class="form-card">
+          <div class="fc-head">
+            <div class="fc-icon amber">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+            </div>
+            <div>
+              <div class="fc-title">Cargo e departamento</div>
+              <div class="fc-sub">Posição funcional na estrutura</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Cargo <span class="req">*</span></label>
+            <select>
+              <option>Analista Financeiro Pleno</option>
+              <option>Analista Financeiro Júnior</option>
+              <option>Analista Financeiro Sênior</option>
+              <option>Coordenador Financeiro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Departamento <span class="req">*</span></label>
+            <select>
+              <option>Financeiro</option>
+              <option>Tesouraria</option>
+              <option>Contabilidade</option>
+              <option>Comercial</option>
+              <option>Operações de Loja</option>
+            </select>
+          </div>
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Data de admissão <span class="req">*</span></label>
+              <input type="date" value="2024-01-15">
+            </div>
+            <div class="field">
+              <label>Carga horária semanal</label>
+              <select>
+                <option>44 horas (CLT padrão)</option>
+                <option>40 horas</option>
+                <option>30 horas</option>
+                <option>20 horas (estágio)</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Salário base</label>
+            <div class="salary-display">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              <div>
+                <strong>R$ 3.900,00</strong>
+                <span style="display:block;">Última alteração: 15/03/2026 (+R$ 250,00 em ajuste salarial)</span>
+              </div>
+              <button class="btn-secondary" style="margin-left:auto;">Editar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="fc-head">
+            <div class="fc-icon green">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div>
+              <div class="fc-title">Hierarquia</div>
+              <div class="fc-sub">Liderança e subordinação</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Gestor direto <span class="req">*</span></label>
+            <select>
+              <option>João Carvalho · Líder Financeiro Cestão L1</option>
+              <option>Maria Santos · Diretora Financeira</option>
+              <option>Helena Cardoso · Coordenadora de Tesouraria</option>
+            </select>
+            <div class="field-help">Quem aprova movimentações e avalia desempenho desta colaboradora.</div>
+          </div>
+          <div class="field">
+            <label>Substituto eventual</label>
+            <select>
+              <option>Beatriz Lopes · Analista Sênior</option>
+              <option>Helena Cardoso · Coordenadora</option>
+              <option>Sem substituto designado</option>
+            </select>
+            <div class="field-help">Para férias, ausências e contingência.</div>
+          </div>
+          <div class="field">
+            <label>Aprovador alternativo</label>
+            <select>
+              <option>Maria Santos (gestora do gestor)</option>
+              <option>Sem alternativo</option>
+            </select>
+            <div class="field-help">Caso o gestor direto esteja indisponível para aprovações.</div>
+          </div>
+
+          <div style="margin-top:14px; padding-top:13px; border-top:1px solid var(--gray1);">
+            <div style="font-size:11.5px; color:var(--txt2); margin-bottom:7px; font-weight:500;">É líder de outras pessoas?</div>
+            <div class="banner" style="background:var(--off); border-left:3px solid var(--gray2); margin:0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+              <div style="font-size:11.5px;">Não. Esta colaboradora não tem subordinados diretos no momento.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: DOCUMENTOS ============= -->
+    <div class="tab-panel" data-panel="docs">
+
+      <div class="banner warn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+        <div>
+          <strong>Dados sensíveis (LGPD).</strong>
+          O acesso a esta aba fica registrado em log de auditoria. Apenas perfis com permissão "exportar dados sensíveis" podem visualizar números completos.
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-card">
+          <div class="fc-head">
+            <div class="fc-icon navy">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            </div>
+            <div>
+              <div class="fc-title">Documentos trabalhistas</div>
+              <div class="fc-sub">CTPS, PIS e demais documentos legais</div>
+            </div>
+          </div>
+          <div class="field-grid-1-1-2">
+            <div class="field">
+              <label>CTPS · Número</label>
+              <input type="text" value="3984572">
+            </div>
+            <div class="field">
+              <label>Série</label>
+              <input type="text" value="0029">
+            </div>
+            <div class="field">
+              <label>UF emissora</label>
+              <select><option>BA</option></select>
+            </div>
+          </div>
+          <div class="field">
+            <label>PIS / NIS / NIT</label>
+            <input type="text" value="120.84219.36-5">
+          </div>
+          <div class="field">
+            <label>Título de eleitor</label>
+            <input type="text" value="0832 4218 0345">
+          </div>
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Zona</label>
+              <input type="text" value="012">
+            </div>
+            <div class="field">
+              <label>Seção</label>
+              <input type="text" value="0184">
+            </div>
+          </div>
+          <div class="field">
+            <label>CNH (se aplicável)</label>
+            <input type="text" placeholder="Não informado">
+          </div>
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Categoria</label>
+              <select><option>Não possui</option><option>A</option><option>B</option><option>AB</option><option>D</option></select>
+            </div>
+            <div class="field">
+              <label>Validade</label>
+              <input type="date">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="fc-head">
+            <div class="fc-icon orange">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            </div>
+            <div>
+              <div class="fc-title">Anexos digitais</div>
+              <div class="fc-sub">Documentos digitalizados</div>
+            </div>
+          </div>
+
+          <div class="doc-item">
+            <div class="doc-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+            </div>
+            <div class="doc-info">
+              <div class="doc-name">CTPS_Fernanda_Lima.pdf</div>
+              <div class="doc-meta">2.4 MB • enviado em 15/01/2024</div>
+            </div>
+            <button class="btn-icon" style="width:30px; height:30px; border-radius:6px; background:var(--gray1); border:none; cursor:pointer; color:var(--txt2);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            </button>
+          </div>
+
+          <div class="doc-item">
+            <div class="doc-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+            </div>
+            <div class="doc-info">
+              <div class="doc-name">RG_frente_verso.pdf</div>
+              <div class="doc-meta">1.1 MB • enviado em 15/01/2024</div>
+            </div>
+            <button class="btn-icon" style="width:30px; height:30px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            </button>
+          </div>
+
+          <div class="doc-item">
+            <div class="doc-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>
+            </div>
+            <div class="doc-info">
+              <div class="doc-name">Comprovante_residencia_jan2024.pdf</div>
+              <div class="doc-meta">680 KB • enviado em 15/01/2024</div>
+            </div>
+            <button class="btn-icon" style="width:30px; height:30px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            </button>
+          </div>
+
+          <div style="border:1.5px dashed var(--gray2); border-radius:8px; padding:16px; text-align:center; color:var(--txt2); font-size:12px; cursor:pointer; margin-top:9px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="margin-bottom:6px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+            <div>Anexar novo documento</div>
+            <div style="font-size:10.5px; color:var(--txt3); margin-top:3px;">PDF, JPG ou PNG até 10 MB</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: BANCÁRIO ============= -->
+    <div class="tab-panel" data-panel="bancario">
+
+      <div class="banner warn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>
+          <strong>Acesso registrado em auditoria.</strong>
+          Os dados desta aba são criptografados em repouso e exibidos apenas para perfis com permissão "ver dados bancários". Toda visualização gera log com data, IP e usuário.
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-card">
+          <div class="fc-head">
+            <div class="fc-icon green">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h2M11 15h3"/></svg>
+            </div>
+            <div>
+              <div class="fc-title">Conta principal</div>
+              <div class="fc-sub">Para depósito de salário</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Banco <span class="req">*</span></label>
+            <select>
+              <option>001 - Banco do Brasil</option>
+              <option>104 - Caixa Econômica Federal</option>
+              <option>237 - Bradesco</option>
+              <option>341 - Itaú</option>
+              <option>033 - Santander</option>
+              <option>260 - Nubank</option>
+              <option>077 - Inter</option>
+            </select>
+          </div>
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Agência <span class="req">*</span></label>
+              <input type="text" value="3471-2">
+            </div>
+            <div class="field">
+              <label>Tipo de conta <span class="req">*</span></label>
+              <select>
+                <option>Conta corrente</option>
+                <option>Conta poupança</option>
+                <option>Conta salário</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-grid-2">
+            <div class="field">
+              <label>Número da conta <span class="req">*</span></label>
+              <input type="text" value="83.291-4">
+            </div>
+            <div class="field">
+              <label>Operação (se aplicável)</label>
+              <input type="text" placeholder="Ex.: 001, 013">
+            </div>
+          </div>
+          <div class="field">
+            <label>Chave PIX</label>
+            <input type="text" value="042.815.392-67">
+            <div class="field-help">CPF, e-mail, telefone ou chave aleatória para pagamentos avulsos.</div>
+          </div>
+          <div class="field">
+            <label>Titularidade</label>
+            <select>
+              <option>Titular</option>
+              <option>Conta de terceiro (com autorização formal)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="fc-head">
+            <div class="fc-icon amber">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </div>
+            <div>
+              <div class="fc-title">Benefícios e dependentes</div>
+              <div class="fc-sub">Vale-transporte, alimentação, plano e dependentes de IR</div>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:9px;">
+            <label class="switch">
+              <input type="checkbox" checked>
+              <div class="switch-track"></div>
+              <span class="switch-label">Vale-transporte</span>
+            </label>
+          </div>
+          <div class="field" style="margin-bottom:9px;">
+            <label class="switch">
+              <input type="checkbox" checked>
+              <div class="switch-track"></div>
+              <span class="switch-label">Vale-alimentação (R$ 480/mês)</span>
+            </label>
+          </div>
+          <div class="field" style="margin-bottom:9px;">
+            <label class="switch">
+              <input type="checkbox" checked>
+              <div class="switch-track"></div>
+              <span class="switch-label">Plano de saúde (Hapvida · titular)</span>
+            </label>
+          </div>
+          <div class="field" style="margin-bottom:9px;">
+            <label class="switch">
+              <input type="checkbox">
+              <div class="switch-track"></div>
+              <span class="switch-label">Plano odontológico</span>
+            </label>
+          </div>
+          <div class="field" style="margin-bottom:9px;">
+            <label class="switch">
+              <input type="checkbox">
+              <div class="switch-track"></div>
+              <span class="switch-label">Seguro de vida</span>
+            </label>
+          </div>
+
+          <div style="margin-top:14px; padding-top:13px; border-top:1px solid var(--gray1);">
+            <div style="font-size:11.5px; color:var(--txt2); margin-bottom:8px; font-weight:500;">Dependentes de IR</div>
+            <div class="banner" style="background:var(--off); border-left:3px solid var(--gray2); margin:0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+              <div style="font-size:11.5px;">Nenhum dependente cadastrado.</div>
+            </div>
+            <button class="btn-secondary" style="width:100%; justify-content:center; margin-top:9px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              Adicionar dependente
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: HISTÓRICO ============= -->
+    <div class="tab-panel" data-panel="historico">
+
+      <div class="stats-row">
+        <div class="stat-mini">
+          <div class="v">2,3</div>
+          <div class="l">Anos de casa</div>
+        </div>
+        <div class="stat-mini">
+          <div class="v">5</div>
+          <div class="l">Movimentações</div>
+        </div>
+        <div class="stat-mini">
+          <div class="v">3</div>
+          <div class="l">Avaliações</div>
+        </div>
+        <div class="stat-mini">
+          <div class="v">142</div>
+          <div class="l">Acessos no ano</div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="fc-head">
+          <div class="fc-icon navy">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div>
+            <div class="fc-title">Linha do tempo</div>
+            <div class="fc-sub">Movimentações, avaliações e marcos relevantes</div>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot orange"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="3"/></svg></div>
+            <div class="tl-content">
+              <div class="tl-head">
+                <div class="tl-title">Ajuste salarial aprovado</div>
+                <div class="tl-date">15/03/2026</div>
+              </div>
+              <div class="tl-desc">Solicitação aprovada por João Carvalho (líder direto) e Patrícia Mello (RH).</div>
+              <div class="tl-changes">
+                <span class="from">R$ 3.650,00</span>
+                <span class="arrow">→</span>
+                <span class="to">R$ 3.900,00</span>
+                <span style="font-size:10.5px; color:var(--txt2);">+R$ 250,00 (6,8%)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-dot navy"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 11l3 3 8-8"/></svg></div>
+            <div class="tl-content">
+              <div class="tl-head">
+                <div class="tl-title">Avaliação de desempenho · Ciclo 2025.2</div>
+                <div class="tl-date">12/12/2025</div>
+              </div>
+              <div class="tl-desc">Nota geral: <strong style="color:var(--green);">4,3 / 5</strong>. Destaque em Foco no cliente e Comunicação.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-dot purple"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M16 17l5-5-5-5M21 12H9"/></svg></div>
+            <div class="tl-content">
+              <div class="tl-head">
+                <div class="tl-title">Mudança de filial de trabalho</div>
+                <div class="tl-date">01/03/2025</div>
+              </div>
+              <div class="tl-desc">Transferida para a equipe de Cestão Loja 1 a pedido do gestor anterior.</div>
+              <div class="tl-changes">
+                <span class="from">ATP - Varejo</span>
+                <span class="arrow">→</span>
+                <span class="to">Cestão Loja 1</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-dot amber"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 17l6-6 4 4 8-8"/></svg></div>
+            <div class="tl-content">
+              <div class="tl-head">
+                <div class="tl-title">Promoção de cargo</div>
+                <div class="tl-date">15/08/2024</div>
+              </div>
+              <div class="tl-desc">Promovida após 7 meses de bom desempenho. Trilha de Júnior → Pleno completada.</div>
+              <div class="tl-changes">
+                <span class="from">Analista Financeiro Júnior</span>
+                <span class="arrow">→</span>
+                <span class="to">Analista Financeiro Pleno</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-dot navy"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 11l3 3 8-8"/></svg></div>
+            <div class="tl-content">
+              <div class="tl-head">
+                <div class="tl-title">Avaliação de desempenho · Ciclo 2024.2</div>
+                <div class="tl-date">10/12/2024</div>
+              </div>
+              <div class="tl-desc">Nota geral: <strong style="color:var(--green);">4,1 / 5</strong>. Primeiros pontos de evolução em liderança.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-dot green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="tl-content">
+              <div class="tl-head">
+                <div class="tl-title">Admissão</div>
+                <div class="tl-date">15/01/2024</div>
+              </div>
+              <div class="tl-desc">Contratada como Analista Financeiro Júnior pela Labuta Serviços, alocada inicialmente no ATP - Varejo.</div>
+              <div class="tl-changes">
+                <span class="to">Salário inicial: R$ 2.800,00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ============= FORM FOOTER STICKY ============= -->
+    <div class="form-footer">
+      <div class="ff-info">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+        Última atualização: 15/03/2026 às 14:32 por Patrícia Mello (RH)
+      </div>
+      <div class="ff-actions">
+        <button class="btn-secondary">Cancelar</button>
+        <button class="btn-primary">Salvar alterações</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+});
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+// ============= NICKNAME COMPONENT =============
+function updateNicknameUI(){
+  const input = document.getElementById('nicknameInput');
+  const counter = document.getElementById('nicknameCounter');
+  const preview = document.getElementById('nicknamePreview');
+  const pill = document.getElementById('nicknamePreviewPill');
+  const validation = document.getElementById('nicknameValidation');
+  const value = input.value;
+
+  // Counter
+  counter.textContent = value.length + '/20';
+  counter.classList.remove('warn', 'danger');
+  if(value.length >= 18) counter.classList.add('warn');
+  if(value.length >= 20) counter.classList.add('danger');
+
+  // Live preview
+  if(value.trim()){
+    preview.textContent = value;
+    pill.classList.remove('empty');
+  } else {
+    preview.textContent = 'sem apelido';
+    pill.classList.add('empty');
+  }
+
+  // Sugestões: tira o "active" se o valor não bater com nenhuma
+  document.querySelectorAll('.nick-sugg').forEach(b=>{
+    b.classList.toggle('active', b.textContent.trim() === value.trim());
+  });
+
+  // Validação
+  const validRegex = /^[a-zA-ZÀ-ÿ0-9_]{2,20}$/;
+  if(!value.trim()){
+    validation.classList.remove('error');
+    validation.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Apelido vazio. Pessoas só vão te encontrar pelo nome completo.';
+    validation.style.color = 'var(--txt3)';
+  } else if(!validRegex.test(value)){
+    validation.classList.add('error');
+    validation.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg> Use apenas letras, números ou underscore. Mínimo 2 caracteres.';
+    validation.style.color = '';
+  } else {
+    validation.classList.remove('error');
+    validation.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg> Apelido válido. Disponível.';
+    validation.style.color = '';
+  }
+}
+
+function setNickname(value, btn){
+  document.getElementById('nicknameInput').value = value;
+  document.querySelectorAll('.nick-sugg').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  updateNicknameUI();
+}
+
+function toggleSearchable(checkbox){
+  const pill = document.getElementById('nicknamePreviewPill');
+  const card = pill.closest('.nickname-preview-card');
+  const validation = document.getElementById('nicknameValidation');
+  if(!checkbox.checked){
+    card.style.opacity = '.5';
+    validation.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Apelido salvo, mas oculto nas buscas.';
+    validation.style.color = 'var(--amber)';
+  } else {
+    card.style.opacity = '1';
+    updateNicknameUI();
+  }
+}
+
+// Inicializa
+updateNicknameUI();
+</script>
+</body>
+</html>

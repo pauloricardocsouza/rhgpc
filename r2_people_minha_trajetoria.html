@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Minha trajetória</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 10px 30px rgba(26,45,79,.18);
+  --hero-gradient:linear-gradient(135deg, #2B4A7A 0%, #6D28D9 50%, #BE185D 100%);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#E82227,#C0392B); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden;}
+.container{max-width:1200px; margin:0 auto; padding:22px 22px 50px;}
+
+/* ============= HERO PERSONAL ============= */
+.hero{
+  background:var(--hero-gradient);
+  border-radius:16px;
+  padding:28px 32px 26px;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-50%; right:-10%;
+  width:400px; height:400px;
+  background:radial-gradient(circle, rgba(245,131,31,.4) 0%, transparent 65%);
+  border-radius:50%;
+  pointer-events:none;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  bottom:-30%; left:-5%;
+  width:300px; height:300px;
+  background:radial-gradient(circle, rgba(255,255,255,.12) 0%, transparent 65%);
+  border-radius:50%;
+  pointer-events:none;
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:22px;
+  align-items:center;
+}
+.hero-avatar{
+  width:88px; height:88px;
+  border-radius:50%;
+  background:linear-gradient(135deg, #E82227, #C0392B);
+  color:#fff;
+  font-size:32px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  border:4px solid rgba(255,255,255,.25);
+  box-shadow:0 4px 16px rgba(0,0,0,.25);
+  flex-shrink:0;
+}
+.hero-info h1{
+  font-size:26px;
+  font-weight:600;
+  letter-spacing:-.4px;
+  display:flex; align-items:center; gap:10px;
+  flex-wrap:wrap;
+  line-height:1.15;
+}
+.hero-nick{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  padding:3px 11px;
+  border-radius:9px;
+  font-weight:500;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.hero-tagline{
+  font-size:13px;
+  color:rgba(255,255,255,.85);
+  margin-top:5px;
+  display:flex; align-items:center; gap:9px;
+  flex-wrap:wrap;
+}
+.hero-tagline .htdot{
+  width:5px; height:5px; border-radius:50%;
+  background:rgba(255,255,255,.45);
+}
+
+.hero-stats{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:11px;
+}
+.hstat{
+  background:rgba(255,255,255,.13);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:11px;
+  padding:11px 13px;
+}
+.hstat-label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  font-weight:600;
+  color:rgba(255,255,255,.7);
+  margin-bottom:4px;
+}
+.hstat-value{
+  font-size:21px;
+  font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:-.3px;
+  line-height:1;
+  display:flex; align-items:baseline; gap:5px;
+}
+.hstat-unit{
+  font-size:11px;
+  font-weight:400;
+  font-family:'Sora',sans-serif;
+  color:rgba(255,255,255,.7);
+}
+.hstat-trend{
+  margin-top:5px;
+  font-size:11px;
+  color:rgba(255,255,255,.85);
+  display:flex; align-items:center; gap:4px;
+}
+.hstat-trend.up{color:#A8E5BC;}
+
+/* ============= NEXT EVENTS ============= */
+.section-title{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:11px;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.section-title h2{
+  font-size:15px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+  letter-spacing:-.2px;
+}
+.section-title h2 svg{width:15px; height:15px; color:var(--orange);}
+.section-title-action{
+  font-size:11.5px;
+  color:var(--navy);
+  cursor:pointer;
+  font-weight:500;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.section-title-action:hover{text-decoration:underline;}
+.section-title-action svg{width:12px; height:12px;}
+
+.events-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+  gap:11px;
+  margin-bottom:22px;
+}
+.event-card{
+  background:#fff;
+  border-radius:12px;
+  padding:14px 16px;
+  box-shadow:var(--shadow-card);
+  border-left:3px solid var(--navy);
+  display:flex; align-items:flex-start; gap:11px;
+  transition:transform .15s, box-shadow .15s;
+}
+.event-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(26,45,79,.08);
+}
+.event-card.orange{border-left-color:var(--orange);}
+.event-card.purple{border-left-color:var(--purple);}
+.event-card.green{border-left-color:var(--green);}
+
+.event-icon{
+  width:38px; height:38px;
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.event-icon.navy{background:#E8EFF8; color:var(--navy);}
+.event-icon.orange{background:var(--orange2); color:var(--orange);}
+.event-icon.purple{background:var(--purple2); color:var(--purple);}
+.event-icon.green{background:var(--green2); color:var(--green);}
+
+.event-info{flex:1; min-width:0;}
+.event-cat{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  color:var(--txt2);
+  font-weight:600;
+  margin-bottom:2px;
+}
+.event-title{
+  font-size:13px; font-weight:600;
+  line-height:1.3;
+  margin-bottom:3px;
+}
+.event-meta{
+  font-size:11px;
+  color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ============= ACHIEVEMENTS ============= */
+.achievements{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:22px;
+}
+.ach-header{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:13px;
+}
+.ach-header h2{
+  font-size:14.5px; font-weight:600;
+  display:flex; align-items:center; gap:7px;
+}
+.ach-header h2 svg{width:15px; height:15px; color:var(--purple);}
+.ach-count{
+  background:var(--purple2);
+  color:var(--purple);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  font-weight:700;
+  padding:3px 10px;
+  border-radius:8px;
+}
+
+.ach-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+  gap:10px;
+}
+.ach-badge{
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center;
+  padding:13px 10px;
+  background:linear-gradient(180deg, var(--off), #fff);
+  border-radius:10px;
+  border:1px solid var(--gray1);
+  transition:all .15s;
+  cursor:default;
+}
+.ach-badge:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-card);
+}
+.ach-icon-circle{
+  width:50px; height:50px;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:7px;
+  position:relative;
+}
+.ach-icon-circle.gold{
+  background:linear-gradient(135deg, #FFD700, #FFA500);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(255,165,0,.35);
+}
+.ach-icon-circle.silver{
+  background:linear-gradient(135deg, #C0C0C0, #A0A0A0);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(160,160,160,.25);
+}
+.ach-icon-circle.bronze{
+  background:linear-gradient(135deg, #CD7F32, #A0522D);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(160,82,45,.25);
+}
+.ach-icon-circle.purple{
+  background:linear-gradient(135deg, #6D28D9, #5523A8);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(109,40,217,.3);
+}
+.ach-icon-circle.locked{
+  background:var(--gray1);
+  color:var(--gray3);
+}
+.ach-title{
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--txt);
+  margin-bottom:2px;
+}
+.ach-locked .ach-title{color:var(--txt3);}
+.ach-desc{
+  font-size:10px;
+  color:var(--txt2);
+  line-height:1.4;
+}
+.ach-progress{
+  margin-top:6px;
+  width:100%;
+  height:3px;
+  background:var(--gray1);
+  border-radius:2px;
+  overflow:hidden;
+}
+.ach-progress-fill{
+  height:100%;
+  background:linear-gradient(90deg, var(--purple), #8E4FE3);
+  border-radius:2px;
+}
+.ach-progress-text{
+  font-size:9.5px;
+  color:var(--txt3);
+  font-family:'JetBrains Mono',monospace;
+  margin-top:3px;
+}
+
+/* ============= TIMELINE FILTERS ============= */
+.timeline-controls{
+  background:#fff;
+  border-radius:11px;
+  padding:13px 16px;
+  box-shadow:var(--shadow-card);
+  margin-bottom:14px;
+  display:flex; gap:11px; align-items:center;
+  flex-wrap:wrap;
+}
+.tc-label{
+  font-size:11px;
+  color:var(--txt2);
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+.tc-chips{
+  display:flex; gap:6px; flex-wrap:wrap;
+  flex:1;
+}
+.tc-chip{
+  padding:6px 11px;
+  border-radius:7px;
+  font-size:11.5px;
+  font-weight:500;
+  font-family:inherit;
+  background:var(--off);
+  color:var(--txt);
+  border:1px solid var(--gray2);
+  cursor:pointer;
+  display:inline-flex; align-items:center; gap:5px;
+  transition:all .12s;
+}
+.tc-chip:hover{background:var(--gray1);}
+.tc-chip.active{
+  background:var(--navy);
+  color:#fff;
+  border-color:var(--navy);
+}
+.tc-chip .tc-dot{
+  width:7px; height:7px; border-radius:50%;
+}
+.tc-chip .tc-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  background:#fff;
+  color:var(--txt);
+  padding:0 5px;
+  border-radius:4px;
+  font-weight:700;
+}
+.tc-chip.active .tc-count{background:rgba(255,255,255,.25); color:#fff;}
+
+.export-self-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 12px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:8px;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt);
+  cursor:pointer; font-family:inherit;
+}
+.export-self-btn:hover{background:var(--off); border-color:var(--navy);}
+.export-self-btn svg{width:13px; height:13px;}
+
+/* ============= TIMELINE ============= */
+.timeline-card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px 20px 22px;
+  box-shadow:var(--shadow-card);
+}
+.tl-year{
+  margin-bottom:11px;
+  display:flex; align-items:center; gap:11px;
+}
+.tl-year-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;
+  font-weight:700;
+  background:linear-gradient(135deg, var(--navy), var(--purple), var(--pink));
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.tl-year-line{
+  flex:1;
+  height:2px;
+  background:linear-gradient(90deg, var(--gray2), transparent);
+  border-radius:2px;
+}
+.tl-year-count{
+  font-size:10.5px;
+  color:var(--txt2);
+  background:var(--off);
+  padding:2px 9px;
+  border-radius:8px;
+  font-weight:600;
+}
+
+.timeline{
+  position:relative;
+  padding-left:28px;
+  margin-bottom:24px;
+}
+.timeline::before{
+  content:''; position:absolute;
+  top:8px; bottom:8px; left:11px;
+  width:2px;
+  background:linear-gradient(180deg, var(--gray2), var(--gray2) 90%, transparent);
+}
+.tl-item{
+  position:relative;
+  padding-bottom:14px;
+}
+.tl-item:last-child{padding-bottom:0;}
+
+.tl-dot{
+  position:absolute;
+  left:-22px; top:7px;
+  width:14px; height:14px;
+  border-radius:50%;
+  background:#fff;
+  border:3px solid var(--gray3);
+  z-index:1;
+}
+.tl-item.green .tl-dot{border-color:var(--green); background:var(--green2);}
+.tl-item.orange .tl-dot{border-color:var(--orange); background:var(--orange2);}
+.tl-item.purple .tl-dot{border-color:var(--purple); background:var(--purple2);}
+.tl-item.red .tl-dot{border-color:var(--red); background:var(--red2);}
+.tl-item.navy .tl-dot{border-color:var(--navy); background:#E8EFF8;}
+.tl-item.amber .tl-dot{border-color:var(--amber); background:var(--amber2);}
+.tl-item.teal .tl-dot{border-color:var(--teal); background:var(--teal2);}
+.tl-item.first .tl-dot{
+  width:18px; height:18px;
+  left:-24px; top:5px;
+  box-shadow:0 0 0 4px rgba(245,131,31,.15);
+  animation:pulseDot 2s infinite;
+}
+@keyframes pulseDot{
+  0%,100%{box-shadow:0 0 0 4px rgba(245,131,31,.15);}
+  50%{box-shadow:0 0 0 7px rgba(245,131,31,.05);}
+}
+
+.tl-card{
+  background:var(--off);
+  border-radius:9px;
+  padding:11px 14px;
+  border:1px solid var(--gray1);
+  transition:all .15s;
+}
+.tl-card:hover{
+  background:#fff;
+  border-color:var(--gray2);
+  box-shadow:var(--shadow-card);
+}
+
+.tl-head{
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:10px; margin-bottom:6px;
+  flex-wrap:wrap;
+}
+.tl-title-row{
+  display:flex; align-items:center; gap:7px;
+  flex-wrap:wrap;
+}
+.tl-icon{
+  width:22px; height:22px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.tl-icon svg{width:12px; height:12px;}
+.tl-item.green .tl-icon{background:var(--green2); color:var(--green);}
+.tl-item.orange .tl-icon{background:var(--orange2); color:var(--orange);}
+.tl-item.purple .tl-icon{background:var(--purple2); color:var(--purple);}
+.tl-item.red .tl-icon{background:var(--red2); color:var(--red);}
+.tl-item.navy .tl-icon{background:#E8EFF8; color:var(--navy);}
+.tl-item.amber .tl-icon{background:var(--amber2); color:var(--amber);}
+.tl-item.teal .tl-icon{background:var(--teal2); color:var(--teal);}
+
+.tl-cat{
+  font-size:9.5px;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+  font-weight:700;
+  padding:1px 7px;
+  border-radius:6px;
+}
+.tl-item.green .tl-cat{background:var(--green2); color:var(--green);}
+.tl-item.orange .tl-cat{background:var(--orange2); color:var(--orange);}
+.tl-item.purple .tl-cat{background:var(--purple2); color:var(--purple);}
+.tl-item.red .tl-cat{background:var(--red2); color:var(--red);}
+.tl-item.navy .tl-cat{background:#E8EFF8; color:var(--navy);}
+.tl-item.amber .tl-cat{background:var(--amber2); color:var(--amber);}
+.tl-item.teal .tl-cat{background:var(--teal2); color:var(--teal);}
+
+.tl-title{
+  font-size:13px; font-weight:600;
+  color:var(--txt);
+}
+.tl-date{
+  font-size:11px; color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.tl-date .tl-rel{
+  display:block;
+  font-size:10px;
+  color:var(--txt3);
+  text-align:right;
+  margin-top:1px;
+  font-family:'Sora',sans-serif;
+}
+.tl-desc{
+  font-size:12px; color:var(--txt2);
+  line-height:1.55;
+}
+.tl-desc strong{color:var(--txt); font-weight:600;}
+.tl-desc .delta-up{color:var(--green); font-weight:600; font-family:'JetBrains Mono',monospace;}
+.tl-desc em{color:var(--txt2); font-style:italic;}
+
+.tl-actions{
+  margin-top:7px;
+  display:flex; gap:7px;
+  flex-wrap:wrap;
+}
+.tl-action-btn{
+  font-size:10.5px;
+  padding:4px 9px;
+  background:#fff;
+  border:1px solid var(--gray2);
+  border-radius:6px;
+  color:var(--navy);
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:4px;
+  font-weight:500;
+}
+.tl-action-btn:hover{background:#E8EFF8;}
+.tl-action-btn svg{width:11px; height:11px;}
+
+/* Privacy note for sensitive items */
+.tl-private-note{
+  margin-top:6px;
+  display:flex; align-items:center; gap:5px;
+  font-size:10px;
+  color:var(--txt3);
+  font-style:italic;
+}
+.tl-private-note svg{width:10px; height:10px;}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 900px){
+  .hero-stats{grid-template-columns:repeat(2, 1fr);}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .container{padding:14px 14px 30px;}
+  .hero{padding:18px 18px 16px; border-radius:13px;}
+  .hero-content{grid-template-columns:auto 1fr; gap:14px;}
+  .hero-avatar{width:64px; height:64px; font-size:22px; border-width:3px;}
+  .hero-info h1{font-size:18px;}
+  .hero-tagline{font-size:11.5px; gap:6px;}
+  .hero-stats{grid-template-columns:repeat(2, 1fr); gap:8px; margin-top:13px;}
+  .hstat{padding:9px 11px;}
+  .hstat-value{font-size:17px;}
+  .events-grid{grid-template-columns:1fr; gap:9px;}
+  .ach-list{grid-template-columns:repeat(2, 1fr);}
+  .timeline-controls{padding:11px 13px;}
+  .timeline-card{padding:14px 14px 18px;}
+  .timeline{padding-left:22px;}
+  .timeline::before{left:9px;}
+  .tl-dot{left:-19px; width:11px; height:11px;}
+  .tl-item.first .tl-dot{left:-21px; width:14px; height:14px;}
+  .tl-head{flex-direction:column; gap:5px;}
+  .tl-date{font-size:10.5px;}
+}
+@media (max-width: 420px){
+  .ach-list{grid-template-columns:1fr;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Minha trajetória</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="10"/></svg>Meu perfil</a>
+      <div class="sidebar-section">Eventos</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Minhas férias</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>Meus atestados</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedback e mural</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Minha trajetória</div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info">
+        <span class="user-name">Fernanda Lima</span>
+        <span class="user-role">Analista Pleno</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- ============= HERO PERSONAL ============= -->
+      <div class="hero">
+        <div class="hero-content">
+          <div class="hero-avatar">FL</div>
+          <div class="hero-info">
+            <h1>
+              Olá, Fernanda
+              <span class="hero-nick">@Fê</span>
+            </h1>
+            <p class="hero-tagline">
+              <span>Analista Pleno · Financeiro</span>
+              <span class="htdot"></span>
+              <span>Cestão Loja 1</span>
+              <span class="htdot"></span>
+              <span>Lidera com João Carvalho</span>
+            </p>
+
+            <div class="hero-stats">
+              <div class="hstat">
+                <div class="hstat-label">Tempo de casa</div>
+                <div class="hstat-value">3<span class="hstat-unit">a</span> 7<span class="hstat-unit">m</span></div>
+                <div class="hstat-trend">desde 14/09/2022</div>
+              </div>
+              <div class="hstat">
+                <div class="hstat-label">Promoções</div>
+                <div class="hstat-value">1<span class="hstat-unit">vez</span></div>
+                <div class="hstat-trend up">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                  Júnior → Pleno em 2024
+                </div>
+              </div>
+              <div class="hstat">
+                <div class="hstat-label">Avaliação atual</div>
+                <div class="hstat-value">4,2<span class="hstat-unit">/5</span></div>
+                <div class="hstat-trend up">
+                  <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                  +0,2 vs ciclo anterior
+                </div>
+              </div>
+              <div class="hstat">
+                <div class="hstat-label">Treinamentos</div>
+                <div class="hstat-value">2<span class="hstat-unit">cursos</span></div>
+                <div class="hstat-trend">60h totais</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============= NEXT EVENTS ============= -->
+      <div class="section-title">
+        <h2>
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Próximos eventos
+        </h2>
+        <a class="section-title-action">
+          Ver agenda completa
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </div>
+
+      <div class="events-grid">
+        <div class="event-card orange">
+          <div class="event-icon orange">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </div>
+          <div class="event-info">
+            <div class="event-cat">Férias</div>
+            <div class="event-title">Próximas férias programadas</div>
+            <div class="event-meta">15/12/2026 → 13/01/2027 · 30 dias</div>
+          </div>
+        </div>
+
+        <div class="event-card green">
+          <div class="event-icon green">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+          </div>
+          <div class="event-info">
+            <div class="event-cat">Promoção</div>
+            <div class="event-title">Promoção pendente</div>
+            <div class="event-meta">Aguardando aprovação RH · há 8 dias</div>
+          </div>
+        </div>
+
+        <div class="event-card purple">
+          <div class="event-icon purple">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="event-info">
+            <div class="event-cat">Avaliação</div>
+            <div class="event-title">Próximo ciclo · Q3/2026</div>
+            <div class="event-meta">Inicia em 01/07/2026 · daqui 2 meses</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============= ACHIEVEMENTS ============= -->
+      <div class="achievements">
+        <div class="ach-header">
+          <h2>
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+            Conquistas
+          </h2>
+          <span class="ach-count">4 / 7</span>
+        </div>
+
+        <div class="ach-list">
+          <div class="ach-badge">
+            <div class="ach-icon-circle gold">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+            </div>
+            <div class="ach-title">Primeira promoção</div>
+            <div class="ach-desc">Júnior → Pleno em 2 anos</div>
+          </div>
+
+          <div class="ach-badge">
+            <div class="ach-icon-circle silver">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="ach-title">3 anos de casa</div>
+            <div class="ach-desc">Aniversário em set/2025</div>
+          </div>
+
+          <div class="ach-badge">
+            <div class="ach-icon-circle bronze">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2"/></svg>
+            </div>
+            <div class="ach-title">Avaliação 4+</div>
+            <div class="ach-desc">2 ciclos consecutivos</div>
+          </div>
+
+          <div class="ach-badge">
+            <div class="ach-icon-circle purple">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>
+            </div>
+            <div class="ach-title">Aprendiz</div>
+            <div class="ach-desc">2 cursos concluídos</div>
+          </div>
+
+          <div class="ach-badge ach-locked">
+            <div class="ach-icon-circle locked">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div class="ach-title">5 anos de casa</div>
+            <div class="ach-desc">Faltam 1a 5m</div>
+            <div class="ach-progress"><div class="ach-progress-fill" style="width:72%;"></div></div>
+            <div class="ach-progress-text">72%</div>
+          </div>
+
+          <div class="ach-badge ach-locked">
+            <div class="ach-icon-circle locked">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div class="ach-title">Segunda promoção</div>
+            <div class="ach-desc">Pleno → Sênior</div>
+            <div class="ach-progress"><div class="ach-progress-fill" style="width:90%;"></div></div>
+            <div class="ach-progress-text">90% · pendente</div>
+          </div>
+
+          <div class="ach-badge ach-locked">
+            <div class="ach-icon-circle locked">
+              <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div class="ach-title">Avaliação 4,5+</div>
+            <div class="ach-desc">Excelência sustentada</div>
+            <div class="ach-progress"><div class="ach-progress-fill" style="width:84%;"></div></div>
+            <div class="ach-progress-text">4,2 / 4,5</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============= TIMELINE FILTERS ============= -->
+      <div class="timeline-controls">
+        <span class="tc-label">Filtrar por:</span>
+        <div class="tc-chips">
+          <button class="tc-chip active" data-filter="all">Tudo <span class="tc-count">14</span></button>
+          <button class="tc-chip" data-filter="cargo">
+            <span class="tc-dot" style="background:var(--green);"></span>
+            Cargo &amp; Salário <span class="tc-count">5</span>
+          </button>
+          <button class="tc-chip" data-filter="ferias">
+            <span class="tc-dot" style="background:var(--orange);"></span>
+            Férias <span class="tc-count">3</span>
+          </button>
+          <button class="tc-chip" data-filter="avaliacao">
+            <span class="tc-dot" style="background:var(--amber);"></span>
+            Avaliações <span class="tc-count">3</span>
+          </button>
+          <button class="tc-chip" data-filter="treinamento">
+            <span class="tc-dot" style="background:var(--teal);"></span>
+            Treinamentos <span class="tc-count">2</span>
+          </button>
+          <button class="tc-chip" data-filter="atestado">
+            <span class="tc-dot" style="background:var(--purple);"></span>
+            Saúde <span class="tc-count">1</span>
+          </button>
+        </div>
+        <button class="export-self-btn">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Exportar histórico
+        </button>
+      </div>
+
+      <!-- ============= TIMELINE ============= -->
+      <div class="timeline-card">
+
+        <!-- ============= 2026 ============= -->
+        <div class="tl-year">
+          <span class="tl-year-label">2026</span>
+          <span class="tl-year-line"></span>
+          <span class="tl-year-count">4 eventos</span>
+        </div>
+        <div class="timeline">
+
+          <div class="tl-item green first" data-cat="cargo">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg></div>
+                  <span class="tl-cat">Promoção</span>
+                  <span class="tl-title">Sua promoção foi solicitada!</span>
+                </div>
+                <div class="tl-date">20/04/2026<span class="tl-rel">há 8 dias</span></div>
+              </div>
+              <div class="tl-desc">
+                Seu líder <strong>João Carvalho</strong> solicitou sua promoção para <strong>Analista Sênior</strong> com salário proposto de <span class="delta-up">R$ 7.200 → R$ 8.500 (+18%)</span>. Aguardando aprovação RH.
+              </div>
+              <div class="tl-actions">
+                <button class="tl-action-btn">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  Acompanhar status
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item amber" data-cat="avaliacao">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                  <span class="tl-cat">Avaliação</span>
+                  <span class="tl-title">Ciclo Q1/2026 concluído</span>
+                </div>
+                <div class="tl-date">15/03/2026<span class="tl-rel">há 1m</span></div>
+              </div>
+              <div class="tl-desc">
+                Sua nota geral foi <strong>4,2 / 5</strong>. Sua autoavaliação 4,0, seu gestor 4,3. Destaques: <strong>colaboração</strong> (4,5) e <strong>execução</strong> (4,4). Ponto a desenvolver: autonomia em projetos novos (3,7).
+              </div>
+              <div class="tl-actions">
+                <button class="tl-action-btn">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+                  Ver detalhes
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item green" data-cat="cargo">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+                  <span class="tl-cat">Salário</span>
+                  <span class="tl-title">Aumento por dissídio coletivo</span>
+                </div>
+                <div class="tl-date">02/03/2026<span class="tl-rel">há 2m</span></div>
+              </div>
+              <div class="tl-desc">
+                Reajuste de <strong>4,5%</strong> aplicado pelo acordo coletivo SINDCOMERCIÁRIOS BA 2026. <span class="delta-up">R$ 6.890 → R$ 7.200</span>. Retroativo a 01/03/2026.
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item purple" data-cat="atestado">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
+                  <span class="tl-cat">Saúde</span>
+                  <span class="tl-title">Atestado registrado · 2 dias</span>
+                </div>
+                <div class="tl-date">28/04/2026<span class="tl-rel">hoje</span></div>
+              </div>
+              <div class="tl-desc">
+                Atestado de <strong>2 dias</strong> registrado · 28/04 a 29/04. Enviado pelo seu líder ao DP. Status: <strong>aguardando validação</strong>.
+              </div>
+              <div class="tl-private-note">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Apenas você e o DP podem ver os detalhes médicos
+              </div>
+              <div class="tl-actions">
+                <button class="tl-action-btn">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Baixar atestado
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= 2025 ============= -->
+        <div class="tl-year">
+          <span class="tl-year-label">2025</span>
+          <span class="tl-year-line"></span>
+          <span class="tl-year-count">6 eventos</span>
+        </div>
+        <div class="timeline">
+
+          <div class="tl-item teal" data-cat="treinamento">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+                  <span class="tl-cat">Treinamento</span>
+                  <span class="tl-title">Gestão financeira avançada</span>
+                </div>
+                <div class="tl-date">15/02/2026<span class="tl-rel">há 2m</span></div>
+              </div>
+              <div class="tl-desc">
+                Curso de <strong>40h</strong> presencial · SEBRAE Bahia. Você concluiu com nota <strong>9,2</strong>. Certificado emitido em 18/02/2026.
+              </div>
+              <div class="tl-actions">
+                <button class="tl-action-btn">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Baixar certificado
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item orange" data-cat="ferias">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+                  <span class="tl-cat">Férias</span>
+                  <span class="tl-title">Você tirou 30 dias de férias</span>
+                </div>
+                <div class="tl-date">18/12/2025<span class="tl-rel">há 4m</span></div>
+              </div>
+              <div class="tl-desc">
+                Período aquisitivo 2024/2025 · <strong>18/12/25 a 16/01/26</strong>. Adiantamento do 13º solicitado. Sem abono pecuniário.
+              </div>
+              <div class="tl-actions">
+                <button class="tl-action-btn">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Recibo de férias
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item navy" data-cat="cargo">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg></div>
+                  <span class="tl-cat">Liderança</span>
+                  <span class="tl-title">Mudou seu líder direto</span>
+                </div>
+                <div class="tl-date">10/10/2025<span class="tl-rel">há 6m</span></div>
+              </div>
+              <div class="tl-desc">
+                Seu novo líder é <strong>João Carvalho</strong>. A Ana Beatriz assumiu a área de Operações. A movimentação foi formalizada com a reorganização do time financeiro.
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item green" data-cat="cargo">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg></div>
+                  <span class="tl-cat">Mérito</span>
+                  <span class="tl-title">Você ganhou um aumento por mérito! 🎉</span>
+                </div>
+                <div class="tl-date">20/06/2025<span class="tl-rel">há 10m</span></div>
+              </div>
+              <div class="tl-desc">
+                Reconhecimento de desempenho do ciclo H1/2025. <span class="delta-up">R$ 6.100 → R$ 6.890 (+12,9%)</span>. Justificativa: você superou metas de fechamento mensal e contribuiu no projeto ERP.
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item amber" data-cat="avaliacao">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                  <span class="tl-cat">Avaliação</span>
+                  <span class="tl-title">Avaliação anual 2024</span>
+                </div>
+                <div class="tl-date">12/05/2025<span class="tl-rel">há 11m</span></div>
+              </div>
+              <div class="tl-desc">
+                Sua nota geral foi <strong>4,0 / 5</strong>. Plano de desenvolvimento aceito: <em>preparação para promoção a Pleno em 6 meses</em> ✓ atingido.
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item teal" data-cat="treinamento">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg></div>
+                  <span class="tl-cat">Treinamento</span>
+                  <span class="tl-title">Excel Avançado · concluído</span>
+                </div>
+                <div class="tl-date">15/01/2025<span class="tl-rel">há 1a 3m</span></div>
+              </div>
+              <div class="tl-desc">
+                Curso EAD de <strong>20h</strong> · plataforma corporativa. Nota <strong>8,5</strong>.
+              </div>
+              <div class="tl-actions">
+                <button class="tl-action-btn">
+                  <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                  Baixar certificado
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= 2024 ============= -->
+        <div class="tl-year">
+          <span class="tl-year-label">2024</span>
+          <span class="tl-year-line"></span>
+          <span class="tl-year-count">3 eventos</span>
+        </div>
+        <div class="timeline">
+
+          <div class="tl-item orange" data-cat="ferias">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+                  <span class="tl-cat">Férias</span>
+                  <span class="tl-title">Você tirou 15 dias de férias</span>
+                </div>
+                <div class="tl-date">20/12/2024<span class="tl-rel">há 1a 4m</span></div>
+              </div>
+              <div class="tl-desc">
+                Gozo parcial · <strong>20/12/24 a 03/01/25</strong>. Os outros 15 dias foram antecipados pro próximo período.
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item green" data-cat="cargo">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg></div>
+                  <span class="tl-cat">Promoção</span>
+                  <span class="tl-title">Você foi promovida! Júnior → Pleno 🎉</span>
+                </div>
+                <div class="tl-date">10/10/2024<span class="tl-rel">há 1a 6m</span></div>
+              </div>
+              <div class="tl-desc">
+                Sua primeira promoção depois de 2 anos! <span class="delta-up">R$ 4.800 → R$ 6.100 (+27%)</span>. Mantida na mesma área (Financeiro · Cestão Loja 1).
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-item amber" data-cat="avaliacao">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                  <span class="tl-cat">Avaliação</span>
+                  <span class="tl-title">Avaliação semestral H1/2024</span>
+                </div>
+                <div class="tl-date">22/06/2024<span class="tl-rel">há 1a 10m</span></div>
+              </div>
+              <div class="tl-desc">
+                Sua nota geral foi <strong>3,8 / 5</strong>. Foi quando entrou no plano para promoção a Pleno.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============= 2022 ============= -->
+        <div class="tl-year">
+          <span class="tl-year-label">2022</span>
+          <span class="tl-year-line"></span>
+          <span class="tl-year-count">1 evento</span>
+        </div>
+        <div class="timeline">
+
+          <div class="tl-item green" data-cat="cargo">
+            <div class="tl-dot"></div>
+            <div class="tl-card">
+              <div class="tl-head">
+                <div class="tl-title-row">
+                  <div class="tl-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+                  <span class="tl-cat">Admissão</span>
+                  <span class="tl-title">Você entrou na empresa! 🎯</span>
+                </div>
+                <div class="tl-date">14/09/2022<span class="tl-rel">há 3a 7m</span></div>
+              </div>
+              <div class="tl-desc">
+                Sua jornada começou aqui. Contratada como <strong>Analista Júnior Financeiro</strong> pela Labuta · alocada no Cestão Inhambupe. Salário inicial R$ 4.300. Sua primeira líder foi Ana Beatriz.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// Filtros da timeline
+document.querySelectorAll('.tc-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.tc-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    const filter = chip.dataset.filter;
+    document.querySelectorAll('.tl-item').forEach(item => {
+      const show = filter === 'all' || item.dataset.cat === filter;
+      item.style.display = show ? '' : 'none';
+    });
+    // Esconde anos sem itens visíveis
+    document.querySelectorAll('.timeline').forEach(tl => {
+      const visible = Array.from(tl.querySelectorAll('.tl-item')).some(i => i.style.display !== 'none');
+      const yearLabel = tl.previousElementSibling;
+      if(yearLabel && yearLabel.classList.contains('tl-year')){
+        yearLabel.style.display = visible ? '' : 'none';
+      }
+      tl.style.display = visible ? '' : 'none';
+    });
+  });
+});
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Movimentação de Pessoal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 4px 16px rgba(26,45,79,.12);
+  --shadow-modal:0 20px 60px rgba(26,45,79,.3);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+
+/* ===== Layout ===== */
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* ===== Sidebar (mesma) ===== */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08); flex-shrink:0;}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px; letter-spacing:.5px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3); letter-spacing:.3px;}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; transition:all .15s; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.nav-item.active svg{opacity:1;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{color:var(--gray3); font-family:'JetBrains Mono',monospace;}
+
+/* ===== Topbar ===== */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500; color:var(--txt);}
+.company-picker svg{color:var(--txt2);}
+.icon-btn{width:36px; height:36px; background:transparent; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; color:var(--txt2);}
+.icon-btn:hover{background:var(--gray1);}
+.icon-btn .badge{position:absolute; top:6px; right:6px; width:16px; height:16px; background:var(--red); border-radius:50%; font-size:9.5px; font-weight:600; color:#fff; display:flex; align-items:center; justify-content:center; border:2px solid #fff;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-chip:hover{background:var(--gray1);}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500; color:var(--txt);}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* ===== Main ===== */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; color:var(--txt); letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px; transition:background .15s;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-success{background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-success:hover{background:#16633C;}
+.btn-danger{background:#fff; color:var(--danger); border:1px solid var(--danger2); padding:8px 14px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-danger:hover{background:var(--danger2);}
+
+/* ===== Banner de contexto (perfil/escopo) ===== */
+.scope-banner{
+  display:flex; align-items:center; gap:11px;
+  background:linear-gradient(90deg, #E8EFF8, #F4F7FC);
+  border-left:3px solid var(--navy);
+  padding:10px 14px; border-radius:var(--radius);
+  margin-bottom:14px;
+  font-size:12px;
+}
+.scope-banner svg{color:var(--navy); flex-shrink:0;}
+.scope-banner strong{color:var(--txt); font-weight:600;}
+.scope-banner span{color:var(--txt2);}
+.scope-tag{
+  margin-left:auto;
+  padding:3px 9px; border-radius:10px;
+  background:var(--navy); color:#fff;
+  font-size:10.5px; font-weight:600;
+  letter-spacing:.3px; text-transform:uppercase;
+}
+
+/* ===== KPIs ===== */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:14px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden; cursor:pointer; transition:transform .15s;}
+.kpi:hover{transform:translateY(-2px);}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--red);}
+.kpi.green::before{background:var(--green);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:26px; font-weight:600; color:var(--txt); margin-top:5px; letter-spacing:-.5px;}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+
+/* ===== Tabs ===== */
+.tabs{
+  display:flex; gap:2px;
+  background:#fff; padding:4px; border-radius:var(--radius);
+  box-shadow:var(--shadow-card); margin-bottom:14px;
+  overflow-x:auto;
+}
+.tab{
+  padding:9px 14px;
+  font-size:12.5px; font-weight:500; color:var(--txt2);
+  background:transparent; border:none; cursor:pointer;
+  border-radius:7px;
+  font-family:inherit;
+  transition:all .15s;
+  display:inline-flex; align-items:center; gap:7px;
+  white-space:nowrap;
+}
+.tab:hover{background:var(--gray1); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab svg{width:14px; height:14px;}
+.tab .count{
+  background:rgba(255,255,255,.2); color:inherit;
+  padding:1px 7px; border-radius:10px; font-size:10.5px; font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+}
+.tab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+
+.tab-panel{display:none;}
+.tab-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* ===== Card movimentação ===== */
+.mov{
+  background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card);
+  padding:14px 16px; margin-bottom:10px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+}
+.mov-avatar{
+  width:42px; height:42px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:600; font-size:13px; color:#fff;
+}
+.mov-body{min-width:0;}
+.mov-head{display:flex; align-items:center; gap:8px; margin-bottom:3px; flex-wrap:wrap;}
+.mov-name{font-size:13.5px; font-weight:600; color:var(--txt);}
+.mov-type{
+  font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:10px;
+  text-transform:uppercase; letter-spacing:.3px;
+}
+.mt-dismissal{background:var(--danger2); color:var(--danger);}
+.mt-dept{background:var(--amber2); color:var(--amber);}
+.mt-pos{background:#E8EFF8; color:var(--navy);}
+.mt-unit{background:#F0E6FA; color:var(--purple);}
+.mt-promo{background:var(--green2); color:var(--green);}
+.mt-salary{background:#FCE6CD; color:var(--amber);}
+.mov-summary{font-size:12px; color:var(--txt2); margin-bottom:6px;}
+.mov-summary strong{color:var(--txt); font-weight:500;}
+.mov-summary .arrow{color:var(--orange); font-weight:600; margin:0 6px;}
+.mov-meta{display:flex; gap:14px; font-size:11px; color:var(--txt3); flex-wrap:wrap;}
+.mov-meta span{display:inline-flex; align-items:center; gap:4px;}
+.mov-meta svg{width:11px; height:11px;}
+
+/* Workflow steps */
+.workflow{
+  display:flex; align-items:center; gap:5px;
+  font-size:10.5px;
+  margin-top:7px;
+}
+.wf-step{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 9px; border-radius:14px;
+  font-weight:500;
+  background:var(--gray1); color:var(--txt3);
+}
+.wf-step.done{background:var(--green2); color:var(--green);}
+.wf-step.current{background:var(--amber2); color:var(--amber); border:1px solid var(--amber);}
+.wf-step.rejected{background:var(--danger2); color:var(--danger);}
+.wf-arrow{color:var(--gray3); font-size:11px;}
+.wf-step .dot{
+  width:6px; height:6px; border-radius:50%; background:currentColor;
+}
+
+.mov-actions{display:flex; gap:7px; flex-shrink:0;}
+.mov-actions.stack{flex-direction:column;}
+.btn-icon-only{
+  width:34px; height:34px; border-radius:7px;
+  background:var(--gray1); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt2);
+  transition:background .15s;
+}
+.btn-icon-only:hover{background:var(--gray2); color:var(--txt);}
+
+/* Status pill global */
+.status-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:12px;
+  font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.3px;
+}
+.sp-draft{background:var(--gray1); color:var(--txt2);}
+.sp-pending{background:var(--amber2); color:var(--amber);}
+.sp-approved{background:var(--green2); color:var(--green);}
+.sp-rejected{background:var(--danger2); color:var(--danger);}
+.sp-executed{background:#E8EFF8; color:var(--navy);}
+
+/* ===== Empty state ===== */
+.empty{
+  background:#fff; border-radius:var(--radius); padding:40px 20px;
+  text-align:center; box-shadow:var(--shadow-card);
+}
+.empty svg{color:var(--gray3); margin-bottom:10px;}
+.empty h3{font-size:14px; color:var(--txt); margin-bottom:4px;}
+.empty p{font-size:12px; color:var(--txt2);}
+
+/* ============= MODAL ============= */
+.modal-overlay{
+  display:none; position:fixed; inset:0;
+  background:rgba(26,45,79,.55);
+  z-index:100;
+  align-items:center; justify-content:center;
+  padding:20px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.show{display:flex; animation:fadeIn .2s;}
+
+.modal{
+  background:#fff; border-radius:var(--radius-lg);
+  width:100%; max-width:680px; max-height:90vh;
+  display:flex; flex-direction:column;
+  box-shadow:var(--shadow-modal);
+  overflow:hidden;
+}
+.modal-head{
+  padding:18px 22px;
+  border-bottom:1px solid var(--gray1);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.modal-title{font-size:15px; font-weight:600; color:var(--txt);}
+.modal-sub{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+.modal-close{
+  width:32px; height:32px; border-radius:7px;
+  background:var(--gray1); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt2);
+}
+.modal-close:hover{background:var(--gray2);}
+
+.modal-body{flex:1; overflow-y:auto; padding:18px 22px;}
+.modal-foot{
+  padding:14px 22px; border-top:1px solid var(--gray1);
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  background:var(--off);
+}
+.modal-foot-left{font-size:11.5px; color:var(--txt2);}
+
+/* Wizard steps */
+.wizard-steps{
+  display:flex; align-items:center; gap:8px;
+  padding:14px 22px;
+  background:var(--off);
+  border-bottom:1px solid var(--gray1);
+}
+.ws-step{
+  display:flex; align-items:center; gap:7px;
+  font-size:11.5px; color:var(--txt3);
+}
+.ws-step.done{color:var(--green);}
+.ws-step.current{color:var(--navy); font-weight:600;}
+.ws-circle{
+  width:22px; height:22px; border-radius:50%;
+  background:var(--gray1); color:var(--txt3);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:600;
+}
+.ws-step.done .ws-circle{background:var(--green); color:#fff;}
+.ws-step.current .ws-circle{background:var(--navy); color:#fff;}
+.ws-line{flex:1; height:2px; background:var(--gray1); border-radius:1px;}
+.ws-line.done{background:var(--green);}
+
+/* Form */
+.field{margin-bottom:14px;}
+.field label{display:block; font-size:11.5px; color:var(--txt2); margin-bottom:5px; font-weight:500;}
+.field label .req{color:var(--danger);}
+.field input[type=text], .field input[type=date], .field input[type=number], .field select, .field textarea{
+  width:100%;
+  padding:9px 12px;
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  font-size:13px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+  transition:border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{
+  outline:none; border-color:var(--navy);
+}
+.field textarea{resize:vertical; min-height:80px;}
+.field-help{font-size:10.5px; color:var(--txt3); margin-top:4px;}
+.field-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+/* Type selector cards */
+.type-grid{display:grid; grid-template-columns:1fr 1fr; gap:9px;}
+.type-card{
+  border:1.5px solid var(--gray2);
+  border-radius:9px;
+  padding:13px 14px;
+  cursor:pointer;
+  display:flex;
+  gap:11px;
+  align-items:flex-start;
+  transition:all .15s;
+  background:#fff;
+}
+.type-card:hover{border-color:var(--navy3); background:var(--off);}
+.type-card.selected{border-color:var(--navy); background:#E8EFF8;}
+.type-card .ic{
+  width:36px; height:36px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.type-card .info{flex:1; min-width:0;}
+.type-card strong{display:block; font-size:13px; color:var(--txt); margin-bottom:2px;}
+.type-card span{font-size:11px; color:var(--txt2); line-height:1.4;}
+
+/* User picker */
+.user-picker{
+  position:relative;
+  margin-bottom:8px;
+}
+.user-picker-input{
+  width:100%; padding:9px 12px 9px 38px;
+  border:1px solid var(--gray2);
+  border-radius:7px; font-size:13px; font-family:inherit; color:var(--txt);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235A7090' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:13px center;
+  background-size:14px;
+}
+.user-result{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 11px;
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  cursor:pointer;
+  margin-bottom:5px;
+  background:#fff;
+  transition:all .15s;
+}
+.user-result:hover{background:var(--off); border-color:var(--navy3);}
+.user-result.selected{background:#E8EFF8; border-color:var(--navy);}
+.user-result .av{width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; color:#fff; flex-shrink:0;}
+.user-result .info{flex:1; min-width:0;}
+.user-result .nm{font-size:12.5px; font-weight:500; color:var(--txt);}
+.user-result .meta{font-size:11px; color:var(--txt2);}
+.user-result .check{color:var(--navy);}
+
+/* Detail rows (review step) */
+.detail-row{
+  display:grid;
+  grid-template-columns:140px 1fr;
+  gap:11px;
+  padding:9px 0;
+  border-bottom:1px solid var(--gray1);
+  font-size:12.5px;
+}
+.detail-row:last-child{border-bottom:none;}
+.detail-row .lbl{color:var(--txt2);}
+.detail-row .val{color:var(--txt); font-weight:500;}
+.detail-row .change{color:var(--orange); font-weight:600;}
+.change-block{
+  background:var(--off); border-radius:8px; padding:11px 13px; margin-top:8px;
+  border:1px solid var(--gray1);
+}
+.change-block .from-to{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+.change-block .ft-old{
+  padding:4px 10px; border-radius:6px;
+  background:var(--danger2); color:var(--danger);
+  font-size:11.5px; font-weight:500;
+  text-decoration:line-through; text-decoration-color:rgba(192,57,43,.4);
+}
+.change-block .ft-arrow{color:var(--orange); font-weight:700; font-size:14px;}
+.change-block .ft-new{
+  padding:4px 10px; border-radius:6px;
+  background:var(--green2); color:var(--green);
+  font-size:11.5px; font-weight:600;
+}
+
+/* ============= DETAIL MODAL ============= */
+.detail-section{margin-bottom:18px;}
+.detail-section h4{font-size:11.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600; margin-bottom:9px;}
+.timeline{
+  position:relative; padding-left:26px;
+}
+.timeline::before{
+  content:''; position:absolute; left:9px; top:5px; bottom:5px;
+  width:2px; background:var(--gray2);
+}
+.tl-item{position:relative; margin-bottom:14px;}
+.tl-item:last-child{margin-bottom:0;}
+.tl-dot{
+  position:absolute; left:-22px; top:1px;
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; border:2px solid var(--gray3);
+  display:flex; align-items:center; justify-content:center;
+}
+.tl-dot.done{border-color:var(--green); background:var(--green); color:#fff;}
+.tl-dot.current{border-color:var(--amber); background:var(--amber); color:#fff;}
+.tl-dot.rejected{border-color:var(--danger); background:var(--danger); color:#fff;}
+.tl-content{background:var(--off); padding:9px 13px; border-radius:8px;}
+.tl-content .ttl{font-size:12.5px; font-weight:600; color:var(--txt);}
+.tl-content .meta{font-size:11px; color:var(--txt2); margin-top:2px;}
+.tl-content .cmt{font-size:12px; color:var(--txt); margin-top:6px; padding-top:6px; border-top:1px solid var(--gray2); font-style:italic;}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 1100px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .field-grid{grid-template-columns:1fr;}
+  .type-grid{grid-template-columns:1fr;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title{display:none;}
+  .company-name{display:none;}
+  .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 40px;}
+  .page-header h1{font-size:18px;}
+  .page-header{flex-direction:column; align-items:stretch;}
+
+  .scope-banner{flex-wrap:wrap;}
+  .scope-tag{margin-left:0; margin-top:4px;}
+
+  .mov{grid-template-columns:auto 1fr; gap:11px;}
+  .mov-actions{grid-column:1/-1; flex-direction:row; justify-content:flex-end;}
+
+  .kpi{padding:11px 12px;}
+  .kpi-value{font-size:20px;}
+
+  .modal{max-height:100vh; height:100vh; max-width:100%; border-radius:0;}
+  .wizard-steps{padding:11px 14px; gap:6px;}
+  .ws-step span:not(.ws-circle){display:none;}
+  .modal-body{padding:14px 16px;}
+  .modal-head, .modal-foot{padding:13px 16px;}
+}
+@media (max-width: 420px){
+  .tab span{display:none;}
+  .tab svg{width:16px; height:16px;}
+  .tab .count{display:inline;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar, .modal-body::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+.tabs::-webkit-scrollbar{height:0;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>Meu perfil</a>
+
+      <div class="sidebar-section">Avaliações</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações ativas</a>
+
+      <div class="sidebar-section">Feedback</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9A2 2 0 0019.72 9H14z"/></svg>Mural de elogios</a>
+
+      <div class="sidebar-section">Gestor</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Minha equipe</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>Movimentações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+
+      <div class="sidebar-section">Administração</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>Filiais e cargos</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Movimentação <strong>de Pessoal</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+      <span class="badge">3</span>
+    </button>
+    <div class="user-chip">
+      <div class="user-avatar">JC</div>
+      <div class="user-info">
+        <span class="user-name">João Carvalho</span>
+        <span class="user-role">Líder Financeiro</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Movimentação de Pessoal</h1>
+        <p>Solicitações de mudança de status, função, setor ou unidade</p>
+      </div>
+      <button class="btn-primary" onclick="openWizard()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Nova movimentação
+      </button>
+    </div>
+
+    <!-- Banner de escopo (mostra que o usuário só vê seu setor) -->
+    <div class="scope-banner">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>
+      <div>
+        <strong>Visualizando como Líder Financeiro</strong>
+        <span>• Departamento: Financeiro • Filial de trabalho: Cestão Loja 1 • </span>
+        <strong>8 colaboradores visíveis</strong>
+      </div>
+      <span class="scope-tag">Escopo limitado</span>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi amber">
+        <div class="kpi-label">Aguardando aprovação</div>
+        <div class="kpi-value">2</div>
+        <div class="kpi-sub">Suas solicitações em análise</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Aprovadas no mês</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-sub">Já efetivadas no sistema</div>
+      </div>
+      <div class="kpi red">
+        <div class="kpi-label">Rejeitadas</div>
+        <div class="kpi-value">1</div>
+        <div class="kpi-sub">Verificar comentários do RH</div>
+      </div>
+      <div class="kpi purple">
+        <div class="kpi-label">Em rascunho</div>
+        <div class="kpi-value">1</div>
+        <div class="kpi-sub">Não enviada ainda</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="minhas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>
+        <span>Solicitadas por mim</span>
+        <span class="count">7</span>
+      </button>
+      <button class="tab" data-tab="aprovar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span>Aguardando aprovação</span>
+        <span class="count">0</span>
+      </button>
+      <button class="tab" data-tab="equipe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>
+        <span>Da minha equipe</span>
+        <span class="count">7</span>
+      </button>
+      <button class="tab" data-tab="historico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+        <span>Histórico</span>
+        <span class="count">23</span>
+      </button>
+    </div>
+
+    <!-- Tab: Solicitadas por mim -->
+    <div class="tab-panel active" data-panel="minhas" id="tabMinhas">
+      <!-- Cards renderizados via JS -->
+    </div>
+
+    <!-- Tab: Aguardando aprovação -->
+    <div class="tab-panel" data-panel="aprovar">
+      <div class="empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <h3>Nenhuma movimentação aguardando você</h3>
+        <p>Quando alguém solicitar uma movimentação na sua hierarquia, ela aparece aqui.</p>
+      </div>
+    </div>
+
+    <!-- Tab: Da minha equipe (cards) -->
+    <div class="tab-panel" data-panel="equipe" id="tabEquipe"></div>
+
+    <!-- Tab: Histórico (cards) -->
+    <div class="tab-panel" data-panel="historico" id="tabHistorico"></div>
+
+  </main>
+</div>
+
+<!-- ============= MODAL: WIZARD NOVA MOVIMENTAÇÃO ============= -->
+<div class="modal-overlay" id="wizardModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Nova movimentação de pessoal</div>
+        <div class="modal-sub">A solicitação seguirá o fluxo: você → líder direto → RH</div>
+      </div>
+      <button class="modal-close" onclick="closeWizard()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="wizard-steps">
+      <div class="ws-step current" data-step="1"><div class="ws-circle">1</div><span>Tipo</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="2"><div class="ws-circle">2</div><span>Colaborador</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="3"><div class="ws-circle">3</div><span>Detalhes</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="4"><div class="ws-circle">4</div><span>Revisão</span></div>
+    </div>
+
+    <div class="modal-body" id="wizardBody"></div>
+
+    <div class="modal-foot">
+      <div class="modal-foot-left" id="wizardFootInfo">Selecione o tipo de movimentação</div>
+      <div style="display:flex; gap:9px;">
+        <button class="btn-secondary" id="btnPrev" onclick="prevStep()" style="display:none;">Voltar</button>
+        <button class="btn-primary" id="btnNext" onclick="nextStep()">Avançar →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============= MODAL: DETALHES ============= -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="dmTitle">Detalhes da movimentação</div>
+        <div class="modal-sub" id="dmSub"></div>
+      </div>
+      <button class="modal-close" onclick="closeDetail()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-foot">
+      <div class="modal-foot-left" id="dmFoot"></div>
+      <div style="display:flex; gap:9px;" id="dmActions"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============= MOCK DATA ============= */
+// Simulando contexto: João Carvalho é Líder Financeiro do Cestão Loja 1
+// Por RLS, ele só vê os 8 colaboradores do seu setor + sua filial
+const visibleEmployees = [
+  {id:'u1', name:'Beatriz Lopes',     dept:'Financeiro', position:'Analista Sênior',   unit:'Cestão L1', initials:'BL', color:'#2B4A7A', salary:5200},
+  {id:'u2', name:'Carlos Eduardo',    dept:'Financeiro', position:'Analista Pleno',    unit:'Cestão L1', initials:'CE', color:'#F5831F', salary:4100},
+  {id:'u3', name:'Daniela Vieira',    dept:'Financeiro', position:'Analista Júnior',   unit:'Cestão L1', initials:'DV', color:'#6D28D9', salary:2800},
+  {id:'u4', name:'Eduardo Mendes',    dept:'Financeiro', position:'Auxiliar Financeiro',unit:'Cestão L1', initials:'EM', color:'#1E7B4B', salary:2200},
+  {id:'u5', name:'Fernanda Lima',     dept:'Financeiro', position:'Analista Pleno',    unit:'Cestão L1', initials:'FL', color:'#E82227', salary:3900},
+  {id:'u6', name:'Gabriel Pinto',     dept:'Financeiro', position:'Estagiário',        unit:'Cestão L1', initials:'GP', color:'#854F0B', salary:1400},
+  {id:'u7', name:'Helena Cardoso',    dept:'Financeiro', position:'Analista Sênior',   unit:'Cestão L1', initials:'HC', color:'#3D5F95', salary:5500},
+  {id:'u8', name:'Igor Rodrigues',    dept:'Financeiro', position:'Auxiliar Financeiro',unit:'Cestão L1', initials:'IR', color:'#1F3A6B', salary:2300}
+];
+
+const movements = [
+  {
+    id:'m1',
+    user:visibleEmployees[2],
+    type:'promotion', typeName:'Promoção',
+    typeIcon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>',
+    from:'Analista Júnior • R$ 2.800',
+    to:'Analista Pleno • R$ 3.800',
+    requestedBy:'João Carvalho (você)',
+    requestedAt:'2026-04-20',
+    effectiveDate:'2026-05-01',
+    status:'pending_hr',
+    workflow:[
+      {role:'Solicitante', name:'João Carvalho', state:'done', when:'20/04/2026 09:32', comment:''},
+      {role:'Líder direto', name:'Maria Santos (Diretora Financeira)', state:'done', when:'21/04/2026 14:15', comment:'Aprovo. Daniela tem mostrado evolução consistente nos últimos 6 meses.'},
+      {role:'RH', name:'Patrícia Mello', state:'current', when:'aguardando', comment:''}
+    ],
+    justification:'Daniela completou todos os módulos da trilha de Analista Pleno e tem entregado análises de margem com qualidade superior à média do time. Vaga aberta após saída do Igor R.'
+  },
+  {
+    id:'m2',
+    user:visibleEmployees[5],
+    type:'department_change', typeName:'Mudança de setor',
+    from:'Financeiro • Estagiário',
+    to:'Comercial • Estagiário',
+    requestedBy:'João Carvalho (você)',
+    requestedAt:'2026-04-22',
+    effectiveDate:'2026-05-15',
+    status:'pending_manager',
+    workflow:[
+      {role:'Solicitante', name:'João Carvalho', state:'done', when:'22/04/2026 11:08'},
+      {role:'Líder direto', name:'Maria Santos (Diretora Financeira)', state:'current', when:'aguardando'},
+      {role:'RH', name:'Patrícia Mello', state:'pending', when:''}
+    ],
+    justification:'Estagiário manifestou interesse em área comercial. Talita (Comercial) confirmou disponibilidade de vaga e mentor.'
+  },
+  {
+    id:'m3',
+    user:visibleEmployees[3],
+    type:'salary_adjustment', typeName:'Ajuste salarial',
+    from:'R$ 2.200',
+    to:'R$ 2.450 (+11,4%)',
+    requestedBy:'João Carvalho (você)',
+    requestedAt:'2026-03-15',
+    effectiveDate:'2026-04-01',
+    status:'approved',
+    workflow:[
+      {role:'Solicitante', name:'João Carvalho', state:'done', when:'15/03/2026'},
+      {role:'Líder direto', name:'Maria Santos', state:'done', when:'16/03/2026'},
+      {role:'RH', name:'Patrícia Mello', state:'done', when:'18/03/2026', comment:'Aprovado conforme política de equiparação.'}
+    ],
+    justification:'Equiparação interna: outros auxiliares com tempo similar estão na mesma faixa.'
+  },
+  {
+    id:'m4',
+    user:visibleEmployees[7],
+    type:'unit_change', typeName:'Mudança de filial',
+    from:'Cestão Loja 1',
+    to:'Cestão Inhambupe',
+    requestedBy:'João Carvalho (você)',
+    requestedAt:'2026-03-08',
+    effectiveDate:'2026-03-25',
+    status:'rejected',
+    workflow:[
+      {role:'Solicitante', name:'João Carvalho', state:'done', when:'08/03/2026'},
+      {role:'Líder direto', name:'Maria Santos', state:'done', when:'09/03/2026'},
+      {role:'RH', name:'Patrícia Mello', state:'rejected', when:'12/03/2026', comment:'Inhambupe está em momento de redução de quadro. Reavaliar em 90 dias.'}
+    ],
+    justification:'Necessidade operacional na filial de Inhambupe.'
+  },
+  {
+    id:'m5',
+    user:visibleEmployees[1],
+    type:'position_change', typeName:'Mudança de função',
+    from:'Analista Pleno',
+    to:'Analista de Tesouraria',
+    requestedBy:'João Carvalho (você)',
+    requestedAt:'2026-02-12',
+    effectiveDate:'2026-03-01',
+    status:'approved',
+    workflow:[
+      {role:'Solicitante', name:'João Carvalho', state:'done', when:'12/02/2026'},
+      {role:'Líder direto', name:'Maria Santos', state:'done', when:'13/02/2026'},
+      {role:'RH', name:'Patrícia Mello', state:'done', when:'15/02/2026'}
+    ],
+    justification:'Reestruturação do time, criando especialização em tesouraria.'
+  },
+  {
+    id:'m6',
+    user:visibleEmployees[6],
+    type:'salary_adjustment', typeName:'Ajuste salarial',
+    from:'R$ 5.200',
+    to:'R$ 5.500',
+    requestedBy:'João Carvalho (você)',
+    requestedAt:'2026-04-25',
+    effectiveDate:'2026-05-01',
+    status:'pending_manager',
+    workflow:[
+      {role:'Solicitante', name:'João Carvalho', state:'done', when:'25/04/2026'},
+      {role:'Líder direto', name:'Maria Santos', state:'current', when:'aguardando'},
+      {role:'RH', name:'Patrícia Mello', state:'pending', when:''}
+    ],
+    justification:'Mérito por performance acima da expectativa.'
+  },
+  {
+    id:'m7',
+    user:visibleEmployees[4],
+    type:'dismissal', typeName:'Demissão',
+    from:'Ativo',
+    to:'Desligamento sem justa causa',
+    requestedBy:'João Carvalho (você)',
+    requestedAt:'2026-04-10',
+    effectiveDate:'2026-04-30',
+    status:'approved',
+    workflow:[
+      {role:'Solicitante', name:'João Carvalho', state:'done', when:'10/04/2026'},
+      {role:'Líder direto', name:'Maria Santos', state:'done', when:'11/04/2026'},
+      {role:'RH', name:'Patrícia Mello', state:'done', when:'12/04/2026', comment:'Documentação encaminhada para DP.'}
+    ],
+    justification:'Reestruturação interna após mudança de processo de fechamento.'
+  }
+];
+
+/* ============= TIPOS DE MOVIMENTAÇÃO ============= */
+const movementTypes = [
+  {id:'department_change', name:'Mudança de setor',     desc:'Transferir para outro departamento', icon:'⇄', cls:'mt-dept', color:'#854F0B', bg:'#FEF3E2'},
+  {id:'position_change',   name:'Mudança de função',    desc:'Alterar cargo/função na mesma área', icon:'⚙', cls:'mt-pos',  color:'#2B4A7A', bg:'#E8EFF8'},
+  {id:'unit_change',       name:'Mudança de filial',    desc:'Transferir para outra unidade',      icon:'⌂', cls:'mt-unit', color:'#6D28D9', bg:'#F0E6FA'},
+  {id:'promotion',         name:'Promoção',             desc:'Subir de nível na carreira',         icon:'↑', cls:'mt-promo',color:'#1E7B4B', bg:'#D4EDDF'},
+  {id:'salary_adjustment', name:'Ajuste salarial',      desc:'Mérito ou equiparação',              icon:'$', cls:'mt-salary',color:'#854F0B', bg:'#FCE6CD'},
+  {id:'dismissal',         name:'Demissão',             desc:'Desligamento do colaborador',        icon:'×', cls:'mt-dismissal', color:'#C0392B', bg:'#FDECEA'}
+];
+
+/* ============= STATUS LABELS ============= */
+const statusInfo = {
+  pending_manager: {label:'Aguarda líder direto', cls:'sp-pending'},
+  pending_hr:      {label:'Aguarda RH',           cls:'sp-pending'},
+  approved:        {label:'Aprovada',             cls:'sp-approved'},
+  rejected:        {label:'Rejeitada',            cls:'sp-rejected'},
+  draft:           {label:'Rascunho',             cls:'sp-draft'},
+  executed:        {label:'Efetivada',            cls:'sp-executed'}
+};
+
+/* ============= RENDER MOV CARD ============= */
+function getTypeMeta(typeId){
+  return movementTypes.find(t=>t.id===typeId) || movementTypes[0];
+}
+
+function renderMovCard(m){
+  const tm = getTypeMeta(m.type);
+  const st = statusInfo[m.status];
+
+  // Workflow steps simplificados
+  const wfHtml = m.workflow.map((s,i)=>{
+    let cls = '';
+    if(s.state==='done') cls='done';
+    else if(s.state==='current') cls='current';
+    else if(s.state==='rejected') cls='rejected';
+    const arrow = i < m.workflow.length-1 ? '<span class="wf-arrow">→</span>' : '';
+    const labels = {Solicitante:'Solicitação', 'Líder direto':'Líder direto', RH:'RH'};
+    return `<div class="wf-step ${cls}"><span class="dot"></span>${labels[s.role]}</div>${arrow}`;
+  }).join('');
+
+  return `
+    <div class="mov" onclick="openDetail('${m.id}')">
+      <div class="mov-avatar" style="background:${m.user.color}">${m.user.initials}</div>
+      <div class="mov-body">
+        <div class="mov-head">
+          <div class="mov-name">${m.user.name}</div>
+          <span class="mov-type ${tm.cls}">${m.typeName}</span>
+          <span class="status-pill ${st.cls}">${st.label}</span>
+        </div>
+        <div class="mov-summary">
+          <strong>${m.from}</strong>
+          <span class="arrow">→</span>
+          <strong>${m.to}</strong>
+        </div>
+        <div class="mov-meta">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Solicitada ${formatDate(m.requestedAt)}</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Efetiva em ${formatDate(m.effectiveDate)}</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18"/></svg>${m.user.unit}</span>
+        </div>
+        <div class="workflow">${wfHtml}</div>
+      </div>
+      <div class="mov-actions">
+        <button class="btn-icon-only" title="Ver detalhes" onclick="event.stopPropagation(); openDetail('${m.id}')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function formatDate(iso){
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function renderTab(tabId){
+  let list = movements;
+  if(tabId==='minhas')       list = movements.filter(m=>m.requestedBy.includes('você'));
+  if(tabId==='aprovar')      list = [];
+  if(tabId==='equipe')       list = movements;
+  if(tabId==='historico')    list = movements.filter(m=>['approved','rejected','executed'].includes(m.status));
+
+  const elId = {minhas:'tabMinhas', equipe:'tabEquipe', historico:'tabHistorico'}[tabId];
+  if(!elId) return;
+
+  const el = document.getElementById(elId);
+  if(list.length===0){
+    el.innerHTML = `<div class="empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>
+      <h3>Nenhuma movimentação aqui</h3>
+      <p>Quando houver solicitações nesse filtro, elas aparecem nesta tela.</p>
+    </div>`;
+  } else {
+    el.innerHTML = list.map(renderMovCard).join('');
+  }
+}
+
+/* ============= TABS ============= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+    renderTab(t.dataset.tab);
+  });
+});
+
+/* ============= MODAL DETAIL ============= */
+function openDetail(id){
+  const m = movements.find(x=>x.id===id);
+  if(!m) return;
+  const tm = getTypeMeta(m.type);
+  const st = statusInfo[m.status];
+
+  document.getElementById('dmTitle').textContent = `${m.typeName} • ${m.user.name}`;
+  document.getElementById('dmSub').innerHTML = `<span class="status-pill ${st.cls}">${st.label}</span>`;
+
+  // Timeline
+  const timeline = m.workflow.map(s=>{
+    let dotCls='', icon='';
+    if(s.state==='done'){dotCls='done'; icon='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';}
+    else if(s.state==='current'){dotCls='current'; icon='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="3"/></svg>';}
+    else if(s.state==='rejected'){dotCls='rejected'; icon='<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg>';}
+    else icon='<span style="font-size:9px; color:#A8B5C8;">●</span>';
+
+    return `
+      <div class="tl-item">
+        <div class="tl-dot ${dotCls}">${icon}</div>
+        <div class="tl-content">
+          <div class="ttl">${s.role}: ${s.name}</div>
+          <div class="meta">${s.when}</div>
+          ${s.comment ? `<div class="cmt">"${s.comment}"</div>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-section">
+      <h4>Colaborador alvo</h4>
+      <div style="display:flex; align-items:center; gap:11px; padding:10px; background:var(--off); border-radius:8px;">
+        <div class="li-avatar" style="background:${m.user.color}; width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600;">${m.user.initials}</div>
+        <div>
+          <div style="font-size:13.5px; font-weight:600;">${m.user.name}</div>
+          <div style="font-size:11.5px; color:var(--txt2);">${m.user.position} • ${m.user.dept} • ${m.user.unit}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Mudança solicitada</h4>
+      <div class="change-block">
+        <div class="from-to">
+          <span class="ft-old">${m.from}</span>
+          <span class="ft-arrow">→</span>
+          <span class="ft-new">${m.to}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Informações</h4>
+      <div class="detail-row"><div class="lbl">Solicitada por</div><div class="val">${m.requestedBy}</div></div>
+      <div class="detail-row"><div class="lbl">Data solicitação</div><div class="val">${formatDate(m.requestedAt)}</div></div>
+      <div class="detail-row"><div class="lbl">Efetiva em</div><div class="val">${formatDate(m.effectiveDate)}</div></div>
+      <div class="detail-row"><div class="lbl">Justificativa</div><div class="val" style="line-height:1.5;">${m.justification}</div></div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Fluxo de aprovação</h4>
+      <div class="timeline">${timeline}</div>
+    </div>
+  `;
+
+  // Ações conforme status
+  const actions = document.getElementById('dmActions');
+  if(m.status==='pending_manager' || m.status==='pending_hr'){
+    // Se eu fosse o aprovador, mostrava aprovar/rejeitar. Como sou o solicitante, mostro apenas cancelar
+    actions.innerHTML = `<button class="btn-secondary" onclick="closeDetail()">Fechar</button>
+      <button class="btn-danger">Cancelar solicitação</button>`;
+  } else {
+    actions.innerHTML = `<button class="btn-secondary" onclick="closeDetail()">Fechar</button>`;
+  }
+
+  document.getElementById('detailModal').classList.add('show');
+}
+function closeDetail(){document.getElementById('detailModal').classList.remove('show');}
+
+/* ============= WIZARD ============= */
+let wizState = {step:1, type:null, userId:null, details:{}, justification:''};
+
+function openWizard(){
+  wizState = {step:1, type:null, userId:null, details:{}, justification:''};
+  renderWizardStep();
+  document.getElementById('wizardModal').classList.add('show');
+}
+function closeWizard(){document.getElementById('wizardModal').classList.remove('show');}
+
+function renderWizardStep(){
+  // Atualiza steps
+  document.querySelectorAll('.ws-step').forEach((el,i)=>{
+    el.classList.remove('current','done');
+    if(i+1 < wizState.step) el.classList.add('done');
+    if(i+1 === wizState.step) el.classList.add('current');
+  });
+  document.querySelectorAll('.ws-line').forEach((el,i)=>{
+    el.classList.toggle('done', i+1 < wizState.step);
+  });
+
+  document.getElementById('btnPrev').style.display = wizState.step>1 ? 'inline-flex' : 'none';
+  document.getElementById('btnNext').textContent = wizState.step<4 ? 'Avançar →' : 'Enviar solicitação';
+
+  if(wizState.step===1) renderStep1();
+  if(wizState.step===2) renderStep2();
+  if(wizState.step===3) renderStep3();
+  if(wizState.step===4) renderStep4();
+}
+
+function renderStep1(){
+  document.getElementById('wizardFootInfo').textContent = 'Selecione o tipo de movimentação';
+  document.getElementById('wizardBody').innerHTML = `
+    <div style="margin-bottom:12px; font-size:12.5px; color:var(--txt2);">Que tipo de movimentação você quer solicitar?</div>
+    <div class="type-grid">
+      ${movementTypes.map(t=>`
+        <div class="type-card ${wizState.type===t.id?'selected':''}" onclick="selectType('${t.id}')">
+          <div class="ic" style="background:${t.bg}; color:${t.color}; font-size:18px; font-weight:700;">${t.icon}</div>
+          <div class="info">
+            <strong>${t.name}</strong>
+            <span>${t.desc}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+function selectType(id){
+  wizState.type = id;
+  renderStep1();
+}
+
+function renderStep2(){
+  document.getElementById('wizardFootInfo').textContent = 'Apenas colaboradores do seu escopo aparecem aqui (8 disponíveis)';
+  document.getElementById('wizardBody').innerHTML = `
+    <div style="margin-bottom:12px; font-size:12.5px; color:var(--txt2);">Selecione o colaborador alvo da movimentação:</div>
+    <div class="user-picker">
+      <input type="text" class="user-picker-input" placeholder="Buscar pelo nome..." oninput="filterUsers(this.value)">
+    </div>
+    <div id="userList">${renderUserList(visibleEmployees)}</div>
+  `;
+}
+function renderUserList(list){
+  if(list.length===0) return '<div class="empty" style="padding:20px;"><p>Nenhum colaborador encontrado.</p></div>';
+  return list.map(u=>`
+    <div class="user-result ${wizState.userId===u.id?'selected':''}" onclick="selectUser('${u.id}')">
+      <div class="av" style="background:${u.color}">${u.initials}</div>
+      <div class="info">
+        <div class="nm">${u.name}</div>
+        <div class="meta">${u.position} • ${u.dept} • ${u.unit}</div>
+      </div>
+      ${wizState.userId===u.id ? '<svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>' : ''}
+    </div>
+  `).join('');
+}
+function filterUsers(q){
+  const filtered = visibleEmployees.filter(u=>u.name.toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('userList').innerHTML = renderUserList(filtered);
+}
+function selectUser(id){
+  wizState.userId = id;
+  renderStep2();
+}
+
+function renderStep3(){
+  const tm = getTypeMeta(wizState.type);
+  document.getElementById('wizardFootInfo').textContent = `Tipo: ${tm.name}`;
+  const u = visibleEmployees.find(x=>x.id===wizState.userId);
+
+  let typeFields = '';
+  if(wizState.type==='department_change'){
+    typeFields = `
+      <div class="field">
+        <label>Departamento atual</label>
+        <input type="text" value="${u.dept}" disabled style="background:var(--gray1);">
+      </div>
+      <div class="field">
+        <label>Novo departamento <span class="req">*</span></label>
+        <select>
+          <option>Selecione...</option>
+          <option>Comercial</option>
+          <option>Administrativo</option>
+          <option>CD Logística</option>
+          <option>Compras</option>
+          <option>TI / BI</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Novo gestor</label>
+        <select>
+          <option>Manter atual</option>
+          <option>Talita Comercial</option>
+          <option>Roberto Almeida</option>
+        </select>
+      </div>
+    `;
+  } else if(wizState.type==='position_change'){
+    typeFields = `
+      <div class="field">
+        <label>Cargo atual</label>
+        <input type="text" value="${u.position}" disabled style="background:var(--gray1);">
+      </div>
+      <div class="field">
+        <label>Novo cargo <span class="req">*</span></label>
+        <select>
+          <option>Selecione...</option>
+          <option>Analista de Tesouraria</option>
+          <option>Analista de Custos</option>
+          <option>Analista Sênior</option>
+          <option>Coordenador Financeiro</option>
+        </select>
+      </div>
+    `;
+  } else if(wizState.type==='unit_change'){
+    typeFields = `
+      <div class="field">
+        <label>Filial de trabalho atual</label>
+        <input type="text" value="${u.unit}" disabled style="background:var(--gray1);">
+      </div>
+      <div class="field">
+        <label>Nova filial de trabalho <span class="req">*</span></label>
+        <select>
+          <option>Selecione...</option>
+          <option>ATP - Varejo</option>
+          <option>ATP - Atacado</option>
+          <option>Cestão Inhambupe</option>
+          <option>CD Logística</option>
+        </select>
+      </div>
+      <div class="field-help">A empresa de cadastro (CNPJ empregador) permanece a mesma. Apenas a alocação muda.</div>
+    `;
+  } else if(wizState.type==='promotion'){
+    typeFields = `
+      <div class="field-grid">
+        <div class="field">
+          <label>Cargo atual</label>
+          <input type="text" value="${u.position}" disabled style="background:var(--gray1);">
+        </div>
+        <div class="field">
+          <label>Novo cargo <span class="req">*</span></label>
+          <select>
+            <option>Selecione...</option>
+            <option>Analista Pleno</option>
+            <option>Analista Sênior</option>
+            <option>Coordenador</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Salário atual</label>
+          <input type="text" value="R$ ${u.salary.toLocaleString('pt-BR')},00" disabled style="background:var(--gray1);">
+        </div>
+        <div class="field">
+          <label>Novo salário <span class="req">*</span></label>
+          <input type="number" placeholder="0,00" value="${(u.salary*1.25).toFixed(0)}">
+        </div>
+      </div>
+    `;
+  } else if(wizState.type==='salary_adjustment'){
+    typeFields = `
+      <div class="field-grid">
+        <div class="field">
+          <label>Salário atual</label>
+          <input type="text" value="R$ ${u.salary.toLocaleString('pt-BR')},00" disabled style="background:var(--gray1);">
+        </div>
+        <div class="field">
+          <label>Novo salário <span class="req">*</span></label>
+          <input type="number" placeholder="0,00" value="${(u.salary*1.1).toFixed(0)}">
+        </div>
+      </div>
+      <div class="field">
+        <label>Motivo do ajuste <span class="req">*</span></label>
+        <select>
+          <option>Selecione...</option>
+          <option>Mérito por desempenho</option>
+          <option>Equiparação interna</option>
+          <option>Dissídio coletivo</option>
+          <option>Acordo individual</option>
+        </select>
+      </div>
+    `;
+  } else if(wizState.type==='dismissal'){
+    typeFields = `
+      <div class="field">
+        <label>Tipo de desligamento <span class="req">*</span></label>
+        <select>
+          <option>Selecione...</option>
+          <option>Sem justa causa (iniciativa do empregador)</option>
+          <option>Com justa causa</option>
+          <option>Pedido de demissão</option>
+          <option>Acordo entre as partes (484-A)</option>
+          <option>Término de contrato</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Aviso prévio</label>
+        <select>
+          <option>Trabalhado (30 dias)</option>
+          <option>Indenizado</option>
+          <option>Dispensado</option>
+        </select>
+      </div>
+    `;
+  }
+
+  document.getElementById('wizardBody').innerHTML = `
+    <div style="background:var(--off); padding:11px 13px; border-radius:8px; margin-bottom:14px; display:flex; align-items:center; gap:10px;">
+      <div class="li-avatar" style="background:${u.color}; width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:600; font-size:12px;">${u.initials}</div>
+      <div style="flex:1;">
+        <div style="font-size:12.5px; font-weight:600;">${u.name}</div>
+        <div style="font-size:11px; color:var(--txt2);">${u.position} • ${u.dept} • ${u.unit}</div>
+      </div>
+      <span class="mov-type ${tm.cls}">${tm.name}</span>
+    </div>
+
+    ${typeFields}
+
+    <div class="field">
+      <label>Data de efetivação <span class="req">*</span></label>
+      <input type="date" value="2026-05-15">
+    </div>
+
+    <div class="field">
+      <label>Justificativa <span class="req">*</span></label>
+      <textarea placeholder="Descreva o contexto e a motivação da movimentação. Mínimo 30 caracteres." oninput="wizState.justification=this.value">${wizState.justification}</textarea>
+      <div class="field-help">Esta justificativa será visível para o líder direto e o RH.</div>
+    </div>
+
+    <div class="field">
+      <label>Anexos (opcional)</label>
+      <div style="border:1.5px dashed var(--gray2); border-radius:8px; padding:14px; text-align:center; color:var(--txt2); font-size:12px; cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="margin-bottom:4px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+        <div>Clique para anexar documentos (PDF, JPG)</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderStep4(){
+  const tm = getTypeMeta(wizState.type);
+  const u = visibleEmployees.find(x=>x.id===wizState.userId);
+  document.getElementById('wizardFootInfo').textContent = 'Revise antes de enviar';
+
+  document.getElementById('wizardBody').innerHTML = `
+    <div style="margin-bottom:14px; padding:11px 13px; background:var(--green2); border-radius:8px; color:var(--green); font-size:12.5px; display:flex; align-items:center; gap:9px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+      Revise os dados abaixo. Após enviar, a solicitação seguirá para o líder direto e depois para o RH.
+    </div>
+
+    <div class="detail-section">
+      <h4>Resumo da solicitação</h4>
+      <div class="detail-row"><div class="lbl">Tipo</div><div class="val"><span class="mov-type ${tm.cls}">${tm.name}</span></div></div>
+      <div class="detail-row"><div class="lbl">Colaborador</div><div class="val">${u.name}</div></div>
+      <div class="detail-row"><div class="lbl">Situação atual</div><div class="val">${u.position} • ${u.dept} • ${u.unit}</div></div>
+      <div class="detail-row"><div class="lbl">Justificativa</div><div class="val" style="line-height:1.5; font-weight:400;">${wizState.justification || '<em style="color:var(--txt3);">não preenchida</em>'}</div></div>
+    </div>
+
+    <div class="detail-section">
+      <h4>Fluxo de aprovação</h4>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot done"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="tl-content">
+            <div class="ttl">Solicitante: João Carvalho (você)</div>
+            <div class="meta">após enviar</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <div class="ttl">Aprovação do líder direto: Maria Santos</div>
+            <div class="meta">Diretora Financeira</div>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <div class="ttl">Aprovação do RH: Patrícia Mello</div>
+            <div class="meta">Coordenadora de RH</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function nextStep(){
+  if(wizState.step===1 && !wizState.type){alert('Selecione um tipo de movimentação'); return;}
+  if(wizState.step===2 && !wizState.userId){alert('Selecione um colaborador'); return;}
+  if(wizState.step<4){
+    wizState.step++;
+    renderWizardStep();
+  } else {
+    // Submeter
+    alert('Solicitação enviada! Você receberá uma notificação quando for analisada.');
+    closeWizard();
+  }
+}
+function prevStep(){
+  if(wizState.step>1){wizState.step--; renderWizardStep();}
+}
+
+/* ============= INTERAÇÕES ============= */
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+/* ============= INIT ============= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderTab('minhas');
+  renderTab('equipe');
+  renderTab('historico');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Entrar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --radius:10px; --radius-lg:14px;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{
+  font-family:'Sora',sans-serif;
+  background:#fff;
+  color:var(--txt);
+  font-size:13px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ============= LAYOUT SPLIT-SCREEN ============= */
+.login-layout{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1.1fr 1fr;
+}
+
+/* ============= PAINEL VISUAL ESQUERDO ============= */
+.visual-panel{
+  background:linear-gradient(135deg, #1A2D4F 0%, #2B4A7A 40%, #1F3A6B 70%, #6D28D9 110%);
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  padding:50px 60px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+/* Decorações de background */
+.visual-panel::before{
+  content:''; position:absolute;
+  top:-100px; right:-100px;
+  width:420px; height:420px;
+  background:radial-gradient(circle, rgba(245,131,31,.22), transparent 65%);
+  border-radius:50%;
+  pointer-events:none;
+}
+.visual-panel::after{
+  content:''; position:absolute;
+  bottom:-150px; left:-100px;
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(109,40,217,.22), transparent 60%);
+  border-radius:50%;
+  pointer-events:none;
+}
+
+/* Pontos decorativos animados */
+.dots{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.dot{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  animation:float 12s ease-in-out infinite;
+}
+.dot:nth-child(1){width:80px; height:80px; top:18%; left:75%; animation-delay:0s;}
+.dot:nth-child(2){width:120px; height:120px; top:60%; left:14%; animation-delay:-3s;}
+.dot:nth-child(3){width:50px; height:50px; top:80%; left:65%; animation-delay:-6s;}
+.dot:nth-child(4){width:30px; height:30px; top:30%; left:55%; animation-delay:-9s;}
+.dot:nth-child(5){width:90px; height:90px; top:8%; left:35%; animation-delay:-2s;}
+@keyframes float{
+  0%,100%{transform:translate(0, 0);}
+  33%{transform:translate(15px, -25px);}
+  66%{transform:translate(-12px, 20px);}
+}
+
+/* Logo no topo */
+.brand-block{
+  display:flex; align-items:center; gap:14px;
+  position:relative; z-index:1;
+}
+.brand-mark{
+  width:54px; height:54px; border-radius:14px;
+  background:linear-gradient(135deg, var(--orange), #D87013);
+  color:#fff; font-weight:700; font-size:20px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 18px rgba(245,131,31,.35);
+}
+.brand-text-block{display:flex; flex-direction:column; line-height:1.15;}
+.brand-product{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.brand-meta{font-size:11.5px; color:rgba(255,255,255,.65); margin-top:2px; text-transform:uppercase; letter-spacing:1.2px; font-weight:500;}
+
+/* Bloco central de mensagem */
+.hero-message{
+  position:relative; z-index:1;
+  max-width:480px;
+}
+.hero-tag{
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  padding:5px 12px; border-radius:11px;
+  font-size:11px; font-weight:500;
+  color:rgba(255,255,255,.85);
+  margin-bottom:16px;
+}
+.hero-tag .tag-dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 0 3px rgba(30,123,75,.3);
+  animation:pulseGreen 2s infinite;
+}
+@keyframes pulseGreen{
+  0%,100%{box-shadow:0 0 0 3px rgba(30,123,75,.3);}
+  50%{box-shadow:0 0 0 6px rgba(30,123,75,.05);}
+}
+.hero-title{
+  font-size:38px; font-weight:600;
+  letter-spacing:-.7px;
+  line-height:1.15;
+  margin-bottom:14px;
+}
+.hero-title .accent{color:var(--orange);}
+.hero-subtitle{
+  font-size:14px;
+  color:rgba(255,255,255,.78);
+  line-height:1.65;
+  margin-bottom:24px;
+}
+
+/* Stats de social proof */
+.hero-stats{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:21px;
+  padding-top:22px;
+  border-top:1px solid rgba(255,255,255,.15);
+}
+.hero-stat{}
+.hero-stat-num{
+  font-size:24px; font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:-.5px;
+  color:var(--orange);
+}
+.hero-stat-lbl{
+  font-size:10.5px;
+  color:rgba(255,255,255,.65);
+  text-transform:uppercase; letter-spacing:.4px; font-weight:500;
+  margin-top:3px;
+}
+
+/* Footer do painel */
+.visual-footer{
+  position:relative; z-index:1;
+  font-size:11px;
+  color:rgba(255,255,255,.55);
+  display:flex; justify-content:space-between; align-items:center;
+  flex-wrap:wrap; gap:11px;
+}
+.vf-tenants{display:flex; gap:11px; align-items:center;}
+.vf-tenant{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 10px; border-radius:8px;
+  background:rgba(255,255,255,.06);
+  font-size:11px;
+  color:rgba(255,255,255,.85);
+}
+.vf-tenant-dot{
+  width:7px; height:7px; border-radius:50%;
+}
+.vf-tenant-dot.gpc{background:var(--orange);}
+.vf-tenant-dot.hec{background:var(--green);}
+.visual-footer .v{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  opacity:.6;
+}
+
+/* ============= PAINEL FORMULÁRIO DIREITO ============= */
+.form-panel{
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:50px 40px;
+  position:relative;
+}
+
+.form-container{
+  width:100%;
+  max-width:380px;
+}
+
+/* Card que envolve o formulário no mobile (sem card no desktop) */
+.form-header{
+  margin-bottom:26px;
+}
+
+/* Logo mobile (oculto no desktop) */
+.mobile-brand{
+  display:none;
+  align-items:center; gap:11px;
+  margin-bottom:24px;
+}
+.mobile-brand-mark{
+  width:42px; height:42px; border-radius:11px;
+  background:linear-gradient(135deg, var(--navy3), var(--orange));
+  color:#fff; font-weight:700; font-size:15px;
+  display:flex; align-items:center; justify-content:center;
+}
+.mobile-brand-text{font-size:15px; font-weight:600;}
+.mobile-brand-meta{font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:1px;}
+
+.form-title{
+  font-size:24px; font-weight:600;
+  letter-spacing:-.4px;
+  margin-bottom:6px;
+}
+.form-subtitle{
+  font-size:13px;
+  color:var(--txt2);
+  line-height:1.55;
+}
+
+/* Tenant chip (se already selected) */
+.tenant-chip{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px;
+  background:var(--off);
+  border:1px solid var(--gray2);
+  border-radius:10px;
+  margin-bottom:20px;
+  position:relative;
+}
+.tenant-chip-logo{
+  width:32px; height:32px; border-radius:8px;
+  background:linear-gradient(135deg, var(--navy), var(--navy2));
+  color:#fff; font-weight:700; font-size:11px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.tenant-chip-info{flex:1; min-width:0;}
+.tenant-chip-name{font-size:12.5px; font-weight:600;}
+.tenant-chip-meta{font-size:11px; color:var(--txt2);}
+.tenant-chip-change{
+  font-size:10.5px; color:var(--orange);
+  font-weight:600; cursor:pointer;
+  background:none; border:none;
+  padding:5px 9px; border-radius:6px;
+  font-family:inherit;
+}
+.tenant-chip-change:hover{background:#FCE6CD;}
+
+/* Form fields */
+.field{margin-bottom:14px;}
+.field-label{
+  display:block;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt);
+  margin-bottom:6px;
+}
+.field-input-wrap{
+  position:relative;
+  display:flex; align-items:center;
+}
+.field-icon{
+  position:absolute; left:13px;
+  color:var(--txt3);
+  pointer-events:none;
+}
+.field-input{
+  width:100%;
+  padding:12px 14px 12px 40px;
+  border:1.5px solid var(--gray2);
+  border-radius:10px;
+  font-size:13.5px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field-input:focus{
+  outline:none;
+  border-color:var(--navy);
+  box-shadow:0 0 0 3px rgba(43,74,122,.1);
+}
+.field-input.has-suffix{padding-right:42px;}
+.field-input.error{
+  border-color:var(--danger);
+  box-shadow:0 0 0 3px rgba(192,57,43,.1);
+}
+
+.field-suffix{
+  position:absolute; right:12px;
+  background:transparent; border:none;
+  color:var(--txt3); cursor:pointer;
+  padding:5px;
+  display:flex;
+}
+.field-suffix:hover{color:var(--txt);}
+
+.field-error{
+  display:none;
+  font-size:11.5px;
+  color:var(--danger);
+  margin-top:5px;
+  align-items:center; gap:5px;
+}
+.field-error.show{display:flex;}
+
+/* Auth method tabs (username vs CPF) */
+.auth-tabs{
+  display:flex; gap:3px;
+  background:var(--off);
+  border-radius:9px;
+  padding:3px;
+  margin-bottom:14px;
+}
+.auth-tab{
+  flex:1;
+  padding:8px 12px;
+  background:transparent; border:none; cursor:pointer;
+  border-radius:7px;
+  font-size:11.5px; font-weight:500;
+  color:var(--txt2);
+  font-family:inherit;
+  display:inline-flex; align-items:center; justify-content:center; gap:5px;
+}
+.auth-tab.active{
+  background:#fff;
+  color:var(--navy);
+  box-shadow:0 1px 3px rgba(26,45,79,.08);
+  font-weight:600;
+}
+.auth-tab svg{width:13px; height:13px;}
+
+/* Form footer (lembrar / esqueci) */
+.form-extras{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+  gap:11px;
+}
+.checkbox-wrap{
+  display:flex; align-items:center; gap:8px;
+  cursor:pointer;
+  font-size:12px;
+  color:var(--txt2);
+}
+.checkbox-wrap input{display:none;}
+.checkbox-wrap .check{
+  width:16px; height:16px; border-radius:4px;
+  border:1.5px solid var(--gray3);
+  display:flex; align-items:center; justify-content:center;
+  background:#fff;
+  transition:all .12s;
+}
+.checkbox-wrap input:checked + .check{
+  background:var(--navy); border-color:var(--navy);
+}
+.checkbox-wrap input:checked + .check::after{
+  content:''; width:8px; height:5px;
+  border-left:2px solid #fff; border-bottom:2px solid #fff;
+  transform:rotate(-45deg);
+  margin-bottom:2px;
+}
+.forgot-link{
+  font-size:12px; color:var(--orange);
+  font-weight:500; cursor:pointer;
+  text-decoration:none;
+}
+.forgot-link:hover{text-decoration:underline;}
+
+/* Botão principal */
+.submit-btn{
+  width:100%;
+  padding:13px 20px;
+  background:linear-gradient(135deg, var(--navy), var(--navy2));
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:13.5px; font-weight:600;
+  cursor:pointer;
+  font-family:inherit;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  box-shadow:0 6px 14px rgba(43,74,122,.25);
+  transition:all .15s;
+  margin-bottom:14px;
+}
+.submit-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 18px rgba(43,74,122,.35);
+}
+.submit-btn:active{transform:translateY(0);}
+.submit-btn:disabled{
+  opacity:.6; cursor:not-allowed; transform:none; box-shadow:none;
+}
+
+/* Divisor */
+.divider{
+  display:flex; align-items:center; gap:11px;
+  margin:18px 0;
+  font-size:11px;
+  color:var(--txt3);
+  text-transform:uppercase; letter-spacing:.5px; font-weight:500;
+}
+.divider::before, .divider::after{
+  content:''; flex:1;
+  height:1px; background:var(--gray2);
+}
+
+/* Alternative auth (SSO) */
+.sso-buttons{
+  display:flex; flex-direction:column; gap:8px;
+}
+.sso-btn{
+  width:100%;
+  padding:11px 16px;
+  background:#fff;
+  border:1.5px solid var(--gray2);
+  border-radius:10px;
+  font-size:12.5px; font-weight:500;
+  cursor:pointer;
+  font-family:inherit;
+  color:var(--txt);
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  transition:all .12s;
+}
+.sso-btn:hover{
+  background:var(--off);
+  border-color:var(--gray3);
+}
+.sso-btn .sso-icon{
+  width:17px; height:17px;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* Help footer */
+.help-footer{
+  text-align:center;
+  margin-top:24px;
+  padding-top:18px;
+  border-top:1px solid var(--gray1);
+  font-size:11.5px;
+  color:var(--txt2);
+  line-height:1.55;
+}
+.help-footer .help-link{
+  color:var(--navy); font-weight:500; cursor:pointer;
+  text-decoration:none;
+}
+.help-footer .help-link:hover{text-decoration:underline;}
+
+/* Privacy footer */
+.privacy-footer{
+  position:absolute;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:10.5px;
+  color:var(--txt3);
+  text-align:center;
+  width:100%;
+  max-width:380px;
+  padding:0 30px;
+  line-height:1.55;
+}
+.privacy-footer a{color:var(--txt2); text-decoration:none;}
+.privacy-footer a:hover{color:var(--navy); text-decoration:underline;}
+.privacy-footer .sep{margin:0 5px;}
+
+/* ============= ALERT BAR (mensagem ao usuário) ============= */
+.alert-bar{
+  display:none;
+  padding:11px 13px;
+  border-radius:9px;
+  font-size:11.5px;
+  margin-bottom:16px;
+  align-items:flex-start; gap:9px;
+  line-height:1.5;
+}
+.alert-bar.show{display:flex; animation:slideDown .25s;}
+@keyframes slideDown{
+  from{opacity:0; transform:translateY(-5px);}
+  to{opacity:1; transform:translateY(0);}
+}
+.alert-bar svg{flex-shrink:0; margin-top:1px;}
+.alert-bar.danger{background:var(--danger2); color:var(--danger); border-left:3px solid var(--danger);}
+.alert-bar.warning{background:var(--amber2); color:var(--amber); border-left:3px solid var(--orange);}
+.alert-bar.info{background:#E8EFF8; color:var(--navy); border-left:3px solid var(--navy);}
+
+/* ============= RESPONSIVE ============= */
+@media (max-width: 900px){
+  .login-layout{grid-template-columns:1fr;}
+  .visual-panel{display:none;}
+  .form-panel{
+    background:linear-gradient(135deg, #F4F7FC 0%, #fff 50%);
+    padding:30px 22px;
+    min-height:100vh;
+  }
+  .form-container{
+    max-width:420px;
+    background:#fff;
+    border-radius:18px;
+    padding:30px 28px;
+    box-shadow:0 8px 30px rgba(26,45,79,.08);
+  }
+  .mobile-brand{display:flex;}
+  .privacy-footer{position:static; transform:none; margin-top:18px; padding-top:18px; border-top:1px solid var(--gray1);}
+}
+
+@media (max-width: 480px){
+  .form-panel{padding:20px 16px; background:#fff;}
+  .form-container{
+    box-shadow:none;
+    padding:0;
+    background:transparent;
+  }
+  .form-title{font-size:20px;}
+  .privacy-footer{margin:18px auto 0; max-width:100%;}
+}
+
+/* Telas grandes */
+@media (min-width: 1400px){
+  .visual-panel{padding:60px 80px;}
+  .hero-title{font-size:42px;}
+  .hero-subtitle{font-size:14.5px;}
+  .form-container{max-width:400px;}
+}
+</style>
+</head>
+<body>
+
+<div class="login-layout">
+
+  <!-- ============= PAINEL VISUAL (DESKTOP) ============= -->
+  <aside class="visual-panel">
+    <div class="dots">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="brand-block">
+      <div class="brand-mark">R2</div>
+      <div class="brand-text-block">
+        <span class="brand-product">R2 People</span>
+        <span class="brand-meta">Gestão de Pessoas</span>
+      </div>
+    </div>
+
+    <div class="hero-message">
+      <div class="hero-tag">
+        <span class="tag-dot"></span>
+        Sistema disponível
+      </div>
+      <h1 class="hero-title">
+        Pessoas, <span class="accent">avaliadas</span> e reconhecidas como deveriam ser.
+      </h1>
+      <p class="hero-subtitle">
+        Avaliação de desempenho, feedback contínuo e reconhecimento público em uma plataforma feita para empresas com estruturas reais · incluindo terceirização e múltiplos empregadores.
+      </p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">367</div>
+          <div class="hero-stat-lbl">Colaboradores ativos</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">14</div>
+          <div class="hero-stat-lbl">Unidades</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">4</div>
+          <div class="hero-stat-lbl">Empregadores</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="visual-footer">
+      <div class="vf-tenants">
+        <span class="vf-tenant"><span class="vf-tenant-dot gpc"></span>GPC</span>
+        <span class="vf-tenant"><span class="vf-tenant-dot hec"></span>HEC</span>
+      </div>
+      <span class="v">© R2 Soluções · v0.1.0</span>
+    </div>
+  </aside>
+
+  <!-- ============= PAINEL FORMULÁRIO ============= -->
+  <main class="form-panel">
+
+    <div class="form-container">
+
+      <!-- Brand mobile (visível só no mobile) -->
+      <div class="mobile-brand">
+        <div class="mobile-brand-mark">R2</div>
+        <div>
+          <div class="mobile-brand-text">R2 People</div>
+          <div class="mobile-brand-meta">GPC</div>
+        </div>
+      </div>
+
+      <div class="form-header">
+        <h2 class="form-title">Bem-vindo de volta</h2>
+        <p class="form-subtitle">Entre com seu usuário e senha para acessar sua área.</p>
+      </div>
+
+      <!-- Tenant pré-selecionado (vindo do subdomínio dash.solucoesr2.com.br/gpc) -->
+      <div class="tenant-chip">
+        <div class="tenant-chip-logo">GPC</div>
+        <div class="tenant-chip-info">
+          <div class="tenant-chip-name">Grupo Pinto Cerqueira</div>
+          <div class="tenant-chip-meta">Você está acessando o tenant da empresa</div>
+        </div>
+        <button class="tenant-chip-change" onclick="alert('Em produção: redireciona para seleção de tenant')">Trocar</button>
+      </div>
+
+      <!-- Alert oculto (aparece em casos como "senha errada" ou "primeiro acesso") -->
+      <div class="alert-bar info" style="display:flex;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span><strong>Primeiro acesso?</strong> Use a senha temporária que o RH te enviou. Você criará uma nova logo depois.</span>
+      </div>
+
+      <!-- Auth method tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-method="username">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2"/></svg>
+          Usuário
+        </button>
+        <button class="auth-tab" data-method="cpf">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>
+          CPF
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form id="loginForm" onsubmit="event.preventDefault(); doLogin();">
+
+        <div class="field">
+          <label class="field-label" for="username" id="userLabel">Usuário</label>
+          <div class="field-input-wrap">
+            <span class="field-icon" id="userIcon">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2"/></svg>
+            </span>
+            <input type="text" class="field-input" id="username" placeholder="seu.usuario" autocomplete="username" autofocus>
+          </div>
+          <div class="field-error" id="userError">
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <span>Usuário ou senha incorretos. Tente novamente.</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="password">Senha</label>
+          <div class="field-input-wrap">
+            <span class="field-icon">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </span>
+            <input type="password" class="field-input has-suffix" id="password" placeholder="Sua senha" autocomplete="current-password">
+            <button class="field-suffix" type="button" onclick="togglePassword()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" id="eyeIcon"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-extras">
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="remember" checked>
+            <span class="check"></span>
+            <span>Lembrar de mim</span>
+          </label>
+          <a class="forgot-link" onclick="forgotPassword()">Esqueci minha senha</a>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          Entrar
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+
+      <!-- SSO opcional -->
+      <div class="divider">ou continue com</div>
+
+      <div class="sso-buttons">
+        <button class="sso-btn" onclick="alert('Em produção: redireciona para Microsoft OAuth para empresas com Microsoft 365')">
+          <span class="sso-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#F25022" d="M11 11H2V2h9z"/><path fill="#7FBA00" d="M22 11h-9V2h9z"/><path fill="#00A4EF" d="M11 22H2v-9h9z"/><path fill="#FFB900" d="M22 22h-9v-9h9z"/></svg>
+          </span>
+          Continuar com Microsoft
+        </button>
+      </div>
+
+      <!-- Help footer -->
+      <div class="help-footer">
+        Problemas para entrar?<br>
+        Fale com o RH da sua empresa ou <a class="help-link">abra um chamado para o R2</a>.
+      </div>
+
+    </div>
+
+    <!-- Privacy footer -->
+    <div class="privacy-footer">
+      <a>Política de privacidade</a>
+      <span class="sep">·</span>
+      <a>Termos de uso</a>
+      <span class="sep">·</span>
+      <a>LGPD</a>
+      <br>
+      <span style="margin-top:5px; display:inline-block;">© 2026 R2 Soluções Empresariais · Feira de Santana, BA</span>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function togglePassword(){
+  const input = document.getElementById('password');
+  const icon = document.getElementById('eyeIcon');
+  if(input.type === 'password'){
+    input.type = 'text';
+    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  } else {
+    input.type = 'password';
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+}
+
+document.querySelectorAll('.auth-tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.auth-tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+
+    const method = t.dataset.method;
+    const label = document.getElementById('userLabel');
+    const input = document.getElementById('username');
+    const icon = document.getElementById('userIcon');
+
+    if(method === 'cpf'){
+      label.textContent = 'CPF';
+      input.placeholder = '000.000.000-00';
+      input.type = 'tel';
+      input.setAttribute('inputmode', 'numeric');
+      icon.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h10M7 16h6"/></svg>';
+    } else {
+      label.textContent = 'Usuário';
+      input.placeholder = 'seu.usuario';
+      input.type = 'text';
+      input.removeAttribute('inputmode');
+      icon.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2"/></svg>';
+    }
+
+    input.value = '';
+    document.getElementById('userError').classList.remove('show');
+    input.focus();
+  });
+});
+
+function doLogin(){
+  const btn = document.getElementById('submitBtn');
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const errorEl = document.getElementById('userError');
+
+  if(!username || !password){
+    errorEl.querySelector('span').textContent = 'Preencha usuário e senha para continuar.';
+    errorEl.classList.add('show');
+    return;
+  }
+
+  // Loading state
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="animation:spin .8s linear infinite;"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Entrando...';
+
+  // Adiciona keyframes de spin (se não existir)
+  if(!document.getElementById('spinKeyframes')){
+    const style = document.createElement('style');
+    style.id = 'spinKeyframes';
+    style.textContent = '@keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}';
+    document.head.appendChild(style);
+  }
+
+  // Demo: simula resposta após 1.2s
+  setTimeout(()=>{
+    btn.disabled = false;
+    btn.innerHTML = 'Entrar <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    alert('Em produção:\n1. Chama supabase.auth.signInWithPassword({email, password})\n2. Em sucesso → verifica must_change_pwd\n3. Se TRUE → /onboarding\n4. Se FALSE → /home');
+  }, 1200);
+}
+
+function forgotPassword(){
+  alert('Em produção:\n1. Modal pede usuário/CPF/email\n2. Sistema envia link de redefinição\n3. Audit log registra solicitação\n4. Token válido por 1h');
+}
+</script>
+</body>
+</html>

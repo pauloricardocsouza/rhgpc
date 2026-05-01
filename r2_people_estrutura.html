@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Estrutura Organizacional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-modal:0 20px 60px rgba(26,45,79,.3);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; transition:all .15s; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500;}
+.icon-btn{width:36px; height:36px; background:transparent; border:none; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; position:relative; color:var(--txt2);}
+.icon-btn:hover{background:var(--gray1);}
+.icon-btn .badge{position:absolute; top:6px; right:6px; width:16px; height:16px; background:var(--red); border-radius:50%; font-size:9.5px; font-weight:600; color:#fff; display:flex; align-items:center; justify-content:center; border:2px solid #fff;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-chip:hover{background:var(--gray1);}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+/* Botões */
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-danger{background:#fff; color:var(--danger); border:1px solid var(--danger2); padding:8px 13px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-danger:hover{background:var(--danger2);}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:14px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.green::before{background:var(--green);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:24px; font-weight:600; margin-top:5px; letter-spacing:-.5px;}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; background:#fff; padding:4px; border-radius:var(--radius); box-shadow:var(--shadow-card); margin-bottom:14px; overflow-x:auto;}
+.tab{padding:9px 16px; font-size:12.5px; font-weight:500; color:var(--txt2); background:transparent; border:none; cursor:pointer; border-radius:7px; font-family:inherit; transition:all .15s; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
+.tab:hover{background:var(--gray1); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab svg{width:14px; height:14px;}
+.tab .count{background:rgba(255,255,255,.2); padding:1px 7px; border-radius:10px; font-size:10.5px; font-weight:600; font-family:'JetBrains Mono',monospace;}
+.tab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* Toolbar (busca + filtros) */
+.toolbar{
+  display:flex; gap:9px; align-items:center;
+  background:#fff; padding:10px 12px; border-radius:var(--radius);
+  box-shadow:var(--shadow-card); margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.search-box{
+  flex:1; min-width:200px;
+  position:relative;
+}
+.search-box input{
+  width:100%;
+  padding:8px 12px 8px 34px;
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  font-size:12.5px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+}
+.search-box input:focus{outline:none; border-color:var(--navy);}
+.search-box svg{position:absolute; left:11px; top:50%; transform:translateY(-50%); color:var(--txt3);}
+
+.toolbar-filter{
+  display:flex; align-items:center; gap:7px;
+  padding:7px 11px; background:var(--gray1); border-radius:7px;
+  font-size:12px; cursor:pointer;
+  transition:background .15s;
+}
+.toolbar-filter:hover{background:var(--gray2);}
+.toolbar-filter .fl-label{color:var(--txt2);}
+.toolbar-filter strong{font-weight:600;}
+.toolbar-filter svg{width:13px; height:13px; color:var(--txt2);}
+
+.view-switch{
+  display:flex; background:var(--gray1); border-radius:7px; padding:3px;
+}
+.view-switch button{
+  padding:5px 11px; font-size:11.5px; background:transparent; border:none;
+  border-radius:5px; cursor:pointer; color:var(--txt2); font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.view-switch button.active{background:#fff; color:var(--txt); box-shadow:0 1px 2px rgba(0,0,0,.06);}
+.view-switch svg{width:13px; height:13px;}
+
+/* ============= TABELA ============= */
+.tbl-card{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); overflow:hidden;}
+.tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+.tbl thead{background:var(--off); position:sticky; top:0; z-index:1;}
+.tbl th{
+  text-align:left; padding:11px 12px;
+  font-size:10.5px; text-transform:uppercase; letter-spacing:.5px;
+  color:var(--txt2); border-bottom:1px solid var(--gray2); font-weight:600;
+  white-space:nowrap;
+}
+.tbl th.center{text-align:center;}
+.tbl th.right{text-align:right;}
+.tbl td{padding:11px 12px; border-bottom:1px solid var(--gray1); color:var(--txt); vertical-align:middle;}
+.tbl td.center{text-align:center;}
+.tbl td.right{text-align:right;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr.row{cursor:pointer; transition:background .12s;}
+.tbl tr.row:hover{background:var(--off);}
+
+.cell-name{display:flex; align-items:center; gap:11px;}
+.cell-icon{
+  width:34px; height:34px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; font-weight:600; font-size:14px;
+}
+.ci-matriz{background:#1A2D4F; color:#fff;}
+.ci-filial{background:var(--navy); color:#fff;}
+.ci-cd{background:var(--purple); color:#fff;}
+.ci-loja{background:var(--orange); color:#fff;}
+.ci-escr{background:var(--green); color:#fff;}
+.ci-dept{background:var(--navy3); color:#fff;}
+.ci-cargo{background:var(--amber); color:#fff;}
+
+.cell-strong{font-size:13px; font-weight:600; color:var(--txt);}
+.cell-meta{font-size:11px; color:var(--txt2); margin-top:1px; font-family:'JetBrains Mono',monospace;}
+.cell-detail{font-size:11.5px; color:var(--txt2);}
+
+.tag{
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 9px; border-radius:11px;
+  font-size:10.5px; font-weight:500;
+  white-space:nowrap;
+}
+.tag-active{background:var(--green2); color:var(--green);}
+.tag-inactive{background:var(--gray1); color:var(--txt2);}
+.tag-blue{background:#E8EFF8; color:var(--navy);}
+.tag-purple{background:#F0E6FA; color:var(--purple);}
+.tag-orange{background:#FCE6CD; color:var(--amber);}
+.tag-green{background:var(--green2); color:var(--green);}
+.tag-amber{background:var(--amber2); color:var(--amber);}
+
+.tag-level{font-family:'JetBrains Mono',monospace; font-weight:600;}
+
+.row-actions{display:flex; gap:5px; justify-content:flex-end;}
+.btn-icon{
+  width:30px; height:30px; border-radius:6px;
+  background:var(--gray1); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--txt2);
+}
+.btn-icon:hover{background:var(--gray2); color:var(--txt);}
+.btn-icon.danger:hover{background:var(--danger2); color:var(--danger);}
+
+/* ============= TREEVIEW (hierarquia) ============= */
+.tree{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); padding:10px;}
+.tree-node{}
+.tree-row{
+  display:flex; align-items:center; gap:9px;
+  padding:8px 9px;
+  border-radius:7px;
+  cursor:pointer;
+  transition:background .12s;
+}
+.tree-row:hover{background:var(--off);}
+.tree-toggle{
+  width:18px; height:18px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  color:var(--txt2);
+  transition:transform .2s;
+}
+.tree-toggle.open{transform:rotate(90deg);}
+.tree-toggle.empty{visibility:hidden;}
+.tree-row .cell-icon{width:28px; height:28px; font-size:12px;}
+.tree-info{flex:1; min-width:0;}
+.tree-info .nm{font-size:12.5px; font-weight:600; color:var(--txt); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.tree-info .meta{font-size:11px; color:var(--txt2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.tree-meta{font-size:11px; color:var(--txt3); display:flex; gap:11px; flex-shrink:0;}
+.tree-meta strong{color:var(--txt); font-family:'JetBrains Mono',monospace;}
+.tree-children{padding-left:24px; display:none;}
+.tree-children.open{display:block;}
+
+/* ============= MODAL ============= */
+.modal-overlay{
+  display:none; position:fixed; inset:0;
+  background:rgba(26,45,79,.55);
+  z-index:100; align-items:center; justify-content:center;
+  padding:20px;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.modal-overlay.show{display:flex; animation:fadeIn .2s;}
+.modal{
+  background:#fff; border-radius:var(--radius-lg);
+  width:100%; max-width:720px; max-height:90vh;
+  display:flex; flex-direction:column;
+  box-shadow:var(--shadow-modal);
+  overflow:hidden;
+}
+.modal-head{
+  padding:18px 22px;
+  border-bottom:1px solid var(--gray1);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.modal-title{font-size:15px; font-weight:600;}
+.modal-sub{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+.modal-close{width:32px; height:32px; border-radius:7px; background:var(--gray1); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.modal-close:hover{background:var(--gray2);}
+.modal-body{flex:1; overflow-y:auto; padding:18px 22px;}
+.modal-foot{padding:14px 22px; border-top:1px solid var(--gray1); display:flex; justify-content:space-between; align-items:center; gap:10px; background:var(--off);}
+.modal-foot-left{font-size:11.5px; color:var(--txt2);}
+
+/* Form */
+.form-section{margin-bottom:18px;}
+.form-section h4{
+  font-size:11.5px; color:var(--txt2);
+  text-transform:uppercase; letter-spacing:.5px;
+  font-weight:600; margin-bottom:10px;
+  padding-bottom:6px; border-bottom:1px solid var(--gray1);
+}
+.field{margin-bottom:13px;}
+.field label{display:block; font-size:11.5px; color:var(--txt2); margin-bottom:5px; font-weight:500;}
+.field label .req{color:var(--danger);}
+.field input[type=text], .field input[type=date], .field input[type=number], .field input[type=email], .field input[type=tel], .field select, .field textarea{
+  width:100%;
+  padding:9px 12px;
+  border:1px solid var(--gray2);
+  border-radius:7px;
+  font-size:13px;
+  font-family:inherit;
+  color:var(--txt);
+  background:#fff;
+}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--navy);}
+.field input:disabled{background:var(--gray1); color:var(--txt2);}
+.field textarea{resize:vertical; min-height:70px;}
+.field-help{font-size:10.5px; color:var(--txt3); margin-top:4px;}
+.field-grid-2{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+.field-grid-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:11px;}
+.field-grid-2-1{display:grid; grid-template-columns:2fr 1fr; gap:11px;}
+
+/* Toggle switch */
+.switch{
+  display:inline-flex; align-items:center; gap:8px;
+  cursor:pointer;
+}
+.switch-track{
+  width:36px; height:20px; background:var(--gray2); border-radius:11px;
+  position:relative; transition:background .2s;
+  flex-shrink:0;
+}
+.switch-track::after{
+  content:''; position:absolute;
+  top:2px; left:2px;
+  width:16px; height:16px;
+  background:#fff; border-radius:50%;
+  transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.switch input{display:none;}
+.switch input:checked + .switch-track{background:var(--green);}
+.switch input:checked + .switch-track::after{transform:translateX(16px);}
+.switch-label{font-size:12.5px; color:var(--txt);}
+
+/* Salário range visual */
+.salary-range{
+  background:var(--off); border-radius:8px; padding:11px 13px; margin-top:6px;
+}
+.salary-range-bar{
+  height:8px; background:var(--gray2); border-radius:4px;
+  position:relative; margin:11px 0 6px;
+}
+.salary-range-fill{
+  position:absolute; height:100%; left:20%; right:20%;
+  background:linear-gradient(90deg, var(--green2), var(--green));
+  border-radius:4px;
+}
+.salary-range-marker{
+  position:absolute; top:-2px;
+  width:12px; height:12px;
+  background:#fff; border:2px solid var(--green);
+  border-radius:50%;
+}
+.salary-range-labels{
+  display:flex; justify-content:space-between;
+  font-size:10.5px; color:var(--txt2);
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* Empty state */
+.empty{background:#fff; border-radius:var(--radius); padding:40px 20px; text-align:center; box-shadow:var(--shadow-card);}
+.empty svg{color:var(--gray3); margin-bottom:10px;}
+.empty h3{font-size:14px; margin-bottom:4px;}
+.empty p{font-size:12px; color:var(--txt2);}
+
+/* Banner de import */
+.import-banner{
+  display:flex; align-items:center; gap:11px;
+  background:#E8EFF8;
+  padding:11px 14px; border-radius:var(--radius);
+  margin-bottom:12px;
+  font-size:12px;
+  border-left:3px solid var(--navy);
+}
+.import-banner svg{color:var(--navy); flex-shrink:0;}
+.import-banner strong{font-weight:600;}
+.import-banner span{color:var(--txt2);}
+.import-banner .actions{margin-left:auto; display:flex; gap:8px; flex-shrink:0;}
+.import-banner button{
+  padding:6px 11px; border-radius:6px; border:1px solid var(--navy3);
+  background:#fff; color:var(--navy); font-size:11.5px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+}
+.import-banner button:hover{background:var(--navy); color:#fff;}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .field-grid-2, .field-grid-3, .field-grid-2-1{grid-template-columns:1fr;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .company-name, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 40px;}
+  .page-header h1{font-size:18px;}
+  .page-header{flex-direction:column; align-items:stretch;}
+
+  /* Tabela responsiva: vira lista de cards */
+  .tbl thead{display:none;}
+  .tbl, .tbl tbody, .tbl tr, .tbl td{display:block; width:100%;}
+  .tbl tr.row{padding:11px 13px; border-bottom:1px solid var(--gray1);}
+  .tbl tr.row:last-child{border-bottom:none;}
+  .tbl td{padding:3px 0; border:none;}
+  .tbl td[data-label]::before{
+    content:attr(data-label) ': ';
+    font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.3px; font-weight:600;
+    margin-right:4px;
+  }
+  .tbl td.cell-main::before{display:none;}
+  .tbl td.cell-actions{display:flex; justify-content:flex-end; padding-top:8px;}
+  .tbl td.cell-actions::before{display:none;}
+
+  .modal{max-height:100vh; height:100vh; max-width:100%; border-radius:0;}
+
+  .toolbar{padding:8px;}
+  .view-switch button span{display:none;}
+}
+@media (max-width: 420px){
+  .tab span{display:none;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar, .modal-body::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+.tabs::-webkit-scrollbar{height:0;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a4 4 0 014-4h8a4 4 0 014 4v2"/></svg>Meu perfil</a>
+      <div class="sidebar-section">Avaliações</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Avaliações</a>
+      <div class="sidebar-section">Feedback</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedbacks</a>
+      <div class="sidebar-section">Gestor</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Minha equipe</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9M12 19a7 7 0 110-14"/></svg>Movimentações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <div class="sidebar-section">Administração</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>Estrutura</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Estrutura <strong>Organizacional</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <button class="icon-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+      <span class="badge">3</span>
+    </button>
+    <div class="user-chip">
+      <div class="user-avatar">RS</div>
+      <div class="user-info">
+        <span class="user-name">Ricardo Silva</span>
+        <span class="user-role">Admin RH</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Estrutura Organizacional</h1>
+        <p>Filiais, departamentos e cargos do GPC</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Exportar
+        </button>
+        <button class="btn-primary" onclick="openImport()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          Importar planilha
+        </button>
+      </div>
+    </div>
+
+    <!-- Banner: lembrete de que tudo pode vir do CSV -->
+    <div class="import-banner">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      <div>
+        <strong>Estrutura importada da implantação inicial</strong><br>
+        <span>Tudo abaixo pode ser editado, complementado ou recriado a qualquer momento. Use o botão "Importar planilha" para atualização em lote.</span>
+      </div>
+      <div class="actions">
+        <button>Baixar modelo</button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="filiais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>
+        <span>Filiais</span>
+        <span class="count">14</span>
+      </button>
+      <button class="tab" data-tab="departamentos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2zM22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        <span>Departamentos</span>
+        <span class="count">15</span>
+      </button>
+      <button class="tab" data-tab="cargos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+        <span>Cargos</span>
+        <span class="count">28</span>
+      </button>
+    </div>
+
+    <!-- ============= TAB: FILIAIS ============= -->
+    <div class="tab-panel active" data-panel="filiais">
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Total de filiais</div><div class="kpi-value">14</div><div class="kpi-sub">12 ativas, 2 desativadas</div></div>
+        <div class="kpi green"><div class="kpi-label">Lojas</div><div class="kpi-value">8</div><div class="kpi-sub">Varejo + atacado</div></div>
+        <div class="kpi purple"><div class="kpi-label">CDs</div><div class="kpi-value">2</div><div class="kpi-sub">Centros de distribuição</div></div>
+        <div class="kpi amber"><div class="kpi-label">Colaboradores</div><div class="kpi-value">367</div><div class="kpi-sub">Distribuídos nas filiais</div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar filial pelo nome ou código..." oninput="filterUnits(this.value)">
+        </div>
+        <div class="toolbar-filter">
+          <span class="fl-label">Tipo:</span><strong>Todos</strong>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="toolbar-filter">
+          <span class="fl-label">Status:</span><strong>Ativas</strong>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="view-switch">
+          <button class="active" onclick="setView('filiais','list', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            <span>Lista</span>
+          </button>
+          <button onclick="setView('filiais','tree', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h7v8H3zM14 4h7v6h-7zM14 14h7v6h-7zM10 12h4M14 7H10V4"/></svg>
+            <span>Hierarquia</span>
+          </button>
+        </div>
+        <button class="btn-primary" onclick="openModal('unit')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Nova filial
+        </button>
+      </div>
+
+      <div id="filiais-list" class="tbl-card">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Filial</th>
+              <th>Tipo</th>
+              <th>Cidade</th>
+              <th>CNPJ</th>
+              <th class="center">Colab.</th>
+              <th class="center">Status</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="unitsTbody"></tbody>
+        </table>
+      </div>
+
+      <div id="filiais-tree" class="tree" style="display:none;">
+        <div id="unitsTree"></div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: DEPARTAMENTOS ============= -->
+    <div class="tab-panel" data-panel="departamentos">
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Departamentos</div><div class="kpi-value">15</div><div class="kpi-sub">Todos ativos</div></div>
+        <div class="kpi green"><div class="kpi-label">Maior depto</div><div class="kpi-value">91</div><div class="kpi-sub">Cestão Loja 1 (operações)</div></div>
+        <div class="kpi purple"><div class="kpi-label">Liderados/líder</div><div class="kpi-value">7,7</div><div class="kpi-sub">Span de controle médio</div></div>
+        <div class="kpi amber"><div class="kpi-label">Sem líder</div><div class="kpi-value">2</div><div class="kpi-sub">Necessitam atribuição</div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar departamento..." oninput="filterDepts(this.value)">
+        </div>
+        <div class="toolbar-filter">
+          <span class="fl-label">Filial:</span><strong>Todas</strong>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="view-switch">
+          <button class="active" onclick="setView('departamentos','list', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            <span>Lista</span>
+          </button>
+          <button onclick="setView('departamentos','tree', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h7v8H3zM14 4h7v6h-7zM14 14h7v6h-7zM10 12h4M14 7H10V4"/></svg>
+            <span>Hierarquia</span>
+          </button>
+        </div>
+        <button class="btn-primary" onclick="openModal('dept')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Novo departamento
+        </button>
+      </div>
+
+      <div id="departamentos-list" class="tbl-card">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Departamento</th>
+              <th>Líder</th>
+              <th>Filial</th>
+              <th class="center">Colab.</th>
+              <th class="center">Sub-deptos</th>
+              <th class="center">Status</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="deptsTbody"></tbody>
+        </table>
+      </div>
+
+      <div id="departamentos-tree" class="tree" style="display:none;">
+        <div id="deptsTree"></div>
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: CARGOS ============= -->
+    <div class="tab-panel" data-panel="cargos">
+
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Cargos cadastrados</div><div class="kpi-value">28</div><div class="kpi-sub">26 ativos</div></div>
+        <div class="kpi amber"><div class="kpi-label">Faixa salarial média</div><div class="kpi-value">R$ 3.420</div><div class="kpi-sub">Média ponderada</div></div>
+        <div class="kpi green"><div class="kpi-label">Operacional</div><div class="kpi-value">14</div><div class="kpi-sub">Cargos de linha de frente</div></div>
+        <div class="kpi purple"><div class="kpi-label">Liderança</div><div class="kpi-value">5</div><div class="kpi-sub">Coord. + Gerentes + Diretores</div></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Buscar cargo..." oninput="filterPositions(this.value)">
+        </div>
+        <div class="toolbar-filter">
+          <span class="fl-label">Nível:</span><strong>Todos</strong>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <div class="toolbar-filter">
+          <span class="fl-label">Departamento:</span><strong>Todos</strong>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+        <button class="btn-primary" onclick="openModal('position')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          Novo cargo
+        </button>
+      </div>
+
+      <div class="tbl-card">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Cargo</th>
+              <th>Nível</th>
+              <th>Departamento</th>
+              <th>CBO</th>
+              <th class="right">Faixa salarial</th>
+              <th class="center">Colab.</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="positionsTbody"></tbody>
+        </table>
+      </div>
+
+    </div>
+
+  </main>
+</div>
+
+<!-- ============= MODAL UNIVERSAL ============= -->
+<div class="modal-overlay" id="entityModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="emTitle">Nova entidade</div>
+        <div class="modal-sub" id="emSub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="emBody"></div>
+    <div class="modal-foot">
+      <div class="modal-foot-left">Os campos com <span style="color:var(--danger)">*</span> são obrigatórios</div>
+      <div style="display:flex; gap:9px;">
+        <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn-primary" onclick="saveEntity()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============= MOCK DATA ============= */
+
+// Filiais (units) · 14 unidades do GPC
+const units = [
+  {id:'u1',  code:'GPC-MAT',  name:'GPC - Matriz Administrativa',  type:'matriz', parentId:null,  cnpj:'12.345.678/0001-90', city:'Feira de Santana', state:'BA', address:'Av. Sampaio, 1000', phone:'(75) 3221-0000', employees:24,  manager:'Maria Santos', active:true,  openedAt:'2008-03-15'},
+  {id:'u2',  code:'ATP-VAR',  name:'ATP - Varejo',                 type:'loja',   parentId:'u1',  cnpj:'12.345.678/0002-71', city:'Feira de Santana', state:'BA', address:'R. das Flores, 200',  phone:'(75) 3221-0001', employees:78,  manager:'Roberto Almeida', active:true, openedAt:'2010-08-20'},
+  {id:'u3',  code:'ATP-ATA',  name:'ATP - Atacado',                type:'loja',   parentId:'u1',  cnpj:'12.345.678/0003-52', city:'Feira de Santana', state:'BA', address:'R. das Flores, 500',  phone:'(75) 3221-0002', employees:42,  manager:'Carlos Augusto', active:true, openedAt:'2012-02-10'},
+  {id:'u4',  code:'CES-L1',   name:'Cestão Loja 1',                type:'loja',   parentId:null,  cnpj:'23.456.789/0001-80', city:'Feira de Santana', state:'BA', address:'Av. Eduardo Fróes, 50',phone:'(75) 3221-0003', employees:91,  manager:'Sandra Gomes', active:true,  openedAt:'2014-06-01'},
+  {id:'u5',  code:'CES-INH',  name:'Cestão Inhambupe',             type:'loja',   parentId:null,  cnpj:'23.456.789/0002-61', city:'Inhambupe',         state:'BA', address:'Pç. Central, 10',     phone:'(75) 3431-0001', employees:46,  manager:'Helena Ribeiro', active:true, openedAt:'2018-11-15'},
+  {id:'u6',  code:'ATP-SBF',  name:'ATP Sr. Bonfim',               type:'loja',   parentId:'u1',  cnpj:'12.345.678/0004-33', city:'Senhor do Bonfim',  state:'BA', address:'R. Pres. Vargas, 80', phone:'(74) 3541-0001', employees:28,  manager:'Roberto Almeida', active:true, openedAt:'2020-04-12'},
+  {id:'u7',  code:'CD-FSA',   name:'CD Logística Feira',           type:'cd',     parentId:'u1',  cnpj:'12.345.678/0005-14', city:'Feira de Santana', state:'BA', address:'Distrito Industrial, 1000', phone:'(75) 3221-0010', employees:37, manager:'João Carvalho CD', active:true, openedAt:'2015-03-20'},
+  {id:'u8',  code:'CD-INH',   name:'CD Inhambupe',                 type:'cd',     parentId:'u5',  cnpj:'23.456.789/0003-42', city:'Inhambupe',         state:'BA', address:'Distrito Norte, 50',  phone:'(75) 3431-0010', employees:0,   manager:null, active:false, openedAt:'2024-01-10'},
+  {id:'u9',  code:'COM-FSA',  name:'Escritório Comercial',         type:'escr',   parentId:'u1',  cnpj:'12.345.678/0006-95', city:'Feira de Santana', state:'BA', address:'Av. Sampaio, 1000 sl 5',phone:'(75) 3221-0020',employees:14, manager:'Talita Comercial', active:true, openedAt:'2019-09-05'},
+  {id:'u10', code:'ATP-EXP',  name:'ATP - Express',                type:'loja',   parentId:'u1',  cnpj:'12.345.678/0007-76', city:'Feira de Santana', state:'BA', address:'Shopping Boulevard',  phone:'(75) 3221-0030', employees:8,   manager:null, active:false, openedAt:'2023-05-15'},
+  {id:'u11', code:'CES-EXP',  name:'Cestão Express',               type:'loja',   parentId:'u4',  cnpj:'23.456.789/0004-23', city:'Feira de Santana', state:'BA', address:'Av. Maria Quitéria, 200', phone:'(75) 3221-0040', employees:12, manager:'Sandra Gomes', active:true, openedAt:'2022-08-22'},
+  {id:'u12', code:'GPC-FIN',  name:'GPC Financeiro',               type:'escr',   parentId:'u1',  cnpj:'12.345.678/0008-57', city:'Feira de Santana', state:'BA', address:'Av. Sampaio, 1000 sl 3',phone:'(75) 3221-0050',employees:11, manager:'Maria Santos', active:true, openedAt:'2010-03-15'},
+  {id:'u13', code:'GPC-RH',   name:'GPC Recursos Humanos',         type:'escr',   parentId:'u1',  cnpj:'12.345.678/0009-38', city:'Feira de Santana', state:'BA', address:'Av. Sampaio, 1000 sl 4',phone:'(75) 3221-0060',employees:7,  manager:'Patrícia Mello', active:true, openedAt:'2010-03-15'},
+  {id:'u14', code:'GPC-TI',   name:'GPC Tecnologia',               type:'escr',   parentId:'u1',  cnpj:'12.345.678/0010-71', city:'Feira de Santana', state:'BA', address:'Av. Sampaio, 1000 sl 6',phone:'(75) 3221-0070',employees:9,  manager:'Ricardo Silva',  active:true, openedAt:'2018-01-10'}
+];
+
+const unitTypes = {
+  matriz: {label:'Matriz', cls:'ci-matriz', tag:'tag-blue', icon:'★'},
+  filial: {label:'Filial', cls:'ci-filial', tag:'tag-blue', icon:'⌂'},
+  loja:   {label:'Loja',   cls:'ci-loja',   tag:'tag-orange', icon:'☉'},
+  cd:     {label:'CD',     cls:'ci-cd',     tag:'tag-purple', icon:'◰'},
+  escr:   {label:'Escritório', cls:'ci-escr', tag:'tag-green', icon:'≡'}
+};
+
+// Departamentos
+const depts = [
+  {id:'d1',  code:'DIR',     name:'Diretoria',          parentId:null, leader:'Maria Santos',     unitId:'u1', employees:3,  active:true, desc:'Direção executiva do grupo'},
+  {id:'d2',  code:'COM',     name:'Comercial',          parentId:null, leader:'Talita Comercial', unitId:null, employees:14, active:true, desc:'Vendas, compras e relacionamento com fornecedores'},
+  {id:'d3',  code:'COM-COMP',name:'Compras',            parentId:'d2', leader:'Carlos Eduardo',   unitId:null, employees:8,  active:true, desc:'Negociação e abastecimento'},
+  {id:'d4',  code:'FIN',     name:'Financeiro',         parentId:null, leader:'João Carvalho',    unitId:'u12',employees:11, active:true, desc:'Contas a pagar, receber, tesouraria'},
+  {id:'d5',  code:'FIN-CONT',name:'Contabilidade',      parentId:'d4', leader:null,               unitId:'u12',employees:5,  active:true, desc:'Apuração contábil e fiscal'},
+  {id:'d6',  code:'RH',      name:'RH / DP',            parentId:null, leader:'Patrícia Mello',   unitId:'u13',employees:7,  active:true, desc:'Recursos humanos e departamento pessoal'},
+  {id:'d7',  code:'TI',      name:'TI / BI',            parentId:null, leader:'Ricardo Silva',    unitId:'u14',employees:9,  active:true, desc:'Tecnologia, infraestrutura e business intelligence'},
+  {id:'d8',  code:'OPER',    name:'Operações de Loja',  parentId:null, leader:'Roberto Almeida',  unitId:null, employees:184,active:true, desc:'Gestão das lojas físicas (varejo e atacado)'},
+  {id:'d9',  code:'CD',      name:'CD / Logística',     parentId:null, leader:'João Carvalho CD', unitId:'u7', employees:37, active:true, desc:'Centro de distribuição e logística'},
+  {id:'d10', code:'PP',      name:'Prevenção de Perdas',parentId:null, leader:'Felipe Oliveira',  unitId:null, employees:8,  active:true, desc:'Auditoria operacional e segurança'},
+  {id:'d11', code:'MKT',     name:'Marketing',          parentId:'d2', leader:null,               unitId:'u9', employees:4,  active:true, desc:'Comunicação, mídia e ações promocionais'},
+  {id:'d12', code:'JUR',     name:'Jurídico',           parentId:null, leader:'Sandra Gomes Adv', unitId:'u1', employees:2,  active:true, desc:'Assessoria jurídica e trabalhista'},
+  {id:'d13', code:'AUD',     name:'Auditoria Interna',  parentId:null, leader:'Carlos Augusto',   unitId:'u1', employees:3,  active:true, desc:'Controles internos e compliance'},
+  {id:'d14', code:'ADM',     name:'Administrativo',     parentId:null, leader:'Beatriz Lopes',    unitId:'u1', employees:24, active:true, desc:'Apoio administrativo geral'},
+  {id:'d15', code:'TES',     name:'Tesouraria',         parentId:'d4', leader:'Helena Cardoso',   unitId:'u12',employees:3,  active:true, desc:'Gestão de caixa e bancos'}
+];
+
+// Cargos
+const positions = [
+  {id:'p1',  code:'OP-CX',     name:'Operador de Caixa',       level:'Operacional', deptId:'d8',  cbo:'5211-10', minSalary:1518, midSalary:1620, maxSalary:1750, employees:42, active:true, description:'Atendimento ao cliente no checkout'},
+  {id:'p2',  code:'REP',       name:'Repositor de Mercadorias',level:'Operacional', deptId:'d8',  cbo:'5212-05', minSalary:1518, midSalary:1620, maxSalary:1750, employees:58, active:true, description:'Reposição e organização de gôndolas'},
+  {id:'p3',  code:'ACG',       name:'Açougueiro',              level:'Operacional', deptId:'d8',  cbo:'8485-05', minSalary:2100, midSalary:2400, maxSalary:2800, employees:14, active:true, description:'Corte, embalagem e atendimento no açougue'},
+  {id:'p4',  code:'PAD',       name:'Padeiro',                 level:'Operacional', deptId:'d8',  cbo:'8483-05', minSalary:2100, midSalary:2400, maxSalary:2700, employees:9,  active:true, description:'Produção de pães e produtos de panificação'},
+  {id:'p5',  code:'AUX-LMP',   name:'Auxiliar de Limpeza',     level:'Operacional', deptId:'d14', cbo:'5143-20', minSalary:1518, midSalary:1518, maxSalary:1620, employees:18, active:true, description:'Higienização das áreas comuns e operacionais'},
+  {id:'p6',  code:'CONF',      name:'Conferente',              level:'Operacional', deptId:'d9',  cbo:'4141-05', minSalary:1800, midSalary:2100, maxSalary:2400, employees:11, active:true, description:'Conferência de mercadorias na entrada do CD'},
+  {id:'p7',  code:'EMP',       name:'Operador de Empilhadeira',level:'Operacional', deptId:'d9',  cbo:'7822-15', minSalary:2200, midSalary:2500, maxSalary:2900, employees:8,  active:true, description:'Movimentação interna no CD'},
+  {id:'p8',  code:'AUX-LOG',   name:'Auxiliar de Logística',   level:'Operacional', deptId:'d9',  cbo:'4141-10', minSalary:1518, midSalary:1700, maxSalary:1900, employees:14, active:true, description:'Suporte às operações do CD'},
+  {id:'p9',  code:'AUX-ADM',   name:'Auxiliar Administrativo', level:'Operacional', deptId:'d14', cbo:'4110-05', minSalary:1700, midSalary:1900, maxSalary:2200, employees:12, active:true, description:'Apoio administrativo geral'},
+  {id:'p10', code:'RECEP',     name:'Recepcionista',           level:'Operacional', deptId:'d14', cbo:'4221-05', minSalary:1518, midSalary:1700, maxSalary:1900, employees:3,  active:true, description:'Atendimento e triagem na recepção'},
+  {id:'p11', code:'EST',       name:'Estagiário',              level:'Estagiário',  deptId:null,  cbo:'',        minSalary:1100, midSalary:1300, maxSalary:1500, employees:8,  active:true, description:'Estágio supervisionado'},
+  {id:'p12', code:'ASS',       name:'Assistente',              level:'Júnior',      deptId:null,  cbo:'4110-10', minSalary:2000, midSalary:2400, maxSalary:2800, employees:11, active:true, description:'Suporte direto aos analistas'},
+  {id:'p13', code:'ANL-JR',    name:'Analista Júnior',         level:'Júnior',      deptId:null,  cbo:'2521-05', minSalary:2800, midSalary:3200, maxSalary:3600, employees:14, active:true, description:'Análises iniciais sob supervisão'},
+  {id:'p14', code:'ANL-PL',    name:'Analista Pleno',          level:'Pleno',       deptId:null,  cbo:'2521-05', minSalary:3800, midSalary:4500, maxSalary:5200, employees:17, active:true, description:'Análises autônomas com responsabilidade técnica'},
+  {id:'p15', code:'ANL-SR',    name:'Analista Sênior',         level:'Sênior',      deptId:null,  cbo:'2521-05', minSalary:5200, midSalary:6200, maxSalary:7500, employees:9,  active:true, description:'Liderança técnica e mentoria'},
+  {id:'p16', code:'ESPEC',     name:'Especialista',            level:'Sênior',      deptId:null,  cbo:'',        minSalary:6500, midSalary:8000, maxSalary:10000,employees:3,  active:true, description:'Referência técnica em sua área'},
+  {id:'p17', code:'ENC',       name:'Encarregado de Setor',    level:'Encarregado', deptId:'d8',  cbo:'4101-05', minSalary:2800, midSalary:3300, maxSalary:3800, employees:18, active:true, description:'Líder de setor de loja'},
+  {id:'p18', code:'SUB-GER',   name:'Subgerente de Loja',      level:'Encarregado', deptId:'d8',  cbo:'4101-05', minSalary:4000, midSalary:4800, maxSalary:5500, employees:8,  active:true, description:'Apoio à gerência de loja'},
+  {id:'p19', code:'COORD',     name:'Coordenador',             level:'Coordenador', deptId:null,  cbo:'1424-05', minSalary:6500, midSalary:8000, maxSalary:9500, employees:14, active:true, description:'Coordenação de equipes e processos'},
+  {id:'p20', code:'GER-LOJA',  name:'Gerente de Loja',         level:'Gerente',     deptId:'d8',  cbo:'1417-05', minSalary:7500, midSalary:9500, maxSalary:12000,employees:6,  active:true, description:'Gestão completa de uma loja'},
+  {id:'p21', code:'GER',       name:'Gerente',                 level:'Gerente',     deptId:null,  cbo:'1417-05', minSalary:10000,midSalary:13000,maxSalary:18000,employees:8,  active:true, description:'Gestão de departamento corporativo'},
+  {id:'p22', code:'DIR',       name:'Diretor',                 level:'Diretoria',   deptId:'d1',  cbo:'1210-05', minSalary:18000,midSalary:25000,maxSalary:40000,employees:3,  active:true, description:'Direção executiva'},
+  {id:'p23', code:'AUX-FIN',   name:'Auxiliar Financeiro',     level:'Operacional', deptId:'d4',  cbo:'4131-15', minSalary:2200, midSalary:2500, maxSalary:2800, employees:5,  active:true, description:'Lançamentos e conferência financeira'},
+  {id:'p24', code:'PP-AGT',    name:'Agente de Prevenção',     level:'Operacional', deptId:'d10', cbo:'5174-10', minSalary:2000, midSalary:2300, maxSalary:2600, employees:8,  active:true, description:'Monitoramento de prevenção de perdas'},
+  {id:'p25', code:'DEV',       name:'Desenvolvedor',           level:'Pleno',       deptId:'d7',  cbo:'2124-05', minSalary:5500, midSalary:7500, maxSalary:10000,employees:3,  active:true, description:'Desenvolvimento de sistemas internos'},
+  {id:'p26', code:'SUP-TI',    name:'Analista de Suporte',     level:'Júnior',      deptId:'d7',  cbo:'2124-15', minSalary:2800, midSalary:3500, maxSalary:4200, employees:2,  active:true, description:'Suporte técnico aos usuários'},
+  {id:'p27', code:'COMP-OP',   name:'Comprador Operacional',   level:'Pleno',       deptId:'d3',  cbo:'3514-05', minSalary:3500, midSalary:4200, maxSalary:5200, employees:5,  active:true, description:'Negociação com fornecedores'},
+  {id:'p28', code:'JUR-ADV',   name:'Advogado',                level:'Sênior',      deptId:'d12', cbo:'2410-05', minSalary:6500, midSalary:9000, maxSalary:13000,employees:2,  active:false, description:'Assessoria jurídica'}
+];
+
+const positionLevels = {
+  'Estagiário':  {tag:'tag-blue',   color:'#2B4A7A'},
+  'Operacional': {tag:'tag-blue',   color:'#3D5F95'},
+  'Júnior':      {tag:'tag-green',  color:'#1E7B4B'},
+  'Pleno':       {tag:'tag-purple', color:'#6D28D9'},
+  'Sênior':      {tag:'tag-amber',  color:'#854F0B'},
+  'Encarregado': {tag:'tag-orange', color:'#854F0B'},
+  'Coordenador': {tag:'tag-amber',  color:'#854F0B'},
+  'Gerente':     {tag:'tag-orange', color:'#F5831F'},
+  'Diretoria':   {tag:'tag-blue',   color:'#1A2D4F'}
+};
+
+/* ============= RENDER UNITS ============= */
+let unitFilter = '';
+function filterUnits(q){unitFilter = q.toLowerCase(); renderUnits();}
+
+function renderUnits(){
+  const tbody = document.getElementById('unitsTbody');
+  const list = units.filter(u=>!unitFilter || u.name.toLowerCase().includes(unitFilter) || u.code.toLowerCase().includes(unitFilter));
+
+  tbody.innerHTML = list.map(u=>{
+    const t = unitTypes[u.type];
+    return `
+      <tr class="row" onclick="openModal('unit','${u.id}')">
+        <td class="cell-main" data-label="Filial">
+          <div class="cell-name">
+            <div class="cell-icon ${t.cls}">${t.icon}</div>
+            <div>
+              <div class="cell-strong">${u.name}</div>
+              <div class="cell-meta">${u.code}</div>
+            </div>
+          </div>
+        </td>
+        <td data-label="Tipo"><span class="tag ${t.tag}">${t.label}</span></td>
+        <td data-label="Cidade"><div class="cell-detail">${u.city} / ${u.state}</div></td>
+        <td data-label="CNPJ"><div class="cell-meta" style="margin:0; color:var(--txt2);">${u.cnpj}</div></td>
+        <td class="center" data-label="Colaboradores"><strong>${u.employees}</strong></td>
+        <td class="center" data-label="Status"><span class="tag ${u.active?'tag-active':'tag-inactive'}">${u.active?'Ativa':'Inativa'}</span></td>
+        <td class="right cell-actions" data-label="Ações">
+          <div class="row-actions">
+            <button class="btn-icon" title="Editar" onclick="event.stopPropagation(); openModal('unit','${u.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn-icon danger" title="Desativar" onclick="event.stopPropagation();">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  if(list.length===0){
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; text-align:center; color:var(--txt2);">Nenhuma filial encontrada com este filtro.</td></tr>`;
+  }
+
+  renderUnitsTree();
+}
+
+function renderUnitsTree(){
+  function build(parentId, depth=0){
+    const children = units.filter(u=>u.parentId===parentId);
+    return children.map(u=>{
+      const t = unitTypes[u.type];
+      const sub = build(u.id, depth+1);
+      const hasChildren = sub.length > 0;
+      return `
+        <div class="tree-node">
+          <div class="tree-row" onclick="this.querySelector('.tree-toggle').click(); event.stopPropagation();">
+            <div class="tree-toggle ${hasChildren?'':'empty'}" onclick="event.stopPropagation(); this.classList.toggle('open'); this.parentElement.parentElement.querySelector('.tree-children').classList.toggle('open');">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="cell-icon ${t.cls}">${t.icon}</div>
+            <div class="tree-info">
+              <div class="nm">${u.name}</div>
+              <div class="meta">${t.label} • ${u.city}/${u.state}</div>
+            </div>
+            <div class="tree-meta">
+              <span><strong>${u.employees}</strong> colab.</span>
+              <span class="tag ${u.active?'tag-active':'tag-inactive'}">${u.active?'Ativa':'Inativa'}</span>
+            </div>
+          </div>
+          ${hasChildren ? `<div class="tree-children">${sub.join('')}</div>` : ''}
+        </div>
+      `;
+    });
+  }
+  document.getElementById('unitsTree').innerHTML = build(null).join('');
+}
+
+/* ============= RENDER DEPTS ============= */
+let deptFilter = '';
+function filterDepts(q){deptFilter = q.toLowerCase(); renderDepts();}
+
+function renderDepts(){
+  const tbody = document.getElementById('deptsTbody');
+  const list = depts.filter(d=>!deptFilter || d.name.toLowerCase().includes(deptFilter) || d.code.toLowerCase().includes(deptFilter));
+
+  tbody.innerHTML = list.map(d=>{
+    const subCount = depts.filter(x=>x.parentId===d.id).length;
+    const unit = d.unitId ? units.find(u=>u.id===d.unitId)?.name : null;
+    return `
+      <tr class="row" onclick="openModal('dept','${d.id}')">
+        <td class="cell-main" data-label="Departamento">
+          <div class="cell-name">
+            <div class="cell-icon ci-dept">⌧</div>
+            <div>
+              <div class="cell-strong">${d.name}</div>
+              <div class="cell-meta">${d.code}${d.parentId ? ' • subdepartamento' : ''}</div>
+            </div>
+          </div>
+        </td>
+        <td data-label="Líder"><div class="cell-detail">${d.leader || '<span style="color:var(--danger);">Não atribuído</span>'}</div></td>
+        <td data-label="Filial"><div class="cell-detail">${unit || '<span style="color:var(--txt3);">Multi-filial</span>'}</div></td>
+        <td class="center" data-label="Colaboradores"><strong>${d.employees}</strong></td>
+        <td class="center" data-label="Sub-deptos">${subCount > 0 ? `<span class="tag tag-blue">${subCount}</span>` : '<span style="color:var(--txt3);">-</span>'}</td>
+        <td class="center" data-label="Status"><span class="tag ${d.active?'tag-active':'tag-inactive'}">${d.active?'Ativo':'Inativo'}</span></td>
+        <td class="right cell-actions" data-label="Ações">
+          <div class="row-actions">
+            <button class="btn-icon" onclick="event.stopPropagation(); openModal('dept','${d.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn-icon danger" onclick="event.stopPropagation();">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  if(list.length===0){
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; text-align:center; color:var(--txt2);">Nenhum departamento encontrado.</td></tr>`;
+  }
+
+  renderDeptsTree();
+}
+
+function renderDeptsTree(){
+  function build(parentId){
+    const children = depts.filter(d=>d.parentId===parentId);
+    return children.map(d=>{
+      const sub = build(d.id);
+      const hasChildren = sub.length > 0;
+      const unit = d.unitId ? units.find(u=>u.id===d.unitId)?.name : 'Multi-filial';
+      return `
+        <div class="tree-node">
+          <div class="tree-row">
+            <div class="tree-toggle ${hasChildren?'':'empty'}" onclick="event.stopPropagation(); this.classList.toggle('open'); this.parentElement.parentElement.querySelector('.tree-children').classList.toggle('open');">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+            <div class="cell-icon ci-dept">⌧</div>
+            <div class="tree-info">
+              <div class="nm">${d.name}</div>
+              <div class="meta">${d.leader || 'Sem líder'} • ${unit}</div>
+            </div>
+            <div class="tree-meta">
+              <span><strong>${d.employees}</strong> colab.</span>
+            </div>
+          </div>
+          ${hasChildren ? `<div class="tree-children">${sub.join('')}</div>` : ''}
+        </div>
+      `;
+    });
+  }
+  document.getElementById('deptsTree').innerHTML = build(null).join('');
+}
+
+/* ============= RENDER POSITIONS ============= */
+let posFilter = '';
+function filterPositions(q){posFilter = q.toLowerCase(); renderPositions();}
+
+function renderPositions(){
+  const tbody = document.getElementById('positionsTbody');
+  const list = positions.filter(p=>!posFilter || p.name.toLowerCase().includes(posFilter) || p.code.toLowerCase().includes(posFilter));
+
+  tbody.innerHTML = list.map(p=>{
+    const lvl = positionLevels[p.level] || {tag:'tag-blue', color:'#2B4A7A'};
+    const dept = p.deptId ? depts.find(d=>d.id===p.deptId)?.name : null;
+    return `
+      <tr class="row" onclick="openModal('position','${p.id}')">
+        <td class="cell-main" data-label="Cargo">
+          <div class="cell-name">
+            <div class="cell-icon ci-cargo" style="background:${lvl.color};">⚏</div>
+            <div>
+              <div class="cell-strong">${p.name}</div>
+              <div class="cell-meta">${p.code}</div>
+            </div>
+          </div>
+        </td>
+        <td data-label="Nível"><span class="tag ${lvl.tag} tag-level">${p.level}</span></td>
+        <td data-label="Departamento"><div class="cell-detail">${dept || '<span style="color:var(--txt3);">Genérico</span>'}</div></td>
+        <td data-label="CBO"><div class="cell-meta" style="color:var(--txt2);">${p.cbo || '-'}</div></td>
+        <td class="right" data-label="Faixa salarial">
+          <div style="font-family:'JetBrains Mono', monospace; font-size:11.5px; color:var(--txt);">
+            R$ ${p.minSalary.toLocaleString('pt-BR')} <span style="color:var(--orange);">→</span> R$ ${p.maxSalary.toLocaleString('pt-BR')}
+          </div>
+          <div style="font-size:10.5px; color:var(--txt2); font-family:'JetBrains Mono', monospace;">
+            mediana R$ ${p.midSalary.toLocaleString('pt-BR')}
+          </div>
+        </td>
+        <td class="center" data-label="Colaboradores"><strong>${p.employees}</strong></td>
+        <td class="right cell-actions" data-label="Ações">
+          <div class="row-actions">
+            <button class="btn-icon" onclick="event.stopPropagation(); openModal('position','${p.id}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn-icon danger" onclick="event.stopPropagation();">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  if(list.length===0){
+    tbody.innerHTML = `<tr><td colspan="7" style="padding:30px; text-align:center; color:var(--txt2);">Nenhum cargo encontrado.</td></tr>`;
+  }
+}
+
+/* ============= MODAL ============= */
+let currentEntity = {kind:null, id:null};
+
+function openModal(kind, id){
+  currentEntity = {kind, id: id||null};
+  const modal = document.getElementById('entityModal');
+  const isEdit = !!id;
+
+  if(kind==='unit'){
+    const u = id ? units.find(x=>x.id===id) : null;
+    document.getElementById('emTitle').textContent = isEdit ? 'Editar filial' : 'Nova filial';
+    document.getElementById('emSub').textContent = isEdit ? `Código: ${u.code}` : 'Cadastro de uma nova unidade do GPC';
+    document.getElementById('emBody').innerHTML = unitForm(u);
+  } else if(kind==='dept'){
+    const d = id ? depts.find(x=>x.id===id) : null;
+    document.getElementById('emTitle').textContent = isEdit ? 'Editar departamento' : 'Novo departamento';
+    document.getElementById('emSub').textContent = isEdit ? `Código: ${d.code}` : 'Defina nome, hierarquia e líder';
+    document.getElementById('emBody').innerHTML = deptForm(d);
+  } else if(kind==='position'){
+    const p = id ? positions.find(x=>x.id===id) : null;
+    document.getElementById('emTitle').textContent = isEdit ? 'Editar cargo' : 'Novo cargo';
+    document.getElementById('emSub').textContent = isEdit ? `Código: ${p.code}` : 'Configure nível, departamento e faixa salarial';
+    document.getElementById('emBody').innerHTML = positionForm(p);
+  }
+
+  modal.classList.add('show');
+}
+
+function closeModal(){document.getElementById('entityModal').classList.remove('show');}
+function saveEntity(){alert('Em produção, isto chamaria o supabase para inserir/atualizar e refazer a listagem.\n\nFechando o modal.'); closeModal();}
+
+function unitForm(u){
+  return `
+    <div class="form-section">
+      <h4>Identificação</h4>
+      <div class="field-grid-2-1">
+        <div class="field">
+          <label>Nome da filial <span class="req">*</span></label>
+          <input type="text" value="${u?u.name:''}" placeholder="Ex.: Cestão Loja 1">
+        </div>
+        <div class="field">
+          <label>Código <span class="req">*</span></label>
+          <input type="text" value="${u?u.code:''}" placeholder="Ex.: CES-L1" style="text-transform:uppercase;">
+        </div>
+      </div>
+      <div class="field-grid-2">
+        <div class="field">
+          <label>Tipo <span class="req">*</span></label>
+          <select>
+            <option value="matriz" ${u&&u.type==='matriz'?'selected':''}>Matriz</option>
+            <option value="filial" ${u&&u.type==='filial'?'selected':''}>Filial</option>
+            <option value="loja"   ${u&&u.type==='loja'?'selected':''}>Loja</option>
+            <option value="cd"     ${u&&u.type==='cd'?'selected':''}>Centro de Distribuição</option>
+            <option value="escr"   ${u&&u.type==='escr'?'selected':''}>Escritório</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Filial superior (hierarquia)</label>
+          <select>
+            <option value="">Nenhuma (raiz)</option>
+            ${units.filter(x=>!u||x.id!==u.id).map(x=>`<option ${u&&u.parentId===x.id?'selected':''} value="${x.id}">${x.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Documentos legais</h4>
+      <div class="field-grid-2">
+        <div class="field">
+          <label>CNPJ</label>
+          <input type="text" value="${u?u.cnpj:''}" placeholder="00.000.000/0000-00">
+          <div class="field-help">Esta é a empresa empregadora. Pode ser diferente da filial onde o colaborador trabalha.</div>
+        </div>
+        <div class="field">
+          <label>Inscrição estadual</label>
+          <input type="text" placeholder="000.000.000.000">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Endereço e contato</h4>
+      <div class="field">
+        <label>Endereço completo</label>
+        <input type="text" value="${u?u.address:''}" placeholder="Rua, número, bairro">
+      </div>
+      <div class="field-grid-3">
+        <div class="field">
+          <label>Cidade</label>
+          <input type="text" value="${u?u.city:''}">
+        </div>
+        <div class="field">
+          <label>UF</label>
+          <select>
+            <option ${u&&u.state==='BA'?'selected':''}>BA</option>
+            <option>SP</option><option>RJ</option><option>MG</option><option>PE</option><option>SE</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Telefone</label>
+          <input type="tel" value="${u?u.phone:''}" placeholder="(00) 0000-0000">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Gestão</h4>
+      <div class="field-grid-2">
+        <div class="field">
+          <label>Gerente responsável</label>
+          <select>
+            <option>Selecione...</option>
+            <option ${u&&u.manager==='Maria Santos'?'selected':''}>Maria Santos</option>
+            <option ${u&&u.manager==='Roberto Almeida'?'selected':''}>Roberto Almeida</option>
+            <option ${u&&u.manager==='Sandra Gomes'?'selected':''}>Sandra Gomes</option>
+            <option ${u&&u.manager==='Helena Ribeiro'?'selected':''}>Helena Ribeiro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Data de abertura</label>
+          <input type="date" value="${u?u.openedAt:''}">
+        </div>
+      </div>
+      <div class="field">
+        <label class="switch">
+          <input type="checkbox" ${u&&u.active?'checked':''}>
+          <div class="switch-track"></div>
+          <span class="switch-label">Filial ativa (recebe colaboradores e movimentações)</span>
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+function deptForm(d){
+  return `
+    <div class="form-section">
+      <h4>Identificação</h4>
+      <div class="field-grid-2-1">
+        <div class="field">
+          <label>Nome do departamento <span class="req">*</span></label>
+          <input type="text" value="${d?d.name:''}" placeholder="Ex.: Financeiro">
+        </div>
+        <div class="field">
+          <label>Código <span class="req">*</span></label>
+          <input type="text" value="${d?d.code:''}" placeholder="Ex.: FIN" style="text-transform:uppercase;">
+        </div>
+      </div>
+      <div class="field">
+        <label>Descrição</label>
+        <textarea placeholder="Resumo das responsabilidades do departamento">${d?d.desc:''}</textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Hierarquia e localização</h4>
+      <div class="field-grid-2">
+        <div class="field">
+          <label>Departamento superior</label>
+          <select>
+            <option value="">Nenhum (raiz)</option>
+            ${depts.filter(x=>!d||x.id!==d.id).map(x=>`<option ${d&&d.parentId===x.id?'selected':''} value="${x.id}">${x.name}</option>`).join('')}
+          </select>
+          <div class="field-help">Crie subdepartamentos quando precisar de hierarquia (ex: Compras dentro de Comercial).</div>
+        </div>
+        <div class="field">
+          <label>Filial associada</label>
+          <select>
+            <option value="">Multi-filial (genérico)</option>
+            ${units.map(x=>`<option ${d&&d.unitId===x.id?'selected':''} value="${x.id}">${x.name}</option>`).join('')}
+          </select>
+          <div class="field-help">Use multi-filial para departamentos transversais (ex: TI atende todas).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Liderança</h4>
+      <div class="field">
+        <label>Líder do departamento</label>
+        <select>
+          <option value="">Sem líder (atribuir depois)</option>
+          <option ${d&&d.leader==='Maria Santos'?'selected':''}>Maria Santos</option>
+          <option ${d&&d.leader==='João Carvalho'?'selected':''}>João Carvalho</option>
+          <option ${d&&d.leader==='Patrícia Mello'?'selected':''}>Patrícia Mello</option>
+          <option ${d&&d.leader==='Ricardo Silva'?'selected':''}>Ricardo Silva</option>
+          <option ${d&&d.leader==='Talita Comercial'?'selected':''}>Talita Comercial</option>
+        </select>
+        <div class="field-help">O líder herda permissões de visualização sobre todos os colaboradores deste departamento.</div>
+      </div>
+      <div class="field">
+        <label class="switch">
+          <input type="checkbox" ${d&&d.active?'checked':''}>
+          <div class="switch-track"></div>
+          <span class="switch-label">Departamento ativo</span>
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+function positionForm(p){
+  return `
+    <div class="form-section">
+      <h4>Identificação</h4>
+      <div class="field-grid-2-1">
+        <div class="field">
+          <label>Nome do cargo <span class="req">*</span></label>
+          <input type="text" value="${p?p.name:''}" placeholder="Ex.: Analista Pleno">
+        </div>
+        <div class="field">
+          <label>Código <span class="req">*</span></label>
+          <input type="text" value="${p?p.code:''}" placeholder="Ex.: ANL-PL" style="text-transform:uppercase;">
+        </div>
+      </div>
+      <div class="field">
+        <label>Descrição / responsabilidades</label>
+        <textarea placeholder="Atribuições principais deste cargo">${p?p.description:''}</textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Classificação</h4>
+      <div class="field-grid-2">
+        <div class="field">
+          <label>Nível de carreira <span class="req">*</span></label>
+          <select>
+            ${Object.keys(positionLevels).map(k=>`<option ${p&&p.level===k?'selected':''}>${k}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Departamento associado</label>
+          <select>
+            <option value="">Genérico (qualquer departamento)</option>
+            ${depts.map(d=>`<option ${p&&p.deptId===d.id?'selected':''} value="${d.id}">${d.name}</option>`).join('')}
+          </select>
+          <div class="field-help">Cargos como "Analista" podem ser genéricos. Cargos como "Açougueiro" são específicos.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Código CBO (Classificação Brasileira de Ocupações)</label>
+        <input type="text" value="${p?p.cbo:''}" placeholder="Ex.: 2521-05">
+        <div class="field-help">Útil para integração com folha de pagamento e eSocial.</div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h4>Faixa salarial</h4>
+      <div class="field-grid-3">
+        <div class="field">
+          <label>Mínimo (R$)</label>
+          <input type="number" value="${p?p.minSalary:''}" placeholder="0">
+        </div>
+        <div class="field">
+          <label>Mediana (R$)</label>
+          <input type="number" value="${p?p.midSalary:''}" placeholder="0">
+        </div>
+        <div class="field">
+          <label>Máximo (R$)</label>
+          <input type="number" value="${p?p.maxSalary:''}" placeholder="0">
+        </div>
+      </div>
+      ${p ? `
+      <div class="salary-range">
+        <div style="font-size:11px; color:var(--txt2);">Visualização da faixa</div>
+        <div class="salary-range-bar">
+          <div class="salary-range-fill"></div>
+          <div class="salary-range-marker" style="left:50%; transform:translateX(-50%);"></div>
+        </div>
+        <div class="salary-range-labels">
+          <span>R$ ${p.minSalary.toLocaleString('pt-BR')}</span>
+          <span>R$ ${p.midSalary.toLocaleString('pt-BR')}</span>
+          <span>R$ ${p.maxSalary.toLocaleString('pt-BR')}</span>
+        </div>
+      </div>` : ''}
+      <div class="field" style="margin-top:13px;">
+        <label class="switch">
+          <input type="checkbox" ${p&&p.active?'checked':''}>
+          <div class="switch-track"></div>
+          <span class="switch-label">Cargo ativo (disponível para movimentações)</span>
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+function openImport(){
+  alert('Aqui abriria o fluxo de importação CSV/Excel:\n\n1. Baixar modelo\n2. Upload com validação prévia (dry-run)\n3. Preview de erros e duplicidades\n4. Confirmar importação\n5. Relatório final');
+}
+
+/* ============= VIEW SWITCH ============= */
+function setView(tab, view, btn){
+  btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(tab+'-list').style.display = view==='list' ? '' : 'none';
+  document.getElementById(tab+'-tree').style.display = view==='tree' ? '' : 'none';
+}
+
+/* ============= TABS ============= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+/* ============= INIT ============= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderUnits();
+  renderDepts();
+  renderPositions();
+});
+</script>
+</body>
+</html>

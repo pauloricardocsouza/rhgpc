@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>R2 People - Ciclos de Avaliação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
+.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--gray3);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--gray3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto; padding-bottom:14px;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:#cbd5e1; text-decoration:none; font-size:12.5px; border-left:3px solid transparent; cursor:pointer;}
+.nav-item:hover{background:var(--navy2); color:#fff;}
+.nav-item.active{background:var(--navy2); color:#fff; border-left-color:var(--orange); font-weight:500;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid rgba(255,255,255,.08); font-size:10.5px; color:var(--gray3); display:flex; align-items:center; justify-content:space-between;}
+.sidebar-footer .v{font-family:'JetBrains Mono',monospace;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
+.topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.company-picker{display:flex; align-items:center; gap:8px; background:var(--gray1); padding:6px 12px; border-radius:8px; cursor:pointer;}
+.company-logo{width:24px; height:24px; border-radius:6px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10px;}
+.company-name{font-size:12.5px; font-weight:500;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#1E7B4B,#15533A); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px; overflow-x:hidden;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+/* Botões */
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary.orange{background:var(--orange);}
+.btn-primary.orange:hover{background:#D87013;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-success{background:var(--green); color:#fff; border:none; padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-success:hover{background:#16633C;}
+
+/* ============= CICLO ATIVO HERO CARD ============= */
+.active-cycle-card{
+  background:linear-gradient(135deg, #2B4A7A 0%, #1F3A6B 100%);
+  color:#fff;
+  border-radius:var(--radius-lg);
+  padding:22px 24px;
+  margin-bottom:14px;
+  position:relative; overflow:hidden;
+  box-shadow:0 6px 20px rgba(26,45,79,.18);
+}
+.active-cycle-card::before{
+  content:''; position:absolute;
+  right:-50px; top:-50px;
+  width:200px; height:200px;
+  background:radial-gradient(circle, rgba(245,131,31,.25), transparent 65%);
+  border-radius:50%;
+}
+.acc-head{
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:16px; margin-bottom:18px;
+  position:relative; z-index:1;
+}
+.acc-info h2{
+  font-size:24px; font-weight:600; letter-spacing:-.3px;
+  display:inline-flex; align-items:center; gap:11px;
+}
+.cycle-status-badge{
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(245,131,31,.2); color:#fff;
+  padding:4px 11px; border-radius:11px;
+  font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.4px;
+}
+.cycle-status-badge .dot{width:7px; height:7px; border-radius:50%; background:var(--orange); animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.acc-info p{font-size:13px; color:rgba(255,255,255,.78); margin-top:6px;}
+.acc-actions{display:flex; gap:8px; flex-wrap:wrap; flex-shrink:0;}
+.acc-actions .btn-light{
+  padding:8px 14px; border-radius:7px; border:1px solid rgba(255,255,255,.25);
+  background:transparent; color:#fff; font-size:12px; font-weight:500;
+  cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.acc-actions .btn-light:hover{background:rgba(255,255,255,.1);}
+.acc-actions .btn-light.primary{background:var(--orange); border-color:var(--orange);}
+
+/* Linha do tempo do ciclo (fases) */
+.cycle-timeline{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:0;
+  margin-bottom:18px;
+  position:relative; z-index:1;
+}
+.ct-step{
+  text-align:center;
+  padding:0 7px;
+  position:relative;
+}
+.ct-step::after{
+  content:''; position:absolute;
+  top:14px; left:50%; right:-50%;
+  height:2px;
+  background:rgba(255,255,255,.18);
+}
+.ct-step:last-child::after{display:none;}
+.ct-step.done::after{background:var(--green);}
+.ct-step.current::after{background:linear-gradient(90deg, var(--orange), rgba(255,255,255,.18));}
+.ct-circle{
+  width:30px; height:30px;
+  background:rgba(255,255,255,.12);
+  border:2px solid rgba(255,255,255,.25);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 9px;
+  font-weight:600; font-size:12px;
+  position:relative; z-index:2;
+  background-clip:padding-box;
+}
+.ct-step.done .ct-circle{background:var(--green); border-color:var(--green);}
+.ct-step.current .ct-circle{background:var(--orange); border-color:var(--orange); box-shadow:0 0 0 4px rgba(245,131,31,.25);}
+.ct-step h5{font-size:12px; font-weight:600; margin-bottom:1px;}
+.ct-step p{font-size:10.5px; color:rgba(255,255,255,.65); font-family:'JetBrains Mono',monospace;}
+
+/* Stats horizontais do ciclo */
+.acc-stats{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:14px;
+  position:relative; z-index:1;
+}
+.acc-stat{
+  background:rgba(255,255,255,.08);
+  border-radius:9px;
+  padding:11px 13px;
+}
+.acc-stat-label{font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:rgba(255,255,255,.6); font-weight:500;}
+.acc-stat-value{font-size:22px; font-weight:600; margin-top:4px;}
+.acc-stat-sub{font-size:11px; color:rgba(255,255,255,.7); margin-top:2px;}
+.acc-progress{
+  background:rgba(255,255,255,.15); border-radius:5px;
+  height:5px; margin-top:7px; overflow:hidden;
+}
+.acc-progress > div{
+  background:var(--orange); height:100%; border-radius:5px;
+}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; background:#fff; padding:4px; border-radius:var(--radius); box-shadow:var(--shadow-card); margin-bottom:14px; overflow-x:auto;}
+.tab{padding:9px 16px; font-size:12.5px; font-weight:500; color:var(--txt2); background:transparent; border:none; cursor:pointer; border-radius:7px; font-family:inherit; display:inline-flex; align-items:center; gap:8px; white-space:nowrap;}
+.tab:hover{background:var(--gray1); color:var(--txt);}
+.tab.active{background:var(--navy); color:#fff;}
+.tab svg{width:14px; height:14px;}
+.tab .count{background:rgba(255,255,255,.2); padding:1px 7px; border-radius:10px; font-size:10.5px; font-weight:600; font-family:'JetBrains Mono',monospace;}
+.tab:not(.active) .count{background:var(--gray1); color:var(--txt2);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block; animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+/* Cards de seção */
+.section-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;}
+.card{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); padding:16px 18px;}
+.card-head{display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:13px;}
+.card-title{font-size:13.5px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:1px;}
+.chart-wrap{position:relative; width:100%; height:240px;}
+
+/* Progresso de adesão */
+.progress-row{
+  display:grid; grid-template-columns:120px 1fr 60px;
+  gap:11px; align-items:center;
+  padding:7px 0;
+  font-size:12px;
+}
+.progress-row .lbl{color:var(--txt2);}
+.progress-bar-bg{
+  background:var(--gray1); border-radius:5px;
+  height:8px; overflow:hidden;
+}
+.progress-bar-fill{
+  height:100%; border-radius:5px;
+  background:linear-gradient(90deg, var(--navy3), var(--navy));
+  transition:width .3s;
+}
+.progress-bar-fill.green{background:linear-gradient(90deg, var(--green), #16633C);}
+.progress-bar-fill.amber{background:linear-gradient(90deg, var(--amber), #663C08);}
+.progress-bar-fill.red{background:linear-gradient(90deg, var(--danger), #951B0E);}
+.progress-pct{
+  text-align:right;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px; font-weight:600;
+}
+
+/* Histórico de ciclos */
+.cycles-history{background:#fff; border-radius:var(--radius); box-shadow:var(--shadow-card); overflow:hidden;}
+.tbl{width:100%; border-collapse:collapse; font-size:12.5px;}
+.tbl thead{background:var(--off);}
+.tbl th{text-align:left; padding:11px 12px; font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--txt2); border-bottom:1px solid var(--gray2); font-weight:600; white-space:nowrap;}
+.tbl th.center{text-align:center;}
+.tbl th.right{text-align:right;}
+.tbl td{padding:13px 12px; border-bottom:1px solid var(--gray1); color:var(--txt); vertical-align:middle;}
+.tbl td.center{text-align:center;}
+.tbl td.right{text-align:right;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr.row{cursor:pointer;}
+.tbl tr.row:hover{background:var(--off);}
+
+.cycle-name-cell{display:flex; align-items:center; gap:11px;}
+.cycle-icon{
+  width:34px; height:34px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; font-weight:700; color:#fff; font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+}
+.cycle-icon.draft{background:var(--gray3);}
+.cycle-icon.open{background:var(--orange);}
+.cycle-icon.closed{background:var(--navy);}
+.cycle-icon.archived{background:var(--gray3);}
+.cycle-cell-info .nm{font-size:12.5px; font-weight:600;}
+.cycle-cell-info .meta{font-size:10.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace;}
+
+.status-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 9px; border-radius:11px;
+  font-size:10.5px; font-weight:600;
+}
+.sp-draft{background:var(--gray1); color:var(--txt2);}
+.sp-self{background:#FCE6CD; color:var(--amber);}
+.sp-mgr{background:var(--amber2); color:var(--amber);}
+.sp-closed{background:var(--green2); color:var(--green);}
+.sp-archived{background:var(--gray1); color:var(--txt3);}
+
+.score-mini{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:600;
+}
+.score-mini .star{color:var(--orange);}
+
+.row-actions{display:flex; gap:5px; justify-content:flex-end;}
+.btn-icon{width:28px; height:28px; border-radius:6px; background:var(--gray1); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.btn-icon:hover{background:var(--gray2); color:var(--txt);}
+
+/* Status pendentes - lista de pessoas */
+.people-list{display:flex; flex-direction:column; gap:6px;}
+.person-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:8px 11px;
+  background:var(--off); border-radius:7px;
+  font-size:12px;
+}
+.person-avatar{
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-weight:600; font-size:11px;
+  flex-shrink:0;
+}
+.person-info{min-width:0;}
+.person-name{font-size:12.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.person-meta{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.pending-badge{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; padding:2px 8px; border-radius:9px;
+  font-weight:600;
+}
+.pb-overdue{background:var(--danger2); color:var(--danger);}
+.pb-pending{background:var(--amber2); color:var(--amber);}
+.pb-done{background:var(--green2); color:var(--green);}
+
+/* ============= MODAL WIZARD ============= */
+.modal-overlay{display:none; position:fixed; inset:0; background:rgba(26,45,79,.55); z-index:100; align-items:center; justify-content:center; padding:20px; -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);}
+.modal-overlay.show{display:flex; animation:fadeIn .2s;}
+.modal{background:#fff; border-radius:var(--radius-lg); width:100%; max-width:780px; max-height:92vh; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(26,45,79,.3); overflow:hidden;}
+.modal-head{padding:18px 22px; border-bottom:1px solid var(--gray1); display:flex; align-items:center; justify-content:space-between;}
+.modal-title{font-size:15px; font-weight:600;}
+.modal-sub{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+.modal-close{width:32px; height:32px; border-radius:7px; background:var(--gray1); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--txt2);}
+.modal-close:hover{background:var(--gray2);}
+.modal-body{flex:1; overflow-y:auto; padding:18px 22px;}
+.modal-foot{padding:14px 22px; border-top:1px solid var(--gray1); display:flex; justify-content:space-between; align-items:center; gap:10px; background:var(--off);}
+.modal-foot-left{font-size:11.5px; color:var(--txt2);}
+
+/* Wizard steps */
+.wizard-steps{display:flex; align-items:center; gap:8px; padding:14px 22px; background:var(--off); border-bottom:1px solid var(--gray1);}
+.ws-step{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--txt3);}
+.ws-step.done{color:var(--green);}
+.ws-step.current{color:var(--navy); font-weight:600;}
+.ws-circle{width:22px; height:22px; border-radius:50%; background:var(--gray1); color:var(--txt3); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600;}
+.ws-step.done .ws-circle{background:var(--green); color:#fff;}
+.ws-step.current .ws-circle{background:var(--navy); color:#fff;}
+.ws-line{flex:1; height:2px; background:var(--gray1); border-radius:1px;}
+.ws-line.done{background:var(--green);}
+
+/* Form */
+.form-section{margin-bottom:20px;}
+.form-section-head{
+  margin-bottom:11px; padding-bottom:8px;
+  border-bottom:1px solid var(--gray1);
+}
+.form-section-head h4{font-size:12.5px; font-weight:600;}
+.form-section-head p{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+.field{margin-bottom:13px;}
+.field label{display:block; font-size:11.5px; color:var(--txt2); margin-bottom:5px; font-weight:500;}
+.field label .req{color:var(--danger);}
+.field input, .field select, .field textarea{width:100%; padding:9px 12px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit; color:var(--txt); background:#fff;}
+.field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--navy);}
+.field textarea{resize:vertical; min-height:60px;}
+.field-grid-2{display:grid; grid-template-columns:1fr 1fr; gap:11px;}
+.field-help{font-size:10.5px; color:var(--txt3); margin-top:4px;}
+
+/* Switch */
+.switch{display:inline-flex; align-items:center; gap:8px; cursor:pointer;}
+.switch-track{width:36px; height:20px; background:var(--gray2); border-radius:11px; position:relative; flex-shrink:0;}
+.switch-track::after{content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.switch input{display:none;}
+.switch input:checked + .switch-track{background:var(--green);}
+.switch input:checked + .switch-track::after{transform:translateX(16px);}
+.switch-label{font-size:12.5px;}
+
+/* Radio horizontal */
+.radio-group{display:flex; gap:6px; flex-wrap:wrap;}
+.radio-group label{
+  flex:1; min-width:70px;
+  padding:9px 12px;
+  border:1.5px solid var(--gray2); border-radius:7px;
+  font-size:11.5px;
+  cursor:pointer;
+  background:#fff; text-align:center;
+  transition:all .12s;
+}
+.radio-group label:hover{border-color:var(--navy3);}
+.radio-group label.selected{
+  border-color:var(--navy); background:#E8EFF8; color:var(--navy); font-weight:600;
+}
+
+/* Tipos de avaliação */
+.eval-types{display:flex; flex-direction:column; gap:8px;}
+.eval-type-card{
+  display:flex; align-items:flex-start; gap:11px;
+  padding:11px 13px;
+  border:1.5px solid var(--gray2); border-radius:9px;
+  cursor:pointer;
+  transition:all .12s;
+  background:#fff;
+}
+.eval-type-card:hover:not(.disabled){border-color:var(--navy3);}
+.eval-type-card.selected{border-color:var(--navy); background:#E8EFF8;}
+.eval-type-card.disabled{opacity:.6; cursor:not-allowed;}
+.etc-check{
+  width:18px; height:18px; border-radius:5px;
+  border:2px solid var(--gray2);
+  flex-shrink:0; margin-top:1px;
+  display:flex; align-items:center; justify-content:center;
+}
+.eval-type-card.selected .etc-check{background:var(--navy); border-color:var(--navy);}
+.eval-type-card.selected .etc-check svg{color:#fff;}
+.etc-check svg{width:11px; height:11px; color:transparent;}
+.etc-info{flex:1;}
+.etc-info h5{font-size:12px; font-weight:600; margin-bottom:2px; display:flex; align-items:center; gap:7px;}
+.etc-info p{font-size:11px; color:var(--txt2); line-height:1.4;}
+
+.locked-tag{
+  font-size:9px; padding:1px 6px; border-radius:6px; font-weight:600;
+  background:var(--gray1); color:var(--txt3);
+  text-transform:uppercase; letter-spacing:.3px;
+}
+.tier-tag{
+  font-size:9px; padding:1px 6px; border-radius:6px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.3px;
+}
+.tier-tag.pro{background:#FCE6CD; color:var(--amber);}
+
+/* Lista de competências */
+.comp-list{
+  border:1px solid var(--gray2); border-radius:8px;
+  overflow:hidden;
+}
+.comp-item{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:11px;
+  align-items:center;
+  padding:10px 13px;
+  border-bottom:1px solid var(--gray1);
+  font-size:12px;
+}
+.comp-item:last-child{border-bottom:none;}
+.comp-item input[type=checkbox]{accent-color:var(--navy);}
+.comp-item .name{font-weight:500;}
+.comp-item .cat{
+  font-size:10px; padding:2px 8px; border-radius:7px;
+  font-weight:600; text-transform:uppercase; letter-spacing:.3px;
+}
+.cat-comp{background:#E8EFF8; color:var(--navy);}
+.cat-tec{background:var(--green2); color:var(--green);}
+.cat-lid{background:#FCE6CD; color:var(--amber);}
+.weight-input{width:70px; padding:5px 8px; border:1px solid var(--gray2); border-radius:5px; font-size:11.5px; text-align:center; font-family:'JetBrains Mono',monospace;}
+
+/* Datepicker grupo */
+.deadline-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:11px;}
+.deadline-card{
+  background:var(--off); border-radius:8px;
+  padding:11px 13px;
+  border-left:3px solid var(--navy3);
+}
+.deadline-card.self{border-left-color:var(--orange);}
+.deadline-card.mgr{border-left-color:var(--purple);}
+.deadline-card.close{border-left-color:var(--green);}
+.deadline-card label{font-size:10.5px; color:var(--txt2); font-weight:600; text-transform:uppercase; letter-spacing:.3px; display:block; margin-bottom:5px;}
+.deadline-card input{
+  width:100%; padding:7px 10px;
+  border:1px solid var(--gray2); border-radius:6px;
+  font-size:12px; font-family:inherit;
+}
+.deadline-card .duration{font-size:10.5px; color:var(--txt2); margin-top:3px; font-family:'JetBrains Mono',monospace;}
+
+/* Review final summary */
+.review-summary{
+  background:linear-gradient(135deg, #E8EFF8, #F4F7FC);
+  border-left:3px solid var(--navy);
+  padding:12px 14px; border-radius:8px;
+  margin-bottom:13px;
+}
+.review-row{display:flex; justify-content:space-between; padding:5px 0; font-size:12px;}
+.review-row .lbl{color:var(--txt2);}
+.review-row .val{font-weight:500;}
+.review-row.total{
+  border-top:1px solid var(--gray2); margin-top:5px; padding-top:8px;
+  font-weight:700; font-size:13px;
+}
+
+/* Banner alerta */
+.alert{
+  padding:10px 13px; border-radius:8px;
+  font-size:11.5px;
+  display:flex; align-items:flex-start; gap:9px;
+  margin-bottom:14px;
+  line-height:1.5;
+}
+.alert.info{background:#E8EFF8; border-left:3px solid var(--navy); color:var(--txt2);}
+.alert.warn{background:var(--amber2); border-left:3px solid var(--amber); color:var(--txt);}
+.alert svg{flex-shrink:0; margin-top:1px;}
+.alert strong{color:var(--txt); font-weight:600;}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .acc-stats{grid-template-columns:repeat(2, 1fr);}
+  .section-grid{grid-template-columns:1fr;}
+  .cycle-timeline{grid-template-columns:1fr; gap:11px;}
+  .ct-step::after{display:none;}
+  .deadline-grid{grid-template-columns:1fr;}
+  .field-grid-2{grid-template-columns:1fr;}
+}
+@media (max-width: 768px){
+  :root{--sidebar-w:0px; --topbar-h:54px;}
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; top:0; bottom:0; left:-260px; width:240px; transition:left .25s;}
+  .sidebar.open{left:0; box-shadow:0 0 30px rgba(0,0,0,.4);}
+  .sidebar-overlay{display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:25;}
+  .sidebar-overlay.show{display:block;}
+  .topbar-toggle{display:flex;}
+  .topbar{padding:0 14px; gap:10px;}
+  .topbar-title, .company-name, .user-info{display:none;}
+  .user-chip{padding:0;}
+  .main{padding:14px 14px 40px;}
+  .page-header h1{font-size:18px;}
+  .acc-head{flex-direction:column; align-items:stretch;}
+  .acc-stats{grid-template-columns:1fr 1fr;}
+  .acc-info h2{font-size:18px; flex-wrap:wrap;}
+
+  .tbl thead{display:none;}
+  .tbl, .tbl tbody, .tbl tr{display:block;}
+  .tbl tr.row{padding:11px 13px; border-bottom:1px solid var(--gray1);}
+  .tbl td{display:block; padding:3px 0; border:none;}
+  .tbl td[data-label]::before{content:attr(data-label) ': '; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.3px; font-weight:600; margin-right:4px;}
+  .tbl td.cell-main::before{display:none;}
+  .tbl td.cell-actions{display:flex; justify-content:flex-end; padding-top:8px;}
+  .tbl td.cell-actions::before{display:none;}
+
+  .modal{max-height:100vh; height:100vh; max-width:100%; border-radius:0;}
+  .wizard-steps{padding:11px 14px; gap:6px;}
+  .ws-step span:not(.ws-circle){display:none;}
+
+  .comp-item{grid-template-columns:auto 1fr; gap:8px;}
+  .comp-item .cat, .comp-item .weight-input{grid-column:2; justify-self:flex-start;}
+}
+@media (max-width: 420px){
+  .tab span{display:none;}
+}
+.main::-webkit-scrollbar, .sidebar-nav::-webkit-scrollbar, .modal-body::-webkit-scrollbar{width:6px;}
+.main::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb{background:var(--gray2); border-radius:3px;}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--navy3); border-radius:3px;}
+.tabs::-webkit-scrollbar{height:0;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">R2</div>
+      <div class="brand-text">
+        <span class="brand-name">R2 People</span>
+        <span class="brand-sub">Gestão de Pessoas</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Geral</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12L12 3l9 9M5 10v10h14V10"/></svg>Home</a>
+      <div class="sidebar-section">RH</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>Dashboard RH</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Ciclos de avaliação</a>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 17l5-5-5-5M21 12H9"/></svg>Movimentações</a>
+      <a class="nav-item" data-r2-1on1-injected="v1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+        1:1s
+      </a>
+      <div class="sidebar-section">Estrutura</div>
+      <a class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="16" r="1"/><path d="M7 10V7a5 5 0 0110 0v3M5 10h14v11H5z"/></svg>Acessos e perfis</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span>R2 Soluções</span>
+      <span class="v">v0.1.0</span>
+    </div>
+  </aside>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A2D4F" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </button>
+    <div class="topbar-title">Ciclos <strong>de Avaliação</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="company-picker">
+      <div class="company-logo">GPC</div>
+      <span class="company-name">Grupo Pinto Cerqueira</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar">PM</div>
+      <div class="user-info">
+        <span class="user-name">Patrícia Mello</span>
+        <span class="user-role">Coord. RH</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="page-header">
+      <div>
+        <h1>Ciclos de Avaliação</h1>
+        <p>Configuração e acompanhamento dos ciclos de desempenho · escala 1 a 5 · auto + gestor</p>
+      </div>
+      <button class="btn-primary orange" onclick="openWizard()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Criar novo ciclo
+      </button>
+    </div>
+
+    <!-- ============= CICLO ATIVO HERO CARD ============= -->
+    <div class="active-cycle-card">
+      <div class="acc-head">
+        <div class="acc-info">
+          <h2>
+            <span style="font-family:'JetBrains Mono',monospace;">2026.1</span>
+            · 1º Semestre 2026
+            <span class="cycle-status-badge"><span class="dot"></span>Em andamento</span>
+          </h2>
+          <p>Ciclo semestral de avaliação · Período: 02/03/2026 a 30/06/2026 · 367 colaboradores incluídos</p>
+        </div>
+        <div class="acc-actions">
+          <button class="btn-light">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Lembrar pendentes
+          </button>
+          <button class="btn-light">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg>
+            Editar configurações
+          </button>
+          <button class="btn-light primary">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+            Ver dashboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Linha do tempo (5 fases) -->
+      <div class="cycle-timeline">
+        <div class="ct-step done">
+          <div class="ct-circle">✓</div>
+          <h5>Setup</h5>
+          <p>02/03</p>
+        </div>
+        <div class="ct-step done">
+          <div class="ct-circle">✓</div>
+          <h5>Auto-avaliação</h5>
+          <p>15/03 - 31/03</p>
+        </div>
+        <div class="ct-step current">
+          <div class="ct-circle">3</div>
+          <h5>Aval. do gestor</h5>
+          <p>01/04 - 30/04</p>
+        </div>
+        <div class="ct-step">
+          <div class="ct-circle">4</div>
+          <h5>9-Box</h5>
+          <p>01/05 - 15/05</p>
+        </div>
+        <div class="ct-step">
+          <div class="ct-circle">5</div>
+          <h5>Feedback 1:1</h5>
+          <p>16/05 - 30/06</p>
+        </div>
+      </div>
+
+      <!-- Stats horizontais -->
+      <div class="acc-stats">
+        <div class="acc-stat">
+          <div class="acc-stat-label">Auto-avaliações</div>
+          <div class="acc-stat-value">359 / 367</div>
+          <div class="acc-stat-sub">97,8% concluídas</div>
+          <div class="acc-progress"><div style="width:97.8%; background:var(--green);"></div></div>
+        </div>
+        <div class="acc-stat">
+          <div class="acc-stat-label">Avaliações do gestor</div>
+          <div class="acc-stat-value">214 / 367</div>
+          <div class="acc-stat-sub">58,3% concluídas</div>
+          <div class="acc-progress"><div style="width:58.3%;"></div></div>
+        </div>
+        <div class="acc-stat">
+          <div class="acc-stat-label">Nota média geral</div>
+          <div class="acc-stat-value">4,2 / 5</div>
+          <div class="acc-stat-sub" style="color:rgba(255,255,255,.7);">↑ 0,2 vs 2025.2</div>
+        </div>
+        <div class="acc-stat">
+          <div class="acc-stat-label">Atrasos</div>
+          <div class="acc-stat-value">37</div>
+          <div class="acc-stat-sub">10 líderes com pendências</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" data-tab="acompanha">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>
+        <span>Acompanhamento</span>
+      </button>
+      <button class="tab" data-tab="historico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <span>Histórico</span>
+        <span class="count">5</span>
+      </button>
+      <button class="tab" data-tab="comp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+        <span>Competências</span>
+        <span class="count">8</span>
+      </button>
+    </div>
+
+    <!-- ============= TAB: ACOMPANHAMENTO ============= -->
+    <div class="tab-panel active" data-panel="acompanha">
+
+      <div class="section-grid">
+
+        <!-- Adesão por área/filial -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Adesão por filial</div>
+              <div class="card-sub">% de avaliações do gestor concluídas (fase atual)</div>
+            </div>
+            <button class="btn-secondary" style="padding:5px 11px; font-size:11.5px;">Ver detalhe →</button>
+          </div>
+          <div class="progress-row"><span class="lbl">GPC Matriz</span><div class="progress-bar-bg"><div class="progress-bar-fill green" style="width:91%"></div></div><span class="progress-pct">91%</span></div>
+          <div class="progress-row"><span class="lbl">Cestão L1</span><div class="progress-bar-bg"><div class="progress-bar-fill green" style="width:78%"></div></div><span class="progress-pct">78%</span></div>
+          <div class="progress-row"><span class="lbl">ATP - Varejo</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:66%"></div></div><span class="progress-pct">66%</span></div>
+          <div class="progress-row"><span class="lbl">CD Logística</span><div class="progress-bar-bg"><div class="progress-bar-fill" style="width:54%"></div></div><span class="progress-pct">54%</span></div>
+          <div class="progress-row"><span class="lbl">ATP - Atacado</span><div class="progress-bar-bg"><div class="progress-bar-fill amber" style="width:43%"></div></div><span class="progress-pct">43%</span></div>
+          <div class="progress-row"><span class="lbl">Cestão Inh.</span><div class="progress-bar-bg"><div class="progress-bar-fill amber" style="width:38%"></div></div><span class="progress-pct">38%</span></div>
+          <div class="progress-row"><span class="lbl">ATP S. Bonfim</span><div class="progress-bar-bg"><div class="progress-bar-fill red" style="width:21%"></div></div><span class="progress-pct">21%</span></div>
+        </div>
+
+        <!-- Distribuição de notas -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Distribuição de notas</div>
+              <div class="card-sub">Nota geral · 214 avaliações concluídas · escala 1-5</div>
+            </div>
+          </div>
+          <div class="chart-wrap"><canvas id="chDistribution"></canvas></div>
+        </div>
+
+      </div>
+
+      <div class="section-grid">
+
+        <!-- Líderes pendentes -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Líderes com mais pendências</div>
+              <div class="card-sub">Avaliações do gestor em atraso ou sem início</div>
+            </div>
+            <button class="btn-primary" style="padding:7px 12px; font-size:11.5px;">Lembrar todos</button>
+          </div>
+          <div class="people-list">
+            <div class="person-row">
+              <div class="person-avatar" style="background:#3D5F95">RA</div>
+              <div class="person-info">
+                <div class="person-name">Roberto Almeida</div>
+                <div class="person-meta">Gerente ATP Varejo · 14 liderados</div>
+              </div>
+              <span class="pending-badge pb-overdue">8 vencidas</span>
+            </div>
+            <div class="person-row">
+              <div class="person-avatar" style="background:#854F0B">CA</div>
+              <div class="person-info">
+                <div class="person-name">Carlos Augusto</div>
+                <div class="person-meta">Auditor Sênior · 6 liderados</div>
+              </div>
+              <span class="pending-badge pb-overdue">6 vencidas</span>
+            </div>
+            <div class="person-row">
+              <div class="person-avatar" style="background:#1E7B4B">HR</div>
+              <div class="person-info">
+                <div class="person-name">Helena Ribeiro</div>
+                <div class="person-meta">Gerente Cestão Inh. · 8 liderados</div>
+              </div>
+              <span class="pending-badge pb-pending">5 pendentes</span>
+            </div>
+            <div class="person-row">
+              <div class="person-avatar" style="background:#F5831F">FR</div>
+              <div class="person-info">
+                <div class="person-name">Felipe Rodrigues</div>
+                <div class="person-meta">Gerente ATP S. Bonfim · 11 liderados</div>
+              </div>
+              <span class="pending-badge pb-pending">9 pendentes</span>
+            </div>
+            <div class="person-row">
+              <div class="person-avatar" style="background:#6D28D9">JC</div>
+              <div class="person-info">
+                <div class="person-name">João Carvalho CD</div>
+                <div class="person-meta">Coord. CD Logística · 12 liderados</div>
+              </div>
+              <span class="pending-badge pb-pending">5 pendentes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linha do tempo de marcos importantes -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Próximos marcos do ciclo</div>
+              <div class="card-sub">Datas que disparam notificações automáticas</div>
+            </div>
+          </div>
+          <div class="people-list">
+            <div class="person-row" style="background:var(--amber2);">
+              <div class="person-avatar" style="background:var(--amber); width:30px; font-family:'JetBrains Mono',monospace; font-size:10px;">3d</div>
+              <div class="person-info">
+                <div class="person-name">Encerra fase do gestor</div>
+                <div class="person-meta">30/04/2026 às 23:59 · Brasília</div>
+              </div>
+              <span class="pending-badge pb-pending">Em 3 dias</span>
+            </div>
+            <div class="person-row">
+              <div class="person-avatar" style="background:var(--navy); width:30px; font-family:'JetBrains Mono',monospace; font-size:10px;">4d</div>
+              <div class="person-info">
+                <div class="person-name">Inicia 9-Box</div>
+                <div class="person-meta">01/05/2026 · Líderes posicionam liderados</div>
+              </div>
+              <span class="pending-badge pb-pending">Em 4 dias</span>
+            </div>
+            <div class="person-row">
+              <div class="person-avatar" style="background:var(--purple); width:30px; font-family:'JetBrains Mono',monospace; font-size:10px;">19d</div>
+              <div class="person-info">
+                <div class="person-name">Inicia feedback 1:1</div>
+                <div class="person-meta">16/05/2026 · Devolutivas individuais</div>
+              </div>
+              <span class="pending-badge pb-pending">Em 19 dias</span>
+            </div>
+            <div class="person-row">
+              <div class="person-avatar" style="background:var(--green); width:30px; font-family:'JetBrains Mono',monospace; font-size:10px;">64d</div>
+              <div class="person-info">
+                <div class="person-name">Encerramento do ciclo</div>
+                <div class="person-meta">30/06/2026 · Resultados consolidados</div>
+              </div>
+              <span class="pending-badge pb-done">Em 64 dias</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ============= TAB: HISTÓRICO ============= -->
+    <div class="tab-panel" data-panel="historico">
+      <div class="cycles-history">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Ciclo</th>
+              <th>Período</th>
+              <th class="center">Status</th>
+              <th class="center">Cobertos</th>
+              <th class="center">Adesão</th>
+              <th class="center">Nota média</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row">
+              <td class="cell-main" data-label="Ciclo">
+                <div class="cycle-name-cell">
+                  <div class="cycle-icon open">26.1</div>
+                  <div class="cycle-cell-info">
+                    <div class="nm">1º Semestre 2026</div>
+                    <div class="meta">cycle_2026_1 · 367 colaboradores</div>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Período">02/03/2026 → 30/06/2026</td>
+              <td class="center" data-label="Status"><span class="status-pill sp-mgr">Aval. gestor</span></td>
+              <td class="center" data-label="Cobertos">367</td>
+              <td class="center" data-label="Adesão"><strong>58,3%</strong></td>
+              <td class="center" data-label="Nota"><span class="score-mini"><span class="star">★</span>4,2</span></td>
+              <td class="right cell-actions" data-label="Ações">
+                <div class="row-actions">
+                  <button class="btn-icon" title="Acompanhar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg></button>
+                  <button class="btn-icon" title="Editar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                </div>
+              </td>
+            </tr>
+            <tr class="row">
+              <td class="cell-main" data-label="Ciclo">
+                <div class="cycle-name-cell">
+                  <div class="cycle-icon closed">25.2</div>
+                  <div class="cycle-cell-info">
+                    <div class="nm">2º Semestre 2025</div>
+                    <div class="meta">cycle_2025_2 · 342 colaboradores</div>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Período">01/09/2025 → 31/12/2025</td>
+              <td class="center" data-label="Status"><span class="status-pill sp-closed">Encerrado</span></td>
+              <td class="center" data-label="Cobertos">342</td>
+              <td class="center" data-label="Adesão"><strong>96,7%</strong></td>
+              <td class="center" data-label="Nota"><span class="score-mini"><span class="star">★</span>4,0</span></td>
+              <td class="right cell-actions" data-label="Ações">
+                <div class="row-actions">
+                  <button class="btn-icon" title="Ver relatório"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></button>
+                  <button class="btn-icon" title="Duplicar como modelo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></button>
+                </div>
+              </td>
+            </tr>
+            <tr class="row">
+              <td class="cell-main" data-label="Ciclo">
+                <div class="cycle-name-cell">
+                  <div class="cycle-icon closed">25.1</div>
+                  <div class="cycle-cell-info">
+                    <div class="nm">1º Semestre 2025</div>
+                    <div class="meta">cycle_2025_1 · 318 colaboradores</div>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Período">01/03/2025 → 30/06/2025</td>
+              <td class="center" data-label="Status"><span class="status-pill sp-closed">Encerrado</span></td>
+              <td class="center" data-label="Cobertos">318</td>
+              <td class="center" data-label="Adesão"><strong>94,3%</strong></td>
+              <td class="center" data-label="Nota"><span class="score-mini"><span class="star">★</span>3,9</span></td>
+              <td class="right cell-actions" data-label="Ações">
+                <div class="row-actions">
+                  <button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></button>
+                  <button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/></svg></button>
+                </div>
+              </td>
+            </tr>
+            <tr class="row">
+              <td class="cell-main" data-label="Ciclo">
+                <div class="cycle-name-cell">
+                  <div class="cycle-icon archived">24.2</div>
+                  <div class="cycle-cell-info">
+                    <div class="nm">2º Semestre 2024</div>
+                    <div class="meta">cycle_2024_2 · 287 colaboradores</div>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Período">01/09/2024 → 31/12/2024</td>
+              <td class="center" data-label="Status"><span class="status-pill sp-archived">Arquivado</span></td>
+              <td class="center" data-label="Cobertos">287</td>
+              <td class="center" data-label="Adesão"><strong>89,2%</strong></td>
+              <td class="center" data-label="Nota"><span class="score-mini"><span class="star">★</span>3,8</span></td>
+              <td class="right cell-actions" data-label="Ações">
+                <div class="row-actions">
+                  <button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></button>
+                </div>
+              </td>
+            </tr>
+            <tr class="row">
+              <td class="cell-main" data-label="Ciclo">
+                <div class="cycle-name-cell">
+                  <div class="cycle-icon archived">24.1</div>
+                  <div class="cycle-cell-info">
+                    <div class="nm">1º Semestre 2024 (importado)</div>
+                    <div class="meta">cycle_2024_1 · migrado de Sólides</div>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Período">01/03/2024 → 30/06/2024</td>
+              <td class="center" data-label="Status"><span class="status-pill sp-archived">Arquivado</span></td>
+              <td class="center" data-label="Cobertos">261</td>
+              <td class="center" data-label="Adesão"><strong>-</strong></td>
+              <td class="center" data-label="Nota"><span class="score-mini"><span class="star">★</span>3,7</span></td>
+              <td class="right cell-actions" data-label="Ações">
+                <div class="row-actions">
+                  <button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============= TAB: COMPETÊNCIAS ============= -->
+    <div class="tab-panel" data-panel="comp">
+      <div class="alert info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>
+          <strong>Competências do ciclo ativo (2026.1).</strong>
+          O peso de cada competência define quanto ela influencia na nota geral. Para alterar, encerre este ciclo ou edite o próximo. Mudanças em ciclos abertos exigem confirmação dupla.
+        </div>
+      </div>
+
+      <div class="cycles-history">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Competência</th>
+              <th>Categoria</th>
+              <th class="center">Peso</th>
+              <th class="center">Avaliações</th>
+              <th class="center">Nota média</th>
+              <th class="right">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Foco no cliente</div><div class="meta" style="font-family:'Sora',sans-serif;">Capacidade de entender e atender necessidades do cliente</div></div></div></td><td><span class="cat cat-comp">Comportamental</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.5</td><td class="center">214</td><td class="center"><span class="score-mini"><span class="star">★</span>4,4</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Comunicação</div><div class="meta" style="font-family:'Sora',sans-serif;">Clareza ao se expressar e escutar ativamente</div></div></div></td><td><span class="cat cat-comp">Comportamental</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.0</td><td class="center">214</td><td class="center"><span class="score-mini"><span class="star">★</span>4,1</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Trabalho em equipe</div><div class="meta" style="font-family:'Sora',sans-serif;">Colabora ativamente e contribui com o grupo</div></div></div></td><td><span class="cat cat-comp">Comportamental</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.0</td><td class="center">214</td><td class="center"><span class="score-mini"><span class="star">★</span>4,3</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Proatividade</div><div class="meta" style="font-family:'Sora',sans-serif;">Antecipa-se a problemas e propõe melhorias</div></div></div></td><td><span class="cat cat-comp">Comportamental</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.2</td><td class="center">214</td><td class="center"><span class="score-mini"><span class="star">★</span>3,9</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Domínio técnico</div><div class="meta" style="font-family:'Sora',sans-serif;">Conhecimento e aplicação das ferramentas/processos</div></div></div></td><td><span class="cat cat-tec">Técnica</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.5</td><td class="center">214</td><td class="center"><span class="score-mini"><span class="star">★</span>4,2</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Qualidade da entrega</div><div class="meta" style="font-family:'Sora',sans-serif;">Atenção a detalhes e cumprimento de padrões</div></div></div></td><td><span class="cat cat-tec">Técnica</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.3</td><td class="center">214</td><td class="center"><span class="score-mini"><span class="star">★</span>4,3</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Liderança</div><div class="meta" style="font-family:'Sora',sans-serif;">Inspira e desenvolve liderados (apenas para gestores)</div></div></div></td><td><span class="cat cat-lid">Liderança</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.5</td><td class="center">68</td><td class="center"><span class="score-mini"><span class="star">★</span>4,0</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+            <tr class="row"><td class="cell-main"><div class="cycle-name-cell"><div class="cycle-cell-info"><div class="nm">Visão estratégica</div><div class="meta" style="font-family:'Sora',sans-serif;">Pensa no longo prazo e em impacto sistêmico</div></div></div></td><td><span class="cat cat-lid">Liderança</span></td><td class="center" style="font-family:'JetBrains Mono',monospace; font-weight:600;">1.0</td><td class="center">68</td><td class="center"><span class="score-mini"><span class="star">★</span>3,8</span></td><td class="right cell-actions"><button class="btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg></button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============= MODAL WIZARD ============= -->
+<div class="modal-overlay" id="cycleModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="cmTitle">Criar novo ciclo de avaliação</div>
+        <div class="modal-sub" id="cmSub">5 passos · cerca de 5 minutos para configurar</div>
+      </div>
+      <button class="modal-close" onclick="closeWizard()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="wizard-steps">
+      <div class="ws-step current" data-step="1"><div class="ws-circle">1</div><span>Identificação</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="2"><div class="ws-circle">2</div><span>Escopo</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="3"><div class="ws-circle">3</div><span>Tipos e escala</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="4"><div class="ws-circle">4</div><span>Competências</span></div>
+      <div class="ws-line"></div>
+      <div class="ws-step" data-step="5"><div class="ws-circle">5</div><span>Cronograma</span></div>
+    </div>
+
+    <div class="modal-body" id="cmBody"></div>
+
+    <div class="modal-foot">
+      <div class="modal-foot-left" id="cmFoot">Defina o nome e a descrição do ciclo</div>
+      <div style="display:flex; gap:9px;">
+        <button class="btn-secondary" id="cmPrev" onclick="prevStep()" style="display:none;">Voltar</button>
+        <button class="btn-primary" id="cmNext" onclick="nextStep()">Avançar →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============= STATE ============= */
+let wizState = {
+  step:1,
+  name:'2026.2 - 2º Semestre',
+  description:'',
+  startDate:'2026-09-01',
+  endDate:'2026-12-31',
+  scope:'all',
+  scale:5,
+  evalTypes:['self','manager'],
+  selfWindow:7,
+  allowAnonymousPeer:'optional',
+  competencies:['foco_cliente','comunicacao','equipe','proatividade','dominio','qualidade','lideranca','estrategia'],
+  selfDeadline:'2026-09-15',
+  managerDeadline:'2026-10-15',
+  closeDate:'2026-12-31'
+};
+
+/* ============= MODAL ============= */
+function openWizard(){
+  document.getElementById('cycleModal').classList.add('show');
+  renderStep();
+}
+function closeWizard(){
+  document.getElementById('cycleModal').classList.remove('show');
+}
+
+function renderStep(){
+  document.querySelectorAll('#cycleModal .ws-step').forEach((el,i)=>{
+    el.classList.remove('current','done');
+    if(i+1 < wizState.step) el.classList.add('done');
+    if(i+1 === wizState.step) el.classList.add('current');
+  });
+  document.querySelectorAll('#cycleModal .ws-line').forEach((el,i)=>{
+    el.classList.toggle('done', i+1 < wizState.step);
+  });
+  document.getElementById('cmPrev').style.display = wizState.step>1 ? 'inline-flex' : 'none';
+  document.getElementById('cmNext').textContent = wizState.step<5 ? 'Avançar →' : 'Criar ciclo (em rascunho)';
+
+  const renderers = [renderStep1, renderStep2, renderStep3, renderStep4, renderStep5];
+  renderers[wizState.step-1]();
+}
+
+function renderStep1(){
+  document.getElementById('cmFoot').textContent = 'Defina como o ciclo aparece para os colaboradores';
+  document.getElementById('cmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Identificação do ciclo</h4>
+        <p>O nome do ciclo aparece no app de cada colaborador, em e-mails e relatórios.</p>
+      </div>
+      <div class="field">
+        <label>Nome do ciclo <span class="req">*</span></label>
+        <input type="text" value="${wizState.name}" oninput="wizState.name=this.value">
+        <div class="field-help">Convenção: AAAA.N (ex: 2026.2 = 2º semestre 2026)</div>
+      </div>
+      <div class="field">
+        <label>Descrição</label>
+        <textarea placeholder="Resumo do contexto deste ciclo (objetivo estratégico, foco, etc.)">${wizState.description}</textarea>
+      </div>
+      <div class="field-grid-2">
+        <div class="field">
+          <label>Início do ciclo <span class="req">*</span></label>
+          <input type="date" value="${wizState.startDate}" oninput="wizState.startDate=this.value">
+        </div>
+        <div class="field">
+          <label>Fim do ciclo <span class="req">*</span></label>
+          <input type="date" value="${wizState.endDate}" oninput="wizState.endDate=this.value">
+        </div>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <div>
+        <strong>Boas práticas:</strong> ciclos semestrais funcionam melhor que trimestrais para empresas até 500 colaboradores. Ciclos anuais reduzem a fadiga de avaliação mas espaçam demais o feedback formal.
+      </div>
+    </div>
+  `;
+}
+
+function renderStep2(){
+  document.getElementById('cmFoot').textContent = 'Defina quem participa do ciclo';
+  document.getElementById('cmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Escopo de participação</h4>
+        <p>Quais colaboradores serão avaliados neste ciclo.</p>
+      </div>
+
+      <div class="eval-types">
+        <label class="eval-type-card ${wizState.scope==='all'?'selected':''}" onclick="wizState.scope='all'; renderStep2();">
+          <div class="etc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="etc-info">
+            <h5>Toda a empresa <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--green);">367 colaboradores</span></h5>
+            <p>Inclui todos os ativos (próprios e terceirizados). Recomendado para a maioria dos casos.</p>
+          </div>
+        </label>
+
+        <label class="eval-type-card ${wizState.scope==='gpc_only'?'selected':''}" onclick="wizState.scope='gpc_only'; renderStep2();">
+          <div class="etc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="etc-info">
+            <h5>Apenas próprios GPC <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--purple);">60 colaboradores</span></h5>
+            <p>Exclui terceirizados (Labuta, Limpactiva, Segure). Útil para ciclos focados em desenvolvimento de carreira interna.</p>
+          </div>
+        </label>
+
+        <label class="eval-type-card ${wizState.scope==='custom'?'selected':''}" onclick="wizState.scope='custom'; renderStep2();">
+          <div class="etc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="etc-info">
+            <h5>Customizado por filial / departamento</h5>
+            <p>Selecione filiais, departamentos ou empregadores específicos. Útil para ciclos pilotos.</p>
+          </div>
+        </label>
+
+        <label class="eval-type-card ${wizState.scope==='leaders_only'?'selected':''}" onclick="wizState.scope='leaders_only'; renderStep2();">
+          <div class="etc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="etc-info">
+            <h5>Apenas líderes <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber);">31 colaboradores</span></h5>
+            <p>Para ciclos de desenvolvimento de liderança ou avaliação ascendente.</p>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="alert warn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      <div>
+        <strong>Atenção sobre prestadoras:</strong> ao incluir terceirizados, o feedback pode ser usado pelo gestor da filial mas não é compartilhado automaticamente com o RH da prestadora. Use a tela de Acessos para definir essa visibilidade se necessário.
+      </div>
+    </div>
+  `;
+}
+
+function renderStep3(){
+  document.getElementById('cmFoot').textContent = 'Configure o que e como será avaliado';
+
+  const types = [
+    {id:'self', label:'Auto-avaliação', desc:'O próprio colaborador se avalia. Base para o diálogo do feedback 1:1.', locked:true},
+    {id:'manager', label:'Avaliação do gestor', desc:'O líder direto avalia o colaborador. Núcleo do processo no MVP.', locked:true},
+    {id:'peer', label:'Avaliação entre pares (360°)', desc:'Colegas avaliam uns aos outros. Pode ser anônimo.', tier:'pro'},
+    {id:'subord', label:'Avaliação ascendente', desc:'Subordinados avaliam o líder. Útil para ciclos de desenvolvimento de gestão.', tier:'pro'}
+  ];
+
+  document.getElementById('cmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Tipos de avaliação habilitados</h4>
+        <p>O MVP do GPC tem auto-avaliação e do gestor obrigatórias. 360° está em roadmap PRO.</p>
+      </div>
+      <div class="eval-types">
+        ${types.map(t=>{
+          const isSelected = wizState.evalTypes.includes(t.id);
+          const isDisabled = t.tier === 'pro';
+          return `
+            <label class="eval-type-card ${isSelected?'selected':''} ${isDisabled?'disabled':''}" ${!isDisabled && !t.locked ? `onclick="toggleEvalType('${t.id}')"` : ''}>
+              <div class="etc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+              <div class="etc-info">
+                <h5>${t.label}
+                  ${t.locked ? '<span class="locked-tag">obrigatório</span>' : ''}
+                  ${t.tier === 'pro' ? '<span class="tier-tag pro">PRO</span>' : ''}
+                </h5>
+                <p>${t.desc}</p>
+              </div>
+            </label>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Escala de avaliação</h4>
+        <p>Range de notas. Aplica para todas as competências.</p>
+      </div>
+      <div class="radio-group">
+        <label class="${wizState.scale===5?'selected':''}" onclick="wizState.scale=5; renderStep3();">1 a 5</label>
+        <label class="${wizState.scale===7?'selected':''}" onclick="wizState.scale=7; renderStep3();">1 a 7</label>
+        <label class="${wizState.scale===10?'selected':''}" onclick="wizState.scale=10; renderStep3();">1 a 10</label>
+        <label class="${wizState.scale===100?'selected':''}" onclick="wizState.scale=100; renderStep3();">0 a 100</label>
+      </div>
+      <div class="field-help" style="margin-top:7px;">No GPC usamos 1 a 5 desde o ciclo 2024.1 · manter consistência facilita comparação histórica.</div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Janela de auto-avaliação</h4>
+        <p>Quantos dias antes do prazo do gestor o colaborador deve concluir a auto-avaliação.</p>
+      </div>
+      <div class="field">
+        <select onchange="wizState.selfWindow=parseInt(this.value)">
+          <option value="3">3 dias</option>
+          <option value="5">5 dias</option>
+          <option value="7" selected>7 dias (padrão)</option>
+          <option value="10">10 dias</option>
+          <option value="14">14 dias</option>
+        </select>
+      </div>
+    </div>
+  `;
+}
+
+function toggleEvalType(id){
+  const i = wizState.evalTypes.indexOf(id);
+  if(i>=0) wizState.evalTypes.splice(i,1);
+  else wizState.evalTypes.push(id);
+  renderStep3();
+}
+
+function renderStep4(){
+  document.getElementById('cmFoot').textContent = 'Selecione e pondere as competências do ciclo';
+
+  const allComps = [
+    {id:'foco_cliente', name:'Foco no cliente', cat:'comp', desc:'Capacidade de entender e atender necessidades do cliente'},
+    {id:'comunicacao', name:'Comunicação', cat:'comp', desc:'Clareza ao se expressar e escutar ativamente'},
+    {id:'equipe', name:'Trabalho em equipe', cat:'comp', desc:'Colabora ativamente e contribui com o grupo'},
+    {id:'proatividade', name:'Proatividade', cat:'comp', desc:'Antecipa-se a problemas e propõe melhorias'},
+    {id:'dominio', name:'Domínio técnico', cat:'tec', desc:'Conhecimento e aplicação das ferramentas/processos'},
+    {id:'qualidade', name:'Qualidade da entrega', cat:'tec', desc:'Atenção a detalhes e cumprimento de padrões'},
+    {id:'organizacao', name:'Organização e prazo', cat:'tec', desc:'Gestão de tempo e cumprimento de deadlines'},
+    {id:'lideranca', name:'Liderança', cat:'lid', desc:'Inspira e desenvolve liderados (apenas para gestores)'},
+    {id:'estrategia', name:'Visão estratégica', cat:'lid', desc:'Pensa no longo prazo e em impacto sistêmico'}
+  ];
+  const catLabels = {comp:'Comportamental', tec:'Técnica', lid:'Liderança'};
+  const catClasses = {comp:'cat-comp', tec:'cat-tec', lid:'cat-lid'};
+
+  document.getElementById('cmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Competências avaliadas</h4>
+        <p>Selecione as competências e ajuste o peso de cada uma. Recomendado: 6 a 10 competências por ciclo.</p>
+      </div>
+
+      <div class="comp-list">
+        ${allComps.map(c=>{
+          const checked = wizState.competencies.includes(c.id);
+          return `
+            <div class="comp-item">
+              <input type="checkbox" ${checked?'checked':''} onchange="toggleComp('${c.id}')">
+              <div>
+                <div class="name">${c.name}</div>
+                <div style="font-size:10.5px; color:var(--txt2); margin-top:1px;">${c.desc}</div>
+              </div>
+              <span class="cat ${catClasses[c.cat]}">${catLabels[c.cat]}</span>
+              <input type="number" class="weight-input" value="${c.cat==='lid'||c.id==='dominio'||c.id==='qualidade'||c.id==='foco_cliente'?'1.5':'1.0'}" step="0.1" min="0.1" max="3.0" ${!checked?'disabled':''}>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="alert info">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <div>
+        <strong>Como o peso afeta a nota:</strong> a nota geral é a média ponderada das competências. Peso 1.5 conta 50% mais que peso 1.0. Mantenha os pesos consistentes com ciclos anteriores para preservar a comparabilidade histórica.
+      </div>
+    </div>
+  `;
+}
+
+function toggleComp(id){
+  const i = wizState.competencies.indexOf(id);
+  if(i>=0) wizState.competencies.splice(i,1);
+  else wizState.competencies.push(id);
+  renderStep4();
+}
+
+function renderStep5(){
+  document.getElementById('cmFoot').textContent = 'Defina os marcos do cronograma';
+
+  document.getElementById('cmBody').innerHTML = `
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Cronograma do ciclo</h4>
+        <p>O sistema enviará lembretes automáticos 3 dias antes de cada prazo.</p>
+      </div>
+
+      <div class="deadline-grid">
+        <div class="deadline-card self">
+          <label>Prazo da auto-avaliação</label>
+          <input type="date" value="${wizState.selfDeadline}" oninput="wizState.selfDeadline=this.value">
+          <div class="duration">~ 14 dias para concluir</div>
+        </div>
+        <div class="deadline-card mgr">
+          <label>Prazo do gestor</label>
+          <input type="date" value="${wizState.managerDeadline}" oninput="wizState.managerDeadline=this.value">
+          <div class="duration">30 dias após auto-avaliação</div>
+        </div>
+        <div class="deadline-card close">
+          <label>Encerramento do ciclo</label>
+          <input type="date" value="${wizState.closeDate}" oninput="wizState.closeDate=this.value">
+          <div class="duration">+ 60 dias para feedback 1:1</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-head">
+        <h4>Resumo final</h4>
+      </div>
+      <div class="review-summary">
+        <div class="review-row"><span class="lbl">Nome do ciclo</span><span class="val">${wizState.name}</span></div>
+        <div class="review-row"><span class="lbl">Período</span><span class="val">${wizState.startDate} → ${wizState.endDate}</span></div>
+        <div class="review-row"><span class="lbl">Escopo</span><span class="val">${wizState.scope==='all'?'Toda a empresa (367)':wizState.scope==='gpc_only'?'Apenas próprios GPC (60)':wizState.scope==='leaders_only'?'Apenas líderes (31)':'Customizado'}</span></div>
+        <div class="review-row"><span class="lbl">Tipos de avaliação</span><span class="val">${wizState.evalTypes.join(' + ').replace('self','Auto').replace('manager','Gestor')}</span></div>
+        <div class="review-row"><span class="lbl">Escala</span><span class="val">${wizState.scale===100?'0 a 100':`1 a ${wizState.scale}`}</span></div>
+        <div class="review-row total"><span class="lbl">Competências</span><span class="val">${wizState.competencies.length} selecionadas</span></div>
+      </div>
+    </div>
+
+    <div class="alert info">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      <div>
+        O ciclo será criado em <strong>rascunho</strong>. Você poderá revisar e fazer ajustes antes de "abrir" formalmente. Uma vez aberto, mudanças estruturais (escala, competências) ficam bloqueadas para preservar a integridade dos dados.
+      </div>
+    </div>
+  `;
+}
+
+function nextStep(){
+  if(wizState.step<5){wizState.step++; renderStep();}
+  else{
+    alert('Em produção, isto criaria o registro em review_cycles e cycle_competencies via Supabase RPC, com status=draft. Fechando o wizard.');
+    closeWizard();
+  }
+}
+function prevStep(){if(wizState.step>1){wizState.step--; renderStep();}}
+
+/* ============= TABS ============= */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+    if(t.dataset.tab==='acompanha') setTimeout(renderChart, 50);
+  });
+});
+
+/* ============= CHART ============= */
+function renderChart(){
+  Chart.defaults.color = '#5A7090';
+  Chart.defaults.font.family = "'Sora', sans-serif";
+  Chart.defaults.font.size = 10.5;
+  if(window._chD) window._chD.destroy();
+  window._chD = new Chart(document.getElementById('chDistribution'), {
+    type:'bar',
+    data:{
+      labels:['1 (insuf.)','2 (precisa\\nmelhorar)','3 (atende)','4 (supera)','5 (excepc.)'],
+      datasets:[{
+        label:'Avaliações',
+        data:[3, 12, 47, 108, 44],
+        backgroundColor:['#C0392B','#F5831F','#A8B5C8','#3D5F95','#1E7B4B'],
+        borderRadius:4,
+        maxBarThickness:46
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{backgroundColor:'#1A2D4F', cornerRadius:6, callbacks:{footer:items=>{const tot=items[0].parsed.y; const total=214; return `${((tot/total)*100).toFixed(1)}% do total`;}}}},
+      scales:{x:{grid:{display:false}, ticks:{color:'#1A2D4F', font:{size:10.5}}}, y:{beginAtZero:true, grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#8FA3BE'}}}
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', renderChart);
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+</script>
+</body>
+</html>
