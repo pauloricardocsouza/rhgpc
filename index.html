@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>R2 People · Demo Visual · Sessões B2 e B3</title>
+
+<style>
+  /* ========================================================================
+     Variaveis
+     ====================================================================== */
+  :root {
+    --bg: #fafafa;
+    --bg-elevated: #ffffff;
+    --bg-sidebar: #0a0a0a;
+    --bg-sidebar-hover: rgba(255,255,255,0.06);
+    --bg-sidebar-active: rgba(255,255,255,0.10);
+
+    --border: #e4e4e7;
+    --border-strong: #d4d4d8;
+    --border-dark: #27272a;
+
+    --text: #18181b;
+    --text-muted: #71717a;
+    --text-faint: #a1a1aa;
+    --text-on-dark: #fafafa;
+    --text-on-dark-muted: #a1a1aa;
+
+    --accent: #18181b;
+    --accent-blue: #2563eb;
+    --accent-green: #16a34a;
+    --accent-amber: #f59e0b;
+    --accent-red: #dc2626;
+    --accent-amber-bg: #fef3c7;
+    --accent-green-bg: #dcfce7;
+    --accent-red-bg: #fee2e2;
+    --accent-blue-bg: #dbeafe;
+
+    --radius: 8px;
+    --radius-sm: 6px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 20px 40px rgba(0,0,0,0.20);
+
+    --sidebar-w-expanded: 240px;
+    --sidebar-w-collapsed: 64px;
+    --topbar-h: 56px;
+
+    --font-display: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    font-family: var(--font-body);
+    color: var(--text);
+    background: var(--bg);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+
+  /* ========================================================================
+     Layout · Shell
+     ====================================================================== */
+  .shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ========================================================================
+     Sidebar (B3)
+     ====================================================================== */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    background: var(--bg-sidebar);
+    color: var(--text-on-dark);
+    border-right: 1px solid var(--border-dark);
+    display: flex;
+    flex-direction: column;
+    width: var(--sidebar-w-expanded);
+    transition: width 200ms ease-out;
+    flex-shrink: 0;
+  }
+  .sidebar.collapsed { width: var(--sidebar-w-collapsed); }
+
+  .sidebar-header {
+    height: var(--topbar-h);
+    border-bottom: 1px solid var(--border-dark);
+    display: flex; align-items: center;
+    padding: 0 16px;
+    justify-content: space-between;
+  }
+  .sidebar.collapsed .sidebar-header { padding: 0 12px; justify-content: center; }
+
+  .sidebar-brand {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    user-select: none;
+  }
+  .sidebar-brand .accent { color: var(--text-on-dark-muted); }
+  .sidebar.collapsed .sidebar-brand { display: none; }
+
+  .sidebar-toggle {
+    background: transparent;
+    border: 0;
+    color: var(--text-on-dark-muted);
+    width: 28px; height: 28px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 120ms;
+  }
+  .sidebar-toggle:hover { background: var(--bg-sidebar-hover); color: var(--text-on-dark); }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+
+  .sidebar-section { margin-top: 16px; }
+  .sidebar-section:first-child { margin-top: 0; }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    padding: 4px 16px;
+  }
+  .sidebar.collapsed .sidebar-section-label { display: none; }
+  .sidebar.collapsed .sidebar-section { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-dark); }
+  .sidebar.collapsed .sidebar-section:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+
+  .sidebar-item {
+    display: flex; align-items: center; gap: 12px;
+    margin: 1px 8px;
+    padding: 8px 12px;
+    color: var(--text-on-dark-muted);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    transition: all 120ms;
+    position: relative;
+    cursor: pointer;
+  }
+  .sidebar-item:hover { background: var(--bg-sidebar-hover); color: var(--text-on-dark); }
+  .sidebar-item.active { background: var(--bg-sidebar-active); color: var(--text-on-dark); }
+  .sidebar-item.active::before {
+    content: '';
+    position: absolute;
+    left: -8px; top: 8px; bottom: 8px;
+    width: 2px;
+    background: var(--text-on-dark);
+    border-radius: 2px;
+  }
+
+  .sidebar-item .icon { width: 16px; height: 16px; flex-shrink: 0; }
+  .sidebar-item .label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar.collapsed .sidebar-item { justify-content: center; }
+  .sidebar.collapsed .sidebar-item .label { display: none; }
+  .sidebar.collapsed .sidebar-item .badge-readonly { display: none; }
+  .sidebar.collapsed .sidebar-item.readonly::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; right: 12px;
+    width: 6px; height: 6px;
+    background: var(--accent-amber);
+    border-radius: 50%;
+  }
+
+  .sidebar-item .badge-readonly {
+    width: 14px; height: 14px;
+    color: var(--accent-amber);
+    flex-shrink: 0;
+  }
+
+  /* tooltip nativo via title quando colapsada */
+
+  .sidebar-footer {
+    border-top: 1px solid var(--border-dark);
+    padding: 12px 16px;
+  }
+  .sidebar.collapsed .sidebar-footer { padding: 12px; text-align: center; }
+
+  .sidebar-role {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .sidebar-role .value {
+    color: var(--text-on-dark);
+    font-family: var(--font-display);
+    margin-left: 4px;
+  }
+  .sidebar.collapsed .sidebar-role { display: none; }
+
+  .sidebar-role-avatar {
+    display: none;
+    width: 28px; height: 28px;
+    margin: 0 auto;
+    background: var(--bg-sidebar-hover);
+    color: var(--text-on-dark);
+    border-radius: 50%;
+    font-family: var(--font-display);
+    font-size: 10px;
+    text-transform: uppercase;
+    align-items: center; justify-content: center;
+  }
+  .sidebar.collapsed .sidebar-role-avatar { display: flex; }
+
+  /* ========================================================================
+     Main · Topbar
+     ====================================================================== */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+  .topbar {
+    height: var(--topbar-h);
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    gap: 16px;
+  }
+  .topbar-title {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .topbar-title .crumb { color: var(--text); }
+
+  .topbar-right { display: flex; gap: 8px; align-items: center; }
+
+  .role-switcher {
+    display: flex; gap: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 2px;
+  }
+  .role-switcher button {
+    background: transparent;
+    border: 0;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: var(--font-display);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: all 120ms;
+  }
+  .role-switcher button:hover { color: var(--text); }
+  .role-switcher button.active {
+    background: var(--bg-elevated);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .demo-banner {
+    display: inline-flex;
+    align-items: center; gap: 6px;
+    background: var(--accent-amber-bg);
+    color: #92400e;
+    border: 1px solid #fcd34d;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ========================================================================
+     Content
+     ====================================================================== */
+  .content { flex: 1; padding: 32px 40px; max-width: 1200px; width: 100%; }
+
+  .page-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .page-header h1 {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .page-header p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  /* ========================================================================
+     Module Cards (B2)
+     ====================================================================== */
+  .modules-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .module-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 120ms;
+  }
+  .module-card:hover { border-color: var(--border-strong); }
+  .module-card.expanded { box-shadow: var(--shadow-sm); }
+
+  .module-header {
+    display: flex; align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    transition: background 120ms;
+  }
+  .module-header:hover { background: var(--bg); }
+
+  .module-chevron {
+    width: 16px; height: 16px;
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transition: transform 200ms;
+  }
+  .module-card.expanded .module-chevron { transform: rotate(90deg); }
+
+  .module-icon {
+    width: 36px; height: 36px;
+    background: #f4f4f5;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    color: #52525b;
+    flex-shrink: 0;
+  }
+  .module-icon svg { width: 18px; height: 18px; }
+
+  .module-title-block { flex: 1; min-width: 0; }
+  .module-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .module-title {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 14px;
+  }
+  .module-code {
+    font-family: var(--font-display);
+    font-size: 10px;
+    color: var(--text-faint);
+  }
+  .module-description {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .module-summary {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    flex-shrink: 0;
+  }
+
+  .badge-core {
+    background: var(--accent);
+    color: white;
+    font-family: var(--font-display);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  /* details */
+  .module-details {
+    border-top: 1px solid var(--border);
+    padding: 16px;
+    background: #fafafa;
+  }
+
+  /* super_admin · stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+  }
+  .stat-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+  .stats-note {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* diretoria · scope blocks */
+  .scope-block { margin-top: 12px; }
+  .scope-block:first-child { margin-top: 0; }
+  .scope-block-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .scope-list {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .scope-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f4f4f5;
+  }
+  .scope-row:last-child { border-bottom: 0; }
+
+  .scope-status { width: 16px; height: 16px; flex-shrink: 0; }
+  .scope-status.active { color: var(--accent-green); }
+  .scope-status.disabled { color: var(--accent-amber); }
+  .scope-status.inactive { color: var(--text-faint); }
+  .scope-status.core { color: var(--text-faint); }
+
+  .scope-info { flex: 1; min-width: 0; }
+  .scope-name { font-size: 13px; font-weight: 500; }
+  .scope-code { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+
+  .scope-actions { display: flex; gap: 4px; }
+
+  .btn {
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 120ms;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .btn:hover { border-color: var(--border-strong); background: #fafafa; }
+  .btn.btn-activate { color: var(--accent-green); border-color: #bbf7d0; }
+  .btn.btn-activate:hover { background: var(--accent-green-bg); }
+  .btn.btn-reactivate { color: var(--accent-blue); border-color: #bfdbfe; }
+  .btn.btn-reactivate:hover { background: var(--accent-blue-bg); }
+  .btn.btn-deactivate { color: var(--text); }
+  .btn.btn-danger {
+    background: var(--accent-red);
+    color: white;
+    border-color: var(--accent-red);
+  }
+  .btn.btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
+  .btn.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .scope-core-tag {
+    font-size: 10px;
+    color: var(--text-faint);
+    font-style: italic;
+    padding: 0 8px;
+  }
+
+  /* ========================================================================
+     Modal
+     ====================================================================== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .modal {
+    background: var(--bg-elevated);
+    border-radius: var(--radius);
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 20px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(8px);
+    transition: transform 200ms;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+  .modal-icon {
+    width: 36px; height: 36px; flex-shrink: 0;
+    background: var(--accent-amber-bg);
+    color: #92400e;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-icon svg { width: 18px; height: 18px; }
+  .modal-title-block { flex: 1; }
+  .modal-title { font-size: 16px; font-weight: 600; margin: 0; }
+  .modal-subtitle { font-size: 12px; color: var(--text-muted); margin: 2px 0 0; }
+
+  .alert-box {
+    background: var(--accent-amber-bg);
+    border: 1px solid #fcd34d;
+    color: #78350f;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+
+  .impact-list { list-style: none; padding: 0; margin: 0; }
+  .impact-row {
+    display: flex; justify-content: space-between;
+    padding: 7px 10px;
+    background: var(--bg);
+    border-radius: 4px;
+    margin-bottom: 2px;
+    font-size: 12px;
+  }
+  .impact-row .count {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+  .impact-row .count.zero { color: var(--text-faint); }
+  .impact-row .count.warn { color: #b45309; }
+
+  .form-group { margin-bottom: 12px; }
+  .form-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .form-textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: vertical;
+  }
+  .form-textarea:focus { outline: none; border-color: var(--accent); }
+
+  .consent {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 12px 0;
+    cursor: pointer;
+    user-select: none;
+  }
+  .consent input { margin-top: 2px; }
+  .consent-text { font-size: 12px; color: var(--text); }
+
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+  .modal-actions .btn { padding: 8px 14px; font-size: 12px; }
+
+  /* ========================================================================
+     Section header above modules
+     ====================================================================== */
+  .section-divider {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ====================================================================
+       Sidebar (B3)
+       ==================================================================== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-brand">R2 <span class="accent">people</span></span>
+      <button class="sidebar-toggle" onclick="toggleSidebar()" title="Recolher/expandir">
+        <svg id="toggleIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-role">
+        Logado como <span class="value" id="sidebarRole">super_admin</span>
+      </div>
+      <div class="sidebar-role-avatar" id="sidebarRoleAvatar">SA</div>
+    </div>
+  </aside>
+
+  <!-- ====================================================================
+       Main
+       ==================================================================== -->
+  <div class="main">
+    <header class="topbar">
+      <div class="topbar-title">
+        <span>Admin</span> · <span class="crumb">Módulos</span>
+      </div>
+
+      <div class="topbar-right">
+        <span class="demo-banner">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+          Demo offline · sem servidor
+        </span>
+        <div class="role-switcher" id="roleSwitcher">
+          <button data-role="super_admin" class="active" onclick="switchRole('super_admin')">super_admin</button>
+          <button data-role="diretoria" onclick="switchRole('diretoria')">diretoria</button>
+          <button data-role="rh" onclick="switchRole('rh')">rh</button>
+          <button data-role="lider" onclick="switchRole('lider')">lider</button>
+          <button data-role="colaborador" onclick="switchRole('colaborador')">colaborador</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-header">
+        <h1>Gestão de Módulos</h1>
+        <p id="pageSubtitle">Visão global · todos os tenants</p>
+      </div>
+
+      <div class="modules-list" id="modulesList"></div>
+    </main>
+  </div>
+</div>
+
+<!-- ========================================================================
+     Modal de confirmação
+     ====================================================================== -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+
+<script>
+/* ============================================================================
+   Mock de dados · simula o estado do banco
+   ========================================================================= */
+
+const MODULES_CATALOG = [
+  { code: 'base',        display_name: 'Base',                                       description: 'Cadastros essenciais e RBAC',                  icon: 'Layers',     is_core: true,  display_order: 0 },
+  { code: 'recognition', display_name: 'Reconhecimentos',                            description: 'Feed de reconhecimentos entre colegas',        icon: 'Award',      is_core: false, display_order: 10 },
+  { code: 'pdi',         display_name: 'PDI · Plano de Desenvolvimento Individual',  description: 'Planos de desenvolvimento e evidências',       icon: 'TrendingUp', is_core: false, display_order: 20 },
+  { code: 'onboarding',  display_name: 'Onboarding',                                 description: 'Jornadas e checklists de integração',          icon: 'UserPlus',   is_core: false, display_order: 30 },
+  { code: 'ninebox',     display_name: '9-Box',                                      description: 'Avaliação matricial de potencial e desempenho',icon: 'Grid3x3',    is_core: false, display_order: 40 },
+  { code: 'climate',     display_name: 'Clima Organizacional',                       description: 'Pesquisas de clima e engajamento',             icon: 'Activity',   is_core: false, display_order: 50 },
+];
+
+// Estado mockado de activations · campo: { code, scope_kind, scope_id, soft_disabled }
+let ACTIVATIONS = [
+  { code: 'recognition', scope_kind: 'tenant',        scope_id: 'tenant-gpc', soft_disabled: false },
+  { code: 'ninebox',     scope_kind: 'tenant',        scope_id: 'tenant-gpc', soft_disabled: false },
+  { code: 'pdi',         scope_kind: 'employer_unit', scope_id: 'eu-atp',     soft_disabled: false },
+  { code: 'pdi',         scope_kind: 'employer_unit', scope_id: 'eu-cestao',  soft_disabled: true  }, // demo readonly
+  { code: 'onboarding',  scope_kind: 'tenant',        scope_id: 'tenant-gpc', soft_disabled: false },
+];
+
+// Estrutura organizacional mock (visível para diretoria do tenant-gpc)
+const TENANT_ID = 'tenant-gpc';
+const EMPLOYER_UNITS = [
+  { id: 'eu-atp',    code: 'ATP',    name: 'ATP Varejo / Atacado' },
+  { id: 'eu-cestao', code: 'CES',    name: 'Cestão L1' },
+];
+const WORKING_UNITS = [
+  { id: 'wu-fsa-c',  code: 'FSA-C',  name: 'Loja Centro · Feira de Santana',  employer_unit_id: 'eu-atp' },
+  { id: 'wu-fsa-n',  code: 'FSA-N',  name: 'Loja Norte · Feira de Santana',   employer_unit_id: 'eu-atp' },
+  { id: 'wu-inh',    code: 'INH',    name: 'Cestão Inhambupe',                employer_unit_id: 'eu-cestao' },
+];
+
+const TENANTS_TOTAL = 3;
+const EMPLOYER_UNITS_TOTAL_GLOBAL = 7;
+const WORKING_UNITS_TOTAL_GLOBAL = 24;
+
+// Catalogo de itens da navbar (espelha my_navbar_items_by_role do SQL)
+const NAVBAR_BY_ROLE = {
+  super_admin: [
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#',                section: 'main',    module_code: null },
+    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: '#',                section: 'main',    module_code: null },
+    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: '#',                section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#',                section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#',                section: 'modules', module_code: 'pdi' },
+    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: '#',                section: 'modules', module_code: 'onboarding' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#',                section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                section: 'modules', module_code: 'climate' },
+    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: '#',                section: 'main',    module_code: null },
+    { key: 'admin_modules',  label: 'Módulos',          icon: 'Layers',     path: '/admin/modulos',   section: 'admin',   module_code: null, isCurrent: true },
+    { key: 'admin_tenants',  label: 'Tenants',          icon: 'Building2',  path: '#',                section: 'admin',   module_code: null },
+    { key: 'admin_users',    label: 'Usuários',         icon: 'UserCog',    path: '#',                section: 'admin',   module_code: null },
+    { key: 'admin_audit',    label: 'Auditoria',        icon: 'FileSearch', path: '#',                section: 'admin',   module_code: null },
+  ],
+  diretoria: [
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#',                section: 'main',    module_code: null },
+    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: '#',                section: 'main',    module_code: null },
+    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: '#',                section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#',                section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#',                section: 'modules', module_code: 'pdi' },
+    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: '#',                section: 'modules', module_code: 'onboarding' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#',                section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                section: 'modules', module_code: 'climate' },
+    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: '#',                section: 'main',    module_code: null },
+    { key: 'admin_modules',  label: 'Módulos',          icon: 'Layers',     path: '/admin/modulos',   section: 'admin',   module_code: null, isCurrent: true },
+    { key: 'admin_users',    label: 'Usuários',         icon: 'UserCog',    path: '#',                section: 'admin',   module_code: null },
+  ],
+  rh: [
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#', section: 'main',    module_code: null },
+    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: '#', section: 'main',    module_code: null },
+    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: '#', section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#', section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#', section: 'modules', module_code: 'pdi' },
+    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: '#', section: 'modules', module_code: 'onboarding' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#', section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#', section: 'modules', module_code: 'climate' },
+    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: '#', section: 'main',    module_code: null },
+  ],
+  lider: [
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#', section: 'main',    module_code: null },
+    { key: 'my_team',        label: 'Meu Time',         icon: 'Users',      path: '#', section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#', section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#', section: 'modules', module_code: 'pdi' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#', section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#', section: 'modules', module_code: 'climate' },
+  ],
+  colaborador: [
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#', section: 'main',    module_code: null },
+    { key: 'my_profile',     label: 'Meu Perfil',       icon: 'User',       path: '#', section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#', section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'Meu PDI',          icon: 'TrendingUp', path: '#', section: 'modules', module_code: 'pdi' },
+    { key: 'ninebox',        label: 'Auto-avaliação',   icon: 'Grid3x3',    path: '#', section: 'modules', module_code: 'ninebox' },
+    { key: 'onboarding',     label: 'Meu Onboarding',   icon: 'UserPlus',   path: '#', section: 'modules', module_code: 'onboarding' },
+    { key: 'climate',        label: 'Pesquisa de Clima',icon: 'Activity',   path: '#', section: 'modules', module_code: 'climate' },
+  ],
+};
+
+const SECTION_LABELS = { main: 'Principal', modules: 'Módulos', admin: 'Administração' };
+
+// Para o usuário "diretoria" mockado, ele pertence a uma employer/working unit
+// específica - isso afeta module_is_active_for_me
+const USER_CONTEXT = {
+  super_admin: { role: 'super_admin', tenant_id: null,        employer_unit_id: null,    working_unit_id: null },
+  diretoria:   { role: 'diretoria',   tenant_id: TENANT_ID,   employer_unit_id: 'eu-atp', working_unit_id: 'wu-fsa-c' },
+  rh:          { role: 'rh',          tenant_id: TENANT_ID,   employer_unit_id: 'eu-atp', working_unit_id: 'wu-fsa-c' },
+  lider:       { role: 'lider',       tenant_id: TENANT_ID,   employer_unit_id: 'eu-atp', working_unit_id: 'wu-fsa-c' },
+  colaborador: { role: 'colaborador', tenant_id: TENANT_ID,   employer_unit_id: 'eu-cestao', working_unit_id: 'wu-inh' },
+};
+
+// Estado da app
+let currentRole = 'super_admin';
+let expandedModules = new Set();
+let pendingDeactivation = null; // { code, scope_kind, scope_id, label, name }
+
+
+/* ============================================================================
+   Lógica · espelha helpers SQL module_is_active_for_user / module_is_readonly
+   ========================================================================= */
+
+function moduleIsActiveForUser(moduleCode, ctx) {
+  if (ctx.role === 'super_admin') return true;
+  const m = MODULES_CATALOG.find(x => x.code === moduleCode);
+  if (m && m.is_core) return true;
+  if (!ctx.tenant_id) return false;
+
+  // Tenant scope
+  if (ACTIVATIONS.some(a => a.code === moduleCode && a.scope_kind === 'tenant'
+        && a.scope_id === ctx.tenant_id && !a.soft_disabled)) return true;
+  // Employer
+  if (ctx.employer_unit_id && ACTIVATIONS.some(a => a.code === moduleCode && a.scope_kind === 'employer_unit'
+        && a.scope_id === ctx.employer_unit_id && !a.soft_disabled)) return true;
+  // Working
+  if (ctx.working_unit_id && ACTIVATIONS.some(a => a.code === moduleCode && a.scope_kind === 'working_unit'
+        && a.scope_id === ctx.working_unit_id && !a.soft_disabled)) return true;
+
+  return false;
+}
+
+function moduleIsReadonlyForUser(moduleCode, ctx) {
+  if (ctx.role === 'super_admin') return false;
+  const m = MODULES_CATALOG.find(x => x.code === moduleCode);
+  if (m && m.is_core) return false;
+  if (!ctx.tenant_id) return false;
+
+  const hasDisabled = ACTIVATIONS.some(a => a.code === moduleCode && a.soft_disabled && (
+    (a.scope_kind === 'tenant'        && a.scope_id === ctx.tenant_id) ||
+    (a.scope_kind === 'employer_unit' && a.scope_id === ctx.employer_unit_id) ||
+    (a.scope_kind === 'working_unit'  && a.scope_id === ctx.working_unit_id)
+  ));
+  if (!hasDisabled) return false;
+  return !moduleIsActiveForUser(moduleCode, ctx);
+}
+
+
+/* ============================================================================
+   Icons · SVG por nome
+   ========================================================================= */
+
+const ICONS = {
+  Home:       '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  Users:      '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  Network:    '<rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-4h14v4M12 8v4"/>',
+  Award:      '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/>',
+  TrendingUp: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  UserPlus:   '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>',
+  Grid3x3:    '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/>',
+  Activity:   '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  BarChart3:  '<path d="M3 3v18h18"/><path d="M7 16V9M12 16v-5M17 16v-9"/>',
+  Layers:     '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  Building2:  '<rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>',
+  UserCog:    '<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4M19 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM21 16h-1M19 12v1M19 19v1M22.5 14.5l-.7.7M16.2 17.3l-.7.7M22.5 17.5l-.7-.7M16.2 14.7l-.7-.7"/>',
+  FileSearch: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="11.5" cy="14.5" r="2.5"/><line x1="13.3" y1="16.3" x2="15" y2="18"/>',
+  User:       '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  CheckCircle:'<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  XCircle:    '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+  AlertTri:   '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  Lock:       '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  Chevron:    '<polyline points="9 18 15 12 9 6"/>',
+};
+
+function svgIcon(name, sizeClass = '') {
+  const path = ICONS[name] || ICONS.Layers;
+  return `<svg class="${sizeClass}" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+}
+
+
+/* ============================================================================
+   Render · Sidebar
+   ========================================================================= */
+
+function renderSidebar() {
+  const items = NAVBAR_BY_ROLE[currentRole] || [];
+  const ctx = USER_CONTEXT[currentRole];
+
+  // Filtrar itens conforme estado do módulo
+  const visibleItems = [];
+  for (const it of items) {
+    if (!it.module_code) {
+      visibleItems.push({ ...it, readonly: false });
+    } else {
+      const active   = moduleIsActiveForUser(it.module_code, ctx);
+      const readonly = moduleIsReadonlyForUser(it.module_code, ctx);
+      if (active)        visibleItems.push({ ...it, readonly: false });
+      else if (readonly) visibleItems.push({ ...it, readonly: true });
+      // senão omite
+    }
+  }
+
+  // Agrupar por section preservando ordem
+  const sections = [];
+  const seen = {};
+  for (const it of visibleItems) {
+    if (!(it.section in seen)) { seen[it.section] = sections.length; sections.push({ name: it.section, items: [] }); }
+    sections[seen[it.section]].items.push(it);
+  }
+
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = sections.map((s, idx) => `
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">${SECTION_LABELS[s.name] || s.name}</div>
+      ${s.items.map(it => `
+        <a class="sidebar-item ${it.isCurrent ? 'active' : ''} ${it.readonly ? 'readonly' : ''}"
+           href="${it.path}"
+           title="${it.label}${it.readonly ? ' (somente leitura)' : ''}"
+           onclick="event.preventDefault()">
+          ${svgIcon(it.icon, 'icon')}
+          <span class="label">${it.label}</span>
+          ${it.readonly ? '<span class="badge-readonly">' + svgIcon('Lock') + '</span>' : ''}
+        </a>
+      `).join('')}
+    </div>
+  `).join('');
+
+  // Footer
+  document.getElementById('sidebarRole').textContent = currentRole;
+  document.getElementById('sidebarRoleAvatar').textContent = currentRole.slice(0, 2).toUpperCase();
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  sb.classList.toggle('collapsed');
+  // Vira o chevron
+  const isCollapsed = sb.classList.contains('collapsed');
+  document.getElementById('toggleIcon').innerHTML = isCollapsed
+    ? '<path d="M9 18l6-6-6-6"/>'
+    : '<path d="M15 18l-6-6 6-6"/>';
+}
+
+
+/* ============================================================================
+   Render · página /admin/modulos (B2)
+   ========================================================================= */
+
+function getActivationState(code, scope_kind, scope_id) {
+  const a = ACTIVATIONS.find(x => x.code === code && x.scope_kind === scope_kind && x.scope_id === scope_id);
+  if (!a) return { active: false, disabled: false };
+  return { active: !a.soft_disabled, disabled: a.soft_disabled };
+}
+
+function getGlobalView(code) {
+  const tenantsActive = new Set(ACTIVATIONS.filter(a => a.code === code && a.scope_kind === 'tenant' && !a.soft_disabled).map(a => a.scope_id)).size;
+  const tenantsDisabled = new Set(ACTIVATIONS.filter(a => a.code === code && a.scope_kind === 'tenant' && a.soft_disabled).map(a => a.scope_id)).size;
+  const employerActive = ACTIVATIONS.filter(a => a.code === code && a.scope_kind === 'employer_unit' && !a.soft_disabled).length;
+  const workingActive = ACTIVATIONS.filter(a => a.code === code && a.scope_kind === 'working_unit'  && !a.soft_disabled).length;
+  const total = ACTIVATIONS.filter(a => a.code === code && !a.soft_disabled).length;
+  return {
+    tenants_total: TENANTS_TOTAL,
+    tenants_active: tenantsActive,
+    tenants_disabled: tenantsDisabled,
+    employer_units_active: employerActive,
+    working_units_active: workingActive,
+    activations_total: total,
+  };
+}
+
+function renderModulesList() {
+  const subtitle = document.getElementById('pageSubtitle');
+  const list = document.getElementById('modulesList');
+
+  const isSuperAdmin = currentRole === 'super_admin';
+  const isAdmin = isSuperAdmin || currentRole === 'diretoria';
+
+  if (!isAdmin) {
+    subtitle.textContent = 'Acesso restrito · apenas super_admin e diretoria.';
+    list.innerHTML = `
+      <div style="padding: 32px; text-align: center; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-muted);">
+        <div style="display: inline-flex; width: 48px; height: 48px; background: var(--accent-red-bg); color: var(--accent-red); border-radius: 50%; align-items: center; justify-content: center; margin-bottom: 12px;">
+          ${svgIcon('XCircle')}
+        </div>
+        <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">permission_denied</div>
+        <div style="font-size: 12px;">Você está logado como <code style="font-family: var(--font-display); background: var(--bg); padding: 1px 5px; border-radius: 3px;">${currentRole}</code>. Esta página é acessível apenas a super_admin e diretoria.</div>
+        <div style="font-size: 11px; margin-top: 12px;">Use o seletor de papel acima para visualizar como super_admin ou diretoria.</div>
+      </div>`;
+    return;
+  }
+
+  subtitle.textContent = isSuperAdmin
+    ? 'Visão global · todos os tenants'
+    : 'Módulos disponíveis no seu tenant (Grupo Pinto Cerqueira)';
+
+  list.innerHTML = MODULES_CATALOG.map(m => {
+    const isExpanded = expandedModules.has(m.code);
+    const summary = getSummaryFor(m, isSuperAdmin);
+    return `
+      <div class="module-card ${isExpanded ? 'expanded' : ''}" id="card-${m.code}">
+        <button class="module-header" onclick="toggleModule('${m.code}')">
+          <svg class="module-chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="module-icon">${svgIcon(m.icon)}</span>
+          <span class="module-title-block">
+            <span class="module-title-row">
+              <span class="module-title">${m.display_name}</span>
+              ${m.is_core ? '<span class="badge-core">Core</span>' : ''}
+              <span class="module-code">${m.code}</span>
+            </span>
+            <span class="module-description">${m.description}</span>
+          </span>
+          <span class="module-summary">${summary}</span>
+        </button>
+        ${isExpanded ? `
+          <div class="module-details">
+            ${isSuperAdmin ? renderSuperAdminPanel(m) : renderDiretoriaPanel(m)}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function getSummaryFor(m, isSuperAdmin) {
+  if (isSuperAdmin) {
+    const v = getGlobalView(m.code);
+    return `${v.tenants_active}/${v.tenants_total} tenants · ${v.activations_total} ativações`;
+  }
+  // Diretoria
+  const tenantState = getActivationState(m.code, 'tenant', TENANT_ID);
+  const empActive = EMPLOYER_UNITS.filter(eu => getActivationState(m.code, 'employer_unit', eu.id).active).length;
+  const wuActive  = WORKING_UNITS .filter(wu => getActivationState(m.code, 'working_unit', wu.id).active).length;
+  const tag = tenantState.active ? 'Ativo no tenant' : tenantState.disabled ? 'Tenant em readonly' : 'Não ativado';
+  return `${tag} · ${empActive} emp · ${wuActive} wu`;
+}
+
+function renderSuperAdminPanel(m) {
+  const v = getGlobalView(m.code);
+  const stats = [
+    { label: 'Tenants total',          value: v.tenants_total },
+    { label: 'Tenants ativos',         value: v.tenants_active },
+    { label: 'Tenants em readonly',    value: v.tenants_disabled },
+    { label: 'Employer units ativos',  value: v.employer_units_active },
+    { label: 'Working units ativos',   value: v.working_units_active },
+    { label: 'Total de ativações',     value: v.activations_total },
+  ];
+  return `
+    <div class="stats-grid">
+      ${stats.map(s => `
+        <div class="stat-card">
+          <div class="stat-value">${s.value}</div>
+          <div class="stat-label">${s.label}</div>
+        </div>
+      `).join('')}
+      <div class="stats-note">Para gerenciar ativações deste módulo, troque para <code style="background: var(--bg); padding: 1px 4px; border-radius: 3px;">diretoria</code> no seletor acima e veja a visão tenant-scoped.</div>
+    </div>
+  `;
+}
+
+function renderDiretoriaPanel(m) {
+  const tenantState = getActivationState(m.code, 'tenant', TENANT_ID);
+
+  let html = '<div class="scope-block">';
+  html += `<div class="scope-block-title">Tenant (toda a organização)</div>`;
+  html += `<div class="scope-list">`;
+  html += renderScopeRow({
+    name: 'Ativação no nível do tenant',
+    code: '',
+    state: tenantState,
+    isCore: m.is_core,
+    moduleCode: m.code,
+    scopeKind: 'tenant',
+    scopeId: TENANT_ID,
+    moduleName: m.display_name,
+    label: 'Tenant inteiro',
+  });
+  html += `</div></div>`;
+
+  html += '<div class="scope-block">';
+  html += `<div class="scope-block-title">Employer Units (${EMPLOYER_UNITS.length})</div>`;
+  html += `<div class="scope-list">`;
+  html += EMPLOYER_UNITS.map(eu => renderScopeRow({
+    name: eu.name,
+    code: eu.code,
+    state: getActivationState(m.code, 'employer_unit', eu.id),
+    isCore: m.is_core,
+    moduleCode: m.code,
+    scopeKind: 'employer_unit',
+    scopeId: eu.id,
+    moduleName: m.display_name,
+    label: eu.name,
+  })).join('');
+  html += `</div></div>`;
+
+  html += '<div class="scope-block">';
+  html += `<div class="scope-block-title">Working Units (${WORKING_UNITS.length})</div>`;
+  html += `<div class="scope-list">`;
+  html += WORKING_UNITS.map(wu => renderScopeRow({
+    name: wu.name,
+    code: wu.code,
+    state: getActivationState(m.code, 'working_unit', wu.id),
+    isCore: m.is_core,
+    moduleCode: m.code,
+    scopeKind: 'working_unit',
+    scopeId: wu.id,
+    moduleName: m.display_name,
+    label: wu.name,
+  })).join('');
+  html += `</div></div>`;
+
+  return html;
+}
+
+function renderScopeRow(r) {
+  let statusIcon, statusClass, action;
+  if (r.isCore) {
+    statusIcon = svgIcon('Lock'); statusClass = 'core';
+    action = `<span class="scope-core-tag">core · sempre ativo</span>`;
+  } else if (r.state.active) {
+    statusIcon = svgIcon('CheckCircle'); statusClass = 'active';
+    action = `<button class="btn btn-deactivate" onclick="requestDeactivate('${r.moduleCode}','${r.scopeKind}','${r.scopeId}','${r.label.replace(/'/g, "\\'")}','${r.moduleName.replace(/'/g, "\\'")}')">Desativar</button>`;
+  } else if (r.state.disabled) {
+    statusIcon = svgIcon('AlertTri'); statusClass = 'disabled';
+    action = `<button class="btn btn-reactivate" onclick="reactivate('${r.moduleCode}','${r.scopeKind}','${r.scopeId}')">Reativar</button>`;
+  } else {
+    statusIcon = svgIcon('XCircle'); statusClass = 'inactive';
+    action = `<button class="btn btn-activate" onclick="activate('${r.moduleCode}','${r.scopeKind}','${r.scopeId}')">Ativar</button>`;
+  }
+  return `
+    <div class="scope-row">
+      <span class="scope-status ${statusClass}">${statusIcon}</span>
+      <div class="scope-info">
+        <div class="scope-name">${r.name}</div>
+        ${r.code ? `<div class="scope-code">${r.code}</div>` : ''}
+      </div>
+      <div class="scope-actions">${action}</div>
+    </div>
+  `;
+}
+
+
+/* ============================================================================
+   Ações · activate / deactivate / reactivate
+   ========================================================================= */
+
+function activate(code, scope_kind, scope_id) {
+  const existing = ACTIVATIONS.find(a => a.code === code && a.scope_kind === scope_kind && a.scope_id === scope_id);
+  if (existing) {
+    existing.soft_disabled = false;
+  } else {
+    ACTIVATIONS.push({ code, scope_kind, scope_id, soft_disabled: false });
+  }
+  rerender();
+}
+
+function reactivate(code, scope_kind, scope_id) {
+  const a = ACTIVATIONS.find(x => x.code === code && x.scope_kind === scope_kind && x.scope_id === scope_id);
+  if (a) a.soft_disabled = false;
+  rerender();
+}
+
+function requestDeactivate(code, scope_kind, scope_id, label, moduleName) {
+  pendingDeactivation = { code, scope_kind, scope_id, label, moduleName };
+  showDeactivateModal();
+}
+
+
+/* ============================================================================
+   Modal · deactivate
+   ========================================================================= */
+
+function getImpactSummary(code) {
+  // Mock de impacto · simula contadores que viriam do banco
+  const impacts = [];
+  if (code === 'ninebox') {
+    impacts.push({ kind: 'ninebox_open_evaluations', label: 'Avaliações 9-Box em andamento', count: 12 });
+    impacts.push({ kind: 'ninebox_active_cycles',    label: 'Ciclos 9-Box abertos',           count: 1  });
+    impacts.push({ kind: 'ninebox_snapshots',        label: 'Snapshots históricos (preservados)', count: 47 });
+  } else if (code === 'recognition') {
+    impacts.push({ kind: 'recognition_visible_posts', label: 'Reconhecimentos visíveis no feed', count: 89 });
+  } else if (code === 'pdi') {
+    impacts.push({ kind: 'pdi_active_plans', label: 'Planos PDI em andamento', count: 23 });
+  } else if (code === 'onboarding') {
+    impacts.push({ kind: 'onboarding_active_journeys', label: 'Jornadas de onboarding ativas', count: 7 });
+  } else if (code === 'climate') {
+    impacts.push({ kind: 'climate_open_surveys', label: 'Pesquisas de clima abertas', count: 0 });
+  }
+  impacts.push({ kind: 'users_affected', label: 'Usuários ativos no escopo', count: 234 });
+  return impacts;
+}
+
+function showDeactivateModal() {
+  const p = pendingDeactivation;
+  const impacts = getImpactSummary(p.code);
+
+  const modal = document.getElementById('modalContent');
+  modal.innerHTML = `
+    <div class="modal-header">
+      <div class="modal-icon">${svgIcon('AlertTri')}</div>
+      <div class="modal-title-block">
+        <h2 class="modal-title">Desativar ${p.moduleName}?</h2>
+        <p class="modal-subtitle">Escopo: ${p.label}</p>
+      </div>
+    </div>
+
+    <div class="alert-box">
+      <strong>Atenção:</strong> ao desativar, todos os dados ficam em modo somente leitura.
+      Avaliações em andamento são bloqueadas para edição, novos registros não podem ser criados.
+      Você pode reativar a qualquer momento sem perda de dados.
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Dados afetados no escopo</label>
+      <ul class="impact-list">
+        ${impacts.map(i => `
+          <li class="impact-row">
+            <span>${i.label}</span>
+            <span class="count ${i.count === 0 ? 'zero' : 'warn'}">${i.count}</span>
+          </li>
+        `).join('')}
+      </ul>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="reasonInput">Motivo (opcional)</label>
+      <textarea id="reasonInput" class="form-textarea" rows="2" placeholder="Ex: reorganização, fim do período de avaliação..."></textarea>
+    </div>
+
+    <label class="consent">
+      <input type="checkbox" id="consentCheck" onchange="document.getElementById('confirmBtn').disabled = !this.checked" />
+      <span class="consent-text">
+        Entendo que após a desativação os dados ficarão em modo somente leitura
+        até a reativação do módulo.
+      </span>
+    </label>
+
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-danger" id="confirmBtn" disabled onclick="confirmDeactivate()">Desativar módulo</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  pendingDeactivation = null;
+}
+
+function confirmDeactivate() {
+  const p = pendingDeactivation;
+  if (!p) return;
+  const existing = ACTIVATIONS.find(a => a.code === p.code && a.scope_kind === p.scope_kind && a.scope_id === p.scope_id);
+  if (existing) {
+    existing.soft_disabled = true;
+  } else {
+    ACTIVATIONS.push({ code: p.code, scope_kind: p.scope_kind, scope_id: p.scope_id, soft_disabled: true });
+  }
+  closeModal();
+  rerender();
+}
+
+
+/* ============================================================================
+   Util · troca de papel + rerender geral
+   ========================================================================= */
+
+function switchRole(role) {
+  currentRole = role;
+  document.querySelectorAll('#roleSwitcher button').forEach(b => {
+    b.classList.toggle('active', b.dataset.role === role);
+  });
+  rerender();
+}
+
+function toggleModule(code) {
+  if (expandedModules.has(code)) expandedModules.delete(code);
+  else expandedModules.add(code);
+  renderModulesList();
+}
+
+function rerender() {
+  renderSidebar();
+  renderModulesList();
+}
+
+
+/* ============================================================================
+   Boot
+   ========================================================================= */
+
+rerender();
+</script>
+
+</body>
+</html>
