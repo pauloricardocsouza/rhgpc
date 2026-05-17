@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Clima Organizacional · Pulsos semanais</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 20px 60px rgba(26,45,79,.3);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; display:block; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px; color:var(--txt);}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; width:auto; opacity:.75;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--green),var(--teal)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden; padding:22px 28px 50px;}
+.container{max-width:1400px; margin:0 auto;}
+
+/* Page header padrão Cofre · eyebrow + title italic */
+.page-header{margin-bottom:22px;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; color:var(--txt); line-height:1.15;}
+.page-title em{font-style:italic; font-weight:800; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+/* Persona switcher */
+.persona-switcher{display:flex; gap:4px; background:var(--gray1); padding:3px; border-radius:8px;}
+.persona-btn{padding:6px 12px; font-size:11.5px; border:none; background:transparent; cursor:pointer; border-radius:6px; font-family:inherit; color:var(--txt2); font-weight:500;}
+.persona-btn.active{background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow-card); position:relative; overflow:hidden; border-left:3px solid var(--navy);}
+.kpi.green{border-color:var(--green);}
+.kpi.amber{border-color:var(--amber);}
+.kpi.red{border-color:var(--red);}
+.kpi-label{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:800; margin-top:6px; letter-spacing:-.5px; color:var(--txt);}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:3px;}
+
+/* Current pulse card */
+.pulse-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:24px 28px; margin-bottom:18px; border:1px solid var(--gray1);}
+.pulse-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+.pulse-title{font-size:16px; font-weight:700; display:flex; align-items:center; gap:10px;}
+.pulse-title svg{width:18px; height:18px; color:var(--orange);}
+.pulse-meta{font-size:11.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace;}
+.pulse-progress-bar{height:6px; background:var(--gray1); border-radius:3px; overflow:hidden; margin-bottom:18px;}
+.pulse-progress-fill{height:100%; background:linear-gradient(90deg, var(--orange), var(--green)); border-radius:3px; transition:width .5s;}
+
+.pulse-question{font-size:18px; font-weight:600; color:var(--txt); margin-bottom:16px; line-height:1.35;}
+
+/* Mood faces */
+.mood-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:10px; margin-bottom:18px;}
+.mood-option{background:var(--off); border:2px solid var(--gray2); border-radius:12px; padding:16px 10px; text-align:center; cursor:pointer; transition:all .15s; position:relative;}
+.mood-option:hover{transform:translateY(-3px); border-color:var(--gray3);}
+.mood-option.selected{border-color:var(--orange); background:var(--orange2);}
+.mood-face{font-size:32px; line-height:1; margin-bottom:6px;}
+.mood-label{font-size:11px; font-weight:600; color:var(--txt2);}
+.mood-option.selected .mood-label{color:var(--orange);}
+.mood-count{position:absolute; top:6px; right:8px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:var(--txt3);}
+
+/* Why chips */
+.why-block{margin-top:14px;}
+.why-label{font-size:12px; color:var(--txt2); margin-bottom:8px;}
+.why-chips{display:flex; flex-wrap:wrap; gap:6px;}
+.why-chip{padding:5px 11px; background:var(--gray1); color:var(--txt2); border-radius:14px; font-size:11.5px; cursor:pointer; border:1px solid transparent; transition:all .15s;}
+.why-chip:hover{border-color:var(--gray3);}
+.why-chip.selected{background:var(--navy); color:#fff; border-color:var(--navy);}
+.why-chip .count{margin-left:5px; font-family:'JetBrains Mono',monospace; font-size:10px; opacity:.7;}
+
+/* Two col */
+.two-col{display:grid; grid-template-columns:1fr 380px; gap:18px;}
+
+/* Heatmap */
+.heatmap-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:20px; border:1px solid var(--gray1);}
+.heatmap-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+.heatmap-header h3{font-size:14px; font-weight:700;}
+.heatmap-legend{display:flex; align-items:center; gap:6px; font-size:10px; color:var(--txt2); font-family:'JetBrains Mono',monospace;}
+.heatmap-legend-bar{display:flex; gap:2px;}
+.heatmap-legend-bar span{width:14px; height:8px; border-radius:2px;}
+
+.heatmap-table{width:100%; border-collapse:separate; border-spacing:3px; font-size:11px;}
+.heatmap-table th{padding:6px 4px; font-weight:500; font-family:'JetBrains Mono',monospace; color:var(--txt3); font-size:9.5px; text-transform:uppercase; letter-spacing:.05em;}
+.heatmap-table td.label{padding:6px 8px 6px 0; font-weight:500; color:var(--txt); text-align:left;}
+.heatmap-table td.cell{width:32px; height:28px; text-align:center; border-radius:5px; font-family:'JetBrains Mono',monospace; font-weight:600; font-size:11px;}
+.h-score-90{background:#15803D; color:#fff;}
+.h-score-80{background:#22C55E; color:#fff;}
+.h-score-70{background:#A7F3D0; color:#065F46;}
+.h-score-60{background:#FEF08A; color:#854D0E;}
+.h-score-50{background:#FB923C; color:#7C2D12;}
+.h-score-40{background:#EF4444; color:#fff;}
+.h-score-na{background:var(--gray1); color:var(--txt3);}
+
+/* Side cards */
+.side-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:18px; border:1px solid var(--gray1); margin-bottom:14px;}
+.side-card h3{font-size:13px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+.side-card h3 svg{width:15px; height:15px; color:var(--txt2);}
+
+.trend-rows{display:flex; flex-direction:column; gap:10px;}
+.trend-row{padding:10px 12px; background:var(--off); border-radius:8px;}
+.trend-row-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+.trend-row-name{font-size:12.5px; font-weight:600;}
+.trend-row-score{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;}
+.trend-bar{height:5px; background:var(--gray2); border-radius:3px; overflow:hidden;}
+.trend-bar-fill{height:100%; border-radius:3px;}
+.trend-delta{font-family:'JetBrains Mono',monospace; font-size:10.5px; margin-top:4px;}
+.trend-delta.up{color:var(--green);}
+.trend-delta.down{color:var(--red);}
+.trend-delta.flat{color:var(--txt2);}
+
+/* History sparkline (SVG inline) */
+.spark-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:18px; border:1px solid var(--gray1); margin-bottom:14px;}
+.spark-card h3{font-size:13px; font-weight:700; margin-bottom:12px;}
+.spark-svg{width:100%; height:80px; display:block;}
+
+/* Send pulse button */
+.send-btn{margin-top:18px; padding:11px 18px; background:var(--orange); color:#fff; border:none; border-radius:8px; font-family:inherit; font-size:13.5px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:8px; transition:all .15s;}
+.send-btn:hover{background:#DC7529;}
+.send-btn:disabled{background:var(--gray3); cursor:not-allowed;}
+.send-btn svg{width:14px; height:14px;}
+
+/* Privacy banner (LGPD) */
+.privacy-banner{background:var(--green2); border-left:4px solid var(--green); border-radius:8px; padding:10px 14px; font-size:11.5px; color:var(--green); margin-bottom:14px; display:flex; align-items:flex-start; gap:8px;}
+.privacy-banner svg{width:14px; height:14px; flex-shrink:0; margin-top:1px;}
+.privacy-banner strong{font-weight:700;}
+
+/* Persona views control */
+[data-persona-view]{display:none;}
+[data-persona-view].active{display:block;}
+
+/* RH agg view · cohort cards */
+.cohort-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-bottom:18px;}
+.cohort-card{background:#fff; border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); border-top:3px solid var(--blue);}
+.cohort-card.green{border-top-color:var(--green);}
+.cohort-card.amber{border-top-color:var(--amber);}
+.cohort-card.red{border-top-color:var(--red);}
+.cohort-name{font-size:13px; font-weight:600; margin-bottom:8px;}
+.cohort-stats{display:flex; gap:14px; font-size:11px; color:var(--txt2);}
+.cohort-stats strong{color:var(--txt); font-family:'JetBrains Mono',monospace;}
+
+/* Mobile (drawer feito por JS) */
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2); flex-shrink:0;}
+  .mobile-hamburger:hover{background:var(--gray1); color:var(--txt);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .two-col{grid-template-columns:1fr;}
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .mood-grid{grid-template-columns:repeat(5, 1fr); gap:6px;}
+  .mood-option{padding:10px 4px;}
+  .mood-face{font-size:24px;}
+  .cohort-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="Grupo Pinto Cerqueira">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item" href="r2_people_minha_trajetoria.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>Minha trajetória</a>
+      <div class="sidebar-section">Desenvolvimento</div>
+      <a class="nav-item" href="r2_people_avaliacao.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>Avaliações</a>
+      <a class="nav-item" href="r2_people_9box.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>9-Box</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>PDI</a>
+      <a class="nav-item" href="r2_people_oneonones.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>1:1s</a>
+      <a class="nav-item" href="r2_people_feedback_mural.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedback</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Clima</a>
+      <div class="sidebar-section">Pessoas</div>
+      <a class="nav-item" href="r2_people_colaboradores_lista.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <div class="sidebar-section">Administração</div>
+      <a class="nav-item" href="index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Módulos</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2 Soluções Empresariais">
+    </div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-title">
+      <span>Desenvolvimento</span>
+      <span class="sep">›</span>
+      <span class="crumb">Clima</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="persona-switcher">
+      <button class="persona-btn active" data-persona="colab">Colaborador</button>
+      <button class="persona-btn" data-persona="rh">RH</button>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar-tb" id="userAvatar">FL</div>
+      <div class="user-info">
+        <span class="user-name" id="userName">Fernanda Lima</span>
+        <span class="user-role" id="userRole">Analista Pleno · Cestão L1</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <!-- ===== COLABORADOR ===== -->
+      <div data-persona-view="colab" class="active">
+
+        <div class="page-header">
+          <div class="page-eyebrow">Desenvolvimento <span class="sep">·</span> Pulso semanal <span class="sep">·</span> Semana 20/2026</div>
+          <h1 class="page-title">Como está sua <em>semana?</em></h1>
+          <p class="page-subtitle">Pesquisa rápida · 30 segundos · respondida por 4.230 colaboradores no GPC nas últimas 8 semanas.</p>
+        </div>
+
+        <div class="privacy-banner">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <span><strong>Anônimo.</strong> Sua resposta entra no agregado da sua unidade. Líderes e RH só veem médias com 5+ respostas. Você nunca é identificado individualmente.</span>
+        </div>
+
+        <section class="pulse-card">
+          <div class="pulse-header">
+            <div class="pulse-title">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Pulso desta semana
+            </div>
+            <div class="pulse-meta">Aberto até dom 24/mai · 7d restantes</div>
+          </div>
+
+          <div class="pulse-progress-bar">
+            <div class="pulse-progress-fill" style="width:68%;"></div>
+          </div>
+
+          <div class="pulse-question">Como você se sente em relação ao seu trabalho esta semana?</div>
+
+          <div class="mood-grid">
+            <div class="mood-option" data-mood="1">
+              <div class="mood-face">😞</div>
+              <div class="mood-label">Muito difícil</div>
+            </div>
+            <div class="mood-option" data-mood="2">
+              <div class="mood-face">😟</div>
+              <div class="mood-label">Difícil</div>
+            </div>
+            <div class="mood-option" data-mood="3">
+              <div class="mood-face">😐</div>
+              <div class="mood-label">Neutra</div>
+            </div>
+            <div class="mood-option selected" data-mood="4">
+              <div class="mood-face">🙂</div>
+              <div class="mood-label">Boa</div>
+            </div>
+            <div class="mood-option" data-mood="5">
+              <div class="mood-face">😊</div>
+              <div class="mood-label">Muito boa</div>
+            </div>
+          </div>
+
+          <div class="why-block">
+            <div class="why-label"><strong>O que mais influencia esse sentimento?</strong> (opcional · até 3)</div>
+            <div class="why-chips">
+              <div class="why-chip selected">Carga de trabalho</div>
+              <div class="why-chip selected">Relacionamento com a equipe</div>
+              <div class="why-chip">Liderança imediata</div>
+              <div class="why-chip">Reconhecimento</div>
+              <div class="why-chip">Salário / benefícios</div>
+              <div class="why-chip">Crescimento na carreira</div>
+              <div class="why-chip">Autonomia</div>
+              <div class="why-chip">Clima do time</div>
+              <div class="why-chip">Equipamentos / processos</div>
+              <div class="why-chip">Vida pessoal</div>
+            </div>
+          </div>
+
+          <button class="send-btn" id="sendBtn">
+            <svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Enviar pulso
+          </button>
+        </section>
+
+        <!-- Histórico pessoal -->
+        <div class="two-col">
+          <div>
+            <div class="spark-card">
+              <h3>Sua trajetória nas últimas 12 semanas</h3>
+              <svg class="spark-svg" viewBox="0 0 600 80" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="sparkGrad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#F58634" stop-opacity=".25"/>
+                    <stop offset="1" stop-color="#F58634" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <!-- 12 pontos com mood 3-5 -->
+                <path d="M0,40 L50,30 L100,45 L150,25 L200,35 L250,40 L300,20 L350,30 L400,15 L450,25 L500,20 L550,18 L600,15 L600,80 L0,80 Z" fill="url(#sparkGrad)"/>
+                <path d="M0,40 L50,30 L100,45 L150,25 L200,35 L250,40 L300,20 L350,30 L400,15 L450,25 L500,20 L550,18 L600,15" stroke="#F58634" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Pontos -->
+                <g fill="#F58634">
+                  <circle cx="0" cy="40" r="3"/><circle cx="50" cy="30" r="3"/><circle cx="100" cy="45" r="3"/>
+                  <circle cx="150" cy="25" r="3"/><circle cx="200" cy="35" r="3"/><circle cx="250" cy="40" r="3"/>
+                  <circle cx="300" cy="20" r="3"/><circle cx="350" cy="30" r="3"/><circle cx="400" cy="15" r="3"/>
+                  <circle cx="450" cy="25" r="3"/><circle cx="500" cy="20" r="3"/><circle cx="550" cy="18" r="3"/>
+                </g>
+              </svg>
+              <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:10px; color:var(--txt3); font-family:'JetBrains Mono',monospace;">
+                <span>Sem 8</span><span>Sem 12</span><span>Sem 16</span><span>Sem 20</span>
+              </div>
+            </div>
+
+            <div class="spark-card">
+              <h3>Sua nuvem de fatores positivos</h3>
+              <div class="why-chips" style="margin-top:6px;">
+                <div class="why-chip selected" style="font-size:13px; padding:7px 14px;">Relacionamento com a equipe<span class="count">12x</span></div>
+                <div class="why-chip" style="background:var(--green2); color:var(--green); border:none; padding:7px 14px; font-size:13px;">Autonomia<span class="count">9x</span></div>
+                <div class="why-chip" style="background:var(--blue2); color:var(--blue); border:none; padding:7px 14px; font-size:12.5px;">Crescimento na carreira<span class="count">7x</span></div>
+                <div class="why-chip" style="background:var(--gray1); padding:5px 11px; font-size:11.5px;">Reconhecimento<span class="count">5x</span></div>
+                <div class="why-chip" style="background:var(--gray1); padding:5px 11px; font-size:11.5px;">Clima do time<span class="count">4x</span></div>
+                <div class="why-chip" style="background:var(--gray1); padding:5px 11px; font-size:11.5px;">Liderança<span class="count">3x</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="side-card" style="background:var(--purple2); border-left:4px solid var(--purple);">
+              <h3 style="color:var(--purple);"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Por que pulsos?</h3>
+              <p style="font-size:12px; color:var(--txt); line-height:1.55;">Pesquisa de clima anual fica muito desatualizada. Um pulso curto por semana gera tendência confiável e permite agir cedo quando algo piora · sem encher seu dia.</p>
+            </div>
+
+            <div class="side-card">
+              <h3><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Sua participação</h3>
+              <div style="font-size:12.5px; color:var(--txt);"><strong>11 de 12</strong> pulsos respondidos no trimestre</div>
+              <div style="font-size:11.5px; color:var(--txt2); margin-top:6px;">Top 12% mais ativos da Cestão L1 · obrigada por contribuir!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== RH ===== -->
+      <div data-persona-view="rh">
+        <div class="page-header">
+          <div class="page-eyebrow">Administração <span class="sep">·</span> Clima organizacional <span class="sep">·</span> GPC consolidado</div>
+          <h1 class="page-title">Clima <em>esta semana</em></h1>
+          <p class="page-subtitle">Pulso semanal · agregado por unidade · só mostra coortes com 5+ respostas (privacidade).</p>
+        </div>
+
+        <section class="kpi-grid">
+          <div class="kpi green">
+            <div class="kpi-label">eNPS atual</div>
+            <div class="kpi-value">+42</div>
+            <div class="kpi-sub">+5 vs semana anterior · zona boa</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Mood médio</div>
+            <div class="kpi-value">4.1</div>
+            <div class="kpi-sub">de 5 · 287 respostas esta semana</div>
+          </div>
+          <div class="kpi amber">
+            <div class="kpi-label">Participação</div>
+            <div class="kpi-value">78%</div>
+            <div class="kpi-sub">287 de 367 colaboradores</div>
+          </div>
+          <div class="kpi red">
+            <div class="kpi-label">Atenção</div>
+            <div class="kpi-value">2</div>
+            <div class="kpi-sub">unidades com mood &lt; 3.5</div>
+          </div>
+        </section>
+
+        <div class="two-col">
+          <div>
+            <div class="heatmap-card">
+              <div class="heatmap-header">
+                <h3>Heatmap por unidade · últimas 8 semanas</h3>
+                <div class="heatmap-legend">
+                  <span>baixo</span>
+                  <div class="heatmap-legend-bar">
+                    <span class="h-score-40"></span><span class="h-score-50"></span><span class="h-score-60"></span><span class="h-score-70"></span><span class="h-score-80"></span><span class="h-score-90"></span>
+                  </div>
+                  <span>alto</span>
+                </div>
+              </div>
+              <table class="heatmap-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Sem 13</th><th>Sem 14</th><th>Sem 15</th><th>Sem 16</th><th>Sem 17</th><th>Sem 18</th><th>Sem 19</th><th>Sem 20</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td class="label">Cestão L1</td><td class="cell h-score-80">82</td><td class="cell h-score-80">85</td><td class="cell h-score-80">83</td><td class="cell h-score-80">81</td><td class="cell h-score-80">84</td><td class="cell h-score-80">86</td><td class="cell h-score-80">85</td><td class="cell h-score-90">90</td></tr>
+                  <tr><td class="label">Cestão Inhambupe</td><td class="cell h-score-70">75</td><td class="cell h-score-70">78</td><td class="cell h-score-80">82</td><td class="cell h-score-80">80</td><td class="cell h-score-70">77</td><td class="cell h-score-70">76</td><td class="cell h-score-70">78</td><td class="cell h-score-80">81</td></tr>
+                  <tr><td class="label">ATP Varejo</td><td class="cell h-score-70">72</td><td class="cell h-score-60">65</td><td class="cell h-score-60">62</td><td class="cell h-score-50">58</td><td class="cell h-score-50">55</td><td class="cell h-score-50">53</td><td class="cell h-score-40">48</td><td class="cell h-score-40">45</td></tr>
+                  <tr><td class="label">ATP Atacado</td><td class="cell h-score-80">80</td><td class="cell h-score-80">82</td><td class="cell h-score-80">85</td><td class="cell h-score-80">84</td><td class="cell h-score-80">83</td><td class="cell h-score-80">86</td><td class="cell h-score-80">85</td><td class="cell h-score-80">87</td></tr>
+                  <tr><td class="label">Sede ATP</td><td class="cell h-score-90">92</td><td class="cell h-score-90">90</td><td class="cell h-score-80">88</td><td class="cell h-score-80">87</td><td class="cell h-score-80">88</td><td class="cell h-score-90">91</td><td class="cell h-score-90">92</td><td class="cell h-score-90">90</td></tr>
+                  <tr><td class="label">Labuta (terc.)</td><td class="cell h-score-60">68</td><td class="cell h-score-60">65</td><td class="cell h-score-50">58</td><td class="cell h-score-50">55</td><td class="cell h-score-50">52</td><td class="cell h-score-40">48</td><td class="cell h-score-40">45</td><td class="cell h-score-40">42</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="heatmap-card" style="margin-top:14px;">
+              <h3 style="margin-bottom:14px;">Top fatores citados esta semana</h3>
+              <div class="why-chips">
+                <div class="why-chip" style="background:var(--green2); color:var(--green); border:none; padding:7px 14px; font-size:13px;">Relacionamento com a equipe<span class="count">89x</span></div>
+                <div class="why-chip" style="background:var(--green2); color:var(--green); border:none; padding:7px 14px; font-size:13px;">Autonomia<span class="count">62x</span></div>
+                <div class="why-chip" style="background:var(--blue2); color:var(--blue); border:none; padding:7px 14px; font-size:12.5px;">Reconhecimento<span class="count">41x</span></div>
+                <div class="why-chip" style="background:var(--red2); color:var(--red); border:none; padding:7px 14px; font-size:13px;">Carga de trabalho<span class="count">73x</span></div>
+                <div class="why-chip" style="background:var(--red2); color:var(--red); border:none; padding:7px 14px; font-size:12.5px;">Salário / benefícios<span class="count">58x</span></div>
+                <div class="why-chip" style="background:var(--amber2); color:var(--amber); border:none; padding:7px 14px; font-size:12px;">Equipamentos / processos<span class="count">34x</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="side-card" style="background:var(--red2); border-left:4px solid var(--red);">
+              <h3 style="color:var(--red);"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Alerta</h3>
+              <p style="font-size:12.5px; color:var(--txt); line-height:1.55;"><strong>ATP Varejo</strong> e <strong>Labuta</strong> caíram 4+ pontos nas últimas 4 semanas. Sugestão: reunião com líderes diretos esta semana.</p>
+              <button class="send-btn" style="margin-top:12px; background:var(--red); padding:8px 14px; font-size:12px;">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                Notificar líderes
+              </button>
+            </div>
+
+            <div class="side-card">
+              <h3><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Tendência por unidade</h3>
+              <div class="trend-rows">
+                <div class="trend-row">
+                  <div class="trend-row-header"><span class="trend-row-name">Cestão L1</span><span class="trend-row-score">90</span></div>
+                  <div class="trend-bar"><div class="trend-bar-fill" style="width:90%; background:var(--green);"></div></div>
+                  <div class="trend-delta up">▲ +6 vs sem 12</div>
+                </div>
+                <div class="trend-row">
+                  <div class="trend-row-header"><span class="trend-row-name">Sede ATP</span><span class="trend-row-score">90</span></div>
+                  <div class="trend-bar"><div class="trend-bar-fill" style="width:90%; background:var(--green);"></div></div>
+                  <div class="trend-delta flat">→ flat (90 → 90)</div>
+                </div>
+                <div class="trend-row">
+                  <div class="trend-row-header"><span class="trend-row-name">ATP Atacado</span><span class="trend-row-score">87</span></div>
+                  <div class="trend-bar"><div class="trend-bar-fill" style="width:87%; background:var(--green);"></div></div>
+                  <div class="trend-delta up">▲ +2</div>
+                </div>
+                <div class="trend-row">
+                  <div class="trend-row-header"><span class="trend-row-name">Cestão Inhambupe</span><span class="trend-row-score">81</span></div>
+                  <div class="trend-bar"><div class="trend-bar-fill" style="width:81%; background:var(--green);"></div></div>
+                  <div class="trend-delta up">▲ +3</div>
+                </div>
+                <div class="trend-row">
+                  <div class="trend-row-header"><span class="trend-row-name">ATP Varejo</span><span class="trend-row-score" style="color:var(--red);">45</span></div>
+                  <div class="trend-bar"><div class="trend-bar-fill" style="width:45%; background:var(--red);"></div></div>
+                  <div class="trend-delta down">▼ -27 desde sem 13</div>
+                </div>
+                <div class="trend-row">
+                  <div class="trend-row-header"><span class="trend-row-name">Labuta (terc.)</span><span class="trend-row-score" style="color:var(--red);">42</span></div>
+                  <div class="trend-bar"><div class="trend-bar-fill" style="width:42%; background:var(--red);"></div></div>
+                  <div class="trend-delta down">▼ -26 desde sem 13</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="side-card">
+              <h3><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Privacidade</h3>
+              <p style="font-size:11.5px; color:var(--txt2); line-height:1.55;">Coortes com menos de 5 respostas não aparecem (mostra "—"). Identificação individual é impossível por design. Respostas armazenadas só com hash anônimo + unidade + semana.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cohort-grid" style="margin-top:18px;">
+          <div class="cohort-card green">
+            <div class="cohort-name">Em destaque · Cestão L1</div>
+            <div class="cohort-stats">
+              <span>Mood <strong>4.5</strong></span>
+              <span>Part. <strong>92%</strong></span>
+              <span>Δ <strong style="color:var(--green);">+6</strong></span>
+            </div>
+          </div>
+          <div class="cohort-card amber">
+            <div class="cohort-name">Estagnado · Inhambupe</div>
+            <div class="cohort-stats">
+              <span>Mood <strong>4.1</strong></span>
+              <span>Part. <strong>72%</strong></span>
+              <span>Δ <strong>+3</strong></span>
+            </div>
+          </div>
+          <div class="cohort-card red">
+            <div class="cohort-name">Queda contínua · ATP Varejo</div>
+            <div class="cohort-stats">
+              <span>Mood <strong style="color:var(--red);">2.3</strong></span>
+              <span>Part. <strong>54%</strong></span>
+              <span>Δ <strong style="color:var(--red);">-27</strong></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+// Persona switching
+const personaBtns = document.querySelectorAll('.persona-btn');
+const personaViews = document.querySelectorAll('[data-persona-view]');
+const userAvatar = document.getElementById('userAvatar');
+const userName = document.getElementById('userName');
+const userRole = document.getElementById('userRole');
+
+const personaConfig = {
+  colab: { name: 'Fernanda Lima', role: 'Analista Pleno · Cestão L1', initials: 'FL', gradient: 'linear-gradient(135deg,var(--navy),var(--purple))' },
+  rh: { name: 'Patrícia Mello', role: 'Coordenadora RH · GPC', initials: 'PM', gradient: 'linear-gradient(135deg,var(--green),var(--teal))' }
+};
+
+personaBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const p = btn.dataset.persona;
+    personaBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    personaViews.forEach(v => v.classList.toggle('active', v.dataset.personaView === p));
+    const cfg = personaConfig[p];
+    userAvatar.textContent = cfg.initials;
+    userAvatar.style.background = cfg.gradient;
+    userName.textContent = cfg.name;
+    userRole.textContent = cfg.role;
+  });
+});
+
+// Mood selection
+document.querySelectorAll('.mood-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+  });
+});
+
+// Why chips (max 3)
+document.querySelectorAll('.why-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    if (chip.classList.contains('selected')) {
+      chip.classList.remove('selected');
+    } else if (document.querySelectorAll('.why-chip.selected').length < 3) {
+      chip.classList.add('selected');
+    }
+  });
+});
+
+// Send btn (feedback)
+document.getElementById('sendBtn')?.addEventListener('click', function(){
+  this.textContent = '✓ Enviado · obrigada!';
+  this.disabled = true;
+  this.style.background = 'var(--green)';
+});
+
+// Mobile drawer (idempotente)
+(function(){
+  if (window.__rhgpcMobileInit) return;
+  window.__rhgpcMobileInit = true;
+  document.addEventListener('DOMContentLoaded', function(){
+    var sb = document.querySelector('.sidebar');
+    var tb = document.querySelector('.topbar');
+    if (!sb || !tb) return;
+    var bd = document.createElement('div');
+    bd.className = 'sidebar-backdrop';
+    document.body.appendChild(bd);
+    var hb = document.createElement('button');
+    hb.className = 'mobile-hamburger';
+    hb.setAttribute('aria-label', 'Abrir menu');
+    hb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+    tb.insertBefore(hb, tb.firstChild);
+    function close(){ sb.classList.remove('open'); bd.classList.remove('show'); }
+    function open(){ sb.classList.add('open'); bd.classList.add('show'); }
+    hb.addEventListener('click', function(){ sb.classList.contains('open') ? close() : open(); });
+    bd.addEventListener('click', close);
+    sb.addEventListener('click', function(e){ if (e.target.tagName === 'A') close(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+  });
+})();
+</script>
+</body>
+</html>
