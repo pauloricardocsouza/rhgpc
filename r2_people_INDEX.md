@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.23 · 17 de maio de 2026
+**Versão**: 2.24 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -987,6 +987,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.20 | Página HTML Hub Admin (entry-point dos 4 cockpits operacionais + status banner + quick actions + atividade recente cross-cockpit) |
 | 2.21 | Spec M13 Onboarding Wizard do tenant (7 passos obrig + 4 opcionais + tenant_onboarding state + microcopy PT-BR + 22 testes meta) |
 | 2.22 | Página HTML Tenant Setup wizard (timeline 7 passos + step card passo 4 + pré-views MFA/branding/política · materializa M13) |
-| **2.23** | **Schema SQL v12 (Onboarding + Billing + Quotas · materializa M13 + adiciona plans/subscriptions/invoices/seats c/ enforcement)** |
+| 2.23 | Schema SQL v12 (Onboarding + Billing + Quotas · materializa M13 + adiciona plans/subscriptions/invoices/seats c/ enforcement) |
+| **2.24** | **Página HTML Billing & Plano (hero plano vigente + 5 quotas vivas + faturas + métodos pagto + seats + 3 planos compare + usage log)** |
 
 ---

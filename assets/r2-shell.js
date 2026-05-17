@@ -248,7 +248,8 @@
     { title: 'Observability · SLOs & Incidentes', url: 'r2_people_observability_admin.html', cat: 'Admin', icon: '📈', kw: 'slo error budget incident postmortem alerta logs metrica grafana prometheus tempo cto' },
     { title: 'Security · DevSec Console', url: 'r2_people_security_admin.html', cat: 'Admin', icon: '🔒', kw: 'security devsec csp owasp vulnerability cve honeytoken secret rotacao pentest hardening' },
     { title: 'Hub Admin · operação consolidada', url: 'r2_people_admin_hub.html', cat: 'Admin', icon: '🎛️', kw: 'hub admin centro operacao consolidado cockpit landing entry point super admin' },
-    { title: 'Tenant Setup · wizard de primeira execução', url: 'r2_people_tenant_setup.html', cat: 'Admin', icon: '🧙', kw: 'onboarding wizard tenant setup primeira execucao branding mfa configuracao inicial' }
+    { title: 'Tenant Setup · wizard de primeira execução', url: 'r2_people_tenant_setup.html', cat: 'Admin', icon: '🧙', kw: 'onboarding wizard tenant setup primeira execucao branding mfa configuracao inicial' },
+    { title: 'Billing & Plano · tenant_admin', url: 'r2_people_billing.html', cat: 'Admin', icon: '💳', kw: 'billing plano fatura invoice assinatura subscription seat quota pagamento cartao pix upgrade' }
   ];
 
   function openSearch() {

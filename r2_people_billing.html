@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Billing · Plano & Assinatura</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; border-right:1px solid var(--gray1); display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:30px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--txt2);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--txt3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:var(--txt2); text-decoration:none; font-size:12.5px; border-left:3px solid transparent;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); border-left-color:var(--orange); font-weight:600;}
+.nav-item svg{width:16px; height:16px; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid var(--gray1); font-size:10.5px; color:var(--txt3); display:flex; justify-content:space-between;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #5A7090, #1A2D4F); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-orange{background:var(--orange); color:#fff; border:none; padding:11px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-orange:hover{background:#D67324;}
+
+/* Plan summary hero */
+.plan-hero{background:#fff; border-radius:14px; box-shadow:var(--shadow-card); padding:24px 28px; margin-bottom:16px; display:grid; grid-template-columns:1fr auto; gap:22px; align-items:center; position:relative; overflow:hidden;}
+.plan-hero::before{content:''; position:absolute; right:-60px; top:-60px; width:200px; height:200px; background:radial-gradient(circle, rgba(31,79,160,.10), transparent 65%); border-radius:50%;}
+.plan-hero-body{position:relative; z-index:1;}
+.plan-tier-tag{display:inline-block; padding:4px 12px; border-radius:14px; background:linear-gradient(90deg, var(--navy), var(--blue)); color:#fff; font-size:11px; font-weight:600; letter-spacing:.4px; margin-bottom:8px;}
+.plan-hero h2{font-size:22px; font-weight:600; letter-spacing:-.3px; margin-bottom:4px;}
+.plan-hero p{font-size:12.5px; color:var(--txt2);}
+.plan-hero-price{position:relative; z-index:1; text-align:right;}
+.plan-price-amount{font-size:32px; font-weight:700; font-family:'JetBrains Mono', monospace; letter-spacing:-1px;}
+.plan-price-amount .currency{font-size:18px; color:var(--txt2); font-weight:500;}
+.plan-price-period{font-size:11.5px; color:var(--txt2);}
+.plan-renewal{font-size:11.5px; color:var(--txt2); margin-top:8px;}
+.plan-renewal strong{color:var(--txt);}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:16px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:14px 15px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.green::before{background:var(--green);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--danger);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:600; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-value.danger{color:var(--danger);}
+.kpi-value.green{color:var(--green);}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:9px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:top;}
+tr:hover td{background:var(--off);}
+td.num{font-family:'JetBrains Mono', monospace; text-align:right;}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.ok{background:var(--green2); color:var(--green);}
+.badge.warn{background:var(--amber2); color:var(--amber);}
+.badge.crit{background:var(--danger2); color:var(--danger);}
+.badge.muted{background:var(--gray1); color:var(--txt2);}
+.badge.blue{background:var(--blue2); color:var(--blue);}
+.badge.purple{background:#F3E8FF; color:var(--purple);}
+
+code{font-family:'JetBrains Mono', monospace; font-size:10.5px; background:var(--gray1); padding:1px 5px; border-radius:4px;}
+
+/* Quota cards */
+.quota-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;}
+.quota-card{background:#fff; border:1px solid var(--gray1); border-radius:10px; padding:14px;}
+.quota-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;}
+.quota-name{font-size:12.5px; font-weight:600;}
+.quota-numbers{font-size:11px; color:var(--txt2); margin-bottom:8px;}
+.quota-numbers .used{font-weight:600; color:var(--txt); font-family:'JetBrains Mono', monospace;}
+.quota-bar{height:8px; background:var(--gray1); border-radius:4px; overflow:hidden;}
+.quota-bar > div{height:100%; border-radius:4px; transition:width .3s;}
+.quota-bar > div.ok{background:linear-gradient(90deg, var(--green), var(--green));}
+.quota-bar > div.warn{background:linear-gradient(90deg, var(--amber), var(--amber));}
+.quota-bar > div.crit{background:linear-gradient(90deg, var(--danger), var(--danger));}
+.quota-foot{font-size:10.5px; color:var(--txt3); margin-top:6px;}
+
+/* Plan compare */
+.plan-compare{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;}
+.plan-col{background:#fff; border:1px solid var(--gray1); border-radius:14px; padding:0; overflow:hidden; display:flex; flex-direction:column;}
+.plan-col.current{border:2px solid var(--navy); position:relative;}
+.plan-col.current::before{content:'plano atual'; position:absolute; top:0; right:14px; padding:3px 11px; background:var(--navy); color:#fff; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.6px; border-radius:0 0 6px 6px;}
+.plan-col.featured{border:2px solid var(--orange);}
+.plan-col.featured::before{content:'mais escolhido'; position:absolute; top:0; right:14px; padding:3px 11px; background:var(--orange); color:#fff; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.6px; border-radius:0 0 6px 6px;}
+.plan-col-head{padding:24px 22px 18px; border-bottom:1px solid var(--gray1);}
+.plan-col-name{font-size:18px; font-weight:600; margin-bottom:3px;}
+.plan-col-desc{font-size:11.5px; color:var(--txt2); min-height:48px;}
+.plan-col-price{margin-top:14px;}
+.plan-col-price .num{font-size:28px; font-weight:700; font-family:'JetBrains Mono', monospace; letter-spacing:-1px;}
+.plan-col-price .num .c{font-size:14px; color:var(--txt2);}
+.plan-col-price .meta{font-size:11px; color:var(--txt2);}
+.plan-col-body{padding:18px 22px; flex:1; display:flex; flex-direction:column; gap:7px;}
+.plan-feat{display:flex; align-items:flex-start; gap:7px; font-size:12px;}
+.plan-feat svg{flex-shrink:0; margin-top:2px; color:var(--green);}
+.plan-feat.no{color:var(--txt3);}
+.plan-feat.no svg{color:var(--gray3);}
+.plan-col-foot{padding:14px 22px; background:var(--off); border-top:1px solid var(--gray1);}
+.plan-col-foot button{width:100%;}
+
+/* Invoice row */
+.inv-status{padding:2px 8px; border-radius:10px; font-size:10.5px; font-weight:500;}
+.inv-status.paid{background:var(--green2); color:var(--green);}
+.inv-status.open{background:var(--amber2); color:var(--amber);}
+.inv-status.draft{background:var(--gray1); color:var(--txt2);}
+.inv-status.void{background:var(--danger2); color:var(--danger);}
+
+/* Method card */
+.method-card{display:grid; grid-template-columns:42px 1fr auto auto; gap:12px; padding:12px 14px; background:#fff; border:1px solid var(--gray1); border-radius:10px; margin-bottom:6px; align-items:center;}
+.method-card.default{border-color:var(--orange);}
+.method-icon{width:42px; height:28px; border-radius:5px; background:linear-gradient(135deg, var(--navy), var(--blue)); display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px; font-weight:700; letter-spacing:.5px;}
+.method-card .info strong{font-size:12.5px; font-weight:600;}
+.method-card .info .meta{font-size:11px; color:var(--txt2);}
+
+@media (max-width:980px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .plan-compare{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/gpc-color.png" alt="GPC" class="brand-logo">
+      <div class="brand-text"><span class="brand-name">GPC</span><span class="brand-sub">Gestão de Pessoas</span></div>
+    </div>
+    <div class="sidebar-section">Admin · tenant</div>
+    <nav class="sidebar-nav">
+      <a href="r2_people_home.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 12 4l9 8"/><path d="M5 10v10h14V10"/></svg>Início</a>
+      <a href="r2_people_billing.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Billing & Plano</a>
+      <a href="r2_people_admin_hub.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Hub Admin</a>
+      <a href="r2_people_configuracoes.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</a>
+      <a href="r2_people_acessos.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7-8 7s-8-2-8-7V6l8-3 8 3z"/></svg>Acessos & Perfis</a>
+      <a href="r2_people_tenants.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21V12h6v9"/></svg>Tenants</a>
+    </nav>
+    <div class="sidebar-footer"><span>R2 Soluções</span><span style="font-family:'JetBrains Mono',monospace;">v0.12</span></div>
+  </aside>
+
+  <div class="topbar">
+    <div class="topbar-title">Admin · <strong>Billing & Plano</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar">PM</div>
+      <div class="user-info"><span class="user-name">Patrícia Mello</span><span class="user-role">tenant_admin · GPC</span></div>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Plano & Assinatura</h1>
+        <p>Plano atual, próxima fatura, seats em uso, métodos de pagamento e histórico · schema v12</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">Exportar histórico</button>
+        <button class="btn-orange">Upgrade para Enterprise</button>
+      </div>
+    </div>
+
+    <!-- Plan hero -->
+    <div class="plan-hero">
+      <div class="plan-hero-body">
+        <span class="plan-tier-tag">Pro · plano vigente</span>
+        <h2>R2 People Pro</h2>
+        <p>Para empresas em crescimento (até 500 pessoas) com necessidade de relatórios e workflows · 11 módulos · MFA obrigatório · 50 GB storage · 100k API calls/mês.</p>
+        <div class="plan-renewal">Renovação automática em <strong>14/06/2026</strong> · próxima fatura R$ <strong>799,00</strong> + R$ <strong>180,00</strong> (12 seats extras × R$ 15)</div>
+      </div>
+      <div class="plan-hero-price">
+        <div class="plan-price-amount"><span class="currency">R$</span> 979<span style="font-size:18px; color:var(--txt2);">,00</span></div>
+        <div class="plan-price-period">por mês · cobrança mensal</div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">Seats ativos</div>
+        <div class="kpi-value">112<span style="font-size:14px; color:var(--txt2);"> / 500</span></div>
+        <div class="kpi-trend">22% utilizado · 100 incluídos + 12 extras</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Storage</div>
+        <div class="kpi-value">12.4<span style="font-size:14px; color:var(--txt2);"> / 50 GB</span></div>
+        <div class="kpi-trend">25% · atestados + comunicados</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">API calls (este mês)</div>
+        <div class="kpi-value">68k<span style="font-size:14px; color:var(--txt2);"> / 100k</span></div>
+        <div class="kpi-trend">68% · ritmo OK até dia 22</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Próxima fatura</div>
+        <div class="kpi-value">R$ 979</div>
+        <div class="kpi-trend">vence 14/06 · cartão final 4242</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="quotas">Quotas em uso</div>
+      <div class="tab" data-tab="invoices">Faturas</div>
+      <div class="tab" data-tab="methods">Métodos de pagamento</div>
+      <div class="tab" data-tab="seats">Seats</div>
+      <div class="tab" data-tab="plans">Comparar planos</div>
+      <div class="tab" data-tab="usage">Log de uso</div>
+    </div>
+
+    <!-- Quotas -->
+    <div class="tab-pane active" id="tab-quotas">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Quotas do plano Pro</div><div class="card-sub">limite enforced via trigger fn_quota_increment</div></div></div>
+        <div class="quota-grid">
+          <div class="quota-card">
+            <div class="quota-head"><div class="quota-name">Seats</div><span class="badge ok">22%</span></div>
+            <div class="quota-numbers"><span class="used">112</span> / 500</div>
+            <div class="quota-bar"><div class="ok" style="width:22%;"></div></div>
+            <div class="quota-foot">+ 388 disponíveis · R$ 15/seat extra</div>
+          </div>
+          <div class="quota-card">
+            <div class="quota-head"><div class="quota-name">Employees</div><span class="badge ok">73%</span></div>
+            <div class="quota-numbers"><span class="used">367</span> / 500</div>
+            <div class="quota-bar"><div class="ok" style="width:73%;"></div></div>
+            <div class="quota-foot">+ 133 disponíveis no plano</div>
+          </div>
+          <div class="quota-card">
+            <div class="quota-head"><div class="quota-name">Storage</div><span class="badge ok">25%</span></div>
+            <div class="quota-numbers"><span class="used">12.4</span> / 50 GB</div>
+            <div class="quota-bar"><div class="ok" style="width:25%;"></div></div>
+            <div class="quota-foot">crescimento ~ 200 MB/mês</div>
+          </div>
+          <div class="quota-card">
+            <div class="quota-head"><div class="quota-name">API calls / mês</div><span class="badge warn">68%</span></div>
+            <div class="quota-numbers"><span class="used">68.412</span> / 100.000</div>
+            <div class="quota-bar"><div class="warn" style="width:68%;"></div></div>
+            <div class="quota-foot">reset em 14/06 · soft warn em 80%</div>
+          </div>
+          <div class="quota-card">
+            <div class="quota-head"><div class="quota-name">Webhooks</div><span class="badge ok">40%</span></div>
+            <div class="quota-numbers"><span class="used">4</span> / 10</div>
+            <div class="quota-bar"><div class="ok" style="width:40%;"></div></div>
+            <div class="quota-foot">6 hooks disponíveis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoices -->
+    <div class="tab-pane" id="tab-invoices">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Faturas emitidas (últimas 12)</div></div>
+          <button class="btn-secondary">Baixar tudo (ZIP)</button>
+        </div>
+        <table>
+          <thead><tr><th>Nº</th><th>Período</th><th>Emissão</th><th>Vencimento</th><th>Pago em</th><th>Método</th><th>Status</th><th class="num">Total</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><code>INV-2026-000142</code></td><td>14/05 a 13/06</td><td>14/05/2026</td><td>14/06/2026</td><td>—</td><td>—</td><td><span class="inv-status open">aberta</span></td><td class="num">R$ 979,00</td><td><button class="btn-secondary" style="padding:5px 9px;">PDF</button></td></tr>
+            <tr><td><code>INV-2026-000128</code></td><td>14/04 a 13/05</td><td>14/04/2026</td><td>14/05/2026</td><td>15/04/2026</td><td>Cartão · 4242</td><td><span class="inv-status paid">paga</span></td><td class="num">R$ 949,00</td><td><button class="btn-secondary" style="padding:5px 9px;">PDF</button></td></tr>
+            <tr><td><code>INV-2026-000114</code></td><td>14/03 a 13/04</td><td>14/03/2026</td><td>14/04/2026</td><td>14/03/2026</td><td>Cartão · 4242</td><td><span class="inv-status paid">paga</span></td><td class="num">R$ 919,00</td><td><button class="btn-secondary" style="padding:5px 9px;">PDF</button></td></tr>
+            <tr><td><code>INV-2026-000100</code></td><td>14/02 a 13/03</td><td>14/02/2026</td><td>14/03/2026</td><td>14/02/2026</td><td>Cartão · 4242</td><td><span class="inv-status paid">paga</span></td><td class="num">R$ 889,00</td><td><button class="btn-secondary" style="padding:5px 9px;">PDF</button></td></tr>
+            <tr><td><code>INV-2026-000086</code></td><td>14/01 a 13/02</td><td>14/01/2026</td><td>14/02/2026</td><td>14/01/2026</td><td>Cartão · 4242</td><td><span class="inv-status paid">paga</span></td><td class="num">R$ 859,00</td><td><button class="btn-secondary" style="padding:5px 9px;">PDF</button></td></tr>
+            <tr><td><code>INV-2025-000072</code></td><td>14/12 a 13/01</td><td>14/12/2025</td><td>14/01/2026</td><td>14/12/2025</td><td>PIX</td><td><span class="inv-status paid">paga</span></td><td class="num">R$ 829,00</td><td><button class="btn-secondary" style="padding:5px 9px;">PDF</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Methods -->
+    <div class="tab-pane" id="tab-methods">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Métodos de pagamento (3)</div></div>
+          <button class="btn-primary">+ Adicionar método</button>
+        </div>
+        <div class="method-card default">
+          <div class="method-icon">VISA</div>
+          <div class="info"><strong>•••• •••• •••• 4242</strong><div class="meta">Patrícia Mello · expira 11/2028</div></div>
+          <span class="badge ok">padrão</span>
+          <button class="btn-secondary" style="padding:6px 11px;">Editar</button>
+        </div>
+        <div class="method-card">
+          <div class="method-icon" style="background:linear-gradient(135deg,#1E7B4B,#0F4A2C);">PIX</div>
+          <div class="info"><strong>CNPJ 03.456.789/0001-12</strong><div class="meta">backup · usado em dez/2025</div></div>
+          <span class="badge muted">backup</span>
+          <button class="btn-secondary" style="padding:6px 11px;">Editar</button>
+        </div>
+        <div class="method-card">
+          <div class="method-icon" style="background:linear-gradient(135deg,#854F0B,#5F3808);">BOL</div>
+          <div class="info"><strong>Boleto bancário</strong><div class="meta">disponível em valores > R$ 500</div></div>
+          <span class="badge muted">disponível</span>
+          <button class="btn-secondary" style="padding:6px 11px;">Editar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seats -->
+    <div class="tab-pane" id="tab-seats">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Seats atribuídos (112)</div><div class="card-sub">cada user ativo consome 1 seat · enforcement via trigger</div></div>
+          <button class="btn-primary">+ Atribuir seat</button>
+        </div>
+        <table>
+          <thead><tr><th>Usuário</th><th>Papel</th><th>Atribuído em</th><th>Atribuído por</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><strong>Patrícia Mello</strong> · patricia.mello@gpc.com.br</td><td><span class="badge purple">tenant_admin</span></td><td>14/01/2025</td><td>— (signup)</td><td><span class="badge ok">ativo</span></td><td><button class="btn-secondary" style="padding:5px 9px;">Revogar</button></td></tr>
+            <tr><td><strong>João Carvalho</strong> · joao.carvalho@gpc.com.br</td><td><span class="badge blue">coord_rh</span></td><td>22/01/2025</td><td>Patrícia Mello</td><td><span class="badge ok">ativo</span></td><td><button class="btn-secondary" style="padding:5px 9px;">Revogar</button></td></tr>
+            <tr><td><strong>Fernanda Lima</strong> · fernanda.lima@gpc.com.br</td><td><span class="badge muted">colaborador</span></td><td>03/02/2025</td><td>Patrícia Mello</td><td><span class="badge ok">ativo</span></td><td><button class="btn-secondary" style="padding:5px 9px;">Revogar</button></td></tr>
+            <tr><td><strong>Renato Pinto</strong> · renato.pinto@gpc.com.br</td><td><span class="badge blue">diretoria</span></td><td>10/02/2025</td><td>Patrícia Mello</td><td><span class="badge ok">ativo</span></td><td><button class="btn-secondary" style="padding:5px 9px;">Revogar</button></td></tr>
+            <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--txt2); font-size:11.5px;">+ 108 outros usuários · <a href="r2_people_acessos.html" style="color:var(--orange); text-decoration:none;">ver todos →</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Compare plans -->
+    <div class="tab-pane" id="tab-plans">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Comparar planos</div><div class="card-sub">3 níveis seed v12 · você está no Pro</div></div></div>
+        <div class="plan-compare">
+          <div class="plan-col">
+            <div class="plan-col-head">
+              <div class="plan-col-name">Starter</div>
+              <div class="plan-col-desc">Para pequenas empresas (até 25 pessoas) que querem digitalizar RH sem complicação.</div>
+              <div class="plan-col-price">
+                <div class="num"><span class="c">R$</span> 299<span class="c">/mês</span></div>
+                <div class="meta">+ R$ 19/seat extra · até 50 seats</div>
+              </div>
+            </div>
+            <div class="plan-col-body">
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>5 módulos básicos (pessoas, atestados, férias…)</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>2 webhooks · 5 GB storage</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>10k API calls/mês</div>
+              <div class="plan-feat no"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>OKRs, PDI, relatórios avançados</div>
+              <div class="plan-feat no"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>SSO · MFA obrigatório</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Suporte por e-mail · horário comercial</div>
+            </div>
+            <div class="plan-col-foot"><button class="btn-secondary">Downgrade</button></div>
+          </div>
+
+          <div class="plan-col current">
+            <div class="plan-col-head">
+              <div class="plan-col-name">Pro</div>
+              <div class="plan-col-desc">Para empresas em crescimento (até 200 pessoas) com necessidade de relatórios e workflows.</div>
+              <div class="plan-col-price">
+                <div class="num"><span class="c">R$</span> 799<span class="c">/mês</span></div>
+                <div class="meta">+ R$ 15/seat extra · até 500 seats</div>
+              </div>
+            </div>
+            <div class="plan-col-body">
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>11 módulos · todos os core</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>10 webhooks · 50 GB storage</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>100k API calls/mês</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>OKRs, PDI, 1:1s, relatórios</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>MFA obrigatório · audit padrão</div>
+              <div class="plan-feat no"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>SSO SAML/OIDC · CS dedicado</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Suporte priority + chat</div>
+            </div>
+            <div class="plan-col-foot"><button class="btn-secondary" disabled style="opacity:.5;">Plano atual</button></div>
+          </div>
+
+          <div class="plan-col featured">
+            <div class="plan-col-head">
+              <div class="plan-col-name">Enterprise</div>
+              <div class="plan-col-desc">Para organizações maduras (200+ pessoas), com SSO, SLA dedicado e Customer Success.</div>
+              <div class="plan-col-price">
+                <div class="num"><span class="c">R$</span> 2.499<span class="c">/mês</span></div>
+                <div class="meta">+ R$ 12/seat extra · seats ilimitados</div>
+              </div>
+            </div>
+            <div class="plan-col-body">
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Todos os módulos · sem limites</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>50 webhooks · 500 GB storage</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>1M API calls/mês</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>SSO SAML/OIDC · audit estendido</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>SLA 99.9% · CS dedicado</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Pen-test compartilhado anual</div>
+              <div class="plan-feat"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>Onboarding white-glove</div>
+            </div>
+            <div class="plan-col-foot"><button class="btn-orange" style="width:100%;">Fazer upgrade</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Usage log -->
+    <div class="tab-pane" id="tab-usage">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Log de uso de quota (últimas 20)</div><div class="card-sub">tabela quota_usage_log · auditável</div></div>
+          <button class="btn-secondary">Filtrar</button>
+        </div>
+        <table>
+          <thead><tr><th>Quando</th><th>Recurso</th><th>Δ</th><th>Nova posição</th><th>Motivo</th><th>Ator</th></tr></thead>
+          <tbody>
+            <tr><td>2min atrás</td><td><code>seats</code></td><td class="num" style="color:var(--green);">+1</td><td class="num">112</td><td>seat_assigned</td><td>Patrícia Mello</td></tr>
+            <tr><td>14min atrás</td><td><code>employees</code></td><td class="num" style="color:var(--green);">+1</td><td class="num">367</td><td>employee_created</td><td>—</td></tr>
+            <tr><td>1h atrás</td><td><code>api_calls_month</code></td><td class="num" style="color:var(--green);">+312</td><td class="num">68.412</td><td>monthly_aggregate</td><td>system</td></tr>
+            <tr><td>3h atrás</td><td><code>storage_gb</code></td><td class="num" style="color:var(--green);">+0.08</td><td class="num">12.4</td><td>uploads_aggregate</td><td>system</td></tr>
+            <tr><td>5h atrás</td><td><code>webhooks</code></td><td class="num" style="color:var(--danger);">−1</td><td class="num">4</td><td>webhook_deleted</td><td>Patrícia Mello</td></tr>
+            <tr><td>1d atrás</td><td><code>seats</code></td><td class="num" style="color:var(--green);">+1</td><td class="num">111</td><td>seat_assigned</td><td>Patrícia Mello</td></tr>
+            <tr><td>2d atrás</td><td><code>seats</code></td><td class="num" style="color:var(--danger);">−1</td><td class="num">110</td><td>seat_revoked</td><td>Patrícia Mello</td></tr>
+            <tr><td>3d atrás</td><td><code>webhooks</code></td><td class="num" style="color:var(--green);">+1</td><td class="num">5</td><td>webhook_created</td><td>Daniel Santos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
