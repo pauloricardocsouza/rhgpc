@@ -250,7 +250,8 @@
     { title: 'Hub Admin · operação consolidada', url: 'r2_people_admin_hub.html', cat: 'Admin', icon: '🎛️', kw: 'hub admin centro operacao consolidado cockpit landing entry point super admin' },
     { title: 'Tenant Setup · wizard de primeira execução', url: 'r2_people_tenant_setup.html', cat: 'Admin', icon: '🧙', kw: 'onboarding wizard tenant setup primeira execucao branding mfa configuracao inicial' },
     { title: 'Billing & Plano · tenant_admin', url: 'r2_people_billing.html', cat: 'Admin', icon: '💳', kw: 'billing plano fatura invoice assinatura subscription seat quota pagamento cartao pix upgrade' },
-    { title: 'DR Console · Backups & Disaster Recovery', url: 'r2_people_dr_console.html', cat: 'Admin', icon: '🛟', kw: 'dr disaster recovery backup pitr restore drill smoke test rpo rto retention devops failover ransomware' }
+    { title: 'DR Console · Backups & Disaster Recovery', url: 'r2_people_dr_console.html', cat: 'Admin', icon: '🛟', kw: 'dr disaster recovery backup pitr restore drill smoke test rpo rto retention devops failover ransomware' },
+    { title: 'Preços públicos · landing comercial', url: 'r2_people_pricing.html', cat: 'Home', icon: '💵', kw: 'preco pricing plano starter pro enterprise comercial landing publico marketing assinatura trial' }
   ];
 
   function openSearch() {
