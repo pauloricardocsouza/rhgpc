@@ -14,48 +14,117 @@
      Variaveis
      ====================================================================== */
   :root {
-    /* ============ GPC brand (alinhado com comercial v4.84) ============ */
-    --gpc-navy: #2E476F;
-    --gpc-navy-dark: #1A2D4F;
-    --gpc-orange: #F58634;
+    /* ============ GPC NAVY (escala completa derivada da logo · comercial v4.84) ============ */
+    --gpc-navy-50:  #EEF2F8;
+    --gpc-navy-100: #D8E0EE;
+    --gpc-navy-200: #B0C0DC;
+    --gpc-navy-300: #7691BC;
+    --gpc-navy-400: #4D6FA0;
+    --gpc-navy-500: #2E476F;
+    --gpc-navy-600: #253C5E;
+    --gpc-navy-700: #1B2D48;
+    --gpc-navy-800: #131F31;
+    --gpc-navy-900: #0B131F;
 
-    --bg: #fafafa;
-    --bg-elevated: #ffffff;
-    --bg-sidebar: var(--gpc-navy-dark);
-    --bg-sidebar-hover: rgba(255,255,255,0.06);
-    --bg-sidebar-active: rgba(255,255,255,0.10);
+    /* ============ GPC ORANGE (escala derivada do acento) ============ */
+    --gpc-orange-50:  #FFF2E8;
+    --gpc-orange-100: #FFE0C6;
+    --gpc-orange-200: #FCC18C;
+    --gpc-orange-300: #F9A153;
+    --gpc-orange-400: #F58634;
+    --gpc-orange-500: #DC7529;
+    --gpc-orange-600: #B45A1F;
+    --gpc-orange-700: #8A4318;
 
-    --border: #e4e4e7;
-    --border-strong: #d4d4d8;
-    --border-dark: rgba(255,255,255,0.08);
+    /* Aliases legados (compatibilidade) */
+    --gpc-navy:      var(--gpc-navy-500);
+    --gpc-navy-dark: var(--gpc-navy-800);
+    --gpc-orange:    var(--gpc-orange-400);
 
-    --text: #1A2D4F;
-    --text-muted: #5A7090;
-    --text-faint: #8FA3BE;
+    /* ============ Neutros com viés navy ============ */
+    --n-0:   #FFFFFF;
+    --n-50:  #F7F8FA;
+    --n-100: #EFF1F5;
+    --n-200: #E4E8EE;
+    --n-300: #C9D0DA;
+    --n-400: #9BA3B2;
+    --n-500: #6B7280;
+    --n-600: #4A5262;
+    --n-700: #2C3340;
+    --n-800: #16202E;
+    --n-900: #0A0E16;
+
+    /* ============ Aliases funcionais ============ */
+    --bg: var(--n-50);
+    --bg-elevated: var(--n-0);
+    --bg-page: var(--n-50);
+    --bg-sidebar: var(--n-0);                           /* sidebar agora é clara */
+    --bg-sidebar-hover: var(--n-100);
+    --bg-sidebar-active: var(--gpc-navy-50);
+
+    --border: var(--n-200);
+    --border-strong: var(--n-300);
+    --border-dark: rgba(255,255,255,0.08);              /* legado · usado em alguns lugares */
+
+    --text: var(--n-900);
+    --text-dim: var(--n-600);
+    --text-muted: var(--n-500);
+    --text-faint: var(--n-400);
     --text-on-dark: #fafafa;
     --text-on-dark-muted: #A8B5C8;
 
-    --accent: var(--gpc-navy);
+    --accent: var(--gpc-navy-500);
+    --accent-dim: var(--gpc-navy-600);
+    --accent-deep: var(--gpc-navy-700);
+    --accent-text: var(--gpc-navy-700);
+    --accent-bg: var(--gpc-navy-50);
+
     --accent-blue: #1E5FBF;
-    --accent-green: #1E7B4B;
-    --accent-amber: #F58634;
-    --accent-red: #E82227;
-    --accent-amber-bg: #FEF3E2;
-    --accent-green-bg: #D4EDDF;
-    --accent-red-bg: #FDECEA;
-    --accent-blue-bg: #DBE7FB;
+    --accent-green: #109854;
+    --accent-amber: var(--gpc-orange-400);
+    --accent-red: #d92d20;
 
-    --radius: 8px;
-    --radius-sm: 6px;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --shadow: 0 4px 12px rgba(26,45,79,0.08);
-    --shadow-lg: 0 20px 40px rgba(26,45,79,0.20);
+    --accent-amber-bg: var(--gpc-orange-50);
+    --accent-green-bg: #E8F6EE;
+    --accent-red-bg: #FDEBEA;
+    --accent-blue-bg: #EAF1FD;
 
+    --highlight: var(--gpc-orange-400);
+    --highlight-text: var(--gpc-orange-600);
+    --highlight-bg: var(--gpc-orange-50);
+
+    /* ============ Spacing ============ */
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+    --sp-5: 20px; --sp-6: 24px; --sp-7: 32px; --sp-8: 48px;
+
+    /* ============ Radii ============ */
+    --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px; --r-full: 9999px;
+    --radius: var(--r-md);
+    --radius-sm: var(--r-sm);
+
+    /* ============ Shadows (tom navy ao invés de preto puro) ============ */
+    --sh-xs: 0 1px 2px rgba(10,14,22,0.04);
+    --sh-sm: 0 1px 3px rgba(10,14,22,0.06), 0 1px 2px rgba(10,14,22,0.04);
+    --sh-md: 0 4px 12px rgba(10,14,22,0.06);
+    --sh-lg: 0 8px 24px rgba(10,14,22,0.08);
+    --shadow-sm: var(--sh-xs);
+    --shadow: var(--sh-md);
+    --shadow-lg: var(--sh-lg);
+
+    /* ============ Layout ============ */
     --sidebar-w-expanded: 240px;
     --sidebar-w-collapsed: 64px;
-    --topbar-h: 56px;
+    --topbar-h: 48px;                                   /* alinha com comercial (era 56px) */
 
-    --font-display: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+    /* ============ Densidade ============ */
+    --row-h: 36px;
+    --row-pad-y: 9px;
+    --row-pad-x: 12px;
+    --card-pad: 18px;
+    --kpi-pad: 18px;
+
+    --font-display: 'Archivo', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     --font-body: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
@@ -129,13 +198,13 @@
     color: var(--text); letter-spacing: -0.01em;
   }
   .sidebar-brand-sub {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 9px; color: var(--text-muted);
     text-transform: uppercase; letter-spacing: 0.18em;
     font-weight: 600;
   }
   .sidebar-brand-version {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 10px; color: var(--text-faint);
     margin-top: 4px;
   }
@@ -164,7 +233,7 @@
 
   .sidebar-section-label {
     padding: 4px 12px 6px;
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 9px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.14em;
     color: var(--text-faint);
@@ -219,6 +288,16 @@
     color: var(--accent-amber);
     flex-shrink: 0;
   }
+  .sidebar-item .badge-soon {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 8.5px; font-weight: 700;
+    padding: 2px 6px; border-radius: 4px;
+    background: var(--bg);
+    color: var(--text-faint);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .sidebar.collapsed .sidebar-item .badge-soon { display: none; }
 
   /* Footer · DESENVOLVIDO POR R2 SOLUÇÕES (estilo comercial) */
   .sidebar-footer {
@@ -229,7 +308,7 @@
   .sidebar.collapsed .sidebar-footer { padding: 10px 6px; }
 
   .sidebar-r2-lbl {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 8.5px; font-weight: 700;
     color: var(--text-faint);
     text-transform: uppercase; letter-spacing: 0.14em;
@@ -255,7 +334,7 @@
   }
   .sidebar-role-block .value {
     color: var(--text);
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     margin-left: 4px;
     font-weight: 600;
   }
@@ -268,7 +347,7 @@
     background: var(--accent);
     color: #fff;
     border-radius: 50%;
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 10px; font-weight: 700;
     text-transform: uppercase;
     align-items: center; justify-content: center;
@@ -304,7 +383,7 @@
   .topbar-hamburger svg { width: 18px; height: 18px; }
 
   .topbar-title {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 600;
     color: var(--text-muted);
@@ -334,7 +413,7 @@
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 11px;
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -371,7 +450,7 @@
     padding-bottom: 16px;
   }
   .page-eyebrow {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 600;
     color: var(--text-muted);
@@ -459,7 +538,7 @@
     font-size: 14px;
   }
   .module-code {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 10px;
     color: var(--text-faint);
   }
@@ -472,14 +551,14 @@
   .module-summary {
     font-size: 11px;
     color: var(--text-muted);
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     flex-shrink: 0;
   }
 
   .badge-core {
     background: var(--accent);
     color: white;
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
@@ -508,7 +587,7 @@
     padding: 12px;
   }
   .stat-value {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-size: 22px;
     font-weight: 600;
     line-height: 1;
@@ -556,7 +635,7 @@
 
   .scope-info { flex: 1; min-width: 0; }
   .scope-name { font-size: 13px; font-weight: 500; }
-  .scope-code { font-family: var(--font-display); font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+  .scope-code { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 
   .scope-actions { display: flex; gap: 4px; }
 
@@ -656,7 +735,7 @@
     font-size: 12px;
   }
   .impact-row .count {
-    font-family: var(--font-display);
+    font-family: var(--font-mono);
     font-weight: 600;
   }
   .impact-row .count.zero { color: var(--text-faint); }
@@ -836,62 +915,63 @@ const EMPLOYER_UNITS_TOTAL_GLOBAL = 7;
 const WORKING_UNITS_TOTAL_GLOBAL = 24;
 
 // Catalogo de itens da navbar (espelha my_navbar_items_by_role do SQL)
+// Paths apontam para os HTMLs estáticos publicados no mesmo diretório.
 const NAVBAR_BY_ROLE = {
   super_admin: [
-    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#',                section: 'main',    module_code: null },
-    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: '#',                section: 'main',    module_code: null },
-    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: '#',                section: 'main',    module_code: null },
-    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#',                section: 'modules', module_code: 'recognition' },
-    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#',                section: 'modules', module_code: 'pdi' },
-    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: '#',                section: 'modules', module_code: 'onboarding' },
-    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#',                section: 'modules', module_code: 'ninebox' },
-    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                section: 'modules', module_code: 'climate' },
-    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: '#',                section: 'main',    module_code: null },
-    { key: 'admin_modules',  label: 'Módulos',          icon: 'Layers',     path: '/admin/modulos',   section: 'admin',   module_code: null, isCurrent: true },
-    { key: 'admin_tenants',  label: 'Tenants',          icon: 'Building2',  path: '#',                section: 'admin',   module_code: null },
-    { key: 'admin_users',    label: 'Usuários',         icon: 'UserCog',    path: '#',                section: 'admin',   module_code: null },
-    { key: 'admin_audit',    label: 'Auditoria',        icon: 'FileSearch', path: '#',                section: 'admin',   module_code: null },
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: 'r2_people_home.html',                  section: 'main',    module_code: null },
+    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: 'r2_people_colaboradores_lista.html',   section: 'main',    module_code: null },
+    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: 'r2_people_estrutura.html',             section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: 'r2_people_feedback_mural.html',        section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: 'r2_people_pdi.html',                   section: 'modules', module_code: 'pdi' },
+    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: 'r2_people_onboarding.html',            section: 'modules', module_code: 'onboarding' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: 'r2_people_9box.html',                  section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                                    section: 'modules', module_code: 'climate' },
+    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: 'r2_people_relatorios.html',            section: 'main',    module_code: null },
+    { key: 'admin_modules',  label: 'Módulos',          icon: 'Layers',     path: 'index.html',                           section: 'admin',   module_code: null, isCurrent: true },
+    { key: 'admin_tenants',  label: 'Tenants',          icon: 'Building2',  path: '#',                                    section: 'admin',   module_code: null },
+    { key: 'admin_users',    label: 'Usuários',         icon: 'UserCog',    path: 'r2_people_acessos.html',               section: 'admin',   module_code: null },
+    { key: 'admin_audit',    label: 'Auditoria',        icon: 'FileSearch', path: 'r2_people_auditoria.html',             section: 'admin',   module_code: null },
   ],
   diretoria: [
-    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#',                section: 'main',    module_code: null },
-    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: '#',                section: 'main',    module_code: null },
-    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: '#',                section: 'main',    module_code: null },
-    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#',                section: 'modules', module_code: 'recognition' },
-    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#',                section: 'modules', module_code: 'pdi' },
-    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: '#',                section: 'modules', module_code: 'onboarding' },
-    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#',                section: 'modules', module_code: 'ninebox' },
-    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                section: 'modules', module_code: 'climate' },
-    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: '#',                section: 'main',    module_code: null },
-    { key: 'admin_modules',  label: 'Módulos',          icon: 'Layers',     path: '/admin/modulos',   section: 'admin',   module_code: null, isCurrent: true },
-    { key: 'admin_users',    label: 'Usuários',         icon: 'UserCog',    path: '#',                section: 'admin',   module_code: null },
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: 'r2_people_home.html',                  section: 'main',    module_code: null },
+    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: 'r2_people_colaboradores_lista.html',   section: 'main',    module_code: null },
+    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: 'r2_people_estrutura.html',             section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: 'r2_people_feedback_mural.html',        section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: 'r2_people_pdi.html',                   section: 'modules', module_code: 'pdi' },
+    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: 'r2_people_onboarding.html',            section: 'modules', module_code: 'onboarding' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: 'r2_people_9box.html',                  section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                                    section: 'modules', module_code: 'climate' },
+    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: 'r2_people_relatorios.html',            section: 'main',    module_code: null },
+    { key: 'admin_modules',  label: 'Módulos',          icon: 'Layers',     path: 'index.html',                           section: 'admin',   module_code: null, isCurrent: true },
+    { key: 'admin_users',    label: 'Usuários',         icon: 'UserCog',    path: 'r2_people_acessos.html',               section: 'admin',   module_code: null },
   ],
   rh: [
-    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#', section: 'main',    module_code: null },
-    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: '#', section: 'main',    module_code: null },
-    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: '#', section: 'main',    module_code: null },
-    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#', section: 'modules', module_code: 'recognition' },
-    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#', section: 'modules', module_code: 'pdi' },
-    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: '#', section: 'modules', module_code: 'onboarding' },
-    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#', section: 'modules', module_code: 'ninebox' },
-    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#', section: 'modules', module_code: 'climate' },
-    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: '#', section: 'main',    module_code: null },
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: 'r2_people_home.html',                  section: 'main',    module_code: null },
+    { key: 'people',         label: 'Pessoas',          icon: 'Users',      path: 'r2_people_colaboradores_lista.html',   section: 'main',    module_code: null },
+    { key: 'orgchart',       label: 'Organograma',      icon: 'Network',    path: 'r2_people_estrutura.html',             section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: 'r2_people_feedback_mural.html',        section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: 'r2_people_pdi.html',                   section: 'modules', module_code: 'pdi' },
+    { key: 'onboarding',     label: 'Onboarding',       icon: 'UserPlus',   path: 'r2_people_onboarding.html',            section: 'modules', module_code: 'onboarding' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: 'r2_people_9box.html',                  section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                                    section: 'modules', module_code: 'climate' },
+    { key: 'reports',        label: 'Relatórios',       icon: 'BarChart3',  path: 'r2_people_relatorios.html',            section: 'main',    module_code: null },
   ],
   lider: [
-    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#', section: 'main',    module_code: null },
-    { key: 'my_team',        label: 'Meu Time',         icon: 'Users',      path: '#', section: 'main',    module_code: null },
-    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#', section: 'modules', module_code: 'recognition' },
-    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: '#', section: 'modules', module_code: 'pdi' },
-    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: '#', section: 'modules', module_code: 'ninebox' },
-    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#', section: 'modules', module_code: 'climate' },
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: 'r2_people_home.html',                  section: 'main',    module_code: null },
+    { key: 'my_team',        label: 'Meu Time',         icon: 'Users',      path: 'r2_people_oneonones.html',             section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: 'r2_people_feedback_mural.html',        section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'PDI',              icon: 'TrendingUp', path: 'r2_people_pdi.html',                   section: 'modules', module_code: 'pdi' },
+    { key: 'ninebox',        label: '9-Box',            icon: 'Grid3x3',    path: 'r2_people_9box.html',                  section: 'modules', module_code: 'ninebox' },
+    { key: 'climate',        label: 'Clima',            icon: 'Activity',   path: '#',                                    section: 'modules', module_code: 'climate' },
   ],
   colaborador: [
-    { key: 'home',           label: 'Início',           icon: 'Home',       path: '#', section: 'main',    module_code: null },
-    { key: 'my_profile',     label: 'Meu Perfil',       icon: 'User',       path: '#', section: 'main',    module_code: null },
-    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: '#', section: 'modules', module_code: 'recognition' },
-    { key: 'pdi',            label: 'Meu PDI',          icon: 'TrendingUp', path: '#', section: 'modules', module_code: 'pdi' },
-    { key: 'ninebox',        label: 'Auto-avaliação',   icon: 'Grid3x3',    path: '#', section: 'modules', module_code: 'ninebox' },
-    { key: 'onboarding',     label: 'Meu Onboarding',   icon: 'UserPlus',   path: '#', section: 'modules', module_code: 'onboarding' },
-    { key: 'climate',        label: 'Pesquisa de Clima',icon: 'Activity',   path: '#', section: 'modules', module_code: 'climate' },
+    { key: 'home',           label: 'Início',           icon: 'Home',       path: 'r2_people_colaborador_home.html',      section: 'main',    module_code: null },
+    { key: 'my_profile',     label: 'Meu Perfil',       icon: 'User',       path: 'r2_people_minha_trajetoria.html',      section: 'main',    module_code: null },
+    { key: 'recognition',    label: 'Reconhecimentos',  icon: 'Award',      path: 'r2_people_feedback_mural.html',        section: 'modules', module_code: 'recognition' },
+    { key: 'pdi',            label: 'Meu PDI',          icon: 'TrendingUp', path: 'r2_people_pdi.html',                   section: 'modules', module_code: 'pdi' },
+    { key: 'ninebox',        label: 'Auto-avaliação',   icon: 'Grid3x3',    path: 'r2_people_avaliacao.html',             section: 'modules', module_code: 'ninebox' },
+    { key: 'onboarding',     label: 'Meu Onboarding',   icon: 'UserPlus',   path: 'r2_people_onboarding.html',            section: 'modules', module_code: 'onboarding' },
+    { key: 'climate',        label: 'Pesquisa de Clima',icon: 'Activity',   path: '#',                                    section: 'modules', module_code: 'climate' },
   ],
 };
 
@@ -1021,11 +1101,12 @@ function renderSidebar() {
       ${s.items.map(it => `
         <a class="sidebar-item ${it.isCurrent ? 'active' : ''} ${it.readonly ? 'readonly' : ''}"
            href="${it.path}"
-           title="${it.label}${it.readonly ? ' (somente leitura)' : ''}"
-           onclick="event.preventDefault()">
+           title="${it.label}${it.readonly ? ' (somente leitura)' : it.path === '#' ? ' (em construção)' : ''}"
+           ${it.path === '#' ? 'onclick="event.preventDefault()"' : ''}>
           ${svgIcon(it.icon, 'icon')}
           <span class="label">${it.label}</span>
           ${it.readonly ? '<span class="badge-readonly">' + svgIcon('Lock') + '</span>' : ''}
+          ${it.path === '#' ? '<span class="badge-soon">em breve</span>' : ''}
         </a>
       `).join('')}
     </div>
@@ -1088,7 +1169,7 @@ function renderModulesList() {
           ${svgIcon('XCircle')}
         </div>
         <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">permission_denied</div>
-        <div style="font-size: 12px;">Você está logado como <code style="font-family: var(--font-display); background: var(--bg); padding: 1px 5px; border-radius: 3px;">${currentRole}</code>. Esta página é acessível apenas a super_admin e diretoria.</div>
+        <div style="font-size: 12px;">Você está logado como <code style="font-family: var(--font-mono); background: var(--bg); padding: 1px 5px; border-radius: 3px;">${currentRole}</code>. Esta página é acessível apenas a super_admin e diretoria.</div>
         <div style="font-size: 11px; margin-top: 12px;">Use o seletor de papel acima para visualizar como super_admin ou diretoria.</div>
       </div>`;
     return;
