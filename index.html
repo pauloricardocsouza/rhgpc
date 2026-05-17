@@ -4,50 +4,59 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>R2 People · Demo Visual · Sessões B2 e B3</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
   /* ========================================================================
      Variaveis
      ====================================================================== */
   :root {
+    /* ============ GPC brand (alinhado com comercial v4.84) ============ */
+    --gpc-navy: #2E476F;
+    --gpc-navy-dark: #1A2D4F;
+    --gpc-orange: #F58634;
+
     --bg: #fafafa;
     --bg-elevated: #ffffff;
-    --bg-sidebar: #0a0a0a;
+    --bg-sidebar: var(--gpc-navy-dark);
     --bg-sidebar-hover: rgba(255,255,255,0.06);
     --bg-sidebar-active: rgba(255,255,255,0.10);
 
     --border: #e4e4e7;
     --border-strong: #d4d4d8;
-    --border-dark: #27272a;
+    --border-dark: rgba(255,255,255,0.08);
 
-    --text: #18181b;
-    --text-muted: #71717a;
-    --text-faint: #a1a1aa;
+    --text: #1A2D4F;
+    --text-muted: #5A7090;
+    --text-faint: #8FA3BE;
     --text-on-dark: #fafafa;
-    --text-on-dark-muted: #a1a1aa;
+    --text-on-dark-muted: #A8B5C8;
 
-    --accent: #18181b;
-    --accent-blue: #2563eb;
-    --accent-green: #16a34a;
-    --accent-amber: #f59e0b;
-    --accent-red: #dc2626;
-    --accent-amber-bg: #fef3c7;
-    --accent-green-bg: #dcfce7;
-    --accent-red-bg: #fee2e2;
-    --accent-blue-bg: #dbeafe;
+    --accent: var(--gpc-navy);
+    --accent-blue: #1E5FBF;
+    --accent-green: #1E7B4B;
+    --accent-amber: #F58634;
+    --accent-red: #E82227;
+    --accent-amber-bg: #FEF3E2;
+    --accent-green-bg: #D4EDDF;
+    --accent-red-bg: #FDECEA;
+    --accent-blue-bg: #DBE7FB;
 
     --radius: 8px;
     --radius-sm: 6px;
     --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --shadow: 0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg: 0 20px 40px rgba(0,0,0,0.20);
+    --shadow: 0 4px 12px rgba(26,45,79,0.08);
+    --shadow-lg: 0 20px 40px rgba(26,45,79,0.20);
 
     --sidebar-w-expanded: 240px;
     --sidebar-w-collapsed: 64px;
     --topbar-h: 56px;
 
     --font-display: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Archivo', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   * { box-sizing: border-box; }
@@ -100,14 +109,40 @@
   .sidebar.collapsed .sidebar-header { padding: 0 12px; justify-content: center; }
 
   .sidebar-brand {
-    font-family: var(--font-display);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     user-select: none;
   }
-  .sidebar-brand .accent { color: var(--text-on-dark-muted); }
-  .sidebar.collapsed .sidebar-brand { display: none; }
+  .sidebar-brand-logo {
+    height: 28px;
+    width: auto;
+    display: block;
+    flex-shrink: 0;
+    filter: brightness(0) invert(1);
+  }
+  .sidebar-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .sidebar-brand-name {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-on-dark);
+    letter-spacing: -0.01em;
+  }
+  .sidebar-brand-sub {
+    font-family: var(--font-display);
+    font-size: 9px;
+    color: var(--text-on-dark-muted);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+  .sidebar.collapsed .sidebar-brand-text { display: none; }
+  .sidebar.collapsed .sidebar-brand-logo { height: 24px; }
 
   .sidebar-toggle {
     background: transparent;
@@ -619,7 +654,13 @@
        ==================================================================== -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-brand">R2 <span class="accent">people</span></span>
+      <span class="sidebar-brand">
+        <img class="sidebar-brand-logo" src="assets/gpc-color.svg" alt="GPC">
+        <span class="sidebar-brand-text">
+          <span class="sidebar-brand-name">R2 People</span>
+          <span class="sidebar-brand-sub">Gestão de Pessoas</span>
+        </span>
+      </span>
       <button class="sidebar-toggle" onclick="toggleSidebar()" title="Recolher/expandir">
         <svg id="toggleIcon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 18l-6-6 6-6"/>
