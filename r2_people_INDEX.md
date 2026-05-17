@@ -1,9 +1,11 @@
-# R2 People · Índice Consolidado de Artefatos
+﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.4 · 1 de maio de 2026
+**Versão**: 2.7 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
-**Status**: protótipo iterativo · pré-MVP
+**Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
+
+**Mudança em v2.5**: o repositório agora hospeda **duas camadas no mesmo lugar** · (1) os 42 HTMLs single-file que rodam em `rh.solucoesr2.com.br` (deploy atual via GitHub Pages) e (2) a codebase Next.js 14 + Supabase em `src/`, `supabase/`, `worker/` com 170 testes backend passando e 12 páginas implementadas. Ver §14 abaixo para a relação entre as duas camadas.
 
 ---
 
@@ -19,14 +21,31 @@ A construção é feita em **imersões iterativas**: a cada turno, uma nova tela
 
 ## 2. Sumário executivo dos artefatos
 
+### Camada 1 · Protótipos HTML (deploy atual)
+
 | Categoria | Quantidade | Tamanho total |
 |---|---|---|
 | Telas de produto (HTML interativo) | 42 | ~2,33 MB |
 | Documentação técnica e de produto (MD) | 5 | ~138 KB |
-| Schema e SQL backend | 10 | ~408 KB |
-| **Total** | **57** | **~2,87 MB** |
+| Schema e SQL de design (`r2_people_schema_v*.sql`) | 10 | ~408 KB |
+| **Subtotal** | **57** | **~2,87 MB** |
 
-57 artefatos catalogados, 11 categorias funcionais, 9 personas distintas, 4 escopos hierárquicos de RLS demonstrados.
+### Camada 2 · Codebase Next.js + Supabase (em desenvolvimento)
+
+| Categoria | Quantidade | Localização |
+|---|---|---|
+| Páginas Next.js (App Router) | 12 | `src/app/**/page.tsx` |
+| Componentes React (TS strict) | ~20 | `src/components/{employees,team,profile,navbar,imports}/` |
+| Módulos do adapter TS | 10 | `src/lib/r2/` |
+| Migrations Supabase (incrementais, idempotentes) | 32 | `supabase/migrations/` |
+| Testes SQL (170 testes passando) | 20 | `supabase/tests/` |
+| Worker FastAPI (OCR Tesseract) | 1 | `worker/` |
+| Docs de sessão (sessao_a1, a2, b2, b3, c4, e1-e6, f1-f6, g1-g3, h, h2, j, k, l) | 22 | `docs/` |
+| **Total** | **~13k linhas TS/TSX + ~25k linhas SQL** | - |
+
+**Combinado**: 57 artefatos de design + codebase Next.js parcial = duas representações sincronizadas do mesmo produto.
+
+57 artefatos de design catalogados, 11 categorias funcionais, 9 personas distintas, 4 escopos hierárquicos de RLS demonstrados.
 
 ---
 
@@ -594,6 +613,21 @@ Itens já discutidos, mas ainda não construídos. Atualizado em v2.4 após entr
 - ✓ Schema metas v5 (anteriormente listado como "Schema v5" no parking lot)
 - ✓ Sidebars atualizadas em 27 telas
 
+### Itens entregues parcialmente na camada Next.js (catalogados em v2.5)
+
+A codebase Next.js já implementou backend e UI parciais para os seguintes módulos (ver §14 para mapa de paridade completo):
+- ✓ Ficha de empregado (`/pessoas`, `/pessoas/[id]`, `/pessoas/novo`)
+- ✓ Importação OCR (`/pessoas/importar` + worker FastAPI)
+- ✓ Avaliações 9-Box (schema + RPCs prontos · UI parcial)
+- ✓ PDI (schema + RPCs + edição inline)
+- ✓ Reconhecimentos (público/privado · UI de enviados)
+- ✓ Onboarding (templates · UI inline edit pendente)
+- ✓ Dashboards (equipe + tenant + drilldown)
+- ✓ Minha jornada (G1)
+- ✓ Solicitações de mudança de perfil (G3)
+- ✓ Admin de módulos por tenant
+- ✓ Storage de PDFs com retenção 30d
+
 ---
 
 ## 11. Decisões deliberadas de fora-de-escopo
@@ -687,7 +721,10 @@ Estas funcionalidades **não serão construídas** no R2 People. Não são esque
 | 2.1 | 28 abr 2026 | Adicionada §11 "Decisões deliberadas de fora-de-escopo" registrando que TOTVS WinThor, perfil público, notificações por e-mail, app nativo e multi-idioma estão fora do escopo conscientemente |
 | 2.2 | 29 abr 2026 | 41 artefatos · novo Módulo 10 Folha & Custo (calculadora individual + folha por filial) · Renato aparece em 2 telas · Fluxo F dissídio coletivo · regra-chave de legislação versionada 2026 |
 | 2.3 | 29 abr 2026 | 42 artefatos · adicionada tela de regime tributário por unidade ao Módulo 10 (CRUD com modal de confirmação dupla + audit log + validações fiscais) · Patrícia ganha permission `manage_tax_regime` (10 telas) · Fluxo G mudança de regime por crescimento · matriz de dependências mostra regime_tributario como fonte de verdade do `units.tax_regime` |
-| **2.4** | **1 mai 2026** | **57 artefatos · novo Módulo 11 1:1s estruturadas (4 telas: hub do líder, sala dual, visão do liderado, visão RH agregada) · novo schema_oneonones_v6.sql com 6 tabelas, 7 enums, 25 RLS policies privacidade-enforced, 3 views agregadas, 8 RPCs SECURITY DEFINER · sidebars atualizadas em 27 telas (idempotente via marker) · Patrícia +2 permissions (view_oneonones_metadata, send_oneonone_messages, 11 telas), João +1 (manage_oneonone_pairs, 8 telas), Larissa +1 (view_oneonones_metadata_by_employer, 4 telas), Fernanda 9 telas · Fluxo H 1:1 quinzenal · nova regra de privacidade transversal "1:1s estruturadas" no §9 · novo doc analise_correcoes.md catalogado · schema_metas_v5 também listado (já entregue antes mas faltava no índice)** |
+| 2.4 | 1 mai 2026 | 57 artefatos · novo Módulo 11 1:1s estruturadas (4 telas: hub do líder, sala dual, visão do liderado, visão RH agregada) · novo schema_oneonones_v6.sql com 6 tabelas, 7 enums, 25 RLS policies privacidade-enforced, 3 views agregadas, 8 RPCs SECURITY DEFINER · sidebars atualizadas em 27 telas (idempotente via marker) · Patrícia +2 permissions (view_oneonones_metadata, send_oneonone_messages, 11 telas), João +1 (manage_oneonone_pairs, 8 telas), Larissa +1 (view_oneonones_metadata_by_employer, 4 telas), Fernanda 9 telas · Fluxo H 1:1 quinzenal · nova regra de privacidade transversal "1:1s estruturadas" no §9 · novo doc analise_correcoes.md catalogado · schema_metas_v5 também listado (já entregue antes mas faltava no índice) |
+| 2.5 | 17 mai 2026 | **Fusão de repositórios** · codebase Next.js + Supabase + worker OCR (anteriormente em `r2_people_repo.zip` separado) movida pra este mesmo repositório · adicionadas pastas `src/` (12 páginas + componentes + adapter TS), `supabase/migrations/` (32 arquivos), `supabase/tests/` (20 arquivos · 170 testes passando), `worker/` (FastAPI OCR), `docs/` (22 sessões a1-l) · `README.md` substituído pelo da codebase Next.js (era stub de 31 bytes) · `MIGRATION_PROMPT.md` adicionado na raiz · `package.json.example`, `tsconfig.json`, `tailwind.config.ts`, `.env.example`, `.gitignore` adicionados · §2 reformulado em duas camadas · nova §14 com mapa de paridade HTMLs ↔ Next.js · §10 atualizado com itens já implementados na camada Next.js · sem mudança nos 42 HTMLs ou nos schemas de design |
+| 2.6 | 17 mai 2026 | **Sessão de specs + parking lot** · 4 specs detalhadas para próximas sessões em ambiente com Postgres: `docs/spec_d1_auth.md` (Supabase Auth real), `docs/spec_m1_estrutura_acessos.md`, `docs/spec_m3_atestados.md`, `docs/spec_m7_oneonones.md` · cada spec inclui migrations, RPCs, testes, adapter TS, páginas Next.js, critérios de aceitação e pontos de atenção · 2 HTMLs novos do parking lot: `r2_people_pdi.html` (módulo completo PDI com 3 personas togláveis, hero, KPIs, lista de ações, histórico) e `r2_people_ferias_programar.html` (wizard CLT de programação de férias com 3 passos: datas/fracionamento, abono+13º, confirmar · validações Art. 134/135) · 2 docs MD novos: `r2_people_privacy_oneonones.md` (modelo de 3 camadas de privacidade complementando a privacy_policy geral) e `r2_people_pitch_deck.md` (15 slides + FAQ pra material comercial) · auditoria leve: 28 em-dashes substituídos em arquivos novos e atualizados (specs + README + INDEX) · pasta vazia `r2_people_export/` removida |
+| **2.7** | **17 mai 2026** | **Continuação specs + parking lot + docs jurídicos/admin** · 3 specs novas: `docs/spec_m2_movimentacoes.md` (workflow promoção/transferência/aumento com aprovação RH), `docs/spec_m4_ferias.md` (schema v7 com vacation_acquisition_periods + vacation_periods + view materializada + regras CLT enforced no banco), `docs/spec_m6_folha_custo.md` (legislação 2026 versionada em `legal_tax_tables`, funções SQL `calc_inss`/`calc_irrf`, 4 telas Folha & Custo + Regime tributário) · 1 HTML novo: `r2_people_9box.html` (matriz 3×3 colorida com 9 caixas, bubbles dos colaboradores, modal de drill por caixa com lista detalhada, histórico de ciclos, toggle 3x3↔5x5) · 2 docs MD comerciais/jurídicos: `r2_people_terms_of_service.md` (17 seções: aceite, RBAC, conta, uso aceitável, SLA, IP, LGPD, encerramento, retenções legais, foro Salvador BA) e `r2_people_admin_manual.md` (12 seções + glossário: conceitos, setup primeiro acesso, estrutura organizacional, RBAC, módulos, tarefas frequentes, importação CSV/OCR, LGPD/DSAR, troubleshooting comum, quando chamar suporte R2) · em-dashes auditados em todos os novos artefatos |
 
 ---
 
@@ -708,3 +745,81 @@ Estas funcionalidades **não serão construídas** no R2 People. Não são esque
 ---
 
 *Este INDEX é mantido manualmente conforme novos artefatos são adicionados. Sempre atualizar a contagem total no §2, adicionar entrada no §4 (módulo apropriado), atualizar matriz §7 se houver dependência nova, e mover item do parking lot §10 para a categoria correspondente.*
+
+---
+
+## 14. Relação entre Camada 1 (HTMLs) e Camada 2 (Next.js)
+
+A partir de v2.5 o repositório hospeda as duas representações do produto no mesmo lugar. Elas têm papéis diferentes:
+
+### Camada 1 · HTMLs (`r2_people_*.html`)
+
+- **Papel**: fonte de verdade visual e funcional para validação com Karla/Ricardo/clientes
+- **Deploy**: GitHub Pages em `rh.solucoesr2.com.br` (via `CNAME`)
+- **Tech**: single-file HTML + Tailwind inline + Sora/JetBrains Mono · sem build, sem backend
+- **Quando alterar**: ao desenhar nova tela, ao validar UX com cliente, ao iterar layout
+- **Vantagem**: deploy instantâneo, zero infra, qualquer pessoa abre e navega
+
+### Camada 2 · Next.js (`src/`, `supabase/`, `worker/`)
+
+- **Papel**: implementação produtiva real, multi-tenant, com RLS e testes
+- **Deploy**: Vercel (frontend) + Supabase (Postgres + Auth + Storage) + container Docker (worker OCR) · ainda não em prod
+- **Tech**: Next.js 14 App Router + TS strict + Tailwind + Supabase JS SDK + FastAPI
+- **Quando alterar**: ao implementar feature real após validação visual na Camada 1
+- **Vantagem**: integridade de dados, segurança LGPD, testes automatizados
+
+### Mapa de paridade · 12 páginas Next.js vs 42 HTMLs
+
+**Já implementado nas duas camadas:**
+
+| HTML rhgpc | Página Next.js |
+|---|---|
+| `colaborador.html` | `src/app/pessoas/[id]/page.tsx` |
+| `colaboradores_lista.html` | `src/app/pessoas/page.tsx` |
+| `colaborador_home.html` + `minha_trajetoria.html` | `src/app/minha-jornada/page.tsx` |
+| `importacao.html` | `src/app/pessoas/importar/page.tsx` + worker |
+| `admin_dashboard.html` | `src/app/dashboard/page.tsx` + drill |
+| `feedback_mural.html` (parcial · só enviados) | `src/app/meus-reconhecimentos/page.tsx` |
+| (team view) | `src/app/minha-equipe/page.tsx` |
+| (G3 profile change) | `src/app/admin/aprovacoes/page.tsx` |
+
+**Só na Camada 1 (HTMLs) · 30 telas aguardando portabilidade pra Next.js:**
+
+| Grupo | HTMLs | Sessão sugerida |
+|---|---|---|
+| Auth & Onboarding | `login`, `onboarding`, `error_pages` | D1 (crítica para deploy) |
+| Estrutura & Acessos | `estrutura`, `acessos` | M1 |
+| Movimentações | `movimentacoes`, `aprovacoes_rh`, `colaborador_movimentacoes` | M2 |
+| Atestados | `atestados`, `atestado_envio_lider`, `atestado_validacao_dp`, `atestado_colaborador` | M3 |
+| Férias | `ferias`, `ferias_programacao_anual`, `afastamentos` | M4 |
+| Avaliações & Feedback (UI) | `ciclos`, `avaliacao`, `feedback_mural` (recebidos) | M5 |
+| Folha & Custo | `calculadora_custo`, `folha_por_filial`, `regime_tributario`, `comparar_cenarios` | M6 |
+| 1:1s | `oneonones`, `oneonone_room`, `minhas_1on1s`, `oneonones_rh` | M7 |
+| Metas (OKR) | `metas`, `minhas_metas`, `lancamento_resultado`, `validacao_resultado` | M8 |
+| Relatórios & Auditoria | `relatorios`, `auditoria` | M9 |
+| Configurações | `configuracoes` | M10 |
+| Histórico de consulta | `historico_consulta` | M11 |
+| Utilitárias/showcase | `home`, `demo`, `empty_states` | opcional |
+
+### Schemas SQL · design vs aplicado
+
+| Camada | Arquivos | Estado |
+|---|---|---|
+| Design (raiz) | `r2_people_schema.sql` (v1) → `_v2.sql` → `_v3.sql` → `_v4.sql` → `_metas_v5.sql` → `_oneonones_v6.sql` + `_rls_policies_detailed.sql` + `_rpc_report_builder.sql` + `_seed_initial.sql` + `_medical_certificates_schema.sql` | Blueprint completo · não aplicado |
+| Aplicado (`supabase/migrations/`) | 32 migrations incrementais (00010_h → 00361_g3) | Aplicáveis · 170 testes passando |
+
+Os schemas de design da raiz cobrem **mais módulos** (atestados v4, metas v5, 1:1s v6, regime tributário) do que as migrations aplicadas (que cobrem o core até G3). Os primeiros servem de blueprint para portar os módulos restantes em sessões M1-M11.
+
+### Fluxo recomendado para próximas sessões
+
+```
+1. Desenhar/iterar na Camada 1 (HTML)        ── validar com cliente
+2. Aprovar visualmente
+3. Portar pra Camada 2 (Next.js + Supabase)  ── implementar com testes
+4. Documentar em docs/sessao_mX.md
+5. Atualizar este INDEX (§4 e §10)
+```
+
+A Camada 1 não morre quando a feature é portada · ela continua servindo como spec visual viva e como ambiente de demo rápida para vendas.
+
+---

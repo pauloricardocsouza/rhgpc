@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R2 People - Programar férias · Wizard CLT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F5831F; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 20px 60px rgba(26,45,79,.3);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; min-height:100vh; padding:30px 20px;}
+
+.demo-page{max-width:1100px; margin:0 auto;}
+.demo-header{margin-bottom:24px;}
+.demo-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.demo-header p{font-size:13px; color:var(--txt2); margin-top:4px;}
+
+.context-card{background:#fff; border-radius:14px; padding:22px 24px; box-shadow:var(--shadow-card); margin-bottom:18px;}
+.context-header{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px;}
+.employee-block{display:flex; gap:14px; align-items:center;}
+.emp-avatar{width:54px; height:54px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:18px;}
+.emp-info h2{font-size:17px; font-weight:600; letter-spacing:-.2px;}
+.emp-info .emp-meta{font-size:12px; color:var(--txt2); margin-top:2px; display:flex; gap:10px; flex-wrap:wrap;}
+.emp-chip{display:inline-flex; align-items:center; gap:4px; padding:2px 8px; background:var(--gray1); border-radius:10px; font-size:10.5px; font-weight:500;}
+.emp-chip.emp{color:var(--purple); background:var(--purple2);}
+.emp-chip.tom{color:var(--blue); background:var(--blue2);}
+
+.aquisitivo-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; padding-top:18px; border-top:1px solid var(--gray1);}
+.aq-card{padding:12px 14px; border-radius:9px; background:var(--off);}
+.aq-card.warn{background:var(--amber2); border-left:3px solid var(--amber);}
+.aq-card.danger{background:var(--red2); border-left:3px solid var(--red);}
+.aq-card.ok{background:var(--green2); border-left:3px solid var(--green);}
+.aq-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.aq-value{font-size:16px; font-weight:600; margin-top:3px; font-family:'JetBrains Mono',monospace;}
+.aq-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+/* Wizard */
+.wizard{background:#fff; border-radius:14px; box-shadow:var(--shadow-card); overflow:hidden;}
+.wizard-stepper{display:flex; background:var(--off); border-bottom:1px solid var(--gray1);}
+.step-item{flex:1; padding:14px 16px; display:flex; align-items:center; gap:10px; position:relative; cursor:pointer;}
+.step-item:not(:last-child)::after{content:''; position:absolute; right:0; top:50%; transform:translateY(-50%); width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:8px solid var(--off); z-index:2;}
+.step-item:not(:last-child)::before{content:''; position:absolute; right:-1px; top:50%; transform:translateY(-50%); width:0; height:0; border-top:9px solid transparent; border-bottom:9px solid transparent; border-left:9px solid var(--gray1); z-index:1;}
+.step-num{width:26px; height:26px; border-radius:50%; background:var(--gray2); color:var(--txt2); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px; flex-shrink:0;}
+.step-item.completed .step-num{background:var(--green); color:#fff;}
+.step-item.active .step-num{background:var(--navy); color:#fff;}
+.step-info{display:flex; flex-direction:column; line-height:1.2;}
+.step-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px;}
+.step-title{font-size:12.5px; font-weight:500;}
+.step-item.active .step-title{color:var(--navy);}
+
+.wizard-body{padding:24px 28px;}
+.step-panel{display:none;}
+.step-panel.active{display:block;}
+.step-panel h3{font-size:16px; font-weight:600; margin-bottom:6px; letter-spacing:-.2px;}
+.step-panel .step-sub{font-size:12.5px; color:var(--txt2); margin-bottom:18px;}
+
+/* Fractioning UI */
+.fraction-toggle{display:flex; gap:6px; background:var(--gray1); padding:4px; border-radius:8px; margin-bottom:14px; width:fit-content;}
+.fraction-btn{padding:6px 12px; font-size:11.5px; border:none; background:transparent; cursor:pointer; border-radius:6px; font-family:inherit; color:var(--txt2); font-weight:500;}
+.fraction-btn.active{background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+.period-card{border:1.5px solid var(--gray2); border-radius:10px; padding:14px 16px; margin-bottom:10px; transition:all .15s;}
+.period-card.valid{border-color:var(--green); background:linear-gradient(to right, var(--green2) 0%, #fff 30%);}
+.period-card.invalid{border-color:var(--red); background:linear-gradient(to right, var(--red2) 0%, #fff 30%);}
+.period-card-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+.period-label{font-size:12px; font-weight:600; color:var(--txt);}
+.period-validation{font-size:11px; display:flex; align-items:center; gap:4px;}
+.period-validation.ok{color:var(--green);}
+.period-validation.err{color:var(--red);}
+.period-validation svg{width:12px; height:12px;}
+
+.date-row{display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:end;}
+.form-label{display:block; font-size:11px; font-weight:500; margin-bottom:4px; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px;}
+.form-input{width:100%; padding:8px 11px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit; color:var(--txt); background:#fff;}
+.form-input:focus{outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(43,74,122,.1);}
+.days-pill{padding:8px 12px; background:var(--navy); color:#fff; border-radius:7px; font-size:13px; font-weight:500; font-family:'JetBrains Mono',monospace; min-width:60px; text-align:center;}
+
+.notice-banner{background:var(--blue2); border-left:4px solid var(--blue); border-radius:8px; padding:10px 14px; font-size:12px; color:var(--blue); margin-top:10px; display:flex; align-items:flex-start; gap:8px;}
+.notice-banner svg{width:14px; height:14px; flex-shrink:0; margin-top:1px;}
+.notice-banner.warn{background:var(--amber2); border-color:var(--amber); color:var(--amber);}
+
+/* Abono + 13o */
+.opt-card{border:1.5px solid var(--gray2); border-radius:10px; padding:14px 16px; margin-bottom:10px;}
+.opt-card.active{border-color:var(--navy); background:var(--off);}
+.opt-header{display:flex; align-items:flex-start; justify-content:space-between; gap:14px;}
+.opt-title{font-size:13px; font-weight:600;}
+.opt-desc{font-size:11.5px; color:var(--txt2); margin-top:3px;}
+.opt-toggle{position:relative; display:inline-block; width:42px; height:22px; flex-shrink:0;}
+.opt-toggle input{opacity:0; width:0; height:0;}
+.opt-slider{position:absolute; cursor:pointer; inset:0; background:var(--gray2); border-radius:22px; transition:.2s;}
+.opt-slider::before{content:''; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s;}
+.opt-toggle input:checked + .opt-slider{background:var(--navy);}
+.opt-toggle input:checked + .opt-slider::before{transform:translateX(20px);}
+.opt-config{margin-top:12px; padding-top:12px; border-top:1px solid var(--gray1); display:none;}
+.opt-card.active .opt-config{display:block;}
+.range-row{display:flex; align-items:center; gap:14px;}
+.range-row input[type=range]{flex:1;}
+.range-display{font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:600; color:var(--navy); min-width:80px; text-align:right;}
+
+/* Resumo */
+.summary-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+.summary-card{background:var(--off); border-radius:10px; padding:14px 16px;}
+.summary-card h4{font-size:11px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500; margin-bottom:8px;}
+.summary-row{display:flex; justify-content:space-between; padding:4px 0; font-size:12.5px;}
+.summary-row.total{padding-top:8px; margin-top:5px; border-top:1px solid var(--gray2); font-weight:600;}
+.summary-row strong{font-family:'JetBrains Mono',monospace; font-weight:500;}
+
+/* Footer */
+.wizard-footer{padding:14px 24px; background:var(--off); border-top:1px solid var(--gray1); display:flex; justify-content:space-between; align-items:center;}
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary:disabled{background:var(--gray3); cursor:not-allowed;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:8px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+
+@media (max-width: 800px){
+  .aquisitivo-grid{grid-template-columns:repeat(2, 1fr);}
+  .summary-grid{grid-template-columns:1fr;}
+  .date-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-page">
+  <div class="demo-header">
+    <h1>Programar férias · Wizard CLT</h1>
+    <p>Modal embarcado em [r2_people_ferias.html](r2_people_ferias.html) e [r2_people_ferias_programacao_anual.html](r2_people_ferias_programacao_anual.html). Demonstração standalone com Fernanda Lima (período aquisitivo 02/03/2025 → 01/03/2026).</p>
+  </div>
+
+  <!-- Context: Employee + Aquisitivo summary -->
+  <div class="context-card">
+    <div class="context-header">
+      <div class="employee-block">
+        <div class="emp-avatar">FL</div>
+        <div class="emp-info">
+          <h2>Fernanda Lima <span class="emp-chip" style="background:var(--gray1); color:var(--txt2);">@Fê</span></h2>
+          <div class="emp-meta">
+            <span>Analista Pleno</span>
+            <span>·</span>
+            <span class="emp-chip emp">EMP · Labuta</span>
+            <span class="emp-chip tom">TOM · Cestão L1</span>
+            <span>·</span>
+            <span>Admissão: 02/03/2024</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-secondary">Ver histórico de férias</button>
+    </div>
+
+    <div class="aquisitivo-grid">
+      <div class="aq-card">
+        <div class="aq-label">Período aquisitivo</div>
+        <div class="aq-value">02/03/25 → 01/03/26</div>
+        <div class="aq-sub">12 meses completos</div>
+      </div>
+      <div class="aq-card ok">
+        <div class="aq-label">Saldo disponível</div>
+        <div class="aq-value">30 dias</div>
+        <div class="aq-sub">corridos · sem faltas</div>
+      </div>
+      <div class="aq-card warn">
+        <div class="aq-label">Período concessivo</div>
+        <div class="aq-value">01/03/27</div>
+        <div class="aq-sub">vence em 287 dias · multa em dobro depois</div>
+      </div>
+      <div class="aq-card">
+        <div class="aq-label">Aviso prévio</div>
+        <div class="aq-value">≥ 30 dias</div>
+        <div class="aq-sub">CLT Art. 135</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wizard -->
+  <div class="wizard">
+    <div class="wizard-stepper">
+      <div class="step-item active" data-step="1">
+        <div class="step-num">1</div>
+        <div class="step-info">
+          <span class="step-label">Passo 1</span>
+          <span class="step-title">Datas e fracionamento</span>
+        </div>
+      </div>
+      <div class="step-item" data-step="2">
+        <div class="step-num">2</div>
+        <div class="step-info">
+          <span class="step-label">Passo 2</span>
+          <span class="step-title">Abono + 13º</span>
+        </div>
+      </div>
+      <div class="step-item" data-step="3">
+        <div class="step-num">3</div>
+        <div class="step-info">
+          <span class="step-label">Passo 3</span>
+          <span class="step-title">Confirmar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wizard-body">
+
+      <!-- ====== PASSO 1 ====== -->
+      <div class="step-panel active" data-panel="1">
+        <h3>Como você quer dividir as férias?</h3>
+        <p class="step-sub">Total de 30 dias. A CLT permite até 3 partes, sendo uma delas ≥ 14 dias contínuos (Art. 134, §1º).</p>
+
+        <div class="fraction-toggle">
+          <button class="fraction-btn" data-parts="1">1 período (30 dias)</button>
+          <button class="fraction-btn active" data-parts="2">2 partes</button>
+          <button class="fraction-btn" data-parts="3">3 partes</button>
+        </div>
+
+        <div id="periodsContainer">
+          <!-- 2 períodos por padrão -->
+          <div class="period-card valid">
+            <div class="period-card-header">
+              <span class="period-label">Período 1</span>
+              <span class="period-validation ok"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>≥ 14 dias contínuos · OK</span>
+            </div>
+            <div class="date-row">
+              <div>
+                <label class="form-label">Início</label>
+                <input class="form-input" type="date" value="2026-12-15">
+              </div>
+              <div>
+                <label class="form-label">Fim</label>
+                <input class="form-input" type="date" value="2027-01-04">
+              </div>
+              <div class="days-pill">21d</div>
+            </div>
+          </div>
+          <div class="period-card valid">
+            <div class="period-card-header">
+              <span class="period-label">Período 2</span>
+              <span class="period-validation ok"><svg fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>complementa para 30 dias</span>
+            </div>
+            <div class="date-row">
+              <div>
+                <label class="form-label">Início</label>
+                <input class="form-input" type="date" value="2026-07-06">
+              </div>
+              <div>
+                <label class="form-label">Fim</label>
+                <input class="form-input" type="date" value="2026-07-14">
+              </div>
+              <div class="days-pill">9d</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notice-banner">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span><strong>Aviso prévio:</strong> primeiro período inicia em 06/07/2026 (52 dias a partir de hoje). Atende CLT Art. 135 (mínimo 30 dias).</span>
+        </div>
+      </div>
+
+      <!-- ====== PASSO 2 ====== -->
+      <div class="step-panel" data-panel="2">
+        <h3>Opções adicionais</h3>
+        <p class="step-sub">Abono pecuniário e adiantamento da primeira parcela do 13º salário (CLT Art. 143).</p>
+
+        <div class="opt-card active" id="optAbono">
+          <div class="opt-header">
+            <div>
+              <div class="opt-title">Vender dias (abono pecuniário)</div>
+              <div class="opt-desc">Converter parte das férias em dinheiro. Limite legal: 1/3 dos dias (até 10 dias do total de 30).</div>
+            </div>
+            <label class="opt-toggle">
+              <input type="checkbox" id="abonoToggle" checked>
+              <span class="opt-slider"></span>
+            </label>
+          </div>
+          <div class="opt-config">
+            <div class="range-row">
+              <input type="range" min="0" max="10" value="7" id="abonoRange">
+              <div class="range-display"><span id="abonoDays">7</span> dias</div>
+            </div>
+            <div style="font-size:11.5px; color:var(--txt2); margin-top:6px;">
+              <strong>Impacto:</strong> recebe R$ <span id="abonoValor">2.683,33</span> a mais (≈ 7/30 × salário R$ 11.500). Dias efetivos de descanso: <span id="diasDescanso">23</span>.
+            </div>
+          </div>
+        </div>
+
+        <div class="opt-card" id="opt13o">
+          <div class="opt-header">
+            <div>
+              <div class="opt-title">Adiantar 1ª parcela do 13º</div>
+              <div class="opt-desc">Receber metade do 13º junto com as férias. Disponível se solicitado entre fevereiro e novembro.</div>
+            </div>
+            <label class="opt-toggle">
+              <input type="checkbox" id="adiantToggle">
+              <span class="opt-slider"></span>
+            </label>
+          </div>
+          <div class="opt-config">
+            <div style="font-size:12px; color:var(--txt);">
+              Você receberá ≈ R$ 4.789 (metade do 13º proporcional aos meses trabalhados em 2026 até a data do início das férias).
+            </div>
+            <div style="font-size:11.5px; color:var(--txt2); margin-top:6px;">
+              Solicitação enviada ao DP · prazo de pagamento: até 30 dias antes do início.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== PASSO 3 ====== -->
+      <div class="step-panel" data-panel="3">
+        <h3>Revisar e enviar para aprovação</h3>
+        <p class="step-sub">Confira os dados. Após enviar, seu líder João Carvalho recebe a solicitação para aprovação.</p>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <h4>Período 1</h4>
+            <div class="summary-row"><span>Início</span><strong>15/12/2026 (ter)</strong></div>
+            <div class="summary-row"><span>Fim</span><strong>04/01/2027 (seg)</strong></div>
+            <div class="summary-row"><span>Dias</span><strong>21</strong></div>
+            <div class="summary-row total"><span>Inclui Natal + Ano Novo</span><strong>✓</strong></div>
+          </div>
+          <div class="summary-card">
+            <h4>Período 2</h4>
+            <div class="summary-row"><span>Início</span><strong>06/07/2026 (seg)</strong></div>
+            <div class="summary-row"><span>Fim</span><strong>14/07/2026 (ter)</strong></div>
+            <div class="summary-row"><span>Dias</span><strong>9</strong></div>
+            <div class="summary-row total"><span>Recesso escolar Davi</span><strong>✓</strong></div>
+          </div>
+          <div class="summary-card">
+            <h4>Financeiro</h4>
+            <div class="summary-row"><span>Salário base × 30 dias</span><strong>R$ 11.500,00</strong></div>
+            <div class="summary-row"><span>+ 1/3 constitucional</span><strong>R$ 3.833,33</strong></div>
+            <div class="summary-row"><span>Abono (7 dias)</span><strong>R$ 2.683,33</strong></div>
+            <div class="summary-row"><span>Adiantamento 13º</span><strong>-</strong></div>
+            <div class="summary-row total"><span>Total bruto a receber</span><strong>R$ 18.016,66</strong></div>
+          </div>
+          <div class="summary-card">
+            <h4>Compliance CLT</h4>
+            <div class="summary-row"><span>Saldo aquisitivo</span><strong style="color:var(--green);">30 dias OK</strong></div>
+            <div class="summary-row"><span>Fracionamento (até 3)</span><strong style="color:var(--green);">2 partes OK</strong></div>
+            <div class="summary-row"><span>Parte ≥ 14 dias</span><strong style="color:var(--green);">21d OK</strong></div>
+            <div class="summary-row"><span>Aviso prévio ≥ 30d</span><strong style="color:var(--green);">52d OK</strong></div>
+            <div class="summary-row"><span>Abono ≤ 1/3</span><strong style="color:var(--green);">7/10 OK</strong></div>
+          </div>
+        </div>
+
+        <div class="notice-banner" style="margin-top:14px;">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span><strong>Próximos passos:</strong> João Carvalho recebe a solicitação · após aprovação, RH (Patrícia) registra no eSocial e programa o pagamento.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="wizard-footer">
+      <button class="btn-secondary" id="btnBack" style="visibility:hidden;">← Voltar</button>
+      <div style="font-size:11px; color:var(--txt2);"><span id="stepIndicator">Passo 1 de 3</span></div>
+      <button class="btn-primary" id="btnNext">Próximo →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 3;
+const stepItems = document.querySelectorAll('.step-item');
+const stepPanels = document.querySelectorAll('.step-panel');
+const btnBack = document.getElementById('btnBack');
+const btnNext = document.getElementById('btnNext');
+const stepIndicator = document.getElementById('stepIndicator');
+
+function goToStep(n){
+  if(n < 1 || n > totalSteps) return;
+  currentStep = n;
+  stepItems.forEach((item, i) => {
+    const num = i + 1;
+    item.classList.toggle('active', num === n);
+    item.classList.toggle('completed', num < n);
+  });
+  stepPanels.forEach(p => p.classList.toggle('active', Number(p.dataset.panel) === n));
+  btnBack.style.visibility = n === 1 ? 'hidden' : 'visible';
+  btnNext.textContent = n === totalSteps ? '✓ Enviar para aprovação' : 'Próximo →';
+  stepIndicator.textContent = `Passo ${n} de ${totalSteps}`;
+}
+
+btnBack.addEventListener('click', () => goToStep(currentStep - 1));
+btnNext.addEventListener('click', () => {
+  if(currentStep < totalSteps){ goToStep(currentStep + 1); }
+  else { alert('Solicitação enviada para João Carvalho · protocolo VAC-2026-0517-AB12C'); }
+});
+stepItems.forEach(item => item.addEventListener('click', () => goToStep(Number(item.dataset.step))));
+
+// Abono toggle
+const abonoCard = document.getElementById('optAbono');
+const abonoToggle = document.getElementById('abonoToggle');
+const abonoRange = document.getElementById('abonoRange');
+const abonoDays = document.getElementById('abonoDays');
+const abonoValor = document.getElementById('abonoValor');
+const diasDescanso = document.getElementById('diasDescanso');
+
+abonoToggle.addEventListener('change', () => abonoCard.classList.toggle('active', abonoToggle.checked));
+abonoRange.addEventListener('input', () => {
+  const d = Number(abonoRange.value);
+  abonoDays.textContent = d;
+  abonoValor.textContent = (11500 * d / 30).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  diasDescanso.textContent = 30 - d;
+});
+
+// 13o toggle
+const opt13oCard = document.getElementById('opt13o');
+const adiantToggle = document.getElementById('adiantToggle');
+adiantToggle.addEventListener('change', () => opt13oCard.classList.toggle('active', adiantToggle.checked));
+
+// Fractioning toggle
+document.querySelectorAll('.fraction-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.fraction-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // Em produção, regeneraria os period-cards conforme escolha
+  });
+});
+</script>
+</body>
+</html>
