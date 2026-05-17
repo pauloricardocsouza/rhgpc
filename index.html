@@ -286,18 +286,36 @@
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center;
     justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 20px;
     gap: 16px;
     position: sticky; top: 0; z-index: 40;
   }
+  .topbar-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .topbar-hamburger {
+    width: 32px; height: 32px;
+    background: transparent; border: 0;
+    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 120ms;
+    flex-shrink: 0;
+  }
+  .topbar-hamburger:hover { background: var(--bg); color: var(--text); }
+  .topbar-hamburger svg { width: 18px; height: 18px; }
+
   .topbar-title {
     font-family: var(--font-display);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    display: flex; align-items: center; gap: 6px;
+    letter-spacing: 0.02em;
+    display: flex; align-items: center; gap: 8px;
+    min-width: 0;
+  }
+  .topbar-title .sep {
+    color: var(--text-faint);
+    font-size: 14px;
+    line-height: 1;
   }
   .topbar-title .crumb { color: var(--text); font-weight: 700; }
 
@@ -351,15 +369,38 @@
   .page-header {
     margin-bottom: 24px;
     padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
   }
-  .page-header h1 {
+  .page-eyebrow {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-bottom: 8px;
+  }
+  .page-eyebrow .sep { color: var(--text-faint); margin: 0 6px; }
+  .page-title {
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.15;
+  }
+  .page-title em {
+    font-style: italic;
+    font-weight: 800;
+    color: var(--accent-amber);
+  }
+  /* Backward compatible com h1 sem .page-title */
+  .page-header h1:not(.page-title) {
     margin: 0 0 4px;
     font-size: 22px;
     font-weight: 600;
     letter-spacing: -0.01em;
   }
-  .page-header p {
+  .page-subtitle, .page-header p {
     margin: 0;
     color: var(--text-muted);
     font-size: 13px;
@@ -709,8 +750,15 @@
        ==================================================================== -->
   <div class="main">
     <header class="topbar">
-      <div class="topbar-title">
-        <span>Admin</span> · <span class="crumb">Módulos</span>
+      <div class="topbar-left">
+        <button class="topbar-hamburger" onclick="toggleSidebar()" title="Recolher/expandir menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-title">
+          <span>Admin</span>
+          <span class="sep">›</span>
+          <span class="crumb">Módulos</span>
+        </div>
       </div>
 
       <div class="topbar-right">
@@ -730,8 +778,9 @@
 
     <main class="content">
       <div class="page-header">
-        <h1>Gestão de Módulos</h1>
-        <p id="pageSubtitle">Visão global · todos os tenants</p>
+        <div class="page-eyebrow">Administração <span class="sep">·</span> Grupo <span class="sep">·</span> GPC Consolidado</div>
+        <h1 class="page-title">Gestão <em>de Módulos</em></h1>
+        <p class="page-subtitle" id="pageSubtitle">Visão global · todos os tenants</p>
       </div>
 
       <div class="modules-list" id="modulesList"></div>
