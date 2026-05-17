@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC People · Showcase · 57 telas em 1 página</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA; --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2; --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB; --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --topbar-h:56px; --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 20px 60px rgba(26,45,79,.3);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{min-height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:14px; line-height:1.5;}
+
+/* Topbar */
+.topbar{height:var(--topbar-h); background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 28px; gap:18px; position:sticky; top:0; z-index:30;}
+.topbar-brand{display:flex; align-items:center; gap:12px;}
+.topbar-brand img{height:36px;}
+.topbar-brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.topbar-brand-name{font-weight:800; font-size:14px;}
+.topbar-brand-sub{font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.16em; font-weight:700;}
+.topbar-spacer{flex:1;}
+.topbar-action{padding:8px 16px; background:var(--navy); color:#fff; border:none; border-radius:8px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:7px;}
+.topbar-action.ghost{background:transparent; color:var(--txt); border:1px solid var(--gray2);}
+.topbar-action.ghost:hover{background:var(--gray1);}
+.topbar-action svg{width:14px; height:14px;}
+
+/* Hero */
+.hero{padding:60px 28px 40px; max-width:1200px; margin:0 auto; text-align:center;}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--orange); text-transform:uppercase; letter-spacing:.2em; font-weight:700; margin-bottom:14px;}
+.hero h1{font-size:48px; font-weight:800; letter-spacing:-1.5px; line-height:1.1; margin-bottom:14px;}
+.hero h1 em{font-style:italic; color:var(--orange);}
+.hero p{font-size:17px; color:var(--txt2); max-width:680px; margin:0 auto 26px; line-height:1.55;}
+.hero-stats{display:flex; justify-content:center; gap:36px; margin-top:32px; flex-wrap:wrap;}
+.hero-stat{text-align:center;}
+.hero-stat-value{font-family:'JetBrains Mono',monospace; font-size:32px; font-weight:800; color:var(--navy); letter-spacing:-.5px;}
+.hero-stat-label{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; font-weight:600; margin-top:4px;}
+
+/* Filtros */
+.filter-section{max-width:1400px; margin:24px auto 18px; padding:0 28px;}
+.filter-bar{background:#fff; border-radius:12px; padding:14px 20px; box-shadow:var(--shadow-card); display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+.filter-pill{padding:7px 14px; background:var(--gray1); border-radius:16px; font-size:12.5px; cursor:pointer; color:var(--txt2); font-weight:600; border:1px solid transparent;}
+.filter-pill:hover{background:var(--gray2);}
+.filter-pill.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+.filter-pill .cnt{margin-left:6px; font-family:'JetBrains Mono',monospace; font-size:10.5px; opacity:.7;}
+.search-input{flex:1; min-width:240px; padding:9px 14px; border:1px solid var(--gray2); border-radius:8px; font-size:13.5px; font-family:inherit;}
+.search-input:focus{outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(46,71,111,.1);}
+
+/* Section */
+.section{max-width:1400px; margin:0 auto 36px; padding:0 28px;}
+.section-header{display:flex; align-items:baseline; gap:14px; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid var(--gray1);}
+.section-icon{font-size:24px;}
+.section-title{font-size:20px; font-weight:800; letter-spacing:-.3px;}
+.section-meta{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em;}
+
+.cards-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:14px;}
+.card{background:#fff; border-radius:12px; padding:18px 20px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); cursor:pointer; transition:all .15s; display:flex; flex-direction:column; text-decoration:none; color:var(--txt);}
+.card:hover{transform:translateY(-3px); box-shadow:0 8px 24px rgba(26,45,79,.1); border-color:var(--navy);}
+.card-icon{font-size:28px; margin-bottom:10px; line-height:1;}
+.card-title{font-size:15px; font-weight:700; margin-bottom:6px; letter-spacing:-.1px;}
+.card-desc{font-size:12.5px; color:var(--txt2); line-height:1.5; margin-bottom:10px; flex:1;}
+.card-footer{display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:10px; border-top:1px solid var(--gray1);}
+.card-url{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.card-arrow{font-size:14px; color:var(--orange); flex-shrink:0;}
+
+.card.featured{border-color:var(--orange); position:relative;}
+.card.featured::before{content:'NOVA'; position:absolute; top:-8px; right:14px; background:var(--orange); color:#fff; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; padding:3px 8px; border-radius:6px; letter-spacing:.1em;}
+.card.starred{border-color:var(--purple); position:relative;}
+.card.starred::before{content:'★ DESTAQUE'; position:absolute; top:-8px; right:14px; background:var(--purple); color:#fff; font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; padding:3px 8px; border-radius:6px; letter-spacing:.1em;}
+
+/* CTA bottom */
+.cta-section{max-width:1200px; margin:40px auto 60px; padding:32px; background:linear-gradient(135deg, var(--navy) 0%, var(--purple) 100%); color:#fff; border-radius:16px; text-align:center; position:relative; overflow:hidden;}
+.cta-section::before{content:''; position:absolute; top:-50%; right:-10%; width:400px; height:400px; background:radial-gradient(circle, rgba(245,134,52,.3) 0%, transparent 65%); border-radius:50%;}
+.cta-content{position:relative; z-index:2;}
+.cta-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; opacity:.85; text-transform:uppercase; letter-spacing:.2em; font-weight:700; margin-bottom:10px;}
+.cta-section h2{font-size:30px; font-weight:800; letter-spacing:-.5px; margin-bottom:10px;}
+.cta-section p{font-size:14.5px; opacity:.92; max-width:560px; margin:0 auto 20px; line-height:1.55;}
+.cta-buttons{display:flex; gap:12px; justify-content:center; flex-wrap:wrap;}
+.cta-btn{padding:11px 22px; border-radius:10px; font-family:inherit; font-size:14px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px;}
+.cta-btn.primary{background:var(--orange); color:#fff; border:none;}
+.cta-btn.primary:hover{background:#DC7529;}
+.cta-btn.ghost{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.4);}
+.cta-btn.ghost:hover{background:rgba(255,255,255,.1);}
+
+footer{padding:28px; text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--txt3); border-top:1px solid var(--gray1); display:flex; justify-content:center; align-items:center; gap:14px;}
+footer img{height:18px; opacity:.7;}
+
+/* Hide everything when filter excludes */
+.card[data-hidden="true"]{display:none;}
+.section[data-empty="true"]{display:none;}
+
+@media (max-width: 700px){
+  .hero h1{font-size:32px;}
+  .hero p{font-size:15px;}
+  .hero-stats{gap:18px;}
+  .hero-stat-value{font-size:24px;}
+  .cards-grid{grid-template-columns:1fr;}
+  .cta-section h2{font-size:22px;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-brand">
+    <img src="assets/gpc-color.png" alt="GPC">
+    <div class="topbar-brand-text">
+      <span class="topbar-brand-name">Gestão de Pessoas</span>
+      <span class="topbar-brand-sub">v.0.1 · Showcase</span>
+    </div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <a class="topbar-action ghost" href="index.html">
+    <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    Entrar no admin
+  </a>
+  <a class="topbar-action" href="r2_people_home.html">
+    Ver demo →
+  </a>
+</header>
+
+<section class="hero">
+  <div class="hero-eyebrow">SaaS de gestão de pessoas para PMEs brasileiras</div>
+  <h1>57 telas. <em>Um produto.</em><br>Estrutura tripartite no DNA.</h1>
+  <p>Construído pra empresas que cresceram além das planilhas. Estrutura tripartite (CTPS ≠ tomador), LGPD enforced no banco, fontes serif modernas, dark mode pronto. Navegue por categoria abaixo ou aperte <kbd style="background:var(--gray1); padding:2px 6px; border-radius:4px; font-family:JetBrains Mono,monospace; font-size:11px;">Cmd+K</kbd> pra buscar.</p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value">57</div>
+      <div class="hero-stat-label">Telas</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">20</div>
+      <div class="hero-stat-label">Módulos</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">11</div>
+      <div class="hero-stat-label">Docs MD</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">8</div>
+      <div class="hero-stat-label">Specs Postgres</div>
+    </div>
+  </div>
+</section>
+
+<div class="filter-section">
+  <div class="filter-bar">
+    <div class="filter-pill active" data-cat="all">Tudo</div>
+    <div class="filter-pill" data-cat="voce">Você</div>
+    <div class="filter-pill" data-cat="pessoas">Pessoas</div>
+    <div class="filter-pill" data-cat="desempenho">Desempenho</div>
+    <div class="filter-pill" data-cat="vida">Vida & Saúde</div>
+    <div class="filter-pill" data-cat="folha">Folha & Custo</div>
+    <div class="filter-pill" data-cat="carreira">Carreira</div>
+    <div class="filter-pill" data-cat="pesquisas">Pesquisas</div>
+    <div class="filter-pill" data-cat="comunicacao">Comunicação</div>
+    <div class="filter-pill" data-cat="analise">Análise</div>
+    <div class="filter-pill" data-cat="admin">Administração</div>
+    <input class="search-input" id="searchInput" placeholder="Buscar tela (ou aperte / em qualquer página)...">
+  </div>
+</div>
+
+<!-- ============ VOCÊ ============ -->
+<section class="section" data-cat="voce">
+  <div class="section-header">
+    <span class="section-icon">👤</span>
+    <h2 class="section-title">Você</h2>
+    <span class="section-meta">5 telas · home pessoal, trajetória, notificações</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card starred" href="r2_people_minha_trajetoria.html">
+      <div class="card-icon">📊</div>
+      <div class="card-title">Minha trajetória</div>
+      <div class="card-desc">Histórico pessoal gamificado · 7 conquistas, 14 eventos em timeline 4 anos</div>
+      <div class="card-footer"><div class="card-url">/minha-trajetoria</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_colaborador_home.html">
+      <div class="card-icon">🏠</div>
+      <div class="card-title">Home colaborador</div>
+      <div class="card-desc">Próximas tarefas, feedback recebido, ciclos abertos, banner LGPD</div>
+      <div class="card-footer"><div class="card-url">/colaborador-home</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_notificacoes.html">
+      <div class="card-icon">🔔</div>
+      <div class="card-title">Notificações</div>
+      <div class="card-desc">10 notificações com filtros · 5 categorias (PDI, OKR, Recog, 1:1, Clima)</div>
+      <div class="card-footer"><div class="card-url">/notificacoes</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_login.html">
+      <div class="card-icon">🔐</div>
+      <div class="card-title">Login</div>
+      <div class="card-desc">Split-screen desktop + fullscreen mobile · SSO Microsoft + magic link</div>
+      <div class="card-footer"><div class="card-url">/login</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_onboarding.html">
+      <div class="card-icon">🆕</div>
+      <div class="card-title">Onboarding primeiro acesso</div>
+      <div class="card-desc">Wizard 5 passos · senha, foto, dados, políticas, tour</div>
+      <div class="card-footer"><div class="card-url">/onboarding</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ PESSOAS ============ -->
+<section class="section" data-cat="pessoas">
+  <div class="section-header">
+    <span class="section-icon">👥</span>
+    <h2 class="section-title">Pessoas</h2>
+    <span class="section-meta">5 telas · ficha, lista, estrutura, cargos</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card starred" href="r2_people_colaborador.html">
+      <div class="card-icon">📝</div>
+      <div class="card-title">Ficha de empregado</div>
+      <div class="card-desc">Cadastro completo com Apelido enriquecido · 5 abas com validação inline</div>
+      <div class="card-footer"><div class="card-url">/pessoas/[id]</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_colaboradores_lista.html">
+      <div class="card-icon">👥</div>
+      <div class="card-title">Lista de colaboradores</div>
+      <div class="card-desc">30 colab mock · filtros, paginação, busca por nome/apelido</div>
+      <div class="card-footer"><div class="card-url">/pessoas</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_estrutura.html">
+      <div class="card-icon">🏛️</div>
+      <div class="card-title">Estrutura organizacional</div>
+      <div class="card-desc">CRUD Filiais (14) + Departamentos (15) + Cargos (28)</div>
+      <div class="card-footer"><div class="card-url">/admin/estrutura</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_cargos_salarios.html">
+      <div class="card-icon">💰</div>
+      <div class="card-title">Cargos & Salários</div>
+      <div class="card-desc">Matriz 13 cargos × 5 níveis · detector de gap salarial</div>
+      <div class="card-footer"><div class="card-url">/cargos-salarios</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_historico_consulta.html">
+      <div class="card-icon">🔍</div>
+      <div class="card-title">Histórico de consulta</div>
+      <div class="card-desc">Search-driven UI Linear/Raycast · 3 personas demonstram RLS ao vivo</div>
+      <div class="card-footer"><div class="card-url">/historico</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ DESEMPENHO ============ -->
+<section class="section" data-cat="desempenho">
+  <div class="section-header">
+    <span class="section-icon">⭐</span>
+    <h2 class="section-title">Desempenho</h2>
+    <span class="section-meta">8 telas · 9-Box, PDI, OKRs, 1:1s</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card featured" href="r2_people_9box.html">
+      <div class="card-icon">🎯</div>
+      <div class="card-title">9-Box · Matriz de talentos</div>
+      <div class="card-desc">Matriz 3×3 colorida com bubbles dos colaboradores · clique abre modal</div>
+      <div class="card-footer"><div class="card-url">/9box</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_pdi.html">
+      <div class="card-icon">📈</div>
+      <div class="card-title">PDI · Plano de Desenvolvimento</div>
+      <div class="card-desc">3 personas togláveis · 7 ações com status, histórico de PDIs anteriores</div>
+      <div class="card-footer"><div class="card-url">/pdi</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_okrs.html">
+      <div class="card-icon">🚀</div>
+      <div class="card-title">OKRs</div>
+      <div class="card-desc">4 objetivos + 12 KRs com check-in semanal e cycle pill</div>
+      <div class="card-footer"><div class="card-url">/okrs</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_oneonones.html">
+      <div class="card-icon">💬</div>
+      <div class="card-title">1:1s · Hub do líder</div>
+      <div class="card-desc">4 KPIs, cards por liderado com health, modal de agendamento</div>
+      <div class="card-footer"><div class="card-url">/oneonones</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_oneonone_room.html">
+      <div class="card-icon">🗣️</div>
+      <div class="card-title">Sala 1:1</div>
+      <div class="card-desc">Notas duais (privadas líder + compartilhadas) com auto-save</div>
+      <div class="card-footer"><div class="card-url">/oneonones/sala</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_avaliacao.html">
+      <div class="card-icon">⭐</div>
+      <div class="card-title">Avaliação</div>
+      <div class="card-desc">Formulário dual auto+gestor · escala 1-5 · comentários</div>
+      <div class="card-footer"><div class="card-url">/avaliacao</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_ciclos.html">
+      <div class="card-icon">🔄</div>
+      <div class="card-title">Ciclos</div>
+      <div class="card-desc">5-phase timeline · CRUD de ciclos de avaliação</div>
+      <div class="card-footer"><div class="card-url">/ciclos</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_metas.html">
+      <div class="card-icon">🏆</div>
+      <div class="card-title">Metas</div>
+      <div class="card-desc">Schema v5 · 4 tabelas, 7 enums, 12 RLS, 3 RPCs</div>
+      <div class="card-footer"><div class="card-url">/metas</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ VIDA & SAÚDE ============ -->
+<section class="section" data-cat="vida">
+  <div class="section-header">
+    <span class="section-icon">🩺</span>
+    <h2 class="section-title">Vida & Saúde</h2>
+    <span class="section-meta">8 telas · atestados, férias, movimentações</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card starred" href="r2_people_atestado_envio_lider.html">
+      <div class="card-icon">📄</div>
+      <div class="card-title">Envio de atestado (líder)</div>
+      <div class="card-desc">Wizard 4 passos · OCR client-side Tesseract · CID NÃO mostrado ao líder</div>
+      <div class="card-footer"><div class="card-url">/atestados/enviar</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_atestado_validacao_dp.html">
+      <div class="card-icon">🔬</div>
+      <div class="card-title">Validação DP</div>
+      <div class="card-desc">Inbox 3 colunas · PDF viewer + CID autocomplete · movimento auto ≥3d</div>
+      <div class="card-footer"><div class="card-url">/dp/atestados</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_atestados.html">
+      <div class="card-icon">🩺</div>
+      <div class="card-title">Hub atestados</div>
+      <div class="card-desc">Lista geral + filtros + ações pra RH</div>
+      <div class="card-footer"><div class="card-url">/atestados</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_ferias.html">
+      <div class="card-icon">🏖️</div>
+      <div class="card-title">Férias · gestão</div>
+      <div class="card-desc">Gantt 8 meses ↔ Lista · 4 KPIs · regras CLT enforced</div>
+      <div class="card-footer"><div class="card-url">/ferias</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_ferias_programacao_anual.html">
+      <div class="card-icon">📅</div>
+      <div class="card-title">Programação anual</div>
+      <div class="card-desc">3 personas (Líder/DP/Diretoria) · matriz mês×colaborador</div>
+      <div class="card-footer"><div class="card-url">/ferias/anual</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_ferias_programar.html">
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">Wizard programar férias</div>
+      <div class="card-desc">3 passos · datas/fracionamento, abono+13º, confirmar · validações CLT</div>
+      <div class="card-footer"><div class="card-url">/ferias/programar</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_movimentacoes.html">
+      <div class="card-icon">↔️</div>
+      <div class="card-title">Movimentações</div>
+      <div class="card-desc">Wizard 4 passos pra promoção/aumento/transferência</div>
+      <div class="card-footer"><div class="card-url">/movimentacoes</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_afastamentos.html">
+      <div class="card-icon">🛌</div>
+      <div class="card-title">Afastamentos</div>
+      <div class="card-desc">Gestão de afastamentos médicos longos</div>
+      <div class="card-footer"><div class="card-url">/afastamentos</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ FOLHA & CUSTO ============ -->
+<section class="section" data-cat="folha">
+  <div class="section-header">
+    <span class="section-icon">💵</span>
+    <h2 class="section-title">Folha & Custo</h2>
+    <span class="section-meta">4 telas · simulação, agregada, regime, comparativo</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card starred" href="r2_people_calculadora_custo.html">
+      <div class="card-icon">🧮</div>
+      <div class="card-title">Calculadora de custo</div>
+      <div class="card-desc">Slider salário · 5 benefícios · comparativo SIMPLES vs LUCRO REAL</div>
+      <div class="card-footer"><div class="card-url">/folha/calculadora</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_folha_por_filial.html">
+      <div class="card-icon">🏪</div>
+      <div class="card-title">Folha por filial</div>
+      <div class="card-desc">4 cenários componíveis · heatmap sazonal · drill por departamento</div>
+      <div class="card-footer"><div class="card-url">/folha/por-filial</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_regime_tributario.html">
+      <div class="card-icon">🧾</div>
+      <div class="card-title">Regime tributário</div>
+      <div class="card-desc">CRUD por unidade · modal confirmação dupla · audit log</div>
+      <div class="card-footer"><div class="card-url">/admin/regime-tributario</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_comparar_cenarios.html">
+      <div class="card-icon">⚖️</div>
+      <div class="card-title">Comparar cenários</div>
+      <div class="card-desc">A vs B lado a lado · paired bars · diff table 14 linhas</div>
+      <div class="card-footer"><div class="card-url">/folha/cenarios</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ CARREIRA ============ -->
+<section class="section" data-cat="carreira">
+  <div class="section-header">
+    <span class="section-icon">🎯</span>
+    <h2 class="section-title">Carreira</h2>
+    <span class="section-meta">3 telas · vagas, indicações, trilhas</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card featured" href="r2_people_vagas.html">
+      <div class="card-icon">💼</div>
+      <div class="card-title">Vagas internas</div>
+      <div class="card-desc">7 vagas · filtros, salário, ações Candidatar/Indicar (R$ 1.500)</div>
+      <div class="card-footer"><div class="card-url">/vagas</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_indicacoes.html">
+      <div class="card-icon">🤝</div>
+      <div class="card-title">Suas indicações</div>
+      <div class="card-desc">Money hero · 4 KPIs · 4 indicações com status pills</div>
+      <div class="card-footer"><div class="card-url">/indicacoes</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_treinamentos.html">
+      <div class="card-icon">🎓</div>
+      <div class="card-title">Treinamentos</div>
+      <div class="card-desc">Trilhas LMS · obrigatórias, recomendadas, concluídas · certificados</div>
+      <div class="card-footer"><div class="card-url">/treinamentos</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ PESQUISAS ============ -->
+<section class="section" data-cat="pesquisas">
+  <div class="section-header">
+    <span class="section-icon">📊</span>
+    <h2 class="section-title">Pesquisas</h2>
+    <span class="section-meta">2 telas · clima, eNPS · anônimas por design</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card featured" href="r2_people_clima.html">
+      <div class="card-icon">🌡️</div>
+      <div class="card-title">Clima organizacional</div>
+      <div class="card-desc">Pulso semanal · 5 moods · heatmap 6 unidades × 8 semanas</div>
+      <div class="card-footer"><div class="card-url">/clima</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_enps.html">
+      <div class="card-icon">📈</div>
+      <div class="card-title">eNPS</div>
+      <div class="card-desc">Quinzenal · big number +42 · trend SVG · comentários +/-</div>
+      <div class="card-footer"><div class="card-url">/enps</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ COMUNICAÇÃO ============ -->
+<section class="section" data-cat="comunicacao">
+  <div class="section-header">
+    <span class="section-icon">📢</span>
+    <h2 class="section-title">Comunicação</h2>
+    <span class="section-meta">3 telas · comunicados, mural, 1:1s liderado</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card featured" href="r2_people_comunicados.html">
+      <div class="card-icon">📢</div>
+      <div class="card-title">Comunicados internos</div>
+      <div class="card-desc">Feed editorial · featured + 6 posts categorizados · eventos + trending</div>
+      <div class="card-footer"><div class="card-url">/comunicados</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_feedback_mural.html">
+      <div class="card-icon">👏</div>
+      <div class="card-title">Feedback & Mural</div>
+      <div class="card-desc">Big tabs Feedback (navy) / Mural (laranja)</div>
+      <div class="card-footer"><div class="card-url">/feedback</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_minhas_1on1s.html">
+      <div class="card-icon">💭</div>
+      <div class="card-title">Minhas 1:1s</div>
+      <div class="card-desc">Visão liderada · hero gradient · pauta inline · privacy enforced</div>
+      <div class="card-footer"><div class="card-url">/minhas-1on1s</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ ANÁLISE ============ -->
+<section class="section" data-cat="analise">
+  <div class="section-header">
+    <span class="section-icon">📈</span>
+    <h2 class="section-title">Análise</h2>
+    <span class="section-meta">3 telas · dashboards, relatórios, 1:1s RH</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card" href="r2_people_admin_dashboard.html">
+      <div class="card-icon">📊</div>
+      <div class="card-title">Dashboard admin</div>
+      <div class="card-desc">5 abas · 9-Box · KPIs gerais do tenant</div>
+      <div class="card-footer"><div class="card-url">/admin/dashboard</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_relatorios.html">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Relatórios</div>
+      <div class="card-desc">Report builder com switch EMP ↔ TOM · 11 RPCs</div>
+      <div class="card-footer"><div class="card-url">/admin/relatorios</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card starred" href="r2_people_oneonones_rh.html">
+      <div class="card-icon">👁️</div>
+      <div class="card-title">1:1s RH agregado</div>
+      <div class="card-desc">Só metadados (privacy enforced) · 6 KPIs · tabela líderes</div>
+      <div class="card-footer"><div class="card-url">/admin/1on1s</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ ADMIN ============ -->
+<section class="section" data-cat="admin">
+  <div class="section-header">
+    <span class="section-icon">⚙️</span>
+    <h2 class="section-title">Administração</h2>
+    <span class="section-meta">7 telas · módulos, tenants, acessos, auditoria</span>
+  </div>
+  <div class="cards-grid">
+    <a class="card" href="index.html">
+      <div class="card-icon">🧩</div>
+      <div class="card-title">Gestão de Módulos</div>
+      <div class="card-desc">Soft-disable por escopo · 3 estados (ativo/readonly/desativado)</div>
+      <div class="card-footer"><div class="card-url">/admin/modulos</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card featured" href="r2_people_tenants.html">
+      <div class="card-icon">🏢</div>
+      <div class="card-title">Tenants (super_admin)</div>
+      <div class="card-desc">5 tenants demo · planos, usage bars, novo tenant modal</div>
+      <div class="card-footer"><div class="card-url">/admin/tenants</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_acessos.html">
+      <div class="card-icon">🔑</div>
+      <div class="card-title">Acessos e perfis</div>
+      <div class="card-desc">9 perfis incluindo "RH Prestadora · Labuta" com escopo</div>
+      <div class="card-footer"><div class="card-url">/admin/acessos</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_auditoria.html">
+      <div class="card-icon">🔒</div>
+      <div class="card-title">Auditoria · LGPD</div>
+      <div class="card-desc">DPO · 4 abas LGPD · audit log filtrado · DSAR · retenção</div>
+      <div class="card-footer"><div class="card-url">/admin/auditoria</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_configuracoes.html">
+      <div class="card-icon">⚙️</div>
+      <div class="card-title">Configurações</div>
+      <div class="card-desc">Tenant settings · 6 abas (geral, branding, notif, integ, billing, workspace)</div>
+      <div class="card-footer"><div class="card-url">/admin/configuracoes</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_importacao.html">
+      <div class="card-icon">📥</div>
+      <div class="card-title">Importação</div>
+      <div class="card-desc">Hub central · wizard 5 passos dry-run · CSV + OCR Domínio</div>
+      <div class="card-footer"><div class="card-url">/admin/importacao</div><div class="card-arrow">→</div></div>
+    </a>
+    <a class="card" href="r2_people_aprovacoes_rh.html">
+      <div class="card-icon">✅</div>
+      <div class="card-title">Aprovações RH</div>
+      <div class="card-desc">4 abas · validação de movimentações pelo RH</div>
+      <div class="card-footer"><div class="card-url">/admin/aprovacoes</div><div class="card-arrow">→</div></div>
+    </a>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-content">
+    <div class="cta-eyebrow">PRONTO PRA COMEÇAR?</div>
+    <h2>Vamos conversar.</h2>
+    <p>Demo guiada de 30 min sem compromisso. Mostro tudo isso ao vivo e respondo dúvidas. Decisão é sua.</p>
+    <div class="cta-buttons">
+      <a class="cta-btn primary" href="mailto:ricardo@solucoesr2.com.br?subject=Demo GPC People">
+        ✉️ Marcar demo
+      </a>
+      <a class="cta-btn ghost" href="r2_people_pitch_deck.md">
+        📄 Ver pitch deck
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Desenvolvido por
+  <img src="assets/r2-color.png" alt="R2 Soluções Empresariais">
+  · GPC People v.0.1 · Salvador · BA
+</footer>
+
+<script>
+// Filter por categoria
+const pills = document.querySelectorAll('.filter-pill');
+const sections = document.querySelectorAll('.section[data-cat]');
+const cards = document.querySelectorAll('.card');
+const searchInput = document.getElementById('searchInput');
+
+pills.forEach(p => {
+  p.addEventListener('click', () => {
+    pills.forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    const cat = p.dataset.cat;
+    sections.forEach(s => {
+      s.dataset.empty = (cat === 'all' || s.dataset.cat === cat) ? 'false' : 'true';
+    });
+    searchInput.value = '';
+    cards.forEach(c => c.dataset.hidden = 'false');
+  });
+});
+
+// Busca textual
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  if (!q) {
+    cards.forEach(c => c.dataset.hidden = 'false');
+    sections.forEach(s => s.dataset.empty = 'false');
+    pills.forEach(x => x.classList.remove('active'));
+    pills[0].classList.add('active');
+    return;
+  }
+  // Reset section filter quando busca
+  pills.forEach(x => x.classList.remove('active'));
+  sections.forEach(s => s.dataset.empty = 'false');
+
+  let totalShown = 0;
+  cards.forEach(c => {
+    const title = c.querySelector('.card-title').textContent.toLowerCase();
+    const desc = c.querySelector('.card-desc').textContent.toLowerCase();
+    const url = c.querySelector('.card-url').textContent.toLowerCase();
+    const match = title.includes(q) || desc.includes(q) || url.includes(q);
+    c.dataset.hidden = match ? 'false' : 'true';
+    if (match) totalShown++;
+  });
+
+  // Esconder sections que ficaram sem nenhum card visível
+  sections.forEach(s => {
+    const visibleCards = s.querySelectorAll('.card:not([data-hidden="true"])');
+    s.dataset.empty = visibleCards.length === 0 ? 'true' : 'false';
+  });
+});
+</script>
+</body>
+</html>
