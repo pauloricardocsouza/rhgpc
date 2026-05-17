@@ -1,9 +1,11 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.8 · 17 de maio de 2026
+**Versão**: 2.9 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
+
+**Mudança em v2.9** · adicionado **r2_people_showcase.html** (página entry-point comercial com 50+ cards navegáveis) + **3 specs novos** (`spec_m5_avaliacoes`, `spec_m8_metas`, `spec_m9_relatorios`) totalizando 10 specs prontos para Postgres + **schema v9** com 8 módulos novos (Notifications, Comunicados, Vagas, Treinamentos, Climate, eNPS, OKRs, Cargos&Salários) com 20 tabelas e 12 ENUMs + **política de Atestados** (3ª política LGPD do produto).
 
 **Mudança em v2.8** · expansão massiva da Camada 1: agora 57 HTMLs (era 42), com **identidade visual Cofre completa** (logo GPC oficial, fontes Archivo + JetBrains Mono, paleta navy #2E476F / orange #F58634 alinhada ao comercial). Adicionado **shell compartilhado** (`assets/r2-shell.css` + `r2-shell.js`) que dá a todos os HTMLs: dark mode, density compacta, sidebar collapse, search global Cmd+K, bell de notificações, user dropdown, atalhos de teclado. Ver §15 abaixo para inventário completo.
 
@@ -968,6 +970,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.5 | Fusão de repositórios (Camada 1 HTMLs + Camada 2 Next.js) |
 | 2.6 | 4 specs técnicas + 2 HTMLs parking lot + docs comerciais |
 | 2.7 | 3 specs adicionais + 9-Box visual + termos/manual |
-| **2.8** | **Identidade visual Cofre + 12 páginas novas + shell compartilhado** |
+| 2.8 | Identidade visual Cofre + 12 páginas novas + shell compartilhado |
+| **2.9** | **Showcase entry-point + 3 specs (M5/M8/M9) + schema v9 + privacy atestados** |
 
 ---
