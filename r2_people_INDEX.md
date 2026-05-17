@@ -1,11 +1,13 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.7 · 17 de maio de 2026
+**Versão**: 2.8 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
 
-**Mudança em v2.5**: o repositório agora hospeda **duas camadas no mesmo lugar** · (1) os 42 HTMLs single-file que rodam em `rh.solucoesr2.com.br` (deploy atual via GitHub Pages) e (2) a codebase Next.js 14 + Supabase em `src/`, `supabase/`, `worker/` com 170 testes backend passando e 12 páginas implementadas. Ver §14 abaixo para a relação entre as duas camadas.
+**Mudança em v2.8** · expansão massiva da Camada 1: agora 57 HTMLs (era 42), com **identidade visual Cofre completa** (logo GPC oficial, fontes Archivo + JetBrains Mono, paleta navy #2E476F / orange #F58634 alinhada ao comercial). Adicionado **shell compartilhado** (`assets/r2-shell.css` + `r2-shell.js`) que dá a todos os HTMLs: dark mode, density compacta, sidebar collapse, search global Cmd+K, bell de notificações, user dropdown, atalhos de teclado. Ver §15 abaixo para inventário completo.
+
+**Mudança em v2.5**: o repositório agora hospeda **duas camadas no mesmo lugar** · (1) os HTMLs single-file que rodam em `rh.solucoesr2.com.br` (deploy atual via GitHub Pages) e (2) a codebase Next.js 14 + Supabase em `src/`, `supabase/`, `worker/` com 170 testes backend passando e 12 páginas implementadas. Ver §14 abaixo para a relação entre as duas camadas.
 
 ---
 
@@ -821,5 +823,151 @@ Os schemas de design da raiz cobrem **mais módulos** (atestados v4, metas v5, 1
 ```
 
 A Camada 1 não morre quando a feature é portada · ela continua servindo como spec visual viva e como ambiente de demo rápida para vendas.
+
+---
+
+## 15. Inventário Camada 1 v2.8 (atualizado)
+
+### Shell compartilhado (NOVO em v2.8)
+
+| Arquivo | Conteúdo |
+|---|---|
+| `assets/r2-shell.css` | ~380 linhas · dark mode (`[data-theme="dark"]`), density compacta (`[data-density="compact"]`), sidebar collapse (`[data-sidebar="collapsed"]`), topbar actions, bell badge, notif dropdown, search overlay, user dropdown, page-header padrão Cofre |
+| `assets/r2-shell.js` | ~360 linhas · boot (aplica prefs antes do render), mobile drawer, atalhos teclado, search com índice de 39 páginas, bell com 5 notificações mock, user dropdown |
+| `assets/gpc-color.png` / `.svg` | Logo GPC oficial (PNG 137 KB · SVG aproximação) |
+| `assets/gpc-white.png` | Variante branca pra fundos escuros |
+| `assets/r2-color.png` / `r2-white.png` | Logo R2 Soluções |
+| `assets/favicon.svg` | Favicon GPC navy/orange compacto |
+
+### Atalhos de teclado (cross-page · via shell)
+
+| Atalho | Ação |
+|---|---|
+| `Cmd/Ctrl + K` ou `/` | Abrir search global |
+| `Cmd/Ctrl + J` | Toggle dark mode |
+| `Cmd/Ctrl + Shift + K` | Toggle density compacta |
+| `Cmd/Ctrl + B` | Toggle sidebar collapse (desktop) |
+| `Esc` | Fechar overlays (search, drawer, dropdown) |
+| `↑ ↓ ↵` | Navegar no search |
+
+### Páginas (57 HTMLs · catalogadas por área)
+
+#### Você (5)
+- `r2_people_login.html` · login + SSO Microsoft
+- `r2_people_onboarding.html` · wizard 5 passos primeiro acesso
+- `r2_people_minha_trajetoria.html` ⭐ · trajetória pessoal gamificada
+- `r2_people_colaborador_home.html` · home pessoal
+- `r2_people_notificacoes.html` 🆕 · caixa de notificações com filtros
+
+#### Comunicação (3)
+- `r2_people_comunicados.html` 🆕 · feed editorial estilo intranet
+- `r2_people_feedback_mural.html` · mural + feedback contínuo
+- `r2_people_minhas_1on1s.html` · 1:1s visão liderado
+
+#### Pessoas / Estrutura (5)
+- `r2_people_colaborador.html` ⭐ · cadastro/edição com Apelido
+- `r2_people_colaboradores_lista.html` · listagem com filtros
+- `r2_people_estrutura.html` · Filiais + Departamentos + Cargos
+- `r2_people_cargos_salarios.html` 🆕 · matriz salarial estruturada
+- `r2_people_historico_consulta.html` ⭐ · search-driven UI (Linear/Raycast)
+
+#### Desempenho (8)
+- `r2_people_ciclos.html` · ciclos de avaliação
+- `r2_people_avaliacao.html` · avaliação dual auto+gestor
+- `r2_people_pdi.html` 🆕 · PDI com 3 personas togláveis
+- `r2_people_9box.html` 🆕 · matriz de talentos 3×3 interativa
+- `r2_people_okrs.html` 🆕 · objetivos + key results + check-ins
+- `r2_people_metas.html` · Metas v5
+- `r2_people_oneonones.html` ⭐ · hub líder
+- `r2_people_oneonone_room.html` ⭐ · sala 1:1 dual
+
+#### Movimentações (3)
+- `r2_people_movimentacoes.html` · líder solicita
+- `r2_people_aprovacoes_rh.html` · RH aprova
+- `r2_people_colaborador_movimentacoes.html` · colaborador acompanha
+
+#### Vida & Saúde (8)
+- `r2_people_atestados.html` · hub atestados
+- `r2_people_atestado_envio_lider.html` ⭐ · envio com OCR client-side
+- `r2_people_atestado_validacao_dp.html` ⭐ · validação DP
+- `r2_people_atestado_colaborador.html` · autoenvio
+- `r2_people_afastamentos.html` · gestão de afastamentos
+- `r2_people_ferias.html` ⭐ · Gantt + lista
+- `r2_people_ferias_programacao_anual.html` ⭐ · programação anual
+- `r2_people_ferias_programar.html` 🆕 · wizard CLT 3 passos
+
+#### Pesquisas (2)
+- `r2_people_clima.html` 🆕 · pulso semanal com 5 moods + heatmap
+- `r2_people_enps.html` 🆕 · Employee NPS quinzenal
+
+#### Carreira (3)
+- `r2_people_vagas.html` 🆕 · banco de talentos + indicações
+- `r2_people_indicacoes.html` 🆕 · suas indicações + ganhos
+- `r2_people_treinamentos.html` 🆕 · trilhas LMS-style
+
+#### Folha & Custo (5)
+- `r2_people_calculadora_custo.html` ⭐ · individual com slider
+- `r2_people_folha_por_filial.html` ⭐ · agregada por unidade
+- `r2_people_comparar_cenarios.html` · A/B de cenários
+- `r2_people_regime_tributario.html` ⭐ · CRUD tax_regime
+- `r2_people_lancamento_resultado.html` · líder lança realizado de meta
+
+#### Análise (3)
+- `r2_people_admin_dashboard.html` · dashboard RH agregado
+- `r2_people_relatorios.html` ⭐ · report builder EMP/TOM
+- `r2_people_oneonones_rh.html` ⭐ · 1:1s visão RH agregada
+
+#### Administração (7)
+- `index.html` · admin de módulos (entry point Pages)
+- `r2_people_tenants.html` 🆕 · cadastro de clientes (super_admin)
+- `r2_people_acessos.html` · perfis de permissão
+- `r2_people_auditoria.html` · audit log + DSAR
+- `r2_people_configuracoes.html` · tenant settings
+- `r2_people_importacao.html` · CSV + OCR Domínio
+- `r2_people_minhas_metas.html` · metas pessoais
+
+#### Utilitárias / Validação (5)
+- `r2_people_minhas_metas.html` · metas pessoais
+- `r2_people_validacao_resultado.html` · gestor valida
+- `r2_people_home.html` · hub togglável 3 personas
+- `r2_people_demo.html` · demo único
+- `r2_people_empty_states.html` · 5 estados togláveis
+- `r2_people_error_pages.html` · 5 estados togláveis (404/403/500/offline/expired)
+
+🆕 = adicionado em v2.6, v2.7 ou v2.8
+⭐ = página complexa com features destacadas
+
+### Docs MD (10)
+- `r2_people_INDEX.md` ⭐ · este
+- `r2_people_architecture_roadmap.md`
+- `r2_people_privacy_policy.md` · LGPD geral
+- `r2_people_privacy_oneonones.md` 🆕 · LGPD específica de 1:1s (3 camadas)
+- `r2_people_terms_of_service.md` 🆕 · 17 seções
+- `r2_people_admin_manual.md` 🆕 · 12 seções + glossário
+- `r2_people_pitch_deck.md` 🆕 · 15 slides comercial
+- `r2_people_modelo_proposta.md` 🆕 · template editável
+- `r2_people_wireframes_mvp.md`
+- `r2_people_analise_correcoes.md`
+
+### Specs técnicos pra próximas sessões com Postgres (em `docs/`)
+- `spec_d1_auth.md` 🆕 · Supabase Auth real
+- `spec_m1_estrutura_acessos.md` 🆕 · CRUD organizacional
+- `spec_m2_movimentacoes.md` 🆕 · workflow aprovação
+- `spec_m3_atestados.md` 🆕 · schema v4 LGPD Art. 11
+- `spec_m4_ferias.md` 🆕 · schema v7 CLT
+- `spec_m6_folha_custo.md` 🆕 · legislação 2026 versionada
+- `spec_m7_oneonones.md` 🆕 · 25 RLS privacy-enforced
+
+---
+
+## 16. Histórico de versões resumido (mais detalhes em §12)
+
+| Versão | Principais entregas |
+|---|---|
+| 2.4 | Módulo 1:1s estruturadas (4 telas + schema v6) |
+| 2.5 | Fusão de repositórios (Camada 1 HTMLs + Camada 2 Next.js) |
+| 2.6 | 4 specs técnicas + 2 HTMLs parking lot + docs comerciais |
+| 2.7 | 3 specs adicionais + 9-Box visual + termos/manual |
+| **2.8** | **Identidade visual Cofre + 12 páginas novas + shell compartilhado** |
 
 ---
