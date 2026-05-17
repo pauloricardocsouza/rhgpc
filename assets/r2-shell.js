@@ -251,7 +251,8 @@
     { title: 'Tenant Setup · wizard de primeira execução', url: 'r2_people_tenant_setup.html', cat: 'Admin', icon: '🧙', kw: 'onboarding wizard tenant setup primeira execucao branding mfa configuracao inicial' },
     { title: 'Billing & Plano · tenant_admin', url: 'r2_people_billing.html', cat: 'Admin', icon: '💳', kw: 'billing plano fatura invoice assinatura subscription seat quota pagamento cartao pix upgrade' },
     { title: 'DR Console · Backups & Disaster Recovery', url: 'r2_people_dr_console.html', cat: 'Admin', icon: '🛟', kw: 'dr disaster recovery backup pitr restore drill smoke test rpo rto retention devops failover ransomware' },
-    { title: 'Preços públicos · landing comercial', url: 'r2_people_pricing.html', cat: 'Home', icon: '💵', kw: 'preco pricing plano starter pro enterprise comercial landing publico marketing assinatura trial' }
+    { title: 'Preços públicos · landing comercial', url: 'r2_people_pricing.html', cat: 'Home', icon: '💵', kw: 'preco pricing plano starter pro enterprise comercial landing publico marketing assinatura trial' },
+    { title: 'Home comercial · landing principal', url: 'r2_people_landing.html', cat: 'Home', icon: '🚀', kw: 'home landing principal comercial marketing valor proposicao hero pilares case gpc trial visitante site publico' }
   ];
 
   function openSearch() {
