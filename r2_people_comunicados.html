@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Comunicados internos</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:#fff; display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.container{max-width:1200px; margin:0 auto;}
+
+.page-header{margin-bottom:22px; display:flex; align-items:flex-end; justify-content:space-between; gap:18px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:8px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary svg{width:14px; height:14px;}
+
+.layout{display:grid; grid-template-columns:1fr 320px; gap:18px;}
+
+/* Featured */
+.featured{background:linear-gradient(135deg, var(--navy) 0%, var(--purple) 100%); color:#fff; border-radius:var(--radius-lg); padding:32px 36px; margin-bottom:18px; position:relative; overflow:hidden;}
+.featured::before{content:''; position:absolute; top:-30%; right:-10%; width:300px; height:300px; background:radial-gradient(circle, rgba(245,134,52,.35) 0%, transparent 65%); border-radius:50%;}
+.featured-content{position:relative; z-index:2;}
+.featured-tag{display:inline-block; padding:4px 10px; background:rgba(255,255,255,.18); border-radius:12px; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin-bottom:12px;}
+.featured-title{font-size:24px; font-weight:800; letter-spacing:-.3px; line-height:1.2; margin-bottom:8px;}
+.featured-excerpt{font-size:14px; opacity:.92; line-height:1.55; margin-bottom:16px; max-width:600px;}
+.featured-meta{display:flex; gap:14px; font-size:12px; opacity:.85;}
+.featured-meta span{display:flex; align-items:center; gap:5px;}
+
+/* Filters */
+.filter-tabs{display:flex; gap:4px; background:var(--gray1); padding:3px; border-radius:8px; margin-bottom:16px; width:fit-content; flex-wrap:wrap;}
+.filter-tab{padding:7px 14px; font-size:12px; border:none; background:transparent; cursor:pointer; border-radius:6px; font-family:inherit; color:var(--txt2); font-weight:600;}
+.filter-tab.active{background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+/* Posts */
+.posts-list{display:flex; flex-direction:column; gap:12px;}
+.post{background:#fff; border-radius:var(--radius-lg); padding:20px 24px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); transition:all .15s; cursor:pointer;}
+.post:hover{border-color:var(--gray2); transform:translateY(-1px); box-shadow:0 4px 16px rgba(26,45,79,.08);}
+.post-header{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.post-tag{padding:3px 10px; border-radius:10px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;}
+.post-tag.rh{background:var(--blue2); color:var(--blue);}
+.post-tag.diretoria{background:var(--purple2); color:var(--purple);}
+.post-tag.ti{background:var(--teal2); color:var(--teal);}
+.post-tag.juridico{background:var(--amber2); color:var(--amber);}
+.post-tag.eventos{background:var(--pink2); color:var(--pink);}
+.post-tag.beneficios{background:var(--green2); color:var(--green);}
+.post-date{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--txt3);}
+.post-priority{margin-left:auto; padding:2px 8px; background:var(--red2); color:var(--red); border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;}
+.post-title{font-size:17px; font-weight:700; letter-spacing:-.2px; margin-bottom:6px; line-height:1.3;}
+.post-excerpt{font-size:13px; color:var(--txt2); line-height:1.55; margin-bottom:12px;}
+.post-footer{display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:12px; border-top:1px solid var(--gray1);}
+.post-author{display:flex; align-items:center; gap:8px;}
+.post-author-avatar{width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--navy3),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:10.5px;}
+.post-author-info{font-size:12px;}
+.post-author-name{font-weight:600;}
+.post-author-role{font-size:10.5px; color:var(--txt2);}
+.post-stats{display:flex; gap:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--txt2);}
+.post-stat{display:flex; align-items:center; gap:4px;}
+.post-stat svg{width:13px; height:13px;}
+
+/* Sidebar widgets */
+.side-card{background:#fff; border-radius:var(--radius-lg); padding:18px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); margin-bottom:14px;}
+.side-card h3{font-size:13px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:7px;}
+.side-card h3 svg{width:14px; height:14px; color:var(--txt2);}
+
+.calendar-event{display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--gray1);}
+.calendar-event:last-child{border:0;}
+.calendar-day{flex-shrink:0; width:42px; padding:5px 0; text-align:center; background:var(--orange2); border-radius:6px;}
+.calendar-day-num{font-size:16px; font-weight:800; color:var(--orange); line-height:1; font-family:'JetBrains Mono',monospace;}
+.calendar-day-month{font-size:9px; color:var(--amber); text-transform:uppercase; letter-spacing:.1em; font-weight:700; margin-top:2px;}
+.calendar-event-info{flex:1; min-width:0;}
+.calendar-event-title{font-size:12.5px; font-weight:600; margin-bottom:2px;}
+.calendar-event-meta{font-size:11px; color:var(--txt2);}
+
+.trending-list{display:flex; flex-direction:column; gap:8px;}
+.trending-item{display:flex; gap:10px; padding:8px 0; align-items:center;}
+.trending-num{font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:800; color:var(--gray3); width:24px; flex-shrink:0;}
+.trending-text{font-size:12.5px; line-height:1.35; font-weight:500;}
+.trending-stat{font-size:10.5px; color:var(--txt2); margin-top:2px; font-family:'JetBrains Mono',monospace;}
+
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .layout{grid-template-columns:1fr;}
+  .featured{padding:22px 24px;}
+  .featured-title{font-size:20px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item" href="r2_people_notificacoes.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg>Comunicados</a>
+      <a class="nav-item" href="r2_people_feedback_mural.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Feedback & Mural</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-title"><span>Comunicação</span><span class="sep">›</span><span class="crumb">Comunicados</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info"><span class="user-name">Fernanda Lima</span><span class="user-role">Analista Pleno · Cestão L1</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Comunicação <span class="sep">·</span> Mural <span class="sep">·</span> Toda a empresa</div>
+          <h1 class="page-title">Comunicados <em>internos</em></h1>
+          <p class="page-subtitle">Feed editorial · só RH e diretoria publicam · você pode reagir e comentar quando habilitado.</p>
+        </div>
+        <button class="btn-primary" style="background:var(--gray3); cursor:not-allowed;" disabled title="Apenas RH ou Diretoria pode publicar">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo comunicado
+        </button>
+      </div>
+
+      <div class="featured">
+        <div class="featured-content">
+          <div class="featured-tag">🌟 Destaque · Diretoria</div>
+          <div class="featured-title">Resultado Q1/2026 · crescemos 18% em receita e contratamos 47 pessoas novas</div>
+          <div class="featured-excerpt">Encerramos o trimestre acima do plano em todas as unidades. O Cestão L1 lidera com +24% e a operação de Inhambupe abriu o segundo CD. Obrigado a cada um de vocês · sem times engajados não chegaríamos aqui. Próximo passo: dissídio + bônus por unidade anunciados em junho.</div>
+          <div class="featured-meta">
+            <span>👤 Renato Pinto · Diretor Operações</span>
+            <span>📅 12 mai 2026</span>
+            <span>👁 átida por 312 colab</span>
+            <span>👏 87 reações</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout">
+        <div>
+          <div class="filter-tabs">
+            <button class="filter-tab active">Todos</button>
+            <button class="filter-tab">RH</button>
+            <button class="filter-tab">Diretoria</button>
+            <button class="filter-tab">TI</button>
+            <button class="filter-tab">Jurídico</button>
+            <button class="filter-tab">Benefícios</button>
+            <button class="filter-tab">Eventos</button>
+          </div>
+
+          <div class="posts-list">
+
+            <article class="post">
+              <div class="post-header">
+                <span class="post-tag rh">RH</span>
+                <span class="post-date">há 2 dias · 17 mai 2026</span>
+                <span class="post-priority">Importante</span>
+              </div>
+              <h2 class="post-title">Programação anual de férias 2026 · até 30/jun pra envio</h2>
+              <p class="post-excerpt">Líderes têm até 30 de junho pra registrar a programação de férias da equipe. Aquisitivos que vencem no segundo semestre já estão sinalizados em vermelho no sistema. Helena (CD Inhambupe) com 18/05 e Juliana (Frente) já vencida · pagamos em dobro se não programar até 31/05.</p>
+              <div class="post-footer">
+                <div class="post-author">
+                  <div class="post-author-avatar">PM</div>
+                  <div class="post-author-info">
+                    <div class="post-author-name">Patrícia Mello</div>
+                    <div class="post-author-role">Coordenadora RH</div>
+                  </div>
+                </div>
+                <div class="post-stats">
+                  <span class="post-stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>284</span>
+                  <span class="post-stat"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>12</span>
+                  <span class="post-stat">👏 28</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="post">
+              <div class="post-header">
+                <span class="post-tag beneficios">Benefícios</span>
+                <span class="post-date">há 5 dias · 14 mai 2026</span>
+              </div>
+              <h2 class="post-title">Novo benefício · Gympass Wellness liberado para todos os efetivos</h2>
+              <p class="post-excerpt">A partir de 01/06 todos os efetivos CLT terão acesso ao Gympass Wellness · academia, yoga, terapia e nutricionista no mesmo app. Sem custo · empresa subsidiou 100%. Adesão automática · só baixar o app e logar com seu email corporativo.</p>
+              <div class="post-footer">
+                <div class="post-author">
+                  <div class="post-author-avatar" style="background:linear-gradient(135deg,var(--green),var(--teal));">PM</div>
+                  <div class="post-author-info">
+                    <div class="post-author-name">Patrícia Mello</div>
+                    <div class="post-author-role">Coordenadora RH</div>
+                  </div>
+                </div>
+                <div class="post-stats">
+                  <span class="post-stat">👁 367</span>
+                  <span class="post-stat">💬 41</span>
+                  <span class="post-stat">👏 142</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="post">
+              <div class="post-header">
+                <span class="post-tag ti">TI</span>
+                <span class="post-date">há 1 semana · 10 mai 2026</span>
+              </div>
+              <h2 class="post-title">Migração de email para Microsoft 365 · agendada 25/mai 23h</h2>
+              <p class="post-excerpt">No próximo dia 25 às 23h migraremos todas as contas de email corporativo do Google Workspace para Microsoft 365. Janela de manutenção: ~4h. Emails recebidos durante a janela são automaticamente retidos. Após a migração você precisará reconfigurar Outlook desktop · tutorial enviado por email separado.</p>
+              <div class="post-footer">
+                <div class="post-author">
+                  <div class="post-author-avatar" style="background:linear-gradient(135deg,var(--teal),var(--blue));">PT</div>
+                  <div class="post-author-info">
+                    <div class="post-author-name">Pedro · TI</div>
+                    <div class="post-author-role">Suporte Infraestrutura</div>
+                  </div>
+                </div>
+                <div class="post-stats">
+                  <span class="post-stat">👁 298</span>
+                  <span class="post-stat">💬 22</span>
+                  <span class="post-stat">👏 18</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="post">
+              <div class="post-header">
+                <span class="post-tag eventos">Eventos</span>
+                <span class="post-date">há 1 semana · 09 mai 2026</span>
+              </div>
+              <h2 class="post-title">Festa junina GPC 2026 · 14/jun · São João do Pinto Cerqueira</h2>
+              <p class="post-excerpt">Salva a data · 14 de junho 2026 das 18h às 23h na sede ATP. Quadrilha, comidas típicas, fogueira, prendas e shows. Cada colaborador pode trazer +2 acompanhantes (cônjuge + 1 filho). Confirmação via formulário até 05/jun. Quadrilha quem topar ensaiar nas terças 18h30 na garagem!</p>
+              <div class="post-footer">
+                <div class="post-author">
+                  <div class="post-author-avatar" style="background:linear-gradient(135deg,var(--orange),var(--pink));">LV</div>
+                  <div class="post-author-info">
+                    <div class="post-author-name">Lucas Vieira</div>
+                    <div class="post-author-role">RH · Engajamento</div>
+                  </div>
+                </div>
+                <div class="post-stats">
+                  <span class="post-stat">👁 312</span>
+                  <span class="post-stat">💬 67</span>
+                  <span class="post-stat">👏 218</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="post">
+              <div class="post-header">
+                <span class="post-tag juridico">Jurídico</span>
+                <span class="post-date">há 2 semanas · 03 mai 2026</span>
+              </div>
+              <h2 class="post-title">LGPD · revisão da política de privacidade interna · vigência 01/jul</h2>
+              <p class="post-excerpt">A política interna de LGPD foi atualizada conforme ANPD Resolução CD/ANPD nº 8/2024. Mudanças principais: detalhamento de retenção por tipo de dado, novos canais para exercício de direitos do titular, fluxo de incidente em 72h. Todos devem ler e confirmar leitura até 30/jun via sistema.</p>
+              <div class="post-footer">
+                <div class="post-author">
+                  <div class="post-author-avatar" style="background:linear-gradient(135deg,var(--amber),var(--orange));">CM</div>
+                  <div class="post-author-info">
+                    <div class="post-author-name">Carla Moreira</div>
+                    <div class="post-author-role">DPO</div>
+                  </div>
+                </div>
+                <div class="post-stats">
+                  <span class="post-stat">👁 247</span>
+                  <span class="post-stat">💬 8</span>
+                  <span class="post-stat">👏 11</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="post">
+              <div class="post-header">
+                <span class="post-tag rh">RH</span>
+                <span class="post-date">há 3 semanas · 28 abr 2026</span>
+              </div>
+              <h2 class="post-title">Programa de indicação amplificado · agora R$ 1.500 por contratação efetivada</h2>
+              <p class="post-excerpt">Indicou alguém que foi contratado e passou pelos 90 dias de experiência? Você recebe R$ 1.500 (era R$ 800). Vagas em destaque para indicação: 4 vagas em TI, 2 em Compras, 3 em Comercial. Acompanhe suas indicações em Vagas internas → Minhas indicações.</p>
+              <div class="post-footer">
+                <div class="post-author">
+                  <div class="post-author-avatar">PM</div>
+                  <div class="post-author-info">
+                    <div class="post-author-name">Patrícia Mello</div>
+                    <div class="post-author-role">Coordenadora RH</div>
+                  </div>
+                </div>
+                <div class="post-stats">
+                  <span class="post-stat">👁 367</span>
+                  <span class="post-stat">💬 24</span>
+                  <span class="post-stat">👏 89</span>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+        <div>
+          <div class="side-card">
+            <h3><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Próximos eventos</h3>
+            <div class="calendar-event">
+              <div class="calendar-day"><div class="calendar-day-num">24</div><div class="calendar-day-month">mai</div></div>
+              <div class="calendar-event-info">
+                <div class="calendar-event-title">Fechamento pulso clima</div>
+                <div class="calendar-event-meta">Domingo · feed clima atualiza segunda</div>
+              </div>
+            </div>
+            <div class="calendar-event">
+              <div class="calendar-day"><div class="calendar-day-num">25</div><div class="calendar-day-month">mai</div></div>
+              <div class="calendar-event-info">
+                <div class="calendar-event-title">Migração email M365</div>
+                <div class="calendar-event-meta">Segunda 23h · 4h de janela</div>
+              </div>
+            </div>
+            <div class="calendar-event">
+              <div class="calendar-day"><div class="calendar-day-num">14</div><div class="calendar-day-month">jun</div></div>
+              <div class="calendar-event-info">
+                <div class="calendar-event-title">Festa junina GPC</div>
+                <div class="calendar-event-meta">Sábado · 18h-23h · ATP</div>
+              </div>
+            </div>
+            <div class="calendar-event">
+              <div class="calendar-day"><div class="calendar-day-num">30</div><div class="calendar-day-month">jun</div></div>
+              <div class="calendar-event-info">
+                <div class="calendar-event-title">Fechamento Q2 OKRs</div>
+                <div class="calendar-event-meta">Confraternização opcional</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-card">
+            <h3><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 13"/></svg>Mais lidos da semana</h3>
+            <div class="trending-list">
+              <div class="trending-item">
+                <span class="trending-num">1</span>
+                <div>
+                  <div class="trending-text">Resultado Q1/2026 · crescemos 18%</div>
+                  <div class="trending-stat">312 views · 87 reações</div>
+                </div>
+              </div>
+              <div class="trending-item">
+                <span class="trending-num">2</span>
+                <div>
+                  <div class="trending-text">Novo benefício Gympass Wellness</div>
+                  <div class="trending-stat">367 views · 142 reações</div>
+                </div>
+              </div>
+              <div class="trending-item">
+                <span class="trending-num">3</span>
+                <div>
+                  <div class="trending-text">Programa de indicação amplificado</div>
+                  <div class="trending-stat">367 views · 89 reações</div>
+                </div>
+              </div>
+              <div class="trending-item">
+                <span class="trending-num">4</span>
+                <div>
+                  <div class="trending-text">Festa junina GPC 14/jun</div>
+                  <div class="trending-stat">312 views · 218 reações</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-card" style="background:var(--orange2); border-left:4px solid var(--orange);">
+            <h3 style="color:var(--orange);">💡 Sugira pauta</h3>
+            <p style="font-size:12px; color:var(--txt); line-height:1.55;">Tem algo importante pra compartilhar? Sugira aos editores (RH e Diretoria). Boas pautas são selecionadas e creditadas a você.</p>
+            <button style="margin-top:10px; background:var(--orange); color:#fff; border:none; padding:8px 14px; border-radius:6px; font-size:11.5px; font-weight:600; cursor:pointer; font-family:inherit;">Sugerir pauta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>

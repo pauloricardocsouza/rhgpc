@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Vagas internas · Banco de talentos</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA; --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF; --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE; --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:#fff; display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.container{max-width:1200px; margin:0 auto;}
+
+.page-header{margin-bottom:22px;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow-card); border-left:3px solid var(--navy);}
+.kpi.green{border-color:var(--green);} .kpi.amber{border-color:var(--amber);}
+.kpi-label{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:800; margin-top:6px; font-family:'JetBrains Mono',monospace;}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:3px;}
+
+.filters-bar{background:#fff; border-radius:var(--radius); padding:12px 16px; box-shadow:var(--shadow-card); margin-bottom:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+.filter-pill{padding:5px 12px; background:var(--gray1); border-radius:14px; font-size:11.5px; cursor:pointer; color:var(--txt2); font-weight:500; border:1px solid transparent;}
+.filter-pill:hover{background:var(--gray2);}
+.filter-pill.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+.search-input{flex:1; min-width:200px; padding:8px 12px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit;}
+
+.jobs-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(380px, 1fr)); gap:14px;}
+.job-card{background:#fff; border-radius:var(--radius-lg); padding:20px 22px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); display:flex; flex-direction:column; transition:all .15s;}
+.job-card:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(26,45,79,.1); border-color:var(--gray2);}
+.job-card.urgent{border-top:3px solid var(--red);}
+.job-card.indicacao{border-top:3px solid var(--orange);}
+.job-header{display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px;}
+.job-title{font-size:16px; font-weight:700; letter-spacing:-.1px; line-height:1.3; flex:1;}
+.job-pills{display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;}
+.job-pill{padding:3px 9px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;}
+.job-pill.clt{background:var(--blue2); color:var(--blue);}
+.job-pill.jovem{background:var(--purple2); color:var(--purple);}
+.job-pill.estagio{background:var(--teal2); color:var(--teal);}
+.job-pill.urgent{background:var(--red2); color:var(--red);}
+.job-pill.indicacao{background:var(--orange2); color:var(--orange);}
+.job-pill.remoto{background:var(--green2); color:var(--green);}
+.job-pill.presencial{background:var(--gray1); color:var(--txt2);}
+.job-meta{display:flex; flex-wrap:wrap; gap:10px; font-size:11.5px; color:var(--txt2); margin-bottom:12px;}
+.job-meta-item{display:flex; align-items:center; gap:5px;}
+.job-meta-item svg{width:13px; height:13px;}
+.job-desc{font-size:12.5px; color:var(--txt2); line-height:1.5; margin-bottom:14px; flex:1;}
+.job-footer{display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:12px; border-top:1px solid var(--gray1);}
+.job-salary{font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--green);}
+.job-bonus{font-size:10px; color:var(--orange); font-weight:600;}
+.job-actions{display:flex; gap:6px;}
+.btn-apply{background:var(--navy); color:#fff; border:none; padding:7px 14px; border-radius:6px; font-size:11.5px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-apply:hover{background:var(--navy2);}
+.btn-indicar{background:var(--orange); color:#fff; border:none; padding:7px 14px; border-radius:6px; font-size:11.5px; font-weight:600; cursor:pointer; font-family:inherit;}
+
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .jobs-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item" href="r2_people_comunicados.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/></svg>Comunicados</a>
+      <div class="sidebar-section">Carreira</div>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Vagas internas</a>
+      <a class="nav-item" href="r2_people_treinamentos.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Treinamentos</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Meu PDI</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-title"><span>Carreira</span><span class="sep">›</span><span class="crumb">Vagas internas</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info"><span class="user-name">Fernanda Lima</span><span class="user-role">Analista Pleno · Cestão L1</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-eyebrow">Carreira <span class="sep">·</span> Banco de talentos <span class="sep">·</span> Oportunidades internas</div>
+        <h1 class="page-title">Vagas <em>abertas</em></h1>
+        <p class="page-subtitle">14 vagas internas · prioridade pra colaboradores antes de divulgar externamente. Indique alguém e ganhe R$ 1.500 por contratação efetivada (90d).</p>
+      </div>
+
+      <section class="kpi-grid">
+        <div class="kpi green">
+          <div class="kpi-label">Vagas abertas</div>
+          <div class="kpi-value">14</div>
+          <div class="kpi-sub">8 internas só · 6 também externas</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-label">Urgentes</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-sub">Fechamento até 30/mai</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Suas candidaturas</div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-sub">Coord. de Dados · em análise</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Suas indicações</div>
+          <div class="kpi-value">2</div>
+          <div class="kpi-sub">1 contratada (R$ 1.500 ganho)</div>
+        </div>
+      </section>
+
+      <div class="filters-bar">
+        <div class="filter-pill active">Todas</div>
+        <div class="filter-pill">TI</div>
+        <div class="filter-pill">Comercial</div>
+        <div class="filter-pill">Operações</div>
+        <div class="filter-pill">RH</div>
+        <div class="filter-pill">Financeiro</div>
+        <div class="filter-pill">Estagiário/Jovem</div>
+        <input class="search-input" placeholder="Cargo, cidade, nível...">
+      </div>
+
+      <div class="jobs-grid">
+
+        <div class="job-card urgent">
+          <div class="job-header">
+            <h3 class="job-title">Coordenador(a) de Dados</h3>
+          </div>
+          <div class="job-pills">
+            <span class="job-pill clt">CLT</span>
+            <span class="job-pill presencial">Presencial · Salvador</span>
+            <span class="job-pill urgent">Urgente · até 30/mai</span>
+          </div>
+          <div class="job-meta">
+            <span class="job-meta-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Sede ATP</span>
+            <span class="job-meta-item">📅 Aberta há 8d · 24 candidaturas</span>
+          </div>
+          <p class="job-desc">Liderar área de dados (3 analistas), modelar data warehouse, parceria com diretoria comercial. Requer experiência prévia em modelagem dimensional + liderança de pelo menos 2 pessoas.</p>
+          <div class="job-footer">
+            <div>
+              <div class="job-salary">R$ 12.000 - 16.000</div>
+              <div class="job-bonus">+ R$ 1.500 indicação</div>
+            </div>
+            <div class="job-actions">
+              <button class="btn-apply" style="background:var(--green);">✓ Você se candidatou</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card indicacao">
+          <div class="job-header">
+            <h3 class="job-title">Desenvolvedor(a) Full-stack · Python/React</h3>
+          </div>
+          <div class="job-pills">
+            <span class="job-pill clt">CLT</span>
+            <span class="job-pill remoto">Remoto / híbrido</span>
+            <span class="job-pill indicacao">+R$ 1.500 indicação</span>
+          </div>
+          <div class="job-meta">
+            <span>📍 Salvador (hub mensal)</span>
+            <span>📅 Aberta há 3d</span>
+          </div>
+          <p class="job-desc">Construir e manter ferramentas internas (dashboards, automações). Stack Python + FastAPI + React + Postgres. Mid/sr · 2+ anos de produção.</p>
+          <div class="job-footer">
+            <div>
+              <div class="job-salary">R$ 8.000 - 14.000</div>
+              <div class="job-bonus">+ R$ 1.500 indicação</div>
+            </div>
+            <div class="job-actions">
+              <button class="btn-apply">Candidatar</button>
+              <button class="btn-indicar">Indicar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card">
+          <div class="job-header">
+            <h3 class="job-title">Analista Comercial Pleno</h3>
+          </div>
+          <div class="job-pills">
+            <span class="job-pill clt">CLT</span>
+            <span class="job-pill presencial">Presencial · ATP</span>
+          </div>
+          <div class="job-meta">
+            <span>📍 ATP Atacado</span>
+            <span>📅 Aberta há 12d · 18 candidaturas</span>
+          </div>
+          <p class="job-desc">Atuar com inteligência comercial: análise de vendas, gestão de carteira de fornecedores, negociação de mix. Forte em Excel + Power BI.</p>
+          <div class="job-footer">
+            <div>
+              <div class="job-salary">R$ 5.500 - 7.500</div>
+              <div class="job-bonus">+ R$ 1.500 indicação</div>
+            </div>
+            <div class="job-actions">
+              <button class="btn-apply">Candidatar</button>
+              <button class="btn-indicar">Indicar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card">
+          <div class="job-header">
+            <h3 class="job-title">Gerente de Loja · Cestão Inhambupe</h3>
+          </div>
+          <div class="job-pills">
+            <span class="job-pill clt">CLT</span>
+            <span class="job-pill presencial">Presencial · Inhambupe</span>
+          </div>
+          <div class="job-meta">
+            <span>📍 Cestão Inhambupe</span>
+            <span>📅 Aberta há 5d</span>
+          </div>
+          <p class="job-desc">Liderar operação completa de loja (45+ colaboradores), gestão de P&L, relacionamento com fornecedores locais. Mudança pra Inhambupe necessária.</p>
+          <div class="job-footer">
+            <div>
+              <div class="job-salary">R$ 9.000 - 12.000</div>
+              <div class="job-bonus">+ R$ 1.500 indicação</div>
+            </div>
+            <div class="job-actions">
+              <button class="btn-apply">Candidatar</button>
+              <button class="btn-indicar">Indicar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card urgent">
+          <div class="job-header">
+            <h3 class="job-title">Analista de Compras</h3>
+          </div>
+          <div class="job-pills">
+            <span class="job-pill clt">CLT</span>
+            <span class="job-pill presencial">Presencial · ATP</span>
+            <span class="job-pill urgent">Urgente · até 25/mai</span>
+          </div>
+          <div class="job-meta">
+            <span>📍 Sede ATP</span>
+            <span>📅 Aberta há 14d · 8 candidaturas</span>
+          </div>
+          <p class="job-desc">Gestão de compras de pereciveis com 30+ fornecedores. Negociação direta, análise de giro, controle de validade. Exige conhecimento WinThor.</p>
+          <div class="job-footer">
+            <div>
+              <div class="job-salary">R$ 4.200 - 5.800</div>
+              <div class="job-bonus">+ R$ 1.500 indicação</div>
+            </div>
+            <div class="job-actions">
+              <button class="btn-apply">Candidatar</button>
+              <button class="btn-indicar">Indicar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card">
+          <div class="job-header">
+            <h3 class="job-title">Estagiário(a) em Marketing Digital</h3>
+          </div>
+          <div class="job-pills">
+            <span class="job-pill estagio">Estágio</span>
+            <span class="job-pill presencial">Presencial · 6h/dia</span>
+          </div>
+          <div class="job-meta">
+            <span>📍 Sede ATP</span>
+            <span>📅 Aberta há 21d</span>
+          </div>
+          <p class="job-desc">Apoio em redes sociais, criação de posts, gestão de campanhas locais. Cursando comunicação, marketing ou design. 20-25h/sem.</p>
+          <div class="job-footer">
+            <div>
+              <div class="job-salary">R$ 1.800 bolsa</div>
+              <div class="job-bonus">+ VT + VR</div>
+            </div>
+            <div class="job-actions">
+              <button class="btn-apply">Candidatar</button>
+              <button class="btn-indicar">Indicar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="job-card">
+          <div class="job-header">
+            <h3 class="job-title">Jovem Aprendiz · Logística</h3>
+          </div>
+          <div class="job-pills">
+            <span class="job-pill jovem">Jovem aprendiz</span>
+            <span class="job-pill presencial">Presencial · CD</span>
+          </div>
+          <div class="job-meta">
+            <span>📍 CD Inhambupe</span>
+            <span>📅 5 vagas · até 15/jun</span>
+          </div>
+          <p class="job-desc">Apoio na operação do centro de distribuição. Conferência de mercadorias, separação de pedidos, organização. 14-22 anos cursando ensino médio.</p>
+          <div class="job-footer">
+            <div>
+              <div class="job-salary">R$ 1.412/mês</div>
+              <div class="job-bonus">+ VT + alimentação</div>
+            </div>
+            <div class="job-actions">
+              <button class="btn-apply">Candidatar</button>
+              <button class="btn-indicar">Indicar</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>

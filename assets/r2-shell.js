@@ -74,6 +74,17 @@
     var existingChip = tb.querySelector('.user-chip, .user-info');
     var chipParent = existingChip ? existingChip.parentElement : null;
 
+    // Bell (notificações) com dropdown
+    var bellBtn = mkBtn('bell', 'Notificações', function(e){
+      e.stopPropagation();
+      toggleNotifications(bellBtn);
+    });
+    var badge = document.createElement('span');
+    badge.className = 'r2-bell-badge';
+    badge.textContent = '3';
+    bellBtn.appendChild(badge);
+    actions.appendChild(bellBtn);
+
     // Theme toggle
     var themeBtn = mkBtn('theme', 'Tema escuro/claro (Ctrl+J)', toggleTheme);
     actions.appendChild(themeBtn);
@@ -124,9 +135,70 @@
       'chevron-left': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>',
       theme: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
       density: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>',
-      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+      bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>'
     };
     return icons[name] || '';
+  }
+
+  // ============ Notifications dropdown ============
+  var notifData = [
+    { kind: 'pdi',    icon: '📈', title: 'PDI atualizado', desc: 'João Carvalho aprovou seu novo PDI Q2/2026',  time: 'há 12min', unread: true },
+    { kind: 'okr',    icon: '🎯', title: 'Check-in vence sexta', desc: 'Você tem 3 KRs sem update há 7 dias',     time: 'há 2h',   unread: true },
+    { kind: 'recog',  icon: '👏', title: 'Você foi reconhecida', desc: 'Patrícia Mello te reconheceu por entrega excepcional', time: 'há 5h', unread: true },
+    { kind: 'oneonone', icon: '💬', title: '1:1 hoje 16h', desc: 'Sala com João Carvalho · auto-início em 3h', time: 'hoje', unread: false },
+    { kind: 'climate', icon: '🌡️', title: 'Pulso semanal aberto', desc: 'Responda em 30s · fecha dom 24/mai', time: 'há 1d', unread: false }
+  ];
+
+  function toggleNotifications(anchor) {
+    var existing = document.querySelector('.r2-notif-dropdown');
+    if (existing) { existing.remove(); return; }
+
+    var dd = document.createElement('div');
+    dd.className = 'r2-notif-dropdown';
+    dd.innerHTML =
+      '<div class="r2-notif-header">' +
+        '<strong>Notificações</strong>' +
+        '<a href="r2_people_notificacoes.html">Ver todas</a>' +
+      '</div>' +
+      '<div class="r2-notif-list">' +
+        notifData.map(function(n){
+          return '<a class="r2-notif-item' + (n.unread ? ' unread' : '') + '" href="r2_people_notificacoes.html">' +
+            '<span class="r2-notif-icon">' + n.icon + '</span>' +
+            '<div class="r2-notif-body">' +
+              '<div class="r2-notif-title">' + n.title + '</div>' +
+              '<div class="r2-notif-desc">' + n.desc + '</div>' +
+              '<div class="r2-notif-time">' + n.time + '</div>' +
+            '</div>' +
+          '</a>';
+        }).join('') +
+      '</div>' +
+      '<div class="r2-notif-footer">' +
+        '<button class="r2-notif-mark-all">Marcar todas como lidas</button>' +
+      '</div>';
+    document.body.appendChild(dd);
+
+    // Posicionar logo abaixo do bell
+    var r = anchor.getBoundingClientRect();
+    dd.style.top = (r.bottom + 6) + 'px';
+    dd.style.right = (window.innerWidth - r.right) + 'px';
+
+    // Click fora fecha
+    setTimeout(function(){
+      document.addEventListener('click', function closeOnOutside(e){
+        if (!dd.contains(e.target) && e.target !== anchor) {
+          dd.remove();
+          document.removeEventListener('click', closeOnOutside);
+        }
+      });
+    }, 10);
+
+    // Mark all as read
+    dd.querySelector('.r2-notif-mark-all').addEventListener('click', function(){
+      dd.querySelectorAll('.r2-notif-item.unread').forEach(function(it){ it.classList.remove('unread'); });
+      var badge = document.querySelector('.r2-bell-badge');
+      if (badge) badge.remove();
+    });
   }
 
   function syncBtnStates() {

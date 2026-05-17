@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Treinamentos · Trilhas de aprendizado</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA; --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2; --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB; --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px; --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:#fff; display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.container{max-width:1200px; margin:0 auto;}
+
+.page-header{margin-bottom:22px;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+/* Hero progresso pessoal */
+.progress-hero{background:linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%); color:#fff; border-radius:var(--radius-lg); padding:24px 28px; margin-bottom:18px; display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center; position:relative; overflow:hidden;}
+.progress-hero::before{content:''; position:absolute; top:-30%; right:-5%; width:280px; height:280px; background:radial-gradient(circle, rgba(245,134,52,.3) 0%, transparent 65%); border-radius:50%;}
+.progress-hero-info{position:relative; z-index:2;}
+.progress-hero-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; opacity:.85; text-transform:uppercase; letter-spacing:.14em; margin-bottom:6px;}
+.progress-hero h2{font-size:22px; font-weight:800; letter-spacing:-.3px; margin-bottom:8px;}
+.progress-hero p{font-size:13px; opacity:.92; max-width:520px;}
+.progress-hero-stats{position:relative; z-index:2; display:flex; gap:14px;}
+.hero-stat{background:rgba(255,255,255,.15); backdrop-filter:blur(8px); padding:12px 16px; border-radius:10px; border:1px solid rgba(255,255,255,.2); min-width:100px;}
+.hero-stat-label{font-size:10px; opacity:.85; text-transform:uppercase; letter-spacing:.5px; font-family:'JetBrains Mono',monospace;}
+.hero-stat-value{font-size:22px; font-weight:800; margin-top:3px; font-family:'JetBrains Mono',monospace;}
+.hero-stat-sub{font-size:11px; opacity:.8; margin-top:1px;}
+
+.filters-bar{background:#fff; border-radius:var(--radius); padding:12px 16px; box-shadow:var(--shadow-card); margin-bottom:14px; display:flex; gap:10px; flex-wrap:wrap;}
+.filter-pill{padding:5px 12px; background:var(--gray1); border-radius:14px; font-size:11.5px; cursor:pointer; color:var(--txt2); font-weight:500; border:1px solid transparent;}
+.filter-pill.active{background:var(--navy); color:#fff;}
+
+/* Trilhas */
+.trail-section{margin-bottom:22px;}
+.trail-section-title{font-size:15px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:10px;}
+.trail-section-title .count{font-family:'JetBrains Mono',monospace; font-size:11px; padding:2px 8px; background:var(--gray1); color:var(--txt2); border-radius:8px; font-weight:600;}
+
+.trails-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:14px;}
+.trail-card{background:#fff; border-radius:var(--radius-lg); padding:0; box-shadow:var(--shadow-card); border:1px solid var(--gray1); overflow:hidden; transition:all .15s; cursor:pointer;}
+.trail-card:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(26,45,79,.1); border-color:var(--gray2);}
+.trail-cover{height:96px; background:linear-gradient(135deg, var(--navy3), var(--purple)); position:relative; display:flex; align-items:center; justify-content:center; font-size:42px;}
+.trail-cover.lider{background:linear-gradient(135deg, var(--orange), var(--red));}
+.trail-cover.tech{background:linear-gradient(135deg, var(--teal), var(--blue));}
+.trail-cover.compl{background:linear-gradient(135deg, var(--amber), var(--orange));}
+.trail-cover.soft{background:linear-gradient(135deg, var(--purple), var(--pink));}
+.trail-cover.lgpd{background:linear-gradient(135deg, var(--green), var(--teal));}
+.trail-body{padding:14px 16px 16px;}
+.trail-title{font-size:15px; font-weight:700; letter-spacing:-.1px; line-height:1.3; margin-bottom:6px;}
+.trail-meta{display:flex; gap:10px; font-size:11px; color:var(--txt2); margin-bottom:10px; flex-wrap:wrap;}
+.trail-meta-item{display:flex; align-items:center; gap:4px;}
+.trail-meta-item svg{width:12px; height:12px;}
+.trail-desc{font-size:12px; color:var(--txt2); line-height:1.45; margin-bottom:12px;}
+
+.trail-progress{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+.trail-progress-bar{flex:1; height:5px; background:var(--gray1); border-radius:3px; overflow:hidden;}
+.trail-progress-fill{height:100%; background:var(--green); border-radius:3px;}
+.trail-progress-fill.zero{background:var(--gray3);}
+.trail-progress-text{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; min-width:48px; text-align:right;}
+
+.trail-footer{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.trail-stats{display:flex; gap:10px; font-size:10.5px; color:var(--txt3); font-family:'JetBrains Mono',monospace;}
+.btn-continue{background:var(--navy); color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:11.5px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-continue.start{background:var(--orange);}
+.btn-continue.done{background:var(--green);}
+
+.trail-badge-row{display:flex; gap:5px; margin-bottom:8px; flex-wrap:wrap;}
+.trail-badge{font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; padding:2px 7px; border-radius:6px; text-transform:uppercase; letter-spacing:.05em;}
+.trail-badge.obrig{background:var(--red2); color:var(--red);}
+.trail-badge.lider{background:var(--orange2); color:var(--amber);}
+.trail-badge.cert{background:var(--purple2); color:var(--purple);}
+.trail-badge.h2{background:var(--gray1); color:var(--txt2);}
+
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .trails-grid{grid-template-columns:1fr;}
+  .progress-hero{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <div class="sidebar-section">Carreira</div>
+      <a class="nav-item" href="r2_people_vagas.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>Vagas internas</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>Treinamentos</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>Meu PDI</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-title"><span>Carreira</span><span class="sep">›</span><span class="crumb">Treinamentos</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info"><span class="user-name">Fernanda Lima</span><span class="user-role">Analista Pleno · Cestão L1</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-eyebrow">Carreira <span class="sep">·</span> Trilhas de aprendizado <span class="sep">·</span> 14 disponíveis</div>
+        <h1 class="page-title">Suas <em>trilhas</em></h1>
+        <p class="page-subtitle">Trilhas obrigatórias (LGPD, NR-12, etc.), trilhas do seu cargo e trilhas opcionais. Conclua e ganhe certificado registrado no seu histórico.</p>
+      </div>
+
+      <div class="progress-hero">
+        <div class="progress-hero-info">
+          <div class="progress-hero-eyebrow">Seu progresso · 2026</div>
+          <h2>3 trilhas concluídas · 2 em andamento</h2>
+          <p>Você está acima da média da sua área (analistas plenos têm em média 2.1 trilhas concluídas no ano). Continue · faltam 47% pra completar todas as trilhas obrigatórias.</p>
+        </div>
+        <div class="progress-hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-label">Concluídas</div>
+            <div class="hero-stat-value">3</div>
+            <div class="hero-stat-sub">de 14 disp.</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Horas estudadas</div>
+            <div class="hero-stat-value">38h</div>
+            <div class="hero-stat-sub">no ano</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-label">Certificados</div>
+            <div class="hero-stat-value">3</div>
+            <div class="hero-stat-sub">no perfil</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="filter-pill active">Todas</div>
+        <div class="filter-pill">Obrigatórias</div>
+        <div class="filter-pill">Para meu cargo</div>
+        <div class="filter-pill">Lideranças</div>
+        <div class="filter-pill">Soft skills</div>
+        <div class="filter-pill">Compliance</div>
+        <div class="filter-pill">Técnicas</div>
+      </div>
+
+      <!-- Em andamento -->
+      <section class="trail-section">
+        <h2 class="trail-section-title">Em andamento <span class="count">2</span></h2>
+        <div class="trails-grid">
+
+          <div class="trail-card">
+            <div class="trail-cover tech">📊</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge cert">Certificado</span>
+                <span class="trail-badge h2">12h</span>
+              </div>
+              <h3 class="trail-title">Modelagem Dimensional · Kimball</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 6 módulos</span>
+                <span class="trail-meta-item">⏱ 12h estimadas</span>
+                <span class="trail-meta-item">🎯 Sugerida pelo seu PDI</span>
+              </div>
+              <p class="trail-desc">Fundamentos do data warehousing com a metodologia Kimball. Modelagem dimensional, star schema, slowly changing dimensions, ETL.</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill" style="width:67%;"></div></div>
+                <div class="trail-progress-text">67%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>4/6 módulos</span><span>·</span><span>8.2h estudadas</span></div>
+                <button class="btn-continue">Continuar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trail-card">
+            <div class="trail-cover lider">🎯</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge lider">Liderança</span>
+                <span class="trail-badge cert">Certificado</span>
+                <span class="trail-badge h2">8h</span>
+              </div>
+              <h3 class="trail-title">Feedback Difícil · conversas que importam</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 4 módulos</span>
+                <span class="trail-meta-item">⏱ 8h estimadas</span>
+              </div>
+              <p class="trail-desc">Estruturar e conduzir conversas difíceis (feedback de melhoria, alinhamento de expectativa, conflito) com SBI e Radical Candor.</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill" style="width:25%;"></div></div>
+                <div class="trail-progress-text">25%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>1/4 módulos</span><span>·</span><span>2h estudadas</span></div>
+                <button class="btn-continue">Continuar</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Obrigatórias pendentes -->
+      <section class="trail-section">
+        <h2 class="trail-section-title">Obrigatórias pendentes <span class="count" style="background:var(--red2); color:var(--red);">2</span></h2>
+        <div class="trails-grid">
+
+          <div class="trail-card">
+            <div class="trail-cover lgpd">🔒</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge obrig">Obrigatória</span>
+                <span class="trail-badge cert">Certificado</span>
+                <span class="trail-badge h2">2h</span>
+              </div>
+              <h3 class="trail-title">LGPD 2026 · atualização anual</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 3 módulos curtos</span>
+                <span class="trail-meta-item">⏱ 2h estimadas</span>
+                <span class="trail-meta-item" style="color:var(--red); font-weight:600;">⚠ Prazo 30/jun</span>
+              </div>
+              <p class="trail-desc">Revisão anual obrigatória da LGPD. Cobre mudanças na ANPD Res. 8/2024, tratamento de dados sensíveis (atestados), fluxo de incidente em 72h.</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill zero" style="width:0%;"></div></div>
+                <div class="trail-progress-text">0%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>Ainda não iniciada</span></div>
+                <button class="btn-continue start">Iniciar agora</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trail-card">
+            <div class="trail-cover compl">⚠️</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge obrig">Obrigatória</span>
+                <span class="trail-badge h2">1h</span>
+              </div>
+              <h3 class="trail-title">Código de Ética GPC · v.2026</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 2 módulos</span>
+                <span class="trail-meta-item">⏱ 1h estimada</span>
+                <span class="trail-meta-item" style="color:var(--red); font-weight:600;">⚠ Prazo 30/mai</span>
+              </div>
+              <p class="trail-desc">Conduta esperada, canais de denúncia, política anti-corrupção, conflito de interesse. Confirmação digital de leitura obrigatória.</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill zero" style="width:0%;"></div></div>
+                <div class="trail-progress-text">0%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>Ainda não iniciada</span></div>
+                <button class="btn-continue start">Iniciar agora</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Recomendadas pra você -->
+      <section class="trail-section">
+        <h2 class="trail-section-title">Recomendadas pra você <span class="count">4</span></h2>
+        <div class="trails-grid">
+
+          <div class="trail-card">
+            <div class="trail-cover tech">🐍</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge cert">Certificado</span>
+                <span class="trail-badge h2">20h</span>
+              </div>
+              <h3 class="trail-title">Python pra análise de dados</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 8 módulos</span>
+                <span class="trail-meta-item">⏱ 20h estimadas</span>
+                <span class="trail-meta-item">🤖 Sugerida por IA · alinha PDI</span>
+              </div>
+              <p class="trail-desc">Pandas, NumPy, visualização com matplotlib/seaborn. Foco em problemas reais de análise comercial. Pré-req: Excel avançado.</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill zero" style="width:0%;"></div></div>
+                <div class="trail-progress-text">0%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>187 colab cursando</span></div>
+                <button class="btn-continue start">Adicionar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trail-card">
+            <div class="trail-cover soft">💬</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge h2">6h</span>
+              </div>
+              <h3 class="trail-title">Apresentações executivas</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 4 módulos</span>
+                <span class="trail-meta-item">⏱ 6h estimadas</span>
+              </div>
+              <p class="trail-desc">Estrutura SCQA, slide design minimalista, storytelling com dados. Pratique apresentando seus cases reais com feedback.</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill zero" style="width:0%;"></div></div>
+                <div class="trail-progress-text">0%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>72 colab cursando</span></div>
+                <button class="btn-continue start">Adicionar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trail-card">
+            <div class="trail-cover tech">📐</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge cert">Certificado</span>
+                <span class="trail-badge h2">14h</span>
+              </div>
+              <h3 class="trail-title">SQL avançado · janelas e CTEs recursivas</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 6 módulos</span>
+                <span class="trail-meta-item">⏱ 14h estimadas</span>
+              </div>
+              <p class="trail-desc">Window functions, CTEs recursivas, performance tuning, query optimization. Pré-req: SQL básico (joins, agregações).</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill zero" style="width:0%;"></div></div>
+                <div class="trail-progress-text">0%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>41 colab cursando</span></div>
+                <button class="btn-continue start">Adicionar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trail-card">
+            <div class="trail-cover soft">🎓</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge h2">4h</span>
+              </div>
+              <h3 class="trail-title">Mentoria reversa · como ser um bom mentor</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">📚 3 módulos</span>
+                <span class="trail-meta-item">⏱ 4h estimadas</span>
+                <span class="trail-meta-item">🎯 Liga ao seu OKR 3</span>
+              </div>
+              <p class="trail-desc">Frameworks de mentoria (GROW, OSCAR), escuta ativa, perguntas poderosas. Útil pra quem vai mentorar jovens ou pares.</p>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill zero" style="width:0%;"></div></div>
+                <div class="trail-progress-text">0%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>28 colab cursando</span></div>
+                <button class="btn-continue start">Adicionar</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Concluídas -->
+      <section class="trail-section">
+        <h2 class="trail-section-title">Concluídas <span class="count" style="background:var(--green2); color:var(--green);">3</span></h2>
+        <div class="trails-grid">
+
+          <div class="trail-card" style="opacity:.85;">
+            <div class="trail-cover tech">📊</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge cert">Certificado</span>
+              </div>
+              <h3 class="trail-title">Data Warehousing Fundamentals</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">✓ Concluída em 15/abr/2026</span>
+              </div>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill" style="width:100%;"></div></div>
+                <div class="trail-progress-text">100%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>Certificado disponível</span></div>
+                <button class="btn-continue done">Ver certificado</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trail-card" style="opacity:.85;">
+            <div class="trail-cover lgpd">🔒</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge cert">Certificado</span>
+                <span class="trail-badge obrig">Obrig.</span>
+              </div>
+              <h3 class="trail-title">LGPD 2025 · anual passada</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">✓ Concluída em 28/mai/2025</span>
+              </div>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill" style="width:100%;"></div></div>
+                <div class="trail-progress-text">100%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>Certificado disponível</span></div>
+                <button class="btn-continue done">Ver certificado</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trail-card" style="opacity:.85;">
+            <div class="trail-cover soft">📈</div>
+            <div class="trail-body">
+              <div class="trail-badge-row">
+                <span class="trail-badge cert">Certificado</span>
+              </div>
+              <h3 class="trail-title">Power BI Essentials</h3>
+              <div class="trail-meta">
+                <span class="trail-meta-item">✓ Concluída em 12/fev/2026</span>
+              </div>
+              <div class="trail-progress">
+                <div class="trail-progress-bar"><div class="trail-progress-fill" style="width:100%;"></div></div>
+                <div class="trail-progress-text">100%</div>
+              </div>
+              <div class="trail-footer">
+                <div class="trail-stats"><span>Certificado disponível</span></div>
+                <button class="btn-continue done">Ver certificado</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>

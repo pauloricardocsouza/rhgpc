@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Notificações</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.container{max-width:900px; margin:0 auto;}
+.page-header{margin-bottom:22px;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.filter-tabs{display:flex; gap:4px; background:var(--gray1); padding:3px; border-radius:8px; margin-bottom:16px; width:fit-content;}
+.filter-tab{padding:7px 14px; font-size:12px; border:none; background:transparent; cursor:pointer; border-radius:6px; font-family:inherit; color:var(--txt2); font-weight:600; display:flex; align-items:center; gap:6px;}
+.filter-tab.active{background:#fff; color:var(--navy); box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.filter-tab .cnt{font-family:'JetBrains Mono',monospace; font-size:10px; padding:1px 6px; border-radius:8px; background:var(--gray2); color:var(--txt3);}
+.filter-tab.active .cnt{background:var(--orange2); color:var(--orange);}
+
+.notif-list{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); border:1px solid var(--gray1); overflow:hidden;}
+.notif-item{display:grid; grid-template-columns:auto 1fr auto; gap:14px; padding:16px 20px; border-bottom:1px solid var(--gray1); cursor:pointer; transition:background .12s; position:relative;}
+.notif-item:last-child{border-bottom:0;}
+.notif-item:hover{background:var(--off);}
+.notif-item.unread{background:var(--orange2);}
+.notif-item.unread:hover{background:#FFF1DE;}
+.notif-item.unread::before{content:''; position:absolute; left:8px; top:24px; width:6px; height:6px; background:var(--orange); border-radius:50%;}
+.notif-icon{width:42px; height:42px; border-radius:10px; background:var(--gray1); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;}
+.notif-icon.pdi{background:var(--blue2);}
+.notif-icon.okr{background:var(--purple2);}
+.notif-icon.recog{background:var(--orange2);}
+.notif-icon.oneonone{background:var(--green2);}
+.notif-icon.climate{background:var(--teal2);}
+.notif-icon.atestado{background:var(--red2);}
+.notif-body{min-width:0;}
+.notif-title{font-size:13.5px; font-weight:600; margin-bottom:3px;}
+.notif-desc{font-size:12px; color:var(--txt2); line-height:1.45;}
+.notif-actor{font-size:11px; color:var(--txt3); margin-top:4px; display:flex; align-items:center; gap:5px;}
+.notif-actor strong{color:var(--txt2); font-weight:600;}
+.notif-time{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt3); white-space:nowrap; padding-top:4px; align-self:flex-start;}
+
+.empty-state{padding:60px 20px; text-align:center; color:var(--txt2);}
+.empty-state svg{width:48px; height:48px; opacity:.3; margin-bottom:12px;}
+.empty-state h3{font-size:14px; margin-bottom:4px;}
+.empty-state p{font-size:12px;}
+
+.action-row{display:flex; justify-content:space-between; margin-bottom:14px;}
+.btn-ghost{background:transparent; color:var(--txt2); border:1px solid var(--gray2); padding:7px 13px; border-radius:6px; font-size:11.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-ghost:hover{background:var(--gray1); color:var(--txt);}
+
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notificações</a>
+      <a class="nav-item" href="r2_people_comunicados.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg>Comunicados</a>
+      <div class="sidebar-section">Desenvolvimento</div>
+      <a class="nav-item" href="r2_people_avaliacao.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>Avaliações</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/></svg>PDI</a>
+      <a class="nav-item" href="r2_people_oneonones.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>1:1s</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-title"><span>Você</span><span class="sep">›</span><span class="crumb">Notificações</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info"><span class="user-name">Fernanda Lima</span><span class="user-role">Analista Pleno · Cestão L1</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-eyebrow">Você <span class="sep">·</span> Notificações <span class="sep">·</span> Últimos 30 dias</div>
+        <h1 class="page-title">Sua <em>caixa</em></h1>
+        <p class="page-subtitle">12 notificações · 3 não lidas. Cada categoria pode ser silenciada nas configurações.</p>
+      </div>
+
+      <div class="action-row">
+        <div class="filter-tabs">
+          <button class="filter-tab active">Todas<span class="cnt">12</span></button>
+          <button class="filter-tab">Não lidas<span class="cnt">3</span></button>
+          <button class="filter-tab">Menções</button>
+          <button class="filter-tab">Aprovações</button>
+          <button class="filter-tab">Pessoal</button>
+        </div>
+        <button class="btn-ghost">Marcar todas como lidas</button>
+      </div>
+
+      <div class="notif-list">
+
+        <a class="notif-item unread">
+          <div class="notif-icon pdi">📈</div>
+          <div class="notif-body">
+            <div class="notif-title">Seu novo PDI foi aprovado</div>
+            <div class="notif-desc">João Carvalho aprovou o PDI "Avançar para Analista Sênior" para o ciclo Q2/2026. Você já pode começar as 7 ações combinadas.</div>
+            <div class="notif-actor">Por <strong>João Carvalho</strong> · Líder financeiro</div>
+          </div>
+          <div class="notif-time">há 12min</div>
+        </a>
+
+        <a class="notif-item unread">
+          <div class="notif-icon okr">🎯</div>
+          <div class="notif-body">
+            <div class="notif-title">Check-in semanal vence sexta</div>
+            <div class="notif-desc">Você tem 3 KRs sem atualização há mais de 7 dias. KR2.O1 (cases de modelagem), KR3.O1 (projeto liderado) e KR1.O3 (mentoria reversa).</div>
+            <div class="notif-actor">Lembrete automático · OKRs</div>
+          </div>
+          <div class="notif-time">há 2h</div>
+        </a>
+
+        <a class="notif-item unread">
+          <div class="notif-icon recog">👏</div>
+          <div class="notif-body">
+            <div class="notif-title">Você foi reconhecida publicamente</div>
+            <div class="notif-desc">"Fernanda salvou nossa apresentação pra diretoria com um pivot table magistral em 30 minutos. Obrigada pela ajuda heroica!"</div>
+            <div class="notif-actor">Por <strong>Patrícia Mello</strong> · Coordenadora RH</div>
+          </div>
+          <div class="notif-time">há 5h</div>
+        </a>
+
+        <a class="notif-item">
+          <div class="notif-icon oneonone">💬</div>
+          <div class="notif-body">
+            <div class="notif-title">1:1 hoje 16h00 com João Carvalho</div>
+            <div class="notif-desc">Sala virtual abre automaticamente 5min antes. Você adicionou 2 itens de pauta. Item da semana anterior "PDI próximos passos" ainda pendente.</div>
+            <div class="notif-actor">Recorrente quinzenal · 1:1s</div>
+          </div>
+          <div class="notif-time">hoje</div>
+        </a>
+
+        <a class="notif-item">
+          <div class="notif-icon climate">🌡️</div>
+          <div class="notif-body">
+            <div class="notif-title">Pulso semanal de clima · 30s para responder</div>
+            <div class="notif-desc">Como você se sente esta semana? Sua resposta entra no agregado da unidade Cestão L1 (anônimo · garantido por design).</div>
+            <div class="notif-actor">Pulso semana 20 · fecha dom 24/mai</div>
+          </div>
+          <div class="notif-time">há 1d</div>
+        </a>
+
+        <a class="notif-item">
+          <div class="notif-icon pdi">✓</div>
+          <div class="notif-body">
+            <div class="notif-title">Ação do PDI marcada como concluída</div>
+            <div class="notif-desc">"Mentoria mensal com Pedro · sessão 1" foi automaticamente marcada concluída após você anexar a ata. Próxima: 12/jun.</div>
+            <div class="notif-actor">Sistema · PDI</div>
+          </div>
+          <div class="notif-time">há 3d</div>
+        </a>
+
+        <a class="notif-item">
+          <div class="notif-icon atestado">🩺</div>
+          <div class="notif-body">
+            <div class="notif-title">Seu atestado foi validado</div>
+            <div class="notif-desc">Atestado ATD-2026-05-10-A3F2C de 12/05 a 14/05 (3 dias) validado pelo DP. Movimentação automática gerada.</div>
+            <div class="notif-actor">Por <strong>Patrícia Mello</strong> · DP</div>
+          </div>
+          <div class="notif-time">há 5d</div>
+        </a>
+
+        <a class="notif-item">
+          <div class="notif-icon recog">👏</div>
+          <div class="notif-body">
+            <div class="notif-title">Você reconheceu Daniela Pereira</div>
+            <div class="notif-desc">"Daniela conduziu uma análise de dados impecável que mudou nossa visão sobre o churn. Liderança técnica de ponta."</div>
+            <div class="notif-actor">Por você · Reconhecimento público</div>
+          </div>
+          <div class="notif-time">há 7d</div>
+        </a>
+
+        <a class="notif-item">
+          <div class="notif-icon okr">🎯</div>
+          <div class="notif-body">
+            <div class="notif-title">Novo OKR cascateado pra você</div>
+            <div class="notif-desc">Renato Pinto (Diretoria) cascateou o objetivo "Reduzir turnover voluntário do GPC". Sua contribuição esperada: 2 KRs alinhados.</div>
+            <div class="notif-actor">Por <strong>Renato Pinto</strong> · Diretoria</div>
+          </div>
+          <div class="notif-time">há 14d</div>
+        </a>
+
+        <a class="notif-item">
+          <div class="notif-icon oneonone">💬</div>
+          <div class="notif-body">
+            <div class="notif-title">1:1 concluída · 7 dias para edit final</div>
+            <div class="notif-desc">Reunião quinzenal de 10/05 concluída. Notas compartilhadas e action items editáveis até 17/05 (depois content lock).</div>
+            <div class="notif-actor">Por <strong>João Carvalho</strong> · 1:1s</div>
+          </div>
+          <div class="notif-time">há 16d</div>
+        </a>
+
+      </div>
+
+      <div style="margin-top:18px; padding:14px 18px; background:var(--purple2); border-radius:10px; border-left:4px solid var(--purple); font-size:12.5px; color:var(--txt);">
+        <strong style="color:var(--purple);">💡 Configure suas notificações</strong> · você pode silenciar categorias específicas ou agrupá-las num resumo diário em <a href="r2_people_configuracoes.html" style="color:var(--purple); font-weight:600;">Configurações</a>.
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>
