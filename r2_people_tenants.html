@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Tenants · Clientes da plataforma</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB;
+  --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+  --shadow-pop:0 20px 60px rgba(26,45,79,.3);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar (padrão Cofre) */
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; display:block; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px; color:var(--txt);}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; width:auto; opacity:.75;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; overflow-x:hidden; padding:22px 28px 50px;}
+.container{max-width:1400px; margin:0 auto;}
+
+/* Page header padrão Cofre */
+.page-header{margin-bottom:22px; display:flex; align-items:flex-end; justify-content:space-between; gap:18px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; color:var(--txt); line-height:1.15;}
+.page-title em{font-style:italic; font-weight:800; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+/* Buttons */
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:8px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary svg{width:14px; height:14px;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:8px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-danger{background:#fff; color:var(--red); border:1px solid var(--red2); padding:6px 12px; border-radius:6px; font-size:11.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-danger:hover{background:var(--red2);}
+.btn-ghost{background:transparent; color:var(--txt2); border:1px solid var(--gray2); padding:6px 12px; border-radius:6px; font-size:11.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-ghost:hover{background:var(--gray1); color:var(--txt);}
+
+/* KPI */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow-card); border-left:3px solid var(--navy);}
+.kpi.green{border-color:var(--green);}
+.kpi.amber{border-color:var(--amber);}
+.kpi.red{border-color:var(--red);}
+.kpi.purple{border-color:var(--purple);}
+.kpi-label{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:800; margin-top:6px; letter-spacing:-.5px; color:var(--txt); font-family:'JetBrains Mono',monospace;}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:3px;}
+
+/* Filters bar */
+.filters-bar{background:#fff; border-radius:var(--radius); padding:12px 16px; box-shadow:var(--shadow-card); margin-bottom:14px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+.filter-pills{display:flex; gap:6px;}
+.filter-pill{padding:5px 12px; background:var(--gray1); border-radius:14px; font-size:11.5px; cursor:pointer; border:1px solid transparent; color:var(--txt2); font-weight:500;}
+.filter-pill:hover{background:var(--gray2);}
+.filter-pill.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+.filter-pill .count{margin-left:5px; font-family:'JetBrains Mono',monospace; font-size:10px; opacity:.7;}
+
+.search-input{flex:1; padding:8px 12px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit; min-width:200px;}
+.search-input:focus{outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(46,71,111,.1);}
+
+/* Tenants table */
+.tenants-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); overflow:hidden; border:1px solid var(--gray1);}
+.tenants-table{width:100%; border-collapse:collapse; font-size:13px;}
+.tenants-table th{padding:14px 16px; text-align:left; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.12em; border-bottom:1px solid var(--gray1);}
+.tenants-table td{padding:14px 16px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+.tenants-table tr:last-child td{border-bottom:0;}
+.tenants-table tr:hover td{background:var(--off);}
+
+.tenant-cell{display:flex; align-items:center; gap:12px;}
+.tenant-logo{width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0;}
+.tenant-logo.gpc{background:linear-gradient(135deg,var(--navy),var(--orange));}
+.tenant-logo.fc{background:linear-gradient(135deg,var(--green),var(--teal));}
+.tenant-logo.demo{background:linear-gradient(135deg,var(--gray3),var(--txt3));}
+.tenant-name{font-weight:600; font-size:13.5px;}
+.tenant-slug{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--txt2);}
+.tenant-meta{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+
+.status-pill{display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:12px; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;}
+.status-pill::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+.status-pill.active{background:var(--green2); color:var(--green);}
+.status-pill.trial{background:var(--blue2); color:var(--blue);}
+.status-pill.suspended{background:var(--red2); color:var(--red);}
+.status-pill.archived{background:var(--gray1); color:var(--txt3);}
+
+.plan-badge{display:inline-block; padding:2px 8px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;}
+.plan-badge.starter{background:var(--gray1); color:var(--txt2);}
+.plan-badge.business{background:var(--blue2); color:var(--blue);}
+.plan-badge.enterprise{background:var(--orange2); color:var(--amber);}
+
+.usage-cell{display:flex; flex-direction:column; gap:5px;}
+.usage-bar{height:6px; background:var(--gray1); border-radius:3px; overflow:hidden;}
+.usage-bar-fill{height:100%; background:var(--green); border-radius:3px;}
+.usage-bar-fill.warn{background:var(--amber);}
+.usage-bar-fill.danger{background:var(--red);}
+.usage-text{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt2);}
+
+.actions-cell{display:flex; gap:6px; justify-content:flex-end;}
+
+/* Modal */
+.modal-overlay{position:fixed; inset:0; background:rgba(15,23,42,.55); display:none; align-items:flex-start; justify-content:center; z-index:60; padding:60px 16px;}
+.modal-overlay.active{display:flex;}
+.modal{background:#fff; border-radius:14px; max-width:580px; width:100%; box-shadow:var(--shadow-pop); overflow:hidden; max-height:90vh; overflow-y:auto;}
+.modal-header{padding:20px 24px 16px; border-bottom:1px solid var(--gray1);}
+.modal-header h3{font-size:17px; font-weight:700;}
+.modal-header p{font-size:12px; color:var(--txt2); margin-top:4px;}
+.modal-body{padding:20px 24px;}
+.modal-footer{padding:14px 24px; border-top:1px solid var(--gray1); display:flex; gap:8px; justify-content:flex-end;}
+
+.form-group{margin-bottom:14px;}
+.form-row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.form-label{display:block; font-size:11.5px; font-weight:600; margin-bottom:5px; color:var(--txt); text-transform:uppercase; letter-spacing:.05em;}
+.form-input, .form-select{width:100%; padding:9px 11px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit; color:var(--txt); background:#fff;}
+.form-input:focus, .form-select:focus{outline:none; border-color:var(--navy); box-shadow:0 0 0 3px rgba(46,71,111,.1);}
+.form-help{font-size:11px; color:var(--txt2); margin-top:4px;}
+
+/* Modules picker */
+.modules-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:8px;}
+.module-pick{padding:10px 12px; border:1.5px solid var(--gray2); border-radius:8px; cursor:pointer; display:flex; align-items:center; gap:9px; font-size:12.5px;}
+.module-pick:hover{border-color:var(--gray3);}
+.module-pick.checked{border-color:var(--navy); background:var(--blue2);}
+.module-pick input{width:16px; height:16px; cursor:pointer;}
+.module-pick .icon{width:18px; height:18px; color:var(--txt2);}
+.module-pick.checked .icon{color:var(--navy);}
+
+/* Mobile */
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2); flex-shrink:0;}
+  .mobile-hamburger:hover{background:var(--gray1); color:var(--txt);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .tenants-table{font-size:12px;}
+  .tenants-table th:nth-child(4),
+  .tenants-table td:nth-child(4),
+  .tenants-table th:nth-child(5),
+  .tenants-table td:nth-child(5){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="Grupo Pinto Cerqueira">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <div class="sidebar-section">Pessoas</div>
+      <a class="nav-item" href="r2_people_colaboradores_lista.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item" href="r2_people_estrutura.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-4h14v4M12 8v4"/></svg>Organograma</a>
+      <div class="sidebar-section">Administração</div>
+      <a class="nav-item" href="index.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Módulos</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="1"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/></svg>Tenants</a>
+      <a class="nav-item" href="r2_people_acessos.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4"/></svg>Usuários</a>
+      <a class="nav-item" href="r2_people_auditoria.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Auditoria</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2 Soluções Empresariais">
+    </div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-title">
+      <span>Administração</span>
+      <span class="sep">›</span>
+      <span class="crumb">Tenants</span>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">RS</div>
+      <div class="user-info">
+        <span class="user-name">Ricardo Silva</span>
+        <span class="user-role">super_admin · R2 Soluções</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Administração <span class="sep">·</span> Tenants <span class="sep">·</span> Cross-cliente</div>
+          <h1 class="page-title">Clientes <em>da plataforma</em></h1>
+          <p class="page-subtitle">Cada tenant é um cliente isolado · dados completamente segregados por <code style="font-family:'JetBrains Mono',monospace;background:var(--gray1);padding:1px 5px;border-radius:3px;font-size:11px;">tenant_id</code> no banco.</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-secondary">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Exportar CSV
+          </button>
+          <button class="btn-primary" onclick="openNewTenant()">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo tenant
+          </button>
+        </div>
+      </div>
+
+      <section class="kpi-grid">
+        <div class="kpi green">
+          <div class="kpi-label">Tenants ativos</div>
+          <div class="kpi-value">4</div>
+          <div class="kpi-sub">de 5 totais · 1 em trial</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Colaboradores</div>
+          <div class="kpi-value">623</div>
+          <div class="kpi-sub">somados em todos os tenants</div>
+        </div>
+        <div class="kpi purple">
+          <div class="kpi-label">MRR estimado</div>
+          <div class="kpi-value">R$ 11.214</div>
+          <div class="kpi-sub">média R$ 18/colab · 623 ativos</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-label">Storage usado</div>
+          <div class="kpi-value">3.4 GB</div>
+          <div class="kpi-sub">de 25 GB disponíveis (14%)</div>
+        </div>
+      </section>
+
+      <div class="filters-bar">
+        <div class="filter-pills">
+          <div class="filter-pill active">Todos<span class="count">5</span></div>
+          <div class="filter-pill">Ativos<span class="count">4</span></div>
+          <div class="filter-pill">Trial<span class="count">1</span></div>
+          <div class="filter-pill">Suspensos<span class="count">0</span></div>
+          <div class="filter-pill">Arquivados<span class="count">0</span></div>
+        </div>
+        <input class="search-input" placeholder="Buscar por nome, slug, CNPJ...">
+      </div>
+
+      <div class="tenants-card">
+        <table class="tenants-table">
+          <thead>
+            <tr>
+              <th>Tenant</th>
+              <th>Plano</th>
+              <th>Colaboradores</th>
+              <th>Storage</th>
+              <th>Próx. cobrança</th>
+              <th>Status</th>
+              <th style="text-align:right;">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="tenant-cell">
+                  <div class="tenant-logo gpc">GPC</div>
+                  <div>
+                    <div class="tenant-name">Grupo Pinto Cerqueira</div>
+                    <div class="tenant-slug">gpc · CNPJ 12.345.678/0001-90</div>
+                    <div class="tenant-meta">Desde mar/2024 · BA · Karla Souza (admin)</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="plan-badge business">Business</span></td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text"><strong>367</strong> / 500</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:73%;"></div></div>
+                </div>
+              </td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text">1.8 GB / 5 GB</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:36%;"></div></div>
+                </div>
+              </td>
+              <td><span style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">15/jun/2026</span><div style="font-size:11px; color:var(--txt2);">R$ 5.138/mês</div></td>
+              <td><span class="status-pill active">Ativo</span></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-ghost">Editar</button>
+                  <button class="btn-ghost">Acessar</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tenant-cell">
+                  <div class="tenant-logo fc">FC</div>
+                  <div>
+                    <div class="tenant-name">FC Filadelfia</div>
+                    <div class="tenant-slug">filadelfia · CNPJ 23.456.789/0001-01</div>
+                    <div class="tenant-meta">Desde set/2024 · BA · Pedro Santos (admin)</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="plan-badge business">Business</span></td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text"><strong>142</strong> / 200</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:71%;"></div></div>
+                </div>
+              </td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text">680 MB / 5 GB</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:14%;"></div></div>
+                </div>
+              </td>
+              <td><span style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">22/jun/2026</span><div style="font-size:11px; color:var(--txt2);">R$ 2.556/mês</div></td>
+              <td><span class="status-pill active">Ativo</span></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-ghost">Editar</button>
+                  <button class="btn-ghost">Acessar</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tenant-cell">
+                  <div class="tenant-logo">SP</div>
+                  <div>
+                    <div class="tenant-name">Supermercados Patriarca</div>
+                    <div class="tenant-slug">patriarca · CNPJ 34.567.890/0001-23</div>
+                    <div class="tenant-meta">Desde jan/2026 · SP · Marcia Bonfim (admin)</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="plan-badge business">Business</span></td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text"><strong>89</strong> / 100</div>
+                  <div class="usage-bar"><div class="usage-bar-fill warn" style="width:89%;"></div></div>
+                </div>
+              </td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text">420 MB / 5 GB</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:8%;"></div></div>
+                </div>
+              </td>
+              <td><span style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">05/jun/2026</span><div style="font-size:11px; color:var(--amber); font-weight:600;">⚠ próx. limite (upgrade?)</div></td>
+              <td><span class="status-pill active">Ativo</span></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-ghost">Editar</button>
+                  <button class="btn-ghost">Acessar</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tenant-cell">
+                  <div class="tenant-logo" style="background:linear-gradient(135deg,var(--amber),var(--orange));">AC</div>
+                  <div>
+                    <div class="tenant-name">Atacadão Central</div>
+                    <div class="tenant-slug">atacentral · CNPJ 45.678.901/0001-34</div>
+                    <div class="tenant-meta">Desde abr/2026 · PE · Roberto Lima (admin)</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="plan-badge enterprise">Enterprise</span></td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text"><strong>847</strong> / 1500</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:56%;"></div></div>
+                </div>
+              </td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text">340 MB / ∞</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:7%;"></div></div>
+                </div>
+              </td>
+              <td><span style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">10/jun/2026</span><div style="font-size:11px; color:var(--txt2);">R$ 12.700/mês</div></td>
+              <td><span class="status-pill active">Ativo</span></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-ghost">Editar</button>
+                  <button class="btn-ghost">Acessar</button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="tenant-cell">
+                  <div class="tenant-logo demo">DM</div>
+                  <div>
+                    <div class="tenant-name">Demo · Mercado Vila</div>
+                    <div class="tenant-slug">demo-vila · sem CNPJ (sandbox)</div>
+                    <div class="tenant-meta">Desde mai/2026 · trial 30d · Larissa Vila (avaliando)</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="plan-badge starter">Starter</span></td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text"><strong>18</strong> / 50</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:36%;"></div></div>
+                </div>
+              </td>
+              <td>
+                <div class="usage-cell">
+                  <div class="usage-text">85 MB / 1 GB</div>
+                  <div class="usage-bar"><div class="usage-bar-fill" style="width:8%;"></div></div>
+                </div>
+              </td>
+              <td><span style="font-family:'JetBrains Mono',monospace; font-size:11.5px;">17/jun/2026</span><div style="font-size:11px; color:var(--blue); font-weight:600;">trial expira em 31d</div></td>
+              <td><span class="status-pill trial">Trial</span></td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-ghost">Editar</button>
+                  <button class="btn-danger">Encerrar</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:18px; padding:14px 18px; background:var(--blue2); border-radius:10px; border-left:4px solid var(--blue); display:flex; align-items:flex-start; gap:10px;">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16" style="color:var(--blue); margin-top:2px; flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <div style="font-size:12.5px; color:var(--txt); line-height:1.55;">
+          <strong style="color:var(--blue);">Multi-tenancy strict.</strong> Cada tenant tem seus dados isolados via RLS no Postgres (<code style="font-family:'JetBrains Mono',monospace; background:#fff; padding:1px 5px; border-radius:3px; font-size:11px;">tenant_id</code>). Mesmo super_admin não vê dados cruzados sem trocar de contexto explicitamente. Auditoria registra toda operação cross-tenant.
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modal Novo Tenant -->
+<div class="modal-overlay" id="newTenantModal" onclick="if(event.target===this) closeNewTenant()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Novo tenant</h3>
+      <p>Cadastrar um novo cliente da plataforma. Slug e CNPJ são imutáveis após criação.</p>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nome legal</label>
+          <input class="form-input" placeholder="Grupo Empresarial Ltda">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nome fantasia</label>
+          <input class="form-input" placeholder="GE">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Slug (URL)</label>
+          <input class="form-input" placeholder="grupoexemplo" pattern="[a-z0-9-]+">
+          <div class="form-help">Apenas letras minúsculas, números e hífen · imutável</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CNPJ</label>
+          <input class="form-input" placeholder="00.000.000/0001-00">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Plano contratado</label>
+        <select class="form-select">
+          <option value="starter">Starter · R$ 12/colab/mês · até 100 colab</option>
+          <option value="business" selected>Business · R$ 18/colab/mês · 100-500 colab</option>
+          <option value="enterprise">Enterprise · sob consulta · 500+ colab</option>
+          <option value="trial">Trial 30d · grátis · até 50 colab</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email do admin principal</label>
+        <input class="form-input" type="email" placeholder="admin@empresa.com.br">
+        <div class="form-help">Receberá o convite por magic link após criação</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Módulos iniciais ativos</label>
+        <div class="modules-grid">
+          <label class="module-pick checked"><input type="checkbox" checked><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>Base (sempre ativo)</label>
+          <label class="module-pick checked"><input type="checkbox" checked><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89L17 22l-5-3-5 3 1.52-9.11"/></svg>Reconhecimentos</label>
+          <label class="module-pick checked"><input type="checkbox" checked><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>PDI</label>
+          <label class="module-pick"><input type="checkbox"><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/></svg>9-Box</label>
+          <label class="module-pick"><input type="checkbox"><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Onboarding</label>
+          <label class="module-pick"><input type="checkbox"><svg class="icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Clima</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeNewTenant()">Cancelar</button>
+      <button class="btn-primary" onclick="alert('Tenant criado em produção · simulação demo'); closeNewTenant();">Criar tenant</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openNewTenant(){ document.getElementById('newTenantModal').classList.add('active'); }
+function closeNewTenant(){ document.getElementById('newTenantModal').classList.remove('active'); }
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeNewTenant(); });
+
+// Module picker
+document.querySelectorAll('.module-pick').forEach(p => {
+  const cb = p.querySelector('input');
+  cb.addEventListener('change', () => p.classList.toggle('checked', cb.checked));
+});
+
+// Filter pills
+document.querySelectorAll('.filter-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+</script>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>
