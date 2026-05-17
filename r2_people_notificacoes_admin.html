@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Notificações & Webhooks · Admin</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:#fff; border-right:1px solid var(--gray1); display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:30px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--txt2);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--txt3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:var(--txt2); text-decoration:none; font-size:12.5px; border-left:3px solid transparent;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); border-left-color:var(--orange); font-weight:600;}
+.nav-item svg{width:16px; height:16px; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid var(--gray1); font-size:10.5px; color:var(--txt3); display:flex; justify-content:space-between;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #5A7090, #1A2D4F); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-danger{background:#fff; color:var(--danger); border:1px solid var(--danger2); padding:7px 12px; border-radius:7px; font-size:11.5px; cursor:pointer; font-family:inherit;}
+.btn-danger:hover{background:var(--danger2);}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:16px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--danger);}
+.kpi.green::before{background:var(--green);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:600; margin-top:5px; letter-spacing:-.5px;}
+.kpi-value.danger{color:var(--danger);}
+.kpi-value.green{color:var(--green);}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:2px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+table{width:100%; border-collapse:collapse; font-size:12px;}
+th{text-align:left; padding:8px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:9px 10px; border-bottom:1px solid var(--gray1); vertical-align:top;}
+tr:hover td{background:var(--off);}
+
+/* Health dot */
+.health{display:inline-flex; align-items:center; gap:6px; font-size:11.5px;}
+.health::before{content:''; width:8px; height:8px; border-radius:50%;}
+.health.ok::before{background:var(--green);}
+.health.warn::before{background:var(--amber);}
+.health.crit::before{background:var(--danger);}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.ok{background:var(--green2); color:var(--green);}
+.badge.warn{background:var(--amber2); color:var(--amber);}
+.badge.crit{background:var(--danger2); color:var(--danger);}
+.badge.muted{background:var(--gray1); color:var(--txt2);}
+.badge.blue{background:var(--blue2); color:var(--blue);}
+
+code{font-family:'JetBrains Mono', monospace; font-size:10.5px; background:var(--gray1); padding:1px 5px; border-radius:4px;}
+
+/* Queue gauges */
+.queue-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;}
+.queue-card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-card); display:flex; flex-direction:column; gap:8px;}
+.queue-head{display:flex; justify-content:space-between; align-items:center;}
+.queue-name{font-size:13px; font-weight:600;}
+.queue-depth{font-size:28px; font-weight:600; font-family:'JetBrains Mono', monospace; letter-spacing:-1px;}
+.queue-line{display:flex; justify-content:space-between; font-size:11px; color:var(--txt2);}
+.queue-bar{height:6px; background:var(--gray1); border-radius:3px; overflow:hidden;}
+.queue-bar > div{height:100%; border-radius:3px;}
+
+/* Filters */
+.filters{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;}
+.filter-input{padding:7px 11px; border:1px solid var(--gray2); border-radius:7px; font-size:12px; font-family:inherit; background:#fff; min-width:180px;}
+select.filter-input{cursor:pointer;}
+
+/* DLQ rows */
+.dlq-row{display:grid; grid-template-columns:1fr auto auto auto; gap:12px; padding:10px 12px; border:1px solid var(--gray1); border-radius:8px; margin-bottom:6px; align-items:center; font-size:12px;}
+.dlq-row .meta{font-size:11px; color:var(--txt2);}
+
+@media (max-width:980px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .queue-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/gpc-color.png" alt="GPC" class="brand-logo">
+      <div class="brand-text"><span class="brand-name">GPC</span><span class="brand-sub">Gestão de Pessoas</span></div>
+    </div>
+    <div class="sidebar-section">Admin</div>
+    <nav class="sidebar-nav">
+      <a href="r2_people_home.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 12 4l9 8"/><path d="M5 10v10h14V10"/></svg>Início</a>
+      <a href="r2_people_notificacoes_admin.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Notif. & Webhooks</a>
+      <a href="r2_people_configuracoes.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</a>
+      <a href="r2_people_lgpd_cockpit.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>Cockpit LGPD</a>
+      <a href="r2_people_auditoria.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5l4-4M5 11l4 4"/><circle cx="16" cy="12" r="5"/></svg>Auditoria & Logs</a>
+    </nav>
+    <div class="sidebar-footer"><span>R2 Soluções</span><span style="font-family:'JetBrains Mono',monospace;">v0.11</span></div>
+  </aside>
+
+  <div class="topbar">
+    <div class="topbar-title">Admin · <strong>Notificações & Webhooks</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar">PM</div>
+      <div class="user-info"><span class="user-name">Patrícia Mello</span><span class="user-role">Coord RH · admin</span></div>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Runtime de notificações</h1>
+        <p>Webhooks de saída · filas pgmq · e-mails · DLQ · stats últimos 7d · spec M12</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">+ Novo webhook</button>
+        <button class="btn-primary">Testar entrega</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">Webhook success 7d</div>
+        <div class="kpi-value green">99.7%</div>
+        <div class="kpi-trend">p95 142ms · meta &lt; 5min</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Eventos enfileirados 24h</div>
+        <div class="kpi-value">14.382</div>
+        <div class="kpi-trend">in-app 8.2k · email 3.1k · webhook 3.0k</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">Em retry agora</div>
+        <div class="kpi-value">7</div>
+        <div class="kpi-trend">próximo retry em 4min · 12min</div>
+      </div>
+      <div class="kpi red">
+        <div class="kpi-label">DLQ (dead)</div>
+        <div class="kpi-value danger">3</div>
+        <div class="kpi-trend">webhook GPC/folha falhou 8x · reprocessar?</div>
+      </div>
+      <div class="kpi purple">
+        <div class="kpi-label">E-mail bounce 7d</div>
+        <div class="kpi-value">1.2%</div>
+        <div class="kpi-trend">SendGrid OK · Resend stand-by</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="webhooks">Webhooks</div>
+      <div class="tab" data-tab="filas">Filas</div>
+      <div class="tab" data-tab="emails">E-mails enviados</div>
+      <div class="tab" data-tab="dlq">DLQ · reprocessar</div>
+      <div class="tab" data-tab="stats">Estatísticas</div>
+      <div class="tab" data-tab="catalog">Catálogo de eventos</div>
+    </div>
+
+    <!-- Webhooks -->
+    <div class="tab-pane active" id="tab-webhooks">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Webhooks configurados (4)</div>
+            <div class="card-sub">HMAC-SHA256 · retry 8x backoff exponencial 30s→24h</div>
+          </div>
+          <button class="btn-primary">+ Novo</button>
+        </div>
+        <table>
+          <thead><tr><th>Nome</th><th>URL</th><th>Eventos</th><th>Health</th><th>Última entrega</th><th>Ações</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>ERP folha · GPC</strong><br><span class="badge muted">v1</span></td>
+              <td><code>https://erp.gpc.com.br/webhooks/r2</code></td>
+              <td>movement.* · employee.terminated</td>
+              <td><span class="health ok">99.8% · 142ms p95</span></td>
+              <td>14s atrás</td>
+              <td>
+                <button class="btn-secondary" style="padding:5px 10px;">Testar</button>
+                <button class="btn-secondary" style="padding:5px 10px;">Replay 24h</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>BI · Looker Studio</strong><br><span class="badge muted">v1</span></td>
+              <td><code>https://hooks.zapier.com/...</code></td>
+              <td>movement.created · payroll.simulated · nps.responded</td>
+              <td><span class="health ok">100% · 280ms p95</span></td>
+              <td>2min atrás</td>
+              <td>
+                <button class="btn-secondary" style="padding:5px 10px;">Testar</button>
+                <button class="btn-secondary" style="padding:5px 10px;">Replay 24h</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Sistema de ponto</strong><br><span class="badge muted">v1</span></td>
+              <td><code>https://ponto.gpc.com.br/api/r2</code></td>
+              <td>certificate.validated</td>
+              <td><span class="health warn">94.2% · 1.4s p95</span></td>
+              <td>1h atrás</td>
+              <td>
+                <button class="btn-secondary" style="padding:5px 10px;">Testar</button>
+                <button class="btn-secondary" style="padding:5px 10px;">Replay 24h</button>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>ERP folha · Filadélfia</strong><br><span class="badge crit dot">offline</span></td>
+              <td><code>https://erp.filadelfia.com/r2</code></td>
+              <td>movement.* · employee.admitted</td>
+              <td><span class="health crit">8 falhas seguidas · em DLQ</span></td>
+              <td>4h atrás</td>
+              <td>
+                <button class="btn-secondary" style="padding:5px 10px;">Testar</button>
+                <button class="btn-danger">Reativar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Como o cliente verifica a assinatura</div></div>
+        <div style="background:var(--off); padding:14px; border-radius:8px; font-family:'JetBrains Mono', monospace; font-size:11.5px; line-height:1.7; overflow-x:auto;">
+<pre style="margin:0;">POST /webhooks/r2 HTTP/1.1
+Host: erp.gpc.com.br
+Content-Type: application/json
+X-R2-Event: movement.created
+X-R2-Event-Id: 01HXYZ7E2K8VYJN2QH...
+X-R2-Signature: 8a3f9c2b...e7d1
+User-Agent: R2People-Webhook/1.0
+
+{"movement_id":"...", "type":"PROMOTION", ...}</pre>
+        </div>
+        <p style="font-size:11.5px; color:var(--txt2); margin-top:8px;">Assinatura = <code>HMAC_SHA256(signing_secret, event_id + body)</code>. Use <code>X-R2-Event-Id</code> para idempotência — retries mantêm o mesmo ID.</p>
+      </div>
+    </div>
+
+    <!-- Filas -->
+    <div class="tab-pane" id="tab-filas">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Filas pgmq · status ao vivo</div></div>
+        <div class="queue-grid">
+          <div class="queue-card">
+            <div class="queue-head">
+              <div class="queue-name">q_notif_inapp</div>
+              <span class="badge ok">saudável</span>
+            </div>
+            <div class="queue-depth">42</div>
+            <div class="queue-line"><span>in / 60s</span><span><strong>137</strong></span></div>
+            <div class="queue-line"><span>out / 60s</span><span><strong>135</strong></span></div>
+            <div class="queue-line"><span>p95 latência</span><span><strong>0.6s</strong></span></div>
+            <div class="queue-bar"><div style="width:8%; background:var(--green);"></div></div>
+          </div>
+          <div class="queue-card">
+            <div class="queue-head">
+              <div class="queue-name">q_notif_email</div>
+              <span class="badge ok">saudável</span>
+            </div>
+            <div class="queue-depth">128</div>
+            <div class="queue-line"><span>in / 60s</span><span><strong>52</strong></span></div>
+            <div class="queue-line"><span>out / 60s</span><span><strong>51</strong></span></div>
+            <div class="queue-line"><span>p95 latência</span><span><strong>1.2s</strong></span></div>
+            <div class="queue-bar"><div style="width:14%; background:var(--green);"></div></div>
+          </div>
+          <div class="queue-card">
+            <div class="queue-head">
+              <div class="queue-name">q_notif_webhook</div>
+              <span class="badge warn">retry alto</span>
+            </div>
+            <div class="queue-depth">87</div>
+            <div class="queue-line"><span>in / 60s</span><span><strong>48</strong></span></div>
+            <div class="queue-line"><span>out / 60s</span><span><strong>41</strong></span></div>
+            <div class="queue-line"><span>p95 latência</span><span><strong>3.4s</strong></span></div>
+            <div class="queue-bar"><div style="width:38%; background:var(--amber);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Workers ativos</div></div>
+        <table>
+          <thead><tr><th>Worker</th><th>Instâncias</th><th>Uptime</th><th>Throughput</th><th>CPU</th></tr></thead>
+          <tbody>
+            <tr><td>worker-inapp</td><td>2</td><td>14d 8h</td><td>2.3 msg/s</td><td>12%</td></tr>
+            <tr><td>worker-email</td><td>2</td><td>14d 8h</td><td>0.8 msg/s</td><td>8%</td></tr>
+            <tr><td>worker-webhook</td><td>3</td><td>3d 2h</td><td>0.7 msg/s</td><td>22%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- E-mails -->
+    <div class="tab-pane" id="tab-emails">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">E-mails enviados (últimas 24h · 3.142)</div></div>
+        </div>
+        <div class="filters">
+          <input type="text" class="filter-input" placeholder="Buscar por e-mail ou template">
+          <select class="filter-input">
+            <option>Todos os status</option><option>sent</option><option>bounced</option><option>complained</option><option>rejected</option>
+          </select>
+          <select class="filter-input">
+            <option>Todos os templates</option>
+            <option>movement_approved</option><option>certificate_validated</option><option>oneonone_scheduled</option><option>mfa_recovery</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>Para</th><th>Template</th><th>Status</th><th>Provider</th><th>Quando</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>fernanda.lima@gpc.com.br</td><td>movement_approved</td><td><span class="badge ok">sent</span></td><td>SendGrid</td><td>2min atrás</td><td><button class="btn-secondary" style="padding:5px 10px;">Reenviar</button></td></tr>
+            <tr><td>joao.carvalho@gpc.com.br</td><td>oneonone_reminder</td><td><span class="badge ok">sent</span></td><td>SendGrid</td><td>4min atrás</td><td><button class="btn-secondary" style="padding:5px 10px;">Reenviar</button></td></tr>
+            <tr><td>email-antigo@dominio.invalid</td><td>movement_created</td><td><span class="badge crit">bounced</span></td><td>SendGrid</td><td>12min atrás</td><td><button class="btn-secondary" style="padding:5px 10px;">Atualizar</button></td></tr>
+            <tr><td>patricia.mello@gpc.com.br</td><td>certificate_validated</td><td><span class="badge ok">sent</span></td><td>SendGrid</td><td>18min atrás</td><td><button class="btn-secondary" style="padding:5px 10px;">Reenviar</button></td></tr>
+            <tr><td>renato.pinto@gpc.com.br</td><td>mfa_recovery</td><td><span class="badge ok">sent</span></td><td>Resend</td><td>34min atrás</td><td><button class="btn-secondary" style="padding:5px 10px;">Reenviar</button></td></tr>
+            <tr><td>candidato-vaga@gmail.com</td><td>indicacao_followup</td><td><span class="badge warn">queued</span></td><td>—</td><td>quiet hours · 09:00</td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DLQ -->
+    <div class="tab-pane" id="tab-dlq">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Dead Letter Queue (3)</div>
+            <div class="card-sub">Mensagens que esgotaram o máximo de tentativas · requer ação manual</div>
+          </div>
+          <button class="btn-primary">Reprocessar todas</button>
+        </div>
+        <div class="dlq-row">
+          <div>
+            <strong>movement.created</strong> → ERP folha Filadélfia
+            <div class="meta">event_id <code>01HXYZ7E2K8VYJN2QH</code> · 8 tentativas em 24h · último HTTP 503</div>
+          </div>
+          <div><span class="badge crit">dead</span></div>
+          <div style="font-size:11px; color:var(--txt2);">há 4h</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-secondary" style="padding:5px 10px;">Ver payload</button>
+            <button class="btn-primary" style="padding:5px 10px;">Reprocessar</button>
+          </div>
+        </div>
+        <div class="dlq-row">
+          <div>
+            <strong>employee.terminated</strong> → ERP folha Filadélfia
+            <div class="meta">event_id <code>01HXYZ8K3M9LX</code> · 8 tentativas · último HTTP 503</div>
+          </div>
+          <div><span class="badge crit">dead</span></div>
+          <div style="font-size:11px; color:var(--txt2);">há 4h</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-secondary" style="padding:5px 10px;">Ver payload</button>
+            <button class="btn-primary" style="padding:5px 10px;">Reprocessar</button>
+          </div>
+        </div>
+        <div class="dlq-row">
+          <div>
+            <strong>certificate.validated</strong> → Sistema de ponto
+            <div class="meta">event_id <code>01HXYZA1B2CD</code> · 8 tentativas · timeout 5s</div>
+          </div>
+          <div><span class="badge crit">dead</span></div>
+          <div style="font-size:11px; color:var(--txt2);">há 1h</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-secondary" style="padding:5px 10px;">Ver payload</button>
+            <button class="btn-primary" style="padding:5px 10px;">Reprocessar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="tab-pane" id="tab-stats">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Latência por evento (p50 / p95) últimos 7d</div></div>
+        <table>
+          <thead><tr><th>Evento</th><th>Volume</th><th>p50</th><th>p95</th><th>p99</th><th>Erros</th></tr></thead>
+          <tbody>
+            <tr><td>movement.created</td><td>1.842</td><td>98ms</td><td>142ms</td><td>320ms</td><td><span class="badge ok">0.1%</span></td></tr>
+            <tr><td>movement.approved</td><td>1.642</td><td>102ms</td><td>156ms</td><td>340ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td>employee.admitted</td><td>47</td><td>118ms</td><td>180ms</td><td>410ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td>employee.terminated</td><td>22</td><td>124ms</td><td>198ms</td><td>458ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td>certificate.uploaded</td><td>312</td><td>156ms</td><td>240ms</td><td>590ms</td><td><span class="badge ok">0.3%</span></td></tr>
+            <tr><td>certificate.validated</td><td>289</td><td>1.1s</td><td>1.4s</td><td>2.8s</td><td><span class="badge warn">5.8%</span></td></tr>
+            <tr><td>payroll.simulated</td><td>62</td><td>112ms</td><td>184ms</td><td>380ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td>oneonone.scheduled</td><td>208</td><td>92ms</td><td>148ms</td><td>290ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td>okr.checkin</td><td>114</td><td>104ms</td><td>168ms</td><td>340ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td>nps.responded</td><td>3.124</td><td>62ms</td><td>120ms</td><td>240ms</td><td><span class="badge ok">0.0%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Catálogo -->
+    <div class="tab-pane" id="tab-catalog">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Catálogo de eventos (10)</div>
+            <div class="card-sub">Versionado · exposto via GET /api/webhook-events</div>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Evento</th><th>Trigger</th><th>Payload (resumo)</th><th>Audiência típica</th></tr></thead>
+          <tbody>
+            <tr><td><code>movement.created</code></td><td>INSERT em movements</td><td>id, employee_id, type, effective_date</td><td>ERP folha · BI</td></tr>
+            <tr><td><code>movement.approved</code></td><td>UPDATE status='approved'</td><td>id, approved_by</td><td>ERP folha</td></tr>
+            <tr><td><code>employee.admitted</code></td><td>INSERT em employees</td><td>id, full_name, position_id, admission_date</td><td>ERP · AD</td></tr>
+            <tr><td><code>employee.terminated</code></td><td>UPDATE status='terminated'</td><td>id, termination_date, type</td><td>ERP · AD · revogar SSO</td></tr>
+            <tr><td><code>certificate.uploaded</code></td><td>INSERT em medical_certificates</td><td>id, employee_id, days, type</td><td>ponto</td></tr>
+            <tr><td><code>certificate.validated</code></td><td>UPDATE status='approved'</td><td>id, validated_by</td><td>ponto</td></tr>
+            <tr><td><code>payroll.simulated</code></td><td>rpc_simulate_payroll</td><td>total_cost, headcount, period</td><td>dashboard externo</td></tr>
+            <tr><td><code>oneonone.scheduled</code></td><td>INSERT em oneonones</td><td>id, leader_id, member_id, scheduled_at</td><td>calendário</td></tr>
+            <tr><td><code>okr.checkin</code></td><td>INSERT em okr_checkins</td><td>okr_id, progress, confidence</td><td>BI</td></tr>
+            <tr><td><code>nps.responded</code></td><td>INSERT em nps_responses</td><td>tenant_id, score_bucket (sem PII)</td><td>BI agregado</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
