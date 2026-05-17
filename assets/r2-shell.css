@@ -1,0 +1,273 @@
+/* ============================================================================
+   R2 Shell · CSS compartilhado entre todos os HTMLs do rhgpc
+   ----------------------------------------------------------------------------
+   Cobre:
+   - Dark mode via [data-theme="dark"] no <html> (overrides de variaveis)
+   - Densidade compacta via [data-density="compact"]
+   - Sidebar collapse via [data-sidebar="collapsed"] no <html>
+   - Topbar actions (theme btn, density btn, settings, avatar dropdown)
+   - Animacoes uniformes
+   ============================================================================ */
+
+/* ============ DARK MODE ============
+   Overrides das variaveis CSS usadas em todos os HTMLs do rhgpc.
+   Os HTMLs ja tem :root com paleta GPC. Dark mode redefine cores neutras
+   mantendo navy/orange institucionais. */
+html[data-theme="dark"] {
+  --off:#0B131F;          /* page bg · navy-900 quase preto */
+  --gray1:#1B2D48;        /* surface escuras */
+  --gray2:#253C5E;        /* borders */
+  --gray3:#4D6FA0;        /* faint */
+  --txt:#EEF2F8;          /* texto principal · navy-50 (claro) */
+  --txt2:#B0C0DC;         /* texto secundario · navy-200 */
+  --txt3:#7691BC;         /* texto faint · navy-300 */
+}
+
+html[data-theme="dark"] body {
+  background: var(--off) !important;
+  color: var(--txt) !important;
+}
+
+/* Sidebar dark · cor de fundo navy-800 com text claro */
+html[data-theme="dark"] .sidebar {
+  background: #131F31 !important;
+  color: var(--txt) !important;
+  border-right-color: #1B2D48 !important;
+}
+html[data-theme="dark"] .sidebar-brand,
+html[data-theme="dark"] .sidebar-brand-text,
+html[data-theme="dark"] .sidebar-brand-name {
+  color: var(--txt) !important;
+}
+html[data-theme="dark"] .sidebar-brand-sub,
+html[data-theme="dark"] .brand-sub,
+html[data-theme="dark"] .sidebar-section,
+html[data-theme="dark"] .sidebar-section-label,
+html[data-theme="dark"] .sidebar-r2-lbl {
+  color: var(--txt3) !important;
+}
+html[data-theme="dark"] .nav-item,
+html[data-theme="dark"] .sidebar-item {
+  color: var(--txt2) !important;
+}
+html[data-theme="dark"] .nav-item:hover,
+html[data-theme="dark"] .sidebar-item:hover {
+  background: #1B2D48 !important;
+  color: var(--txt) !important;
+}
+html[data-theme="dark"] .nav-item.active,
+html[data-theme="dark"] .sidebar-item.active {
+  background: rgba(245, 134, 52, 0.12) !important;
+  color: var(--orange) !important;
+}
+html[data-theme="dark"] .sidebar-footer,
+html[data-theme="dark"] .sidebar-header {
+  border-color: #1B2D48 !important;
+}
+html[data-theme="dark"] .sidebar-r2-logo {
+  filter: brightness(0) invert(1);
+  opacity: 0.55;
+}
+html[data-theme="dark"] .brand-logo,
+html[data-theme="dark"] .sidebar-brand-logo {
+  /* logo continua colorido tambem em dark (preserva identidade) */
+}
+
+/* Topbar dark */
+html[data-theme="dark"] .topbar {
+  background: #131F31 !important;
+  border-bottom-color: #1B2D48 !important;
+}
+html[data-theme="dark"] .topbar-title { color: var(--txt2) !important; }
+html[data-theme="dark"] .topbar-title .crumb { color: var(--txt) !important; }
+
+/* Cards/KPIs dark · surface intermediaria */
+html[data-theme="dark"] .kpi,
+html[data-theme="dark"] .module-card,
+html[data-theme="dark"] .pulse-card,
+html[data-theme="dark"] .pdi-active,
+html[data-theme="dark"] .side-card,
+html[data-theme="dark"] .heatmap-card,
+html[data-theme="dark"] .matrix-card,
+html[data-theme="dark"] .spark-card,
+html[data-theme="dark"] .context-card,
+html[data-theme="dark"] .legend-card,
+html[data-theme="dark"] .history-card,
+html[data-theme="dark"] .cohort-card,
+html[data-theme="dark"] .wizard,
+html[data-theme="dark"] .pdi-card {
+  background: #16202E !important;
+  border-color: #253C5E !important;
+}
+html[data-theme="dark"] .kpi-value,
+html[data-theme="dark"] .page-title {
+  color: var(--txt) !important;
+}
+
+/* Form inputs dark */
+html[data-theme="dark"] .form-input,
+html[data-theme="dark"] .form-textarea,
+html[data-theme="dark"] .form-select,
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  background: #1B2D48 !important;
+  border-color: #253C5E !important;
+  color: var(--txt) !important;
+}
+
+/* ============ DENSIDADE COMPACTA ============
+   Reduz paddings de cards e listas pra mostrar mais conteudo na tela. */
+html[data-density="compact"] .kpi,
+html[data-density="compact"] .module-card .module-header {
+  padding: 10px 12px !important;
+}
+html[data-density="compact"] .kpi-value {
+  font-size: 22px !important;
+}
+html[data-density="compact"] .nav-item,
+html[data-density="compact"] .sidebar-item {
+  padding: 5px 10px !important;
+  font-size: 12px !important;
+}
+html[data-density="compact"] .sidebar-section,
+html[data-density="compact"] .sidebar-section-label {
+  padding: 6px 12px 3px !important;
+}
+html[data-density="compact"] .page-header { margin-bottom: 14px !important; }
+html[data-density="compact"] .page-title { font-size: 22px !important; }
+html[data-density="compact"] .kpi-grid { gap: 8px !important; }
+
+/* ============ SIDEBAR COLLAPSE (desktop) ============
+   Ao clicar no chevron, sidebar encolhe pra 64px e mostra so ícones. */
+@media (min-width: 901px) {
+  html[data-sidebar="collapsed"] .sidebar {
+    width: 64px !important;
+    overflow: visible;
+  }
+  html[data-sidebar="collapsed"] .sidebar .brand-text,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-brand-text,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-brand-version,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-section,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-section-label,
+  html[data-sidebar="collapsed"] .sidebar .nav-item span:not(.badge-readonly),
+  html[data-sidebar="collapsed"] .sidebar .sidebar-item .label,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-item .badge-soon,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-r2-lbl,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-role-block {
+    display: none !important;
+  }
+  html[data-sidebar="collapsed"] .sidebar .brand-logo,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-brand-logo {
+    height: 36px !important;
+    max-width: 100% !important;
+  }
+  html[data-sidebar="collapsed"] .sidebar .sidebar-r2-logo {
+    height: 18px !important;
+  }
+  html[data-sidebar="collapsed"] .sidebar .nav-item,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-item {
+    justify-content: center !important;
+    padding: 9px 8px !important;
+  }
+  html[data-sidebar="collapsed"] .sidebar .sidebar-brand,
+  html[data-sidebar="collapsed"] .sidebar .sidebar-header {
+    padding: 14px 8px !important;
+  }
+  /* Grid · sidebar adapta */
+  html[data-sidebar="collapsed"] .app {
+    grid-template-columns: 64px 1fr !important;
+  }
+}
+
+/* ============ TOPBAR ACTIONS (icone buttons) ============
+   Injetados no DOM pelo r2-shell.js. */
+.r2-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.r2-topbar-actions .r2-icon-btn {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--txt2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+  position: relative;
+}
+.r2-topbar-actions .r2-icon-btn:hover {
+  background: var(--gray1);
+  color: var(--txt);
+}
+html[data-theme="dark"] .r2-topbar-actions .r2-icon-btn:hover {
+  background: #1B2D48;
+}
+.r2-topbar-actions .r2-icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+.r2-topbar-actions .r2-icon-btn[data-active="true"] {
+  background: var(--blue2);
+  color: var(--navy);
+}
+html[data-theme="dark"] .r2-topbar-actions .r2-icon-btn[data-active="true"] {
+  background: rgba(245, 134, 52, 0.16);
+  color: var(--orange);
+}
+
+/* Tooltip simples no hover */
+.r2-topbar-actions .r2-icon-btn[aria-label]:hover::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0A0E16;
+  color: #fff;
+  font-size: 10.5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Sidebar collapse button (apenas desktop · escondido no mobile que tem hamburger) */
+.r2-sidebar-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--gray1);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--txt2);
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.r2-sidebar-collapse-btn:hover { background: var(--gray2); color: var(--txt); }
+.r2-sidebar-collapse-btn svg { width: 14px; height: 14px; }
+html[data-sidebar="collapsed"] .r2-sidebar-collapse-btn svg {
+  transform: rotate(180deg);
+}
+@media (max-width: 900px) {
+  .r2-sidebar-collapse-btn { display: none !important; }
+}
+
+/* Transition suave nas mudancas de estado */
+.app, .sidebar, .topbar {
+  transition: background .2s, border-color .2s;
+}
+.sidebar {
+  transition: width .25s ease, background .2s, transform .25s ease;
+}
