@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.12 · 17 de maio de 2026
+**Versão**: 2.13 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -976,6 +976,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.9 | Showcase entry-point + 3 specs (M5/M8/M9) + schema v9 + privacy atestados |
 | 2.10 | Spec M10 Configurações + schema v10 consolidado (movs+auth+settings+history) |
 | 2.11 | Spec D4 Backups/DR + Spec M12 Notif/Webhooks runtime (filas pgmq + HMAC + DLQ) |
-| **2.12** | **Spec D5 Observabilidade (Logflare + Prom + Tempo + 7 SLOs + 10 alertas + runbooks)** |
+| 2.12 | Spec D5 Observabilidade (Logflare + Prom + Tempo + 7 SLOs + 10 alertas + runbooks) |
+| **2.13** | **Spec D6 Segurança aplicacional (CSP A+, OWASP Top 10, secrets, pen-test, 25+ testes meta)** |
 
 ---
