@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Security · DevSec Console</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; border-right:1px solid var(--gray1); display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:30px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--txt2);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--txt3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:var(--txt2); text-decoration:none; font-size:12.5px; border-left:3px solid transparent;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); border-left-color:var(--orange); font-weight:600;}
+.nav-item svg{width:16px; height:16px; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid var(--gray1); font-size:10.5px; color:var(--txt3); display:flex; justify-content:space-between;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.security-pill{display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:20px; background:var(--green2); color:var(--green); font-size:11px; font-weight:600;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #6D28D9, #C0392B); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-danger{background:var(--danger); color:#fff; border:none; padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-danger:hover{background:#A52A1F;}
+
+/* Score hero */
+.score-hero{background:linear-gradient(110deg, #0F1B2E 0%, #1A2D4F 100%); color:#fff; border-radius:var(--radius); padding:22px 26px; margin-bottom:16px; display:grid; grid-template-columns:auto 1fr auto; gap:22px; align-items:center; position:relative; overflow:hidden;}
+.score-hero::before{content:''; position:absolute; right:-60px; top:-60px; width:240px; height:240px; background:radial-gradient(circle, rgba(30,123,75,.22), transparent 65%); border-radius:50%;}
+.score-ring{position:relative; z-index:1; width:96px; height:96px; border-radius:50%; background:conic-gradient(var(--green) 0% 92%, rgba(255,255,255,.12) 92% 100%); display:flex; align-items:center; justify-content:center;}
+.score-ring::before{content:''; position:absolute; inset:6px; border-radius:50%; background:#0F1B2E;}
+.score-ring-value{position:relative; z-index:2; font-size:24px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.score-text{position:relative; z-index:1;}
+.score-text h2{font-size:18px; font-weight:600; margin-bottom:3px;}
+.score-text p{font-size:12.5px; color:rgba(255,255,255,.78);}
+.score-action{position:relative; z-index:1; display:flex; gap:8px;}
+.score-action button{padding:8px 14px; border-radius:7px; border:1px solid rgba(255,255,255,.25); background:transparent; color:#fff; font-size:11.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.score-action button.primary{background:var(--orange); border-color:var(--orange);}
+
+/* KPI */
+.kpi-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:16px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.green::before{background:var(--green);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--danger);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:600; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-value.green{color:var(--green);}
+.kpi-value.danger{color:var(--danger);}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:2px;}
+
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+table{width:100%; border-collapse:collapse; font-size:12px;}
+th{text-align:left; padding:8px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:9px 10px; border-bottom:1px solid var(--gray1); vertical-align:top;}
+tr:hover td{background:var(--off);}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.ok{background:var(--green2); color:var(--green);}
+.badge.warn{background:var(--amber2); color:var(--amber);}
+.badge.crit{background:var(--danger2); color:var(--danger);}
+.badge.muted{background:var(--gray1); color:var(--txt2);}
+.badge.crit-pulse{background:var(--danger); color:#fff; animation:pulse-bg 2s infinite;}
+@keyframes pulse-bg{0%,100%{opacity:1;}50%{opacity:.6;}}
+
+.sev{display:inline-block; padding:2px 8px; border-radius:10px; font-size:10.5px; font-weight:600;}
+.sev.critical{background:var(--danger); color:#fff;}
+.sev.high{background:var(--danger2); color:var(--danger);}
+.sev.medium{background:var(--amber2); color:var(--amber);}
+.sev.low{background:var(--blue2); color:var(--blue);}
+
+code{font-family:'JetBrains Mono', monospace; font-size:10.5px; background:var(--gray1); padding:1px 5px; border-radius:4px;}
+
+/* Checklist */
+.checklist{display:grid; gap:8px;}
+.check-item{display:grid; grid-template-columns:32px 1fr auto; gap:12px; padding:11px 14px; background:var(--off); border-radius:8px; align-items:center;}
+.check-item .icon{width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px;}
+.check-item .icon.ok{background:var(--green2); color:var(--green);}
+.check-item .icon.warn{background:var(--amber2); color:var(--amber);}
+.check-item .icon.crit{background:var(--danger2); color:var(--danger);}
+.check-item .icon.pending{background:var(--gray1); color:var(--txt2);}
+.check-item .name{font-size:12.5px; font-weight:500;}
+.check-item .meta{font-size:10.5px; color:var(--txt2);}
+
+/* OWASP matrix */
+.owasp-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px;}
+.owasp-card{background:#fff; padding:13px 14px; border-radius:8px; border:1px solid var(--gray1); display:grid; grid-template-columns:42px 1fr auto; gap:12px; align-items:center;}
+.owasp-id{width:32px; height:32px; border-radius:8px; background:var(--gray1); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px; color:var(--txt2); font-family:'JetBrains Mono', monospace;}
+.owasp-card .title{font-size:12.5px; font-weight:600;}
+.owasp-card .desc{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+
+/* Honeytoken */
+.honeytoken-banner{padding:12px 14px; background:linear-gradient(90deg, var(--green2), #fff); border:1px solid var(--green); border-radius:8px; display:flex; align-items:center; gap:12px;}
+.honeytoken-banner.alert{background:linear-gradient(90deg, var(--danger), var(--danger2)); border-color:var(--danger); color:#fff;}
+.honeytoken-banner svg{flex-shrink:0;}
+
+@media (max-width:980px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .owasp-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/gpc-color.png" alt="GPC" class="brand-logo">
+      <div class="brand-text"><span class="brand-name">GPC</span><span class="brand-sub">Gestão de Pessoas</span></div>
+    </div>
+    <div class="sidebar-section">Admin · operação</div>
+    <nav class="sidebar-nav">
+      <a href="r2_people_home.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 12 4l9 8"/><path d="M5 10v10h14V10"/></svg>Início</a>
+      <a href="r2_people_security_admin.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Security</a>
+      <a href="r2_people_observability_admin.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Observability</a>
+      <a href="r2_people_notificacoes_admin.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Notif. & Webhooks</a>
+      <a href="r2_people_lgpd_cockpit.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>Cockpit LGPD</a>
+      <a href="r2_people_auditoria.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5l4-4M5 11l4 4"/><circle cx="16" cy="12" r="5"/></svg>Auditoria & Logs</a>
+    </nav>
+    <div class="sidebar-footer"><span>R2 Soluções</span><span style="font-family:'JetBrains Mono',monospace;">v0.11</span></div>
+  </aside>
+
+  <div class="topbar">
+    <div class="topbar-title">Admin · <strong>Security</strong></div>
+    <span class="security-pill">🔒 postura saudável</span>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar">RS</div>
+      <div class="user-info"><span class="user-name">Ricardo Silva</span><span class="user-role">DevSec · R2</span></div>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>DevSec Console</h1>
+        <p>CSP · honeytokens · vulnerabilidades · hardening checklist · OWASP Top 10 · spec D6</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">Rotacionar segredos</button>
+        <button class="btn-primary">+ Declarar incidente</button>
+      </div>
+    </div>
+
+    <!-- Score hero -->
+    <div class="score-hero">
+      <div class="score-ring"><div class="score-ring-value">A+</div></div>
+      <div class="score-text">
+        <h2>Postura de segurança: <strong>92/100</strong></h2>
+        <p>SSL Labs A+ · securityheaders.com A+ · 0 vulnerabilidades críticas · pen-test válido até 14/02/2027 · próxima rotação JWT em 38d</p>
+      </div>
+      <div class="score-action">
+        <button>Histórico</button>
+        <button class="primary">Auditar agora</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">Vulnerabilidades open</div>
+        <div class="kpi-value green">0 crit / 2 med</div>
+        <div class="kpi-trend">Snyk + Renovate diário</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">CSP violations 24h</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-trend">todas inline em /pdi · fix em revisão</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">RLS denials 24h</div>
+        <div class="kpi-value">14</div>
+        <div class="kpi-trend">baseline · sem spike</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Honeytokens</div>
+        <div class="kpi-value green">0 hits</div>
+        <div class="kpi-trend">7 plantados · monitorados 24/7</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">Cobertura RLS</div>
+        <div class="kpi-value">97%</div>
+        <div class="kpi-trend">3 tabelas pendentes</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="checklist">Hardening checklist</div>
+      <div class="tab" data-tab="vulns">Vulnerabilidades</div>
+      <div class="tab" data-tab="csp">CSP violations</div>
+      <div class="tab" data-tab="honey">Honeytokens</div>
+      <div class="tab" data-tab="owasp">OWASP Top 10</div>
+      <div class="tab" data-tab="secrets">Secrets & rotação</div>
+    </div>
+
+    <!-- Checklist -->
+    <div class="tab-pane active" id="tab-checklist">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Hardening checklist · pré-GA (16/18)</div>
+            <div class="card-sub">spec D6 §13 · revisado semanalmente</div>
+          </div>
+          <span class="badge ok">89%</span>
+        </div>
+        <div class="checklist">
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Todos os HTTP headers retornando</div><div class="meta">HSTS preload, CSP nonce, X-Frame DENY, COOP/COEP</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">CSP score A+ em securityheaders.com</div><div class="meta">última verificação 17/05 09:00</div></div><div><span class="badge ok">A+</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">SSL Labs A+</div><div class="meta">TLS 1.3, HSTS preload submetido</div></div><div><span class="badge ok">A+</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">CSRF token validado em 100% dos POSTs</div><div class="meta">double-submit pattern</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon warn">⚠</div><div><div class="name">RLS habilitada em todas as tabelas com tenant_id</div><div class="meta">3 pendentes: nps_responses_archive, okr_checkins_v2_backup, retention_runs</div></div><div><span class="badge warn">97%</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">pg_stat_statements confirma 0 queries com string interpolation</div><div class="meta">scan diário</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Test suite cobre 100% das RLS policies</div><div class="meta">170 testes (1 allow + 1 deny por policy)</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">MFA obrigatório roles privilegiadas</div><div class="meta">super_admin, dpo, tenant_admin</div></div><div><span class="badge ok">100%</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">7 honeytokens plantados e alertando</div><div class="meta">PagerDuty P1 configurado</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Renovate weekly + Dependabot</div><div class="meta">PR auto-merge em patch</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">git-secrets pre-commit ativo</div><div class="meta">patterns Anthropic, Supabase, Stripe</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon warn">⚠</div><div><div class="name">Pen-test externo realizado</div><div class="meta">próximo agendado para Jul/2026 (CREST)</div></div><div><span class="badge warn">due Jul</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Bug bounty privado configurado</div><div class="meta">HackerOne · 7 pesquisadores · 2 reports pendentes</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Runbook de incidente revisado</div><div class="meta">última revisão 02/05/2026</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">DPO assinou política de privacidade</div><div class="meta">v3.2 vigente</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Logflare alerta em CSP violation P2</div><div class="meta">threshold &gt; 10/min</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Cookies só com Secure + HttpOnly + SameSite</div><div class="meta">audit em prod confirma</div></div><div><span class="badge ok">OK</span></div></div>
+          <div class="check-item"><div class="icon ok">✓</div><div><div class="name">Upload com ClamAV + EXIF strip + signed URL 15min</div><div class="meta">worker testado com EICAR</div></div><div><span class="badge ok">OK</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vulnerabilidades -->
+    <div class="tab-pane" id="tab-vulns">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Vulnerabilidades em deps (2 open)</div>
+            <div class="card-sub">Snyk + Dependabot sync · CI bloqueia high+ em produção</div>
+          </div>
+          <button class="btn-secondary">Importar do Snyk</button>
+        </div>
+        <table>
+          <thead><tr><th>CVE</th><th>Pacote</th><th>Severidade</th><th>Exploitável?</th><th>Status</th><th>Detectado</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>CVE-2026-1234</code></td>
+              <td>fast-xml-parser@4.2.x</td>
+              <td><span class="sev medium">medium</span></td>
+              <td><span class="badge muted">não · não usamos parseString</span></td>
+              <td><span class="badge warn">accepted</span></td>
+              <td>02/05/2026</td>
+              <td><button class="btn-secondary" style="padding:5px 10px;">Detalhes</button></td>
+            </tr>
+            <tr>
+              <td><code>CVE-2026-2345</code></td>
+              <td>follow-redirects@1.15.x</td>
+              <td><span class="sev medium">medium</span></td>
+              <td><span class="badge warn">talvez · usado por axios</span></td>
+              <td><span class="badge ok">open · fix em PR</span></td>
+              <td>14/05/2026</td>
+              <td><button class="btn-secondary" style="padding:5px 10px;">Ver PR</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Histórico · últimos 30d</div></div>
+        <table>
+          <thead><tr><th>CVE</th><th>Pacote</th><th>Severidade</th><th>Fixed em</th><th>Detectado</th><th>Resolvido</th></tr></thead>
+          <tbody>
+            <tr><td><code>CVE-2026-0901</code></td><td>next@14.2.x</td><td><span class="sev high">high</span></td><td>14.2.7</td><td>22/04</td><td>22/04 (mesmo dia · auto-merge)</td></tr>
+            <tr><td><code>CVE-2026-0654</code></td><td>postgres@3.4.x</td><td><span class="sev medium">medium</span></td><td>3.4.4</td><td>18/04</td><td>19/04</td></tr>
+            <tr><td><code>CVE-2026-0423</code></td><td>pino@9.0.x</td><td><span class="sev low">low</span></td><td>9.0.3</td><td>10/04</td><td>10/04</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CSP -->
+    <div class="tab-pane" id="tab-csp">
+      <div class="card">
+        <div class="card-head"><div class="card-title">CSP violations 24h (3)</div></div>
+        <table>
+          <thead><tr><th>Diretiva violada</th><th>Documento</th><th>Bloqueado</th><th>Source</th><th>UA</th><th>Quando</th></tr></thead>
+          <tbody>
+            <tr><td><code>script-src</code> · inline sem nonce</td><td>/pdi</td><td><code>inline</code></td><td>chart.js:14:32</td><td>Chrome 128</td><td>2h atrás</td></tr>
+            <tr><td><code>script-src</code> · inline sem nonce</td><td>/pdi</td><td><code>inline</code></td><td>chart.js:14:32</td><td>Chrome 128</td><td>3h atrás</td></tr>
+            <tr><td><code>img-src</code> · external sem allow-list</td><td>/comunicados</td><td><code>https://imgur.com/...</code></td><td>comunicado-html:24</td><td>Firefox 124</td><td>5h atrás</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:11.5px; color:var(--txt2); margin-top:10px;">Fix em revisão: adicionar nonce ao chart.js wrapper · sanitizar HTML de comunicados antes de salvar.</p>
+      </div>
+    </div>
+
+    <!-- Honeytokens -->
+    <div class="tab-pane" id="tab-honey">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Honeytokens ativos (7)</div></div>
+        <div class="honeytoken-banner">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <div>
+            <strong style="font-size:12.5px;">Sem hits nas últimas 90d.</strong>
+            <div style="font-size:11px; color:var(--txt2);">Qualquer hit dispara P1 instantâneo (PagerDuty + SMS).</div>
+          </div>
+        </div>
+        <table style="margin-top:14px;">
+          <thead><tr><th>Token ID</th><th>Local</th><th>Tipo</th><th>Plantado em</th><th>Hits 90d</th></tr></thead>
+          <tbody>
+            <tr><td><code>HT-001</code></td><td>src/lib/legacy/db.ts:42 (comentário)</td><td>fake API key Anthropic</td><td>02/03/2026</td><td>0</td></tr>
+            <tr><td><code>HT-002</code></td><td>scripts/migrate.sh:18 (env var)</td><td>fake DB connection string</td><td>02/03/2026</td><td>0</td></tr>
+            <tr><td><code>HT-003</code></td><td>docs/internal/deploy.md:88</td><td>fake AWS access key</td><td>02/03/2026</td><td>0</td></tr>
+            <tr><td><code>HT-004</code></td><td>worker/setup.py:14</td><td>fake Stripe secret</td><td>15/03/2026</td><td>0</td></tr>
+            <tr><td><code>HT-005</code></td><td>supabase/seed.sql:312</td><td>fake admin password</td><td>15/03/2026</td><td>0</td></tr>
+            <tr><td><code>HT-006</code></td><td>backup config file</td><td>fake B2 application key</td><td>10/04/2026</td><td>0</td></tr>
+            <tr><td><code>HT-007</code></td><td>kubeconfig (mock)</td><td>fake cluster token</td><td>10/04/2026</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- OWASP -->
+    <div class="tab-pane" id="tab-owasp">
+      <div class="card">
+        <div class="card-head"><div class="card-title">OWASP Top 10 (2021) · cobertura</div></div>
+        <div class="owasp-grid">
+          <div class="owasp-card"><div class="owasp-id">A01</div><div><div class="title">Broken Access Control</div><div class="desc">RLS 97% · testes 100% · métrica r2_rls_denials</div></div><span class="badge warn">97%</span></div>
+          <div class="owasp-card"><div class="owasp-id">A02</div><div><div class="title">Cryptographic Failures</div><div class="desc">bcrypt 12, JWT HS256, HMAC SHA-256, TLS 1.3</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A03</div><div><div class="title">Injection</div><div class="desc">queries parametrizadas · linter strict</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A04</div><div><div class="title">Insecure Design</div><div class="desc">@sensitive decorator, email_safe flag, threat model doc</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A05</div><div><div class="title">Security Misconfig</div><div class="desc">git-secrets, NODE_ENV check, error boundary</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A06</div><div><div class="title">Vulnerable Components</div><div class="desc">Snyk + Renovate · 0 crit · 2 medium accepted</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A07</div><div><div class="title">Auth Failures</div><div class="desc">rate-limit 3 camadas · MFA · zxcvbn ≥ 3</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A08</div><div><div class="title">Software & Data Integrity</div><div class="desc">GH Actions OIDC, npm ci, commits GPG-signed</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A09</div><div><div class="title">Logging & Monitoring</div><div class="desc">spec D5 ativa · alertas configurados</div></div><span class="badge ok">OK</span></div>
+          <div class="owasp-card"><div class="owasp-id">A10</div><div><div class="title">SSRF</div><div class="desc">whitelist scheme · bloqueio IP privado · timeout 5s</div></div><span class="badge ok">OK</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secrets -->
+    <div class="tab-pane" id="tab-secrets">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Segredos & rotação</div></div>
+          <button class="btn-danger">Rotação emergencial (todos)</button>
+        </div>
+        <table>
+          <thead><tr><th>Secret</th><th>Frequência</th><th>Última rotação</th><th>Próxima</th><th>Status</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr><td><code>JWT_SECRET</code></td><td>90 dias</td><td>22/03/2026</td><td>20/06/2026</td><td><span class="badge ok">em dia · 38d</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Rotacionar agora</button></td></tr>
+            <tr><td>Webhook signing GPC</td><td>sob demanda</td><td>02/04/2026</td><td>—</td><td><span class="badge ok">OK</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Rotacionar</button></td></tr>
+            <tr><td><code>DB_PASSWORD</code></td><td>180 dias</td><td>10/02/2026</td><td>09/08/2026</td><td><span class="badge ok">em dia · 84d</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Rotacionar</button></td></tr>
+            <tr><td>SMTP SendGrid</td><td>anual</td><td>05/01/2026</td><td>05/01/2027</td><td><span class="badge ok">em dia</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Rotacionar</button></td></tr>
+            <tr><td>Service role key Supabase</td><td>anual</td><td>14/02/2026</td><td>14/02/2027</td><td><span class="badge ok">em dia</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Rotacionar</button></td></tr>
+            <tr><td>OAuth Google client_secret</td><td>anual</td><td>30/11/2025</td><td>30/11/2026</td><td><span class="badge warn">196d</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Rotacionar</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
