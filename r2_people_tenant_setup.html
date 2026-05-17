@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Configuração inicial · Tenant Setup</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:linear-gradient(180deg, #F4F7FC 0%, #E7EFFB 100%); color:var(--txt); font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; min-height:100vh;}
+
+/* Header minimal */
+.setup-header{background:#fff; border-bottom:1px solid var(--gray1); padding:14px 26px; display:flex; align-items:center; justify-content:space-between;}
+.setup-brand{display:flex; align-items:center; gap:10px;}
+.setup-brand img{height:30px;}
+.setup-brand-text{line-height:1.1;}
+.setup-brand-name{font-size:14px; font-weight:600;}
+.setup-brand-sub{font-size:10.5px; color:var(--txt2);}
+.setup-tenant-tag{font-size:12px; color:var(--txt2);}
+.setup-tenant-tag strong{color:var(--txt);}
+.setup-actions{display:flex; gap:8px; align-items:center;}
+.setup-actions a{font-size:11.5px; color:var(--txt2); text-decoration:none;}
+.setup-actions a:hover{color:var(--orange);}
+
+/* Container */
+.setup-wrap{max-width:760px; margin:0 auto; padding:30px 24px 60px;}
+
+/* Timeline */
+.timeline{display:flex; gap:0; align-items:center; margin-bottom:34px; padding:0 8px;}
+.tl-step{flex:1; display:flex; align-items:center; gap:8px; position:relative;}
+.tl-dot{width:32px; height:32px; border-radius:50%; background:var(--gray1); color:var(--txt2); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; font-family:'JetBrains Mono', monospace; flex-shrink:0; border:2px solid var(--gray1); transition:all .14s;}
+.tl-step.done .tl-dot{background:var(--green); color:#fff; border-color:var(--green);}
+.tl-step.active .tl-dot{background:var(--orange); color:#fff; border-color:var(--orange); box-shadow:0 0 0 5px rgba(245,131,52,.15);}
+.tl-label{font-size:10.5px; color:var(--txt2); font-weight:500; white-space:nowrap; display:none;}
+.tl-step.active .tl-label{color:var(--orange); font-weight:600; display:block;}
+.tl-step:not(:last-child)::after{content:''; position:absolute; left:42px; right:-8px; top:15px; height:2px; background:var(--gray1); z-index:-1;}
+.tl-step.done:not(:last-child)::after{background:var(--green);}
+
+/* Step card */
+.step-card{background:#fff; border-radius:16px; box-shadow:0 4px 20px rgba(26,45,79,.06); overflow:hidden;}
+.step-card-head{padding:30px 36px 6px;}
+.step-num{font-size:11px; font-weight:600; color:var(--orange); text-transform:uppercase; letter-spacing:1px; font-family:'JetBrains Mono', monospace; margin-bottom:8px;}
+.step-card-head h1{font-size:24px; font-weight:600; letter-spacing:-.3px; margin-bottom:6px;}
+.step-card-head p{font-size:13.5px; color:var(--txt2); line-height:1.55; max-width:560px;}
+.step-card-body{padding:24px 36px 30px;}
+
+/* Form */
+.form-group{margin-bottom:18px;}
+.form-label{display:block; font-size:12px; font-weight:500; color:var(--txt); margin-bottom:6px;}
+.form-label .req{color:var(--danger);}
+.form-input{width:100%; padding:11px 13px; border:1px solid var(--gray2); border-radius:8px; font-size:13.5px; font-family:inherit; background:#fff; transition:border-color .12s;}
+.form-input:focus{border-color:var(--orange); outline:none; box-shadow:0 0 0 3px rgba(245,131,52,.1);}
+.form-hint{font-size:11px; color:var(--txt2); margin-top:5px;}
+.form-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+
+/* Brand preview */
+.brand-preview{background:var(--off); border-radius:10px; padding:18px; display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+.brand-input{display:flex; flex-direction:column; gap:10px;}
+.color-picker{display:flex; align-items:center; gap:10px; padding:8px 10px; background:#fff; border:1px solid var(--gray2); border-radius:8px;}
+.color-swatch{width:30px; height:30px; border-radius:6px; cursor:pointer; border:1px solid var(--gray1);}
+.color-input{flex:1; border:none; font-family:'JetBrains Mono', monospace; font-size:12px; background:transparent; padding:0;}
+.upload-zone{padding:18px; background:#fff; border:1px dashed var(--gray3); border-radius:8px; text-align:center; cursor:pointer;}
+.upload-zone:hover{border-color:var(--orange);}
+.upload-zone svg{width:28px; height:28px; color:var(--txt2); margin-bottom:6px;}
+.upload-zone .lbl{font-size:12.5px; color:var(--txt);}
+.upload-zone .meta{font-size:10.5px; color:var(--txt2); margin-top:2px;}
+.preview-mini{background:#fff; border:1px solid var(--gray1); border-radius:8px; overflow:hidden;}
+.preview-mini-top{height:32px; display:flex; align-items:center; padding:0 12px; gap:8px;}
+.preview-mini-logo{width:18px; height:18px; border-radius:4px;}
+.preview-mini-brand{font-size:11px; font-weight:600;}
+.preview-mini-body{padding:14px; min-height:80px; background:var(--off);}
+.preview-mini-cta{display:inline-block; padding:6px 12px; border-radius:6px; font-size:11px; color:#fff; font-weight:500;}
+
+/* MFA QR */
+.mfa-container{display:grid; grid-template-columns:auto 1fr; gap:24px; padding:18px; background:var(--off); border-radius:10px;}
+.mfa-qr{width:140px; height:140px; background:#fff; border:1px solid var(--gray2); border-radius:10px; display:flex; align-items:center; justify-content:center; padding:10px;}
+.mfa-qr-pattern{width:120px; height:120px; background-image:
+  linear-gradient(45deg, var(--txt) 25%, transparent 25%),
+  linear-gradient(-45deg, var(--txt) 25%, transparent 25%),
+  linear-gradient(45deg, transparent 75%, var(--txt) 75%),
+  linear-gradient(-45deg, transparent 75%, var(--txt) 75%);
+  background-size:14px 14px;
+  background-position:0 0, 0 7px, 7px -7px, -7px 0;
+  position:relative;
+}
+.mfa-qr-pattern::before, .mfa-qr-pattern::after{content:''; position:absolute; width:30px; height:30px; background:#fff; border:6px solid var(--txt);}
+.mfa-qr-pattern::before{top:0; left:0;}
+.mfa-qr-pattern::after{top:0; right:0;}
+.mfa-info h4{font-size:13.5px; font-weight:600; margin-bottom:6px;}
+.mfa-info p{font-size:12px; color:var(--txt2); margin-bottom:10px;}
+.mfa-recovery{background:#fff; padding:11px; border-radius:8px; font-family:'JetBrains Mono', monospace; font-size:11px; line-height:1.7; border:1px solid var(--gray2);}
+.mfa-recovery .codes{column-count:2; column-gap:14px;}
+
+/* Why panel */
+.why-trigger{font-size:11.5px; color:var(--orange); cursor:pointer; display:inline-flex; align-items:center; gap:4px; margin-top:8px;}
+.why-trigger:hover{text-decoration:underline;}
+.why-panel{margin-top:14px; padding:14px 16px; background:var(--blue2); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; font-size:12px; color:var(--navy); line-height:1.55; display:none;}
+.why-panel.open{display:block;}
+.why-panel strong{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.6px; margin-bottom:4px;}
+
+/* Footer nav */
+.step-footer{padding:18px 36px; background:var(--off); border-top:1px solid var(--gray1); display:flex; justify-content:space-between; align-items:center;}
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:11px 22px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary:disabled{background:var(--gray3); cursor:not-allowed;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:11px 18px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-link{background:none; border:none; color:var(--txt2); font-size:12px; cursor:pointer; font-family:inherit; text-decoration:underline;}
+.btn-link:hover{color:var(--orange);}
+.shortcut-hint{font-size:11px; color:var(--txt3); font-family:'JetBrains Mono', monospace;}
+
+/* Policy rows */
+.policy-row{display:grid; grid-template-columns:1fr auto auto auto auto auto; gap:12px; padding:11px 14px; background:var(--off); border-radius:8px; margin-bottom:6px; align-items:center; font-size:12.5px;}
+.policy-row.head{background:transparent; font-size:10.5px; text-transform:uppercase; color:var(--txt2); letter-spacing:.4px; font-weight:500; padding-bottom:4px;}
+.policy-row input[type="checkbox"]{cursor:pointer; width:16px; height:16px; accent-color:var(--orange);}
+
+@media (max-width:760px){
+  .form-row{grid-template-columns:1fr;}
+  .brand-preview{grid-template-columns:1fr;}
+  .mfa-container{grid-template-columns:1fr;}
+  .timeline{overflow-x:auto;}
+  .step-card-head, .step-card-body, .step-footer{padding-left:20px; padding-right:20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="setup-header">
+  <div class="setup-brand">
+    <img src="assets/gpc-color.png" alt="GPC">
+    <div class="setup-brand-text">
+      <div class="setup-brand-name">R2 People</div>
+      <div class="setup-brand-sub">Configuração inicial</div>
+    </div>
+  </div>
+  <div class="setup-tenant-tag">Configurando <strong>GPC · Grupo Pinto Cerqueira</strong></div>
+  <div class="setup-actions">
+    <a href="r2_people_login.html">Sair</a>
+  </div>
+</div>
+
+<div class="setup-wrap">
+  <!-- Timeline -->
+  <div class="timeline" role="navigation" aria-label="Progresso do setup">
+    <div class="tl-step done"><div class="tl-dot">✓</div><div class="tl-label">Termos</div></div>
+    <div class="tl-step done"><div class="tl-dot">✓</div><div class="tl-label">Tenant</div></div>
+    <div class="tl-step done"><div class="tl-dot">✓</div><div class="tl-label">Branding</div></div>
+    <div class="tl-step active"><div class="tl-dot">4</div><div class="tl-label">Primeira pessoa</div></div>
+    <div class="tl-step"><div class="tl-dot">5</div><div class="tl-label">Estrutura</div></div>
+    <div class="tl-step"><div class="tl-dot">6</div><div class="tl-label">Política</div></div>
+    <div class="tl-step"><div class="tl-dot">7</div><div class="tl-label">MFA</div></div>
+  </div>
+
+  <!-- Step card · exemplo passo 4 (primeira pessoa admin) -->
+  <div class="step-card" role="region" aria-live="polite">
+    <div class="step-card-head">
+      <div class="step-num">Passo 4 de 7</div>
+      <h1>Adicione a primeira pessoa</h1>
+      <p>Comece com você como administrador. Depois você importa o time todo de uma vez via planilha — não precisa cadastrar à mão.</p>
+    </div>
+
+    <div class="step-card-body">
+      <div class="form-group">
+        <label class="form-label">Seu nome completo <span class="req">*</span></label>
+        <input class="form-input" type="text" value="Patrícia Mello">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">E-mail <span class="req">*</span></label>
+          <input class="form-input" type="email" value="patricia.mello@gpc.com.br">
+          <div class="form-hint">Login + canal de recuperação</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CPF</label>
+          <input class="form-input" type="text" placeholder="000.000.000-00">
+          <div class="form-hint">Opcional · só pedimos quando precisamos para CTPS</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Seu papel inicial <span class="req">*</span></label>
+        <select class="form-input">
+          <option>tenant_admin · acesso total (recomendado para você)</option>
+          <option>rh · acessa pessoas e dados sensíveis</option>
+          <option>diretoria · vê todos os indicadores agregados</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Seu RH é interno ou terceirizado?</label>
+        <div style="display:flex; gap:14px; padding:6px 0;">
+          <label style="font-size:12.5px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="radio" name="rh-type" checked style="accent-color:var(--orange);"> Interno (uma equipe minha cuida)
+          </label>
+          <label style="font-size:12.5px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="radio" name="rh-type" style="accent-color:var(--orange);"> Terceirizado (escritório/prestador)
+          </label>
+        </div>
+      </div>
+
+      <span class="why-trigger" onclick="this.nextElementSibling.classList.toggle('open')">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Por que pedimos isso?
+      </span>
+      <div class="why-panel">
+        <strong>Base legal · LGPD Art. 7º V</strong>
+        Esses dados são necessários para executar o contrato entre você (controlador) e a R2 (operador). Seu papel <code style="background:#fff; padding:1px 5px; border-radius:3px;">tenant_admin</code> define quem na sua empresa terá privilégios elevados (pode ver dados sensíveis, criar webhooks, alterar configurações de segurança). Você pode delegar este papel depois, mas alguém precisa começar.
+      </div>
+    </div>
+
+    <div class="step-footer">
+      <button class="btn-link" aria-label="Voltar ao passo anterior">← Voltar</button>
+      <span class="shortcut-hint">Ctrl+Enter avança</span>
+      <button class="btn-primary">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- Mini-preview do passo 7 (MFA) -->
+  <div class="step-card" style="margin-top:24px; opacity:.6;" aria-hidden="true">
+    <div class="step-card-head">
+      <div class="step-num">Pré-visualização · Passo 7</div>
+      <h1>Proteja sua conta com MFA</h1>
+      <p>Como admin, você tem acesso a dados sensíveis. MFA é obrigatório para tenant_admin (não pode pular).</p>
+    </div>
+    <div class="step-card-body">
+      <div class="mfa-container">
+        <div class="mfa-qr"><div class="mfa-qr-pattern"></div></div>
+        <div class="mfa-info">
+          <h4>Escaneie com Google Authenticator, Authy ou 1Password</h4>
+          <p>Depois do scan, baixe e guarde os códigos de recuperação. Você precisa de pelo menos 1 caso perca o celular.</p>
+          <div class="mfa-recovery">
+            <div class="codes">
+              <div>a3f9-7k2x</div>
+              <div>b2e8-1m4n</div>
+              <div>c7d2-9p3q</div>
+              <div>d4f1-5r6s</div>
+              <div>e9g3-2t4v</div>
+              <div>f1h5-8w7y</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mini-preview branding passo 3 -->
+  <div class="step-card" style="margin-top:24px; opacity:.6;" aria-hidden="true">
+    <div class="step-card-head">
+      <div class="step-num">Pré-visualização · Passo 3</div>
+      <h1>Personalize a aparência</h1>
+      <p>Sua identidade visual aparece para todos os colaboradores. Pode pular e usar o template R2.</p>
+    </div>
+    <div class="step-card-body">
+      <div class="brand-preview">
+        <div class="brand-input">
+          <div class="upload-zone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div class="lbl">Arraste seu logo aqui ou clique</div>
+            <div class="meta">PNG/SVG · 256×256 mín. · 2MB máx.</div>
+          </div>
+          <div class="color-picker">
+            <div class="color-swatch" style="background:#2E476F;"></div>
+            <input class="color-input" value="#2E476F">
+            <span style="font-size:11px; color:var(--txt2);">primária</span>
+          </div>
+          <div class="color-picker">
+            <div class="color-swatch" style="background:#F58634;"></div>
+            <input class="color-input" value="#F58634">
+            <span style="font-size:11px; color:var(--txt2);">secundária</span>
+          </div>
+        </div>
+        <div class="preview-mini">
+          <div class="preview-mini-top" style="background:#2E476F; color:#fff;">
+            <div class="preview-mini-logo" style="background:#F58634;"></div>
+            <span class="preview-mini-brand">GPC</span>
+          </div>
+          <div class="preview-mini-body">
+            <div style="font-size:11px; color:var(--txt2); margin-bottom:8px;">Preview da home</div>
+            <span class="preview-mini-cta" style="background:#F58634;">Nova movimentação</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mini-preview política passo 6 -->
+  <div class="step-card" style="margin-top:24px; opacity:.6;" aria-hidden="true">
+    <div class="step-card-head">
+      <div class="step-num">Pré-visualização · Passo 6</div>
+      <h1>Defina quem vê o quê</h1>
+      <p>Marque os papéis que podem visualizar cada categoria. Você refina depois em <code style="background:var(--gray1); padding:1px 6px; border-radius:4px; font-size:11px;">Acessos & Perfis</code>.</p>
+    </div>
+    <div class="step-card-body">
+      <div class="policy-row head"><div>Permissão</div><div>colab.</div><div>líder</div><div>rh</div><div>diret.</div><div>admin</div></div>
+      <div class="policy-row">
+        <div><strong>view_salary</strong> · ver salário de colaboradores</div>
+        <div><input type="checkbox"></div>
+        <div><input type="checkbox"></div>
+        <div><input type="checkbox" checked></div>
+        <div><input type="checkbox" checked></div>
+        <div><input type="checkbox" checked></div>
+      </div>
+      <div class="policy-row">
+        <div><strong>view_medical_cid</strong> · ver CID em atestados</div>
+        <div><input type="checkbox"></div>
+        <div><input type="checkbox"></div>
+        <div><input type="checkbox" checked></div>
+        <div><input type="checkbox"></div>
+        <div><input type="checkbox" checked></div>
+      </div>
+      <div class="policy-row">
+        <div><strong>approve_movements</strong> · aprovar promo/transfer</div>
+        <div><input type="checkbox"></div>
+        <div><input type="checkbox" checked></div>
+        <div><input type="checkbox" checked></div>
+        <div><input type="checkbox" checked></div>
+        <div><input type="checkbox" checked></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status indicator at bottom -->
+  <div style="text-align:center; margin-top:24px; font-size:11.5px; color:var(--txt3);">
+    Progresso salvo automaticamente · você pode <a href="r2_people_home.html" style="color:var(--orange); text-decoration:none;">continuar depois</a>
+    <div style="font-family:'JetBrains Mono', monospace; margin-top:4px;">tenant_onboarding · steps_completed=[1,2,3] · current=4</div>
+  </div>
+</div>
+
+<script>
+// Ctrl+Enter avança
+document.addEventListener('keydown', function(e){
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    const btn = document.querySelector('.step-footer .btn-primary');
+    if (btn) btn.click();
+  }
+});
+</script>
+</body>
+</html>
