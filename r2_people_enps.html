@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · eNPS · Employee Net Promoter Score</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA; --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2; --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px; --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:#fff; display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--green),var(--teal)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.container{max-width:1200px; margin:0 auto;}
+
+.page-header{margin-bottom:22px;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+/* eNPS big number hero */
+.enps-hero{background:#fff; border-radius:var(--radius-lg); padding:32px 36px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); margin-bottom:18px; display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:center;}
+.enps-big{font-family:'JetBrains Mono',monospace; font-size:96px; font-weight:800; line-height:1; letter-spacing:-3px;}
+.enps-big.zone-excelente{color:#15803D;}
+.enps-big.zone-bom{color:#22C55E;}
+.enps-big.zone-aceitavel{color:var(--amber);}
+.enps-big.zone-ruim{color:var(--red);}
+.enps-info h2{font-size:18px; font-weight:700; margin-bottom:6px;}
+.enps-zone-label{display:inline-block; padding:4px 12px; border-radius:14px; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; margin-bottom:10px;}
+.enps-zone-label.excelente{background:#15803D; color:#fff;}
+.enps-zone-label.bom{background:#22C55E; color:#fff;}
+.enps-zone-label.aceitavel{background:var(--amber); color:#fff;}
+.enps-zone-label.ruim{background:var(--red); color:#fff;}
+.enps-desc{font-size:13px; color:var(--txt2); line-height:1.55; margin-bottom:12px;}
+.enps-delta{display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;}
+.enps-delta.up{background:var(--green2); color:var(--green);}
+.enps-delta.down{background:var(--red2); color:var(--red);}
+
+/* Distribution bar */
+.dist-card{background:#fff; border-radius:var(--radius-lg); padding:22px 24px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); margin-bottom:18px;}
+.dist-header{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.dist-header h3{font-size:14px; font-weight:700;}
+.dist-meta{font-size:11.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace;}
+
+.dist-bar{display:flex; height:36px; border-radius:8px; overflow:hidden; margin-bottom:14px;}
+.dist-seg{display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-family:'JetBrains Mono',monospace; font-size:13px;}
+.dist-seg.detractors{background:#DC2626;}
+.dist-seg.passives{background:#F59E0B;}
+.dist-seg.promoters{background:#16A34A;}
+
+.dist-legend{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;}
+.dist-legend-item{padding:12px 14px; border-radius:8px; border:1px solid var(--gray1);}
+.dist-legend-item.detractors{background:#FEF2F2; border-color:#FECACA;}
+.dist-legend-item.passives{background:#FFFBEB; border-color:#FDE68A;}
+.dist-legend-item.promoters{background:#F0FDF4; border-color:#BBF7D0;}
+.dist-legend-label{font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.14em; font-weight:700; margin-bottom:5px;}
+.dist-legend-item.detractors .dist-legend-label{color:#991B1B;}
+.dist-legend-item.passives .dist-legend-label{color:#854D0E;}
+.dist-legend-item.promoters .dist-legend-label{color:#15803D;}
+.dist-legend-count{font-size:22px; font-weight:800; font-family:'JetBrains Mono',monospace; line-height:1; margin-bottom:3px;}
+.dist-legend-desc{font-size:11px; color:var(--txt2); line-height:1.4;}
+
+/* Trend chart */
+.trend-card{background:#fff; border-radius:var(--radius-lg); padding:22px 24px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); margin-bottom:18px;}
+.trend-card h3{font-size:14px; font-weight:700; margin-bottom:16px;}
+.trend-svg{width:100%; height:200px;}
+
+/* By unit table */
+.units-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); overflow:hidden; border:1px solid var(--gray1); margin-bottom:18px;}
+.units-card .units-header{padding:16px 20px; border-bottom:1px solid var(--gray1);}
+.units-card .units-header h3{font-size:14px; font-weight:700;}
+.units-table{width:100%; border-collapse:collapse; font-size:13px;}
+.units-table th{padding:12px 16px; text-align:left; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt3); text-transform:uppercase; letter-spacing:.12em; border-bottom:1px solid var(--gray1); font-weight:700; background:var(--off);}
+.units-table td{padding:12px 16px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+.units-table tr:last-child td{border-bottom:0;}
+.unit-score{font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:800;}
+.unit-score.up{color:#15803D;}
+.unit-score.mid{color:var(--amber);}
+.unit-score.down{color:var(--red);}
+.unit-bar{width:100%; height:6px; background:var(--gray1); border-radius:3px; overflow:hidden;}
+.unit-bar-fill{height:100%; border-radius:3px;}
+.unit-delta{font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;}
+
+/* Comments */
+.comments-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;}
+.comments-card{background:#fff; border-radius:var(--radius-lg); padding:18px 20px; box-shadow:var(--shadow-card); border:1px solid var(--gray1);}
+.comments-card h3{font-size:13px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:7px;}
+.comment-item{padding:10px 12px; border-radius:8px; font-size:12.5px; line-height:1.5; margin-bottom:8px; border-left:3px solid;}
+.comment-item.positivo{background:var(--green2); border-color:var(--green); color:var(--txt);}
+.comment-item.negativo{background:var(--red2); border-color:var(--red); color:var(--txt);}
+.comment-meta{font-size:10.5px; color:var(--txt2); margin-top:5px; font-family:'JetBrains Mono',monospace;}
+
+/* Survey card · pending */
+.survey-pending{background:linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%); color:#fff; border-radius:var(--radius-lg); padding:24px 28px; margin-bottom:18px;}
+.survey-pending h3{font-size:18px; font-weight:800; margin-bottom:8px;}
+.survey-pending p{font-size:13px; opacity:.93; margin-bottom:16px; max-width:520px;}
+.survey-pending-actions{display:flex; gap:10px;}
+.btn-respond{background:#fff; color:var(--navy); border:none; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;}
+.btn-later{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.4); padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;}
+
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .enps-hero{grid-template-columns:1fr; gap:14px;}
+  .enps-big{font-size:64px;}
+  .dist-legend{grid-template-columns:1fr;}
+  .comments-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item" href="r2_people_admin_dashboard.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Dashboard</a>
+      <div class="sidebar-section">Pesquisas</div>
+      <a class="nav-item" href="r2_people_clima.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Clima organizacional</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>eNPS</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-title"><span>Pesquisas</span><span class="sep">›</span><span class="crumb">eNPS</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info"><span class="user-name">Patrícia Mello</span><span class="user-role">Coordenadora RH · GPC</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div class="page-eyebrow">Pesquisas <span class="sep">·</span> eNPS quinzenal <span class="sep">·</span> Q2/2026</div>
+        <h1 class="page-title">Employee NPS <em>· Q2/2026</em></h1>
+        <p class="page-subtitle">Pergunta única: "Em uma escala de 0 a 10, o quanto você recomendaria GPC como um lugar pra trabalhar?" · respondida quinzenalmente.</p>
+      </div>
+
+      <div class="survey-pending">
+        <h3>🎯 Nova rodada eNPS aberta · você ainda não respondeu</h3>
+        <p>Sua resposta entra no agregado da semana. Anônima e protegida. Leva 30 segundos.</p>
+        <div class="survey-pending-actions">
+          <button class="btn-respond">Responder agora →</button>
+          <button class="btn-later">Lembrar amanhã</button>
+        </div>
+      </div>
+
+      <div class="enps-hero">
+        <div class="enps-big zone-bom">+42</div>
+        <div class="enps-info">
+          <span class="enps-zone-label bom">Zona boa</span>
+          <h2>eNPS consolidado · GPC · esta quinzena</h2>
+          <p class="enps-desc">Subiu <strong style="color:var(--green);">+5 pontos</strong> em relação à quinzena anterior. <strong>287 respondentes</strong> de 367 elegíveis · participação 78% (acima da média histórica de 71%).</p>
+          <span class="enps-delta up">▲ +5 · vs quinzena anterior</span>
+          &nbsp;
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--txt2);">Mediana benchmark setor: +25</span>
+        </div>
+      </div>
+
+      <div class="dist-card">
+        <div class="dist-header">
+          <h3>Distribuição esta quinzena</h3>
+          <div class="dist-meta">287 respondentes · 22/mai/2026</div>
+        </div>
+        <div class="dist-bar">
+          <div class="dist-seg detractors" style="width:18%;">18%</div>
+          <div class="dist-seg passives" style="width:22%;">22%</div>
+          <div class="dist-seg promoters" style="width:60%;">60%</div>
+        </div>
+        <div class="dist-legend">
+          <div class="dist-legend-item detractors">
+            <div class="dist-legend-label">Detratores · notas 0-6</div>
+            <div class="dist-legend-count">52</div>
+            <div class="dist-legend-desc">Insatisfeitos · podem falar mal da empresa</div>
+          </div>
+          <div class="dist-legend-item passives">
+            <div class="dist-legend-label">Passivos · notas 7-8</div>
+            <div class="dist-legend-count">63</div>
+            <div class="dist-legend-desc">Indiferentes · neutros e influenciáveis</div>
+          </div>
+          <div class="dist-legend-item promoters">
+            <div class="dist-legend-label">Promotores · notas 9-10</div>
+            <div class="dist-legend-count">172</div>
+            <div class="dist-legend-desc">Engajados · indicam GPC ativamente</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trend-card">
+        <h3>Tendência últimas 12 quinzenas</h3>
+        <svg class="trend-svg" viewBox="0 0 800 200" preserveAspectRatio="none">
+          <!-- Linha base zero -->
+          <line x1="40" y1="100" x2="800" y2="100" stroke="#E4E8EE" stroke-width="1"/>
+          <!-- Eixo Y labels -->
+          <text x="35" y="20" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#8FA3BE">+100</text>
+          <text x="35" y="65" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#8FA3BE">+50</text>
+          <text x="35" y="105" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#8FA3BE">0</text>
+          <text x="35" y="150" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#8FA3BE">-50</text>
+          <text x="35" y="195" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#8FA3BE">-100</text>
+          <!-- Gridlines -->
+          <line x1="40" y1="20" x2="800" y2="20" stroke="#EFF1F5" stroke-width="0.5"/>
+          <line x1="40" y1="65" x2="800" y2="65" stroke="#EFF1F5" stroke-width="0.5"/>
+          <line x1="40" y1="150" x2="800" y2="150" stroke="#EFF1F5" stroke-width="0.5"/>
+          <line x1="40" y1="195" x2="800" y2="195" stroke="#EFF1F5" stroke-width="0.5"/>
+          <!-- Zona boa (40-70) -->
+          <rect x="40" y="46" width="760" height="27" fill="rgba(34,197,94,.06)"/>
+          <!-- Trend line · 12 pontos · valores entre 18 e 42 -->
+          <polyline points="80,82 142,77 204,75 266,69 328,74 390,67 452,72 514,65 576,69 638,63 700,58 762,55"
+                    stroke="#1E5FBF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- Pontos -->
+          <g fill="#1E5FBF">
+            <circle cx="80" cy="82" r="4"/><circle cx="142" cy="77" r="4"/><circle cx="204" cy="75" r="4"/>
+            <circle cx="266" cy="69" r="4"/><circle cx="328" cy="74" r="4"/><circle cx="390" cy="67" r="4"/>
+            <circle cx="452" cy="72" r="4"/><circle cx="514" cy="65" r="4"/><circle cx="576" cy="69" r="4"/>
+            <circle cx="638" cy="63" r="4"/><circle cx="700" cy="58" r="4"/><circle cx="762" cy="55" r="5" stroke="#fff" stroke-width="2"/>
+          </g>
+          <!-- Valor atual destacado -->
+          <text x="762" y="42" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#15803D">+42</text>
+          <!-- X axis labels (quinzenas) -->
+          <g font-family="JetBrains Mono, monospace" font-size="9" fill="#8FA3BE" text-anchor="middle">
+            <text x="80" y="180">Q9</text>
+            <text x="204" y="180">Q11</text>
+            <text x="328" y="180">Q13</text>
+            <text x="452" y="180">Q15</text>
+            <text x="576" y="180">Q17</text>
+            <text x="700" y="180">Q19</text>
+            <text x="762" y="180" font-weight="700" fill="#1A2D4F">Q20</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="units-card">
+        <div class="units-header"><h3>eNPS por unidade · esta quinzena</h3></div>
+        <table class="units-table">
+          <thead>
+            <tr>
+              <th>Unidade</th>
+              <th>Respondentes</th>
+              <th>eNPS</th>
+              <th>Distribuição</th>
+              <th>Δ vs anterior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cestão L1</strong><div style="font-size:11px; color:var(--txt2);">78 colab</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;">71 / 78<div style="font-size:10.5px; color:var(--txt2);">91%</div></td>
+              <td class="unit-score up">+68</td>
+              <td><div class="unit-bar"><div class="unit-bar-fill" style="width:84%; background:#16A34A;"></div></div></td>
+              <td class="unit-delta" style="color:var(--green);">▲ +8</td>
+            </tr>
+            <tr>
+              <td><strong>Sede ATP</strong><div style="font-size:11px; color:var(--txt2);">62 colab</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;">58 / 62<div style="font-size:10.5px; color:var(--txt2);">94%</div></td>
+              <td class="unit-score up">+62</td>
+              <td><div class="unit-bar"><div class="unit-bar-fill" style="width:81%; background:#16A34A;"></div></div></td>
+              <td class="unit-delta" style="color:var(--green);">▲ +3</td>
+            </tr>
+            <tr>
+              <td><strong>ATP Atacado</strong><div style="font-size:11px; color:var(--txt2);">71 colab</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;">54 / 71<div style="font-size:10.5px; color:var(--txt2);">76%</div></td>
+              <td class="unit-score up">+54</td>
+              <td><div class="unit-bar"><div class="unit-bar-fill" style="width:77%; background:#16A34A;"></div></div></td>
+              <td class="unit-delta" style="color:var(--green);">▲ +6</td>
+            </tr>
+            <tr>
+              <td><strong>Cestão Inhambupe</strong><div style="font-size:11px; color:var(--txt2);">62 colab</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;">42 / 62<div style="font-size:10.5px; color:var(--txt2);">68%</div></td>
+              <td class="unit-score mid">+38</td>
+              <td><div class="unit-bar"><div class="unit-bar-fill" style="width:69%; background:#F59E0B;"></div></div></td>
+              <td class="unit-delta" style="color:var(--green);">▲ +4</td>
+            </tr>
+            <tr>
+              <td><strong>ATP Varejo</strong><div style="font-size:11px; color:var(--txt2);">94 colab</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;">52 / 94<div style="font-size:10.5px; color:var(--txt2);">55%</div></td>
+              <td class="unit-score down">+12</td>
+              <td><div class="unit-bar"><div class="unit-bar-fill" style="width:56%; background:#DC2626;"></div></div></td>
+              <td class="unit-delta" style="color:var(--red);">▼ -18</td>
+            </tr>
+            <tr>
+              <td><strong>Labuta (terc.)</strong><div style="font-size:11px; color:var(--txt2);">60 colab</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;">10 / 60<div style="font-size:10.5px; color:var(--txt2);">17%</div></td>
+              <td class="unit-score down">-12</td>
+              <td><div class="unit-bar"><div class="unit-bar-fill" style="width:44%; background:#DC2626;"></div></div></td>
+              <td class="unit-delta" style="color:var(--red);">▼ -15</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="comments-grid">
+        <div class="comments-card">
+          <h3>👍 O que as pessoas elogiam</h3>
+          <div class="comment-item positivo">
+            "Liderança imediata é genuinamente acessível. Tenho 1:1s quinzenais que fazem diferença."
+            <div class="comment-meta">Promotor · ATP Atacado · há 2d</div>
+          </div>
+          <div class="comment-item positivo">
+            "Crescimento real. Em 18 meses passei de Júnior pra Pleno. Não vi isso em lugar nenhum antes."
+            <div class="comment-meta">Promotor · Cestão L1 · há 4d</div>
+          </div>
+          <div class="comment-item positivo">
+            "Time bom de verdade. As pessoas se ajudam. Ambiente raro."
+            <div class="comment-meta">Promotor · Sede ATP · há 5d</div>
+          </div>
+          <div class="comment-item positivo">
+            "Benefícios competitivos. Gympass + plano saúde + VR diferenciado."
+            <div class="comment-meta">Promotor · Cestão Inhambupe · há 7d</div>
+          </div>
+        </div>
+        <div class="comments-card">
+          <h3>👎 O que precisa melhorar</h3>
+          <div class="comment-item negativo">
+            "Carga de trabalho insustentável nas frentes. Hora extra virou regra."
+            <div class="comment-meta">Detrator · ATP Varejo · há 1d</div>
+          </div>
+          <div class="comment-item negativo">
+            "Salário abaixo do mercado pra função. Reajuste anual não cobre inflação."
+            <div class="comment-meta">Detrator · Labuta · há 3d</div>
+          </div>
+          <div class="comment-item negativo">
+            "Equipamentos antigos. Computador trava o tempo todo. Trabalho fica mais lento."
+            <div class="comment-meta">Detrator · ATP Varejo · há 4d</div>
+          </div>
+          <div class="comment-item negativo">
+            "Falta de plano de carreira claro. Não sei o que preciso pra subir."
+            <div class="comment-meta">Passivo · Labuta · há 6d</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:14px 18px; background:var(--green2); border-radius:10px; border-left:4px solid var(--green); font-size:12.5px; color:var(--txt);">
+        <strong style="color:var(--green);">🔒 Privacidade garantida</strong> · respostas individuais nunca são identificáveis. Coortes com &lt;5 respondentes não aparecem. Comentários selecionados perdem qualquer metadado que possa identificar quem escreveu.
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>

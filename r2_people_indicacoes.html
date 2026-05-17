@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Programa de indicação · R$ 1.500 por contratação</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA; --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2; --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB; --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px; --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:#fff; display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--navy),var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.container{max-width:1100px; margin:0 auto;}
+
+.page-header{margin-bottom:22px; display:flex; align-items:flex-end; justify-content:space-between; gap:18px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--orange); color:#fff; border:none; padding:10px 18px; border-radius:8px; font-size:13.5px; font-weight:700; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:8px;}
+.btn-primary:hover{background:#DC7529;}
+.btn-primary svg{width:14px; height:14px;}
+
+/* Money hero */
+.money-hero{background:linear-gradient(135deg, var(--green) 0%, var(--teal) 100%); color:#fff; border-radius:var(--radius-lg); padding:28px 32px; margin-bottom:18px; display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center; position:relative; overflow:hidden;}
+.money-hero::before{content:''; position:absolute; top:-30%; right:-5%; width:280px; height:280px; background:radial-gradient(circle, rgba(245,134,52,.35) 0%, transparent 65%); border-radius:50%;}
+.money-hero-info{position:relative; z-index:2;}
+.money-hero-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; opacity:.85; text-transform:uppercase; letter-spacing:.14em; margin-bottom:6px;}
+.money-hero h2{font-size:24px; font-weight:800; letter-spacing:-.3px; margin-bottom:6px;}
+.money-hero p{font-size:14px; opacity:.95; max-width:540px; line-height:1.5;}
+.money-hero-total{position:relative; z-index:2; text-align:right;}
+.money-hero-total-label{font-family:'JetBrains Mono',monospace; font-size:11px; opacity:.85; text-transform:uppercase; letter-spacing:.14em;}
+.money-hero-total-value{font-size:36px; font-weight:800; font-family:'JetBrains Mono',monospace; margin-top:4px; letter-spacing:-.5px;}
+.money-hero-total-sub{font-size:11.5px; opacity:.85; margin-top:2px;}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow-card); border-left:3px solid var(--navy);}
+.kpi.green{border-color:var(--green);} .kpi.amber{border-color:var(--amber);} .kpi.purple{border-color:var(--purple);}
+.kpi-label{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:800; margin-top:6px; font-family:'JetBrains Mono',monospace;}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:3px;}
+
+/* Steps */
+.steps-card{background:#fff; border-radius:var(--radius-lg); padding:22px 26px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); margin-bottom:18px;}
+.steps-card h3{font-size:15px; font-weight:700; margin-bottom:14px;}
+.steps{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;}
+.step{position:relative; padding:14px;}
+.step:not(:last-child)::after{content:'→'; position:absolute; right:-8px; top:14px; color:var(--gray3); font-size:18px;}
+.step-num{width:30px; height:30px; border-radius:50%; background:var(--orange); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-family:'JetBrains Mono',monospace; margin-bottom:10px;}
+.step-title{font-size:13px; font-weight:700; margin-bottom:4px;}
+.step-desc{font-size:11.5px; color:var(--txt2); line-height:1.45;}
+
+/* My indications table */
+.indications-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); overflow:hidden; border:1px solid var(--gray1);}
+.indications-table{width:100%; border-collapse:collapse; font-size:13px;}
+.indications-table th{padding:14px 16px; text-align:left; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt3); text-transform:uppercase; letter-spacing:.12em; border-bottom:1px solid var(--gray1); font-weight:700;}
+.indications-table td{padding:14px 16px; border-bottom:1px solid var(--gray1);}
+.indications-table tr:last-child td{border-bottom:0;}
+.indications-table tr:hover td{background:var(--off);}
+
+.cand-cell{display:flex; align-items:center; gap:12px;}
+.cand-avatar{width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--purple),var(--pink)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;}
+.cand-name{font-weight:600;}
+.cand-meta{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+.status-pill{display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:12px; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;}
+.status-pill::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor;}
+.status-pill.contratado{background:var(--green2); color:var(--green);}
+.status-pill.experiencia{background:var(--blue2); color:var(--blue);}
+.status-pill.processo{background:var(--purple2); color:var(--purple);}
+.status-pill.rejeitado{background:var(--red2); color:var(--red);}
+.status-pill.aguardando{background:var(--amber2); color:var(--amber);}
+
+.money-cell{font-family:'JetBrains Mono',monospace; font-weight:700;}
+.money-cell.paid{color:var(--green);}
+.money-cell.pending{color:var(--amber);}
+.money-cell.none{color:var(--txt3);}
+
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .money-hero{grid-template-columns:1fr;}
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .steps{grid-template-columns:1fr 1fr;}
+  .step:not(:last-child)::after{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <div class="sidebar-section">Carreira</div>
+      <a class="nav-item" href="r2_people_vagas.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>Vagas internas</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4M17 11l2 2 4-4"/></svg>Indicações</a>
+      <a class="nav-item" href="r2_people_treinamentos.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg>Treinamentos</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-title"><span>Carreira</span><span class="sep">›</span><span class="crumb">Indicações</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info"><span class="user-name">Fernanda Lima</span><span class="user-role">Analista Pleno · Cestão L1</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Carreira <span class="sep">·</span> Programa de indicação <span class="sep">·</span> R$ 1.500 / contratação</div>
+          <h1 class="page-title">Indique alguém <em>que vale a pena</em></h1>
+          <p class="page-subtitle">Receba R$ 1.500 a cada indicação contratada que completar 90 dias. Bônus pago no salário do mês seguinte ao final do período de experiência.</p>
+        </div>
+        <button class="btn-primary">
+          <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova indicação
+        </button>
+      </div>
+
+      <div class="money-hero">
+        <div class="money-hero-info">
+          <div class="money-hero-eyebrow">Seus ganhos · 2026</div>
+          <h2>Você já ganhou R$ 1.500 com indicações</h2>
+          <p>Continue indicando · você tem 2 candidatos em processo e 1 em período de experiência (faltam 38 dias pra liberar mais R$ 1.500).</p>
+        </div>
+        <div class="money-hero-total">
+          <div class="money-hero-total-label">Total acumulado</div>
+          <div class="money-hero-total-value">R$ 1.500</div>
+          <div class="money-hero-total-sub">+ R$ 4.500 em aberto</div>
+        </div>
+      </div>
+
+      <section class="kpi-grid">
+        <div class="kpi green">
+          <div class="kpi-label">Contratadas</div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-sub">R$ 1.500 já recebidos</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-label">Em experiência</div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-sub">faltam 38d pra R$ 1.500</div>
+        </div>
+        <div class="kpi purple">
+          <div class="kpi-label">Em processo</div>
+          <div class="kpi-value">2</div>
+          <div class="kpi-sub">RH analisando</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Ranking GPC</div>
+          <div class="kpi-value">#7</div>
+          <div class="kpi-sub">de 367 colab no ano</div>
+        </div>
+      </section>
+
+      <section class="steps-card">
+        <h3>Como funciona</h3>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-title">Indique</div>
+            <div class="step-desc">Envia nome, email, vaga sugerida e por que você acha que vai dar match.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-title">RH avalia</div>
+            <div class="step-desc">Entrevista normal. Você recebe atualização em cada etapa do processo.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-title">Contratação</div>
+            <div class="step-desc">Se contratado, candidato passa pelos 90 dias de experiência.</div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-title">Você recebe</div>
+            <div class="step-desc">R$ 1.500 no salário do mês seguinte ao fim da experiência.</div>
+          </div>
+        </div>
+      </section>
+
+      <div style="margin-bottom:12px; font-size:14px; font-weight:700;">Suas indicações <span style="color:var(--txt2); font-weight:500; margin-left:6px;">(4 totais)</span></div>
+
+      <div class="indications-card">
+        <table class="indications-table">
+          <thead>
+            <tr>
+              <th>Candidato</th>
+              <th>Vaga</th>
+              <th>Indicado em</th>
+              <th>Status</th>
+              <th style="text-align:right;">Bônus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="cand-cell">
+                  <div class="cand-avatar">PA</div>
+                  <div>
+                    <div class="cand-name">Pedro Almeida</div>
+                    <div class="cand-meta">pedro.almeida@email.com · 28a</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Analista de Dados</div>
+                <div style="font-size:11px; color:var(--txt2);">Sede ATP</div>
+              </td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:12px;">02/jan/2026</td>
+              <td><span class="status-pill contratado">Contratado · 90d ✓</span></td>
+              <td style="text-align:right;" class="money-cell paid">R$ 1.500 ✓</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cand-cell">
+                  <div class="cand-avatar" style="background:linear-gradient(135deg,var(--blue),var(--teal));">RC</div>
+                  <div>
+                    <div class="cand-name">Renata Coutinho</div>
+                    <div class="cand-meta">renata.c@email.com · 32a</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Coordenadora de Pessoas</div>
+                <div style="font-size:11px; color:var(--txt2);">Cestão L1</div>
+              </td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:12px;">15/abr/2026</td>
+              <td><span class="status-pill experiencia">Em experiência · 38d restantes</span></td>
+              <td style="text-align:right;" class="money-cell pending">R$ 1.500 (jul)</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cand-cell">
+                  <div class="cand-avatar" style="background:linear-gradient(135deg,var(--orange),var(--red));">MS</div>
+                  <div>
+                    <div class="cand-name">Marcelo Souza</div>
+                    <div class="cand-meta">marcelo.s@email.com · 35a</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Coordenador de Dados</div>
+                <div style="font-size:11px; color:var(--txt2);">Sede ATP · vaga urgente</div>
+              </td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:12px;">08/mai/2026</td>
+              <td><span class="status-pill processo">Em processo · 2ª entrevista</span></td>
+              <td style="text-align:right;" class="money-cell pending">R$ 1.500 ⏳</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cand-cell">
+                  <div class="cand-avatar" style="background:linear-gradient(135deg,var(--green),var(--teal));">JV</div>
+                  <div>
+                    <div class="cand-name">Júlia Vasconcelos</div>
+                    <div class="cand-meta">julia.v@email.com · 26a</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div>Estágio em Marketing</div>
+                <div style="font-size:11px; color:var(--txt2);">Sede ATP</div>
+              </td>
+              <td style="font-family:'JetBrains Mono',monospace; font-size:12px;">10/mai/2026</td>
+              <td><span class="status-pill aguardando">Aguardando análise RH</span></td>
+              <td style="text-align:right;" class="money-cell none">R$ 0 (estágio)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:18px; padding:14px 18px; background:var(--blue2); border-radius:10px; border-left:4px solid var(--blue); font-size:12.5px; color:var(--txt); line-height:1.55;">
+        <strong style="color:var(--blue);">💡 Regras do programa</strong> · Estágio e jovem aprendiz não geram bônus. Cargos de liderança (gerência+) pagam R$ 3.000. Bônus contabilizado quando o candidato completa 90 dias de experiência efetiva. Cada candidato pode ser indicado por apenas 1 colaborador (primeiro a indicar leva).
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>
