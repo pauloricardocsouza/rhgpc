@@ -240,6 +240,7 @@
     { title: 'Configurações', url: 'r2_people_configuracoes.html', cat: 'Admin', icon: '⚙️', kw: 'settings tenant branding' },
     { title: 'Programa de indicação', url: 'r2_people_indicacoes.html', cat: 'Carreira', icon: '🤝', kw: 'indicar bonus referral R$ 1500' },
     { title: 'eNPS · Employee NPS', url: 'r2_people_enps.html', cat: 'Pesquisas', icon: '📊', kw: 'nps net promoter score recomenda' },
+    { title: 'Cargos & Salários', url: 'r2_people_cargos_salarios.html', cat: 'Pessoas', icon: '💰', kw: 'matriz banda nivel cbo' },
     { title: 'Importação', url: 'r2_people_importacao.html', cat: 'Admin', icon: '📥', kw: 'csv excel upload' }
   ];
 

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Cargos & Salários · Matriz estruturada</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --purple:#6D28D9; --purple2:#F0E6FA; --green:#1E7B4B; --green2:#D4EDDF;
+  --amber:#854F0B; --amber2:#FEF3E2; --teal:#0F766E; --teal2:#CFF7EE;
+  --blue:#1E5FBF; --blue2:#DBE7FB; --pink:#BE185D; --pink2:#FCE7F3;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px; --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+.sidebar{grid-area:sidebar; background:#fff; display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--green),var(--teal)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.container{max-width:1400px; margin:0 auto;}
+
+.page-header{margin-bottom:22px; display:flex; align-items:flex-end; justify-content:space-between; gap:18px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:8px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-primary svg{width:14px; height:14px;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:8px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow-card); border-left:3px solid var(--navy);}
+.kpi.green{border-color:var(--green);} .kpi.amber{border-color:var(--amber);} .kpi.purple{border-color:var(--purple);}
+.kpi-label{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:800; margin-top:6px; font-family:'JetBrains Mono',monospace;}
+.kpi-sub{font-size:11.5px; color:var(--txt2); margin-top:3px;}
+
+/* Filtros + busca */
+.filters-bar{background:#fff; border-radius:var(--radius); padding:12px 16px; box-shadow:var(--shadow-card); margin-bottom:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+.filter-pill{padding:5px 12px; background:var(--gray1); border-radius:14px; font-size:11.5px; cursor:pointer; color:var(--txt2); font-weight:500; border:1px solid transparent;}
+.filter-pill.active{background:var(--navy); color:#fff;}
+.search-input{flex:1; min-width:200px; padding:8px 12px; border:1px solid var(--gray2); border-radius:7px; font-size:13px; font-family:inherit;}
+
+/* Matriz: tabela */
+.matrix-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); overflow:hidden; border:1px solid var(--gray1); margin-bottom:18px;}
+.matrix-header{padding:14px 18px; border-bottom:1px solid var(--gray1); display:flex; justify-content:space-between; align-items:center;}
+.matrix-header h3{font-size:14px; font-weight:700;}
+.matrix-meta{font-size:11.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace;}
+
+.matrix-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+.matrix-table th{padding:10px 14px; text-align:left; font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt3); text-transform:uppercase; letter-spacing:.12em; border-bottom:1px solid var(--gray1); font-weight:700; background:var(--off);}
+.matrix-table th.level{text-align:center; min-width:110px;}
+.matrix-table td{padding:14px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+.matrix-table tr:last-child td{border-bottom:0;}
+.matrix-table tr:hover td{background:var(--off);}
+
+.cargo-name{font-weight:600; font-size:13px;}
+.cargo-cbo{font-size:10.5px; color:var(--txt2); font-family:'JetBrains Mono',monospace; margin-top:2px;}
+.cargo-area{display:inline-block; padding:2px 8px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; margin-top:4px;}
+.cargo-area.adm{background:var(--blue2); color:var(--blue);}
+.cargo-area.ope{background:var(--orange2); color:var(--amber);}
+.cargo-area.com{background:var(--purple2); color:var(--purple);}
+.cargo-area.fin{background:var(--green2); color:var(--green);}
+.cargo-area.ti{background:var(--teal2); color:var(--teal);}
+
+.salary-cell{text-align:center; padding:8px 6px !important;}
+.salary-value{font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; color:var(--txt);}
+.salary-headcount{font-size:10px; color:var(--txt2); margin-top:3px; font-family:'JetBrains Mono',monospace;}
+.salary-cell.empty{color:var(--txt3); font-style:italic; font-size:10.5px;}
+
+.salary-cell.has-gap{background:linear-gradient(180deg, var(--green2) 0%, transparent 100%); position:relative;}
+.salary-cell.warn{background:linear-gradient(180deg, var(--amber2) 0%, transparent 100%);}
+
+/* Niveis */
+.level-pill{display:inline-block; padding:3px 9px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;}
+.level-pill.jr{background:var(--gray1); color:var(--txt2);}
+.level-pill.pl{background:var(--blue2); color:var(--blue);}
+.level-pill.sr{background:var(--purple2); color:var(--purple);}
+.level-pill.es{background:var(--orange2); color:var(--amber);}
+.level-pill.lid{background:var(--green2); color:var(--green);}
+
+/* Detail card on hover */
+.detail-pop{position:fixed; background:#fff; border:1px solid var(--gray2); border-radius:10px; padding:14px 16px; box-shadow:0 12px 32px rgba(10,14,22,.18); width:280px; z-index:50; pointer-events:none; display:none;}
+.detail-pop.show{display:block;}
+.detail-pop h4{font-size:13px; font-weight:700; margin-bottom:8px;}
+.detail-pop dl{display:grid; grid-template-columns:auto 1fr; gap:6px 10px; font-size:12px;}
+.detail-pop dt{color:var(--txt2);}
+.detail-pop dd{font-weight:600; font-family:'JetBrains Mono',monospace;}
+
+/* Distribution chart */
+.dist-card{background:#fff; border-radius:var(--radius-lg); box-shadow:var(--shadow-card); padding:20px 24px; border:1px solid var(--gray1); margin-bottom:18px;}
+.dist-card h3{font-size:14px; font-weight:700; margin-bottom:14px;}
+.dist-bars{display:flex; align-items:flex-end; gap:8px; height:140px; padding:0 4px;}
+.dist-bar{flex:1; display:flex; flex-direction:column; align-items:center; gap:5px;}
+.dist-bar-fill{width:100%; background:linear-gradient(180deg, var(--navy3) 0%, var(--navy) 100%); border-radius:6px 6px 0 0; min-height:8px; position:relative;}
+.dist-bar-fill::after{content:attr(data-count); position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; color:var(--txt);}
+.dist-bar-label{font-size:10px; color:var(--txt2); font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.05em;}
+
+.mobile-hamburger{display:none !important;}
+@media (max-width: 900px){
+  .app{grid-template-columns:1fr; grid-template-areas:"topbar" "main";}
+  .sidebar{position:fixed; left:0; top:0; bottom:0; width:240px; transform:translateX(-100%); transition:transform .25s ease; z-index:60; box-shadow:0 4px 24px rgba(0,0,0,.2);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .2s;}
+  .sidebar-backdrop.show{opacity:1; pointer-events:auto;}
+  .mobile-hamburger{display:flex !important; align-items:center; justify-content:center; width:36px; height:36px; background:transparent; border:none; border-radius:6px; cursor:pointer; color:var(--txt2);}
+  .mobile-hamburger svg{width:20px; height:20px;}
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .matrix-table{font-size:11.5px;}
+  .matrix-table th:nth-child(2),
+  .matrix-table td:nth-child(2){display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Home</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <div class="sidebar-section">Pessoas</div>
+      <a class="nav-item" href="r2_people_colaboradores_lista.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item" href="r2_people_estrutura.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="6" rx="1"/></svg>Organograma</a>
+      <a class="nav-item active"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Cargos & Salários</a>
+      <div class="sidebar-section">Folha & Custo</div>
+      <a class="nav-item" href="r2_people_calculadora_custo.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>Calculadora</a>
+      <a class="nav-item" href="r2_people_folha_por_filial.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Folha por filial</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+  <header class="topbar">
+    <div class="topbar-title"><span>Pessoas</span><span class="sep">›</span><span class="crumb">Cargos & Salários</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info"><span class="user-name">Patrícia Mello</span><span class="user-role">Coordenadora RH · GPC</span></div>
+    </div>
+  </header>
+  <main class="main">
+    <div class="container">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Pessoas <span class="sep">·</span> Estrutura <span class="sep">·</span> Matriz de cargos GPC</div>
+          <h1 class="page-title">Cargos <em>& salários</em></h1>
+          <p class="page-subtitle">28 cargos ativos · 5 níveis (Jr/Pleno/Sr/Especialista/Liderança) · faixa salarial sugerida por banda. Atualizada em 12/mai/2026 pela diretoria.</p>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-secondary">📥 Exportar CSV</button>
+          <button class="btn-primary">
+            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo cargo
+          </button>
+        </div>
+      </div>
+
+      <section class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Cargos ativos</div>
+          <div class="kpi-value">28</div>
+          <div class="kpi-sub">5 áreas · 5 níveis</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-label">Folha consolidada</div>
+          <div class="kpi-value">R$ 1.84M</div>
+          <div class="kpi-sub">367 colab · média R$ 5.012</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-label">Cargos com gap</div>
+          <div class="kpi-value">3</div>
+          <div class="kpi-sub">colab pagos &lt; piso da banda</div>
+        </div>
+        <div class="kpi purple">
+          <div class="kpi-label">Última revisão</div>
+          <div class="kpi-value" style="font-size:18px;">12/mai/2026</div>
+          <div class="kpi-sub">próxima: out/2026 (anual)</div>
+        </div>
+      </section>
+
+      <div class="filters-bar">
+        <div class="filter-pill active">Todas as áreas</div>
+        <div class="filter-pill">Administrativo</div>
+        <div class="filter-pill">Operacional</div>
+        <div class="filter-pill">Comercial</div>
+        <div class="filter-pill">Financeiro</div>
+        <div class="filter-pill">TI</div>
+        <input class="search-input" placeholder="Buscar cargo, CBO, nível...">
+      </div>
+
+      <div class="matrix-card">
+        <div class="matrix-header">
+          <h3>Matriz de cargos por nível salarial</h3>
+          <span class="matrix-meta">Valores em R$ · piso da banda · 12/mai/2026</span>
+        </div>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Cargo</th>
+              <th>Área</th>
+              <th class="level"><span class="level-pill jr">Jr</span></th>
+              <th class="level"><span class="level-pill pl">Pleno</span></th>
+              <th class="level"><span class="level-pill sr">Sênior</span></th>
+              <th class="level"><span class="level-pill es">Especialista</span></th>
+              <th class="level"><span class="level-pill lid">Liderança</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Comercial -->
+            <tr>
+              <td>
+                <div class="cargo-name">Analista Comercial</div>
+                <div class="cargo-cbo">CBO 2521-05</div>
+                <span class="cargo-area com">Comercial</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Inteligência de vendas</td>
+              <td class="salary-cell"><div class="salary-value">R$ 3.200</div><div class="salary-headcount">4 colab</div></td>
+              <td class="salary-cell has-gap"><div class="salary-value">R$ 5.500</div><div class="salary-headcount">8 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 8.500</div><div class="salary-headcount">3 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 12.000</div><div class="salary-headcount">1 colab</div></td>
+              <td class="salary-cell empty">—</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Comprador</div>
+                <div class="cargo-cbo">CBO 2522-10</div>
+                <span class="cargo-area com">Comercial</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Compras estratégicas</td>
+              <td class="salary-cell"><div class="salary-value">R$ 3.800</div><div class="salary-headcount">3 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 6.200</div><div class="salary-headcount">5 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 9.500</div><div class="salary-headcount">2 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell"><div class="salary-value">R$ 14.000</div><div class="salary-headcount">1 colab</div></td>
+            </tr>
+            <!-- Operacional -->
+            <tr>
+              <td>
+                <div class="cargo-name">Operador de Caixa</div>
+                <div class="cargo-cbo">CBO 4211-25</div>
+                <span class="cargo-area ope">Operacional</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Frente de loja</td>
+              <td class="salary-cell"><div class="salary-value">R$ 1.650</div><div class="salary-headcount">42 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 1.950</div><div class="salary-headcount">28 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Repositor</div>
+                <div class="cargo-cbo">CBO 4141-10</div>
+                <span class="cargo-area ope">Operacional</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Reposição de produtos</td>
+              <td class="salary-cell warn"><div class="salary-value">R$ 1.520</div><div class="salary-headcount">31 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 1.800</div><div class="salary-headcount">22 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Supervisor de Loja</div>
+                <div class="cargo-cbo">CBO 4101-05</div>
+                <span class="cargo-area ope">Operacional</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Coord. operações loja</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell"><div class="salary-value">R$ 5.800</div><div class="salary-headcount">8 colab</div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Gerente de Loja</div>
+                <div class="cargo-cbo">CBO 1414-10</div>
+                <span class="cargo-area ope">Operacional</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Gestão completa unid.</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell"><div class="salary-value">R$ 9.500</div><div class="salary-headcount">5 colab</div></td>
+            </tr>
+            <!-- Financeiro -->
+            <tr>
+              <td>
+                <div class="cargo-name">Analista Financeiro</div>
+                <div class="cargo-cbo">CBO 2522-05</div>
+                <span class="cargo-area fin">Financeiro</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Contas a pagar/receber</td>
+              <td class="salary-cell"><div class="salary-value">R$ 3.000</div><div class="salary-headcount">5 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 4.800</div><div class="salary-headcount">6 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 7.500</div><div class="salary-headcount">2 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell"><div class="salary-value">R$ 13.000</div><div class="salary-headcount">1 colab</div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Contador</div>
+                <div class="cargo-cbo">CBO 2522-10</div>
+                <span class="cargo-area fin">Financeiro</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Fiscal/contábil</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell"><div class="salary-value">R$ 5.500</div><div class="salary-headcount">2 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 8.200</div><div class="salary-headcount">1 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+            </tr>
+            <!-- Administrativo / RH -->
+            <tr>
+              <td>
+                <div class="cargo-name">Analista de RH</div>
+                <div class="cargo-cbo">CBO 2524-05</div>
+                <span class="cargo-area adm">Administrativo</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">DP, recrutamento, BP</td>
+              <td class="salary-cell"><div class="salary-value">R$ 2.900</div><div class="salary-headcount">3 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 4.500</div><div class="salary-headcount">4 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 7.000</div><div class="salary-headcount">1 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell"><div class="salary-value">R$ 11.500</div><div class="salary-headcount">1 colab</div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Assistente Administrativo</div>
+                <div class="cargo-cbo">CBO 4110-05</div>
+                <span class="cargo-area adm">Administrativo</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Suporte geral admin</td>
+              <td class="salary-cell warn"><div class="salary-value">R$ 1.850</div><div class="salary-headcount">12 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 2.600</div><div class="salary-headcount">8 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+            </tr>
+            <!-- TI -->
+            <tr>
+              <td>
+                <div class="cargo-name">Analista de Dados</div>
+                <div class="cargo-cbo">CBO 2122-10</div>
+                <span class="cargo-area ti">TI</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Eng. de dados + análise</td>
+              <td class="salary-cell"><div class="salary-value">R$ 4.500</div><div class="salary-headcount">2 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 7.500</div><div class="salary-headcount">3 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 11.000</div><div class="salary-headcount">2 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell"><div class="salary-value">R$ 16.000</div><div class="salary-headcount">1 colab</div></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Desenvolvedor</div>
+                <div class="cargo-cbo">CBO 2124-05</div>
+                <span class="cargo-area ti">TI</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Full-stack / back-end</td>
+              <td class="salary-cell"><div class="salary-value">R$ 5.000</div><div class="salary-headcount">1 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 8.000</div><div class="salary-headcount">2 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 12.000</div><div class="salary-headcount">1 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cargo-name">Analista de Infraestrutura</div>
+                <div class="cargo-cbo">CBO 2123-05</div>
+                <span class="cargo-area ti">TI</span>
+              </td>
+              <td style="font-size:11px; color:var(--txt2);">Redes, servidores, suporte</td>
+              <td class="salary-cell"><div class="salary-value">R$ 3.500</div><div class="salary-headcount">2 colab</div></td>
+              <td class="salary-cell"><div class="salary-value">R$ 5.800</div><div class="salary-headcount">1 colab</div></td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+              <td class="salary-cell empty">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dist-card">
+        <h3>Distribuição de colaboradores por faixa salarial</h3>
+        <div class="dist-bars">
+          <div class="dist-bar"><div class="dist-bar-fill" data-count="73" style="height:78%;"></div><div class="dist-bar-label">até R$ 2k</div></div>
+          <div class="dist-bar"><div class="dist-bar-fill" data-count="98" style="height:100%;"></div><div class="dist-bar-label">2k-3k</div></div>
+          <div class="dist-bar"><div class="dist-bar-fill" data-count="84" style="height:86%;"></div><div class="dist-bar-label">3k-5k</div></div>
+          <div class="dist-bar"><div class="dist-bar-fill" data-count="58" style="height:60%;"></div><div class="dist-bar-label">5k-8k</div></div>
+          <div class="dist-bar"><div class="dist-bar-fill" data-count="32" style="height:34%;"></div><div class="dist-bar-label">8k-12k</div></div>
+          <div class="dist-bar"><div class="dist-bar-fill" data-count="14" style="height:16%;"></div><div class="dist-bar-label">12k-18k</div></div>
+          <div class="dist-bar"><div class="dist-bar-fill" data-count="8" style="height:10%;"></div><div class="dist-bar-label">&gt; 18k</div></div>
+        </div>
+      </div>
+
+      <div style="padding:14px 18px; background:var(--amber2); border-radius:10px; border-left:4px solid var(--amber); font-size:12.5px; color:var(--txt); line-height:1.55;">
+        <strong style="color:var(--amber);">⚠ Cargos com gap</strong> · 3 cargos tem colaboradores pagos abaixo do piso da banda: Repositor (1 caso · R$ 1.480), Assistente Administrativo (2 casos · R$ 1.780 e R$ 1.810). Recomendação: ajustar até dissídio coletivo (mar/2027) ou justificar exceção no audit.
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/r2-shell.js" defer></script>
+</body>
+</html>

@@ -703,6 +703,47 @@ html[data-sidebar="collapsed"] .r2-sidebar-collapse-btn svg {
   .r2-sidebar-collapse-btn { display: none !important; }
 }
 
+/* ============ PAGE HEADER PADRAO COFRE (cross-page) ============
+   Aplica automaticamente nos h1 que estao dentro de .page-header.
+   Compatível com HTMLs antigos sem precisar tocar markup. */
+.page-header h1:not([class]),
+.page-header h1.page-title {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.15 !important;
+  color: var(--txt) !important;
+  margin: 0 0 6px 0 !important;
+}
+html[data-density="compact"] .page-header h1:not([class]),
+html[data-density="compact"] .page-header h1.page-title {
+  font-size: 22px !important;
+}
+.page-header h1 em,
+.page-header h1 strong em,
+.page-title em {
+  font-style: italic !important;
+  font-weight: 800 !important;
+  color: var(--orange, #F58634) !important;
+}
+
+/* page-eyebrow generico (HTMLs novos ja tem · este garante consistencia) */
+.page-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--txt2);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+.page-eyebrow .sep { color: var(--txt3); margin: 0 6px; }
+.page-subtitle {
+  margin: 6px 0 0;
+  color: var(--txt2);
+  font-size: 13px;
+}
+
 /* Transition suave nas mudancas de estado */
 .app, .sidebar, .topbar {
   transition: background .2s, border-color .2s;
