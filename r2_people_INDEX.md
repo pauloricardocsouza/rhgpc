@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.29 · 17 de maio de 2026
+**Versão**: 2.30 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -993,6 +993,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.26 | Hub Admin atualizado para 6 cockpits (grid 3x2 + Billing + DR cards + status banner 6 pills + 2 quick actions novos) |
 | 2.27 | Spec C1 · Comercial & Sales Playbook (1ª da série C · funil 6 estágios + BANT-C + 10 objeções + pricing público + plano 30/60/90 + meta R$ 68k MRR ano 1) |
 | 2.28 | Página HTML Preços públicos · landing comercial (toggle mensal/anual + 3 planos compare + 5 add-ons + tabela detalhada 22 linhas + 8 FAQs + CTA bottom) |
-| **2.29** | **Página HTML Landing principal comercial (hero + mockup app + 6 pain points + 3 pilares + stats faixa + case GPC + 12 módulos + final CTA · fecha funil de aquisição)** |
+| 2.29 | Página HTML Landing principal comercial (hero + mockup app + 6 pain points + 3 pilares + stats faixa + case GPC + 12 módulos + final CTA · fecha funil de aquisição) |
+| **2.30** | **Spec C2 Customer Success Playbook (health score 8 sinais + 5 categorias champion→critical + plano 30/60/90 + 4 intervenções + expansão MRR + 22 testes meta · fecha série C)** |
 
 ---
