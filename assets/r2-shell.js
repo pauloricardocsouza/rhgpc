@@ -246,7 +246,8 @@
     { title: 'Cockpit LGPD · DPO', url: 'r2_people_lgpd_cockpit.html', cat: 'Admin', icon: '🛡️', kw: 'dpo ropa dsar retencao consentimento sub operadores treinamento privacidade compliance' },
     { title: 'Notif. & Webhooks · Admin', url: 'r2_people_notificacoes_admin.html', cat: 'Admin', icon: '📡', kw: 'webhook dlq fila pgmq email runtime hmac retry catalogo eventos' },
     { title: 'Observability · SLOs & Incidentes', url: 'r2_people_observability_admin.html', cat: 'Admin', icon: '📈', kw: 'slo error budget incident postmortem alerta logs metrica grafana prometheus tempo cto' },
-    { title: 'Security · DevSec Console', url: 'r2_people_security_admin.html', cat: 'Admin', icon: '🔒', kw: 'security devsec csp owasp vulnerability cve honeytoken secret rotacao pentest hardening' }
+    { title: 'Security · DevSec Console', url: 'r2_people_security_admin.html', cat: 'Admin', icon: '🔒', kw: 'security devsec csp owasp vulnerability cve honeytoken secret rotacao pentest hardening' },
+    { title: 'Hub Admin · operação consolidada', url: 'r2_people_admin_hub.html', cat: 'Admin', icon: '🎛️', kw: 'hub admin centro operacao consolidado cockpit landing entry point super admin' }
   ];
 
   function openSearch() {

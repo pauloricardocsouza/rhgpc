@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.19 · 17 de maio de 2026
+**Versão**: 2.20 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -983,6 +983,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.16 | Página HTML cockpit LGPD do DPO (6 abas: DSAR + ROPA + Retenção + Consents + Sub-ops + Treinamentos) |
 | 2.17 | Página HTML admin Notif & Webhooks (6 abas: Webhooks + Filas + E-mails + DLQ + Stats + Catálogo) |
 | 2.18 | Página HTML Observability admin (7 SLOs c/ budget bars + incidentes + alertas + métricas + logs stream + drill-down) |
-| **2.19** | **Página HTML Security DevSec Console (score 92/100 + hardening 16/18 + CVEs + CSP + honeytokens + OWASP Top10 + secrets rotação)** |
+| 2.19 | Página HTML Security DevSec Console (score 92/100 + hardening 16/18 + CVEs + CSP + honeytokens + OWASP Top10 + secrets rotação) |
+| **2.20** | **Página HTML Hub Admin (entry-point dos 4 cockpits operacionais + status banner + quick actions + atividade recente cross-cockpit)** |
 
 ---
