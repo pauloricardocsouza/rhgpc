@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.15 · 17 de maio de 2026
+**Versão**: 2.16 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -979,6 +979,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.12 | Spec D5 Observabilidade (Logflare + Prom + Tempo + 7 SLOs + 10 alertas + runbooks) |
 | 2.13 | Spec D6 Segurança aplicacional (CSP A+, OWASP Top 10, secrets, pen-test, 25+ testes meta) |
 | 2.14 | Spec D7 Compliance LGPD playbook (DPO routines, ROPA, DSAR runbook, retenção, ANPD) |
-| **2.15** | **Schema SQL v11 (Observability + Security + Compliance · materializa D5+D6+D7 em SQL executável)** |
+| 2.15 | Schema SQL v11 (Observability + Security + Compliance · materializa D5+D6+D7 em SQL executável) |
+| **2.16** | **Página HTML cockpit LGPD do DPO (6 abas: DSAR + ROPA + Retenção + Consents + Sub-ops + Treinamentos)** |
 
 ---

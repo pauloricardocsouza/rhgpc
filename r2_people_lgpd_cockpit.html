@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Cockpit LGPD · DPO</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar */
+.sidebar{grid-area:sidebar; background:#fff; border-right:1px solid var(--gray1); display:flex; flex-direction:column; overflow:hidden; z-index:30;}
+.sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:30px;}
+.brand-text{display:flex; flex-direction:column; line-height:1.1;}
+.brand-name{font-weight:600; font-size:14px;}
+.brand-sub{font-size:10.5px; color:var(--txt2);}
+.sidebar-section{padding:14px 14px 6px; font-size:10px; text-transform:uppercase; letter-spacing:1.2px; color:var(--txt3); font-weight:500;}
+.sidebar-nav{flex:1; overflow-y:auto;}
+.nav-item{display:flex; align-items:center; gap:11px; padding:9px 18px; color:var(--txt2); text-decoration:none; font-size:12.5px; border-left:3px solid transparent;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); border-left-color:var(--orange); font-weight:600;}
+.nav-item svg{width:16px; height:16px; opacity:.85;}
+.sidebar-footer{padding:12px 16px; border-top:1px solid var(--gray1); font-size:10.5px; color:var(--txt3); display:flex; justify-content:space-between;}
+
+/* Topbar */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title strong{color:var(--txt); font-weight:600;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px; cursor:pointer;}
+.user-avatar{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #6D28D9, #1A2D4F); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main */
+.main{grid-area:main; overflow-y:auto; padding:22px 22px 40px;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-header h1{font-size:22px; font-weight:600; letter-spacing:-.3px;}
+.page-header p{font-size:13px; color:var(--txt2); margin-top:2px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;}
+.btn-secondary:hover{background:var(--gray1);}
+
+/* Hero */
+.hero{background:linear-gradient(110deg, #2E476F 0%, #1A2D4F 70%); color:#fff; border-radius:var(--radius); padding:20px 24px; margin-bottom:16px; display:grid; grid-template-columns:auto 1fr auto; gap:18px; align-items:center; position:relative; overflow:hidden;}
+.hero::before{content:''; position:absolute; right:-40px; top:-40px; width:180px; height:180px; background:radial-gradient(circle, rgba(245,131,31,.22), transparent 65%); border-radius:50%;}
+.hero-icon{width:54px; height:54px; border-radius:13px; background:rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; position:relative; z-index:1;}
+.hero-text{position:relative; z-index:1;}
+.hero-text h2{font-size:18px; font-weight:600; margin-bottom:3px;}
+.hero-text p{font-size:12.5px; color:rgba(255,255,255,.78);}
+.hero-action{position:relative; z-index:1; display:flex; gap:8px;}
+.hero-action button{padding:8px 14px; border-radius:7px; border:1px solid rgba(255,255,255,.25); background:transparent; color:#fff; font-size:11.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.hero-action button:hover{background:rgba(255,255,255,.1);}
+.hero-action button.primary{background:var(--orange); border-color:var(--orange);}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:16px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden; cursor:pointer;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--danger);}
+.kpi.green::before{background:var(--green);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:600; margin-top:5px; letter-spacing:-.5px;}
+.kpi-value.danger{color:var(--danger);}
+.kpi-value.green{color:var(--green);}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:2px; display:flex; align-items:center; gap:4px;}
+.kpi-trend.up{color:var(--green);}
+.kpi-trend.down{color:var(--danger);}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* Card */
+.card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+/* Tables */
+table{width:100%; border-collapse:collapse; font-size:12px;}
+th{text-align:left; padding:8px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:9px 10px; border-bottom:1px solid var(--gray1); vertical-align:top;}
+tr:hover td{background:var(--off);}
+
+/* Badges */
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.active{background:var(--green2); color:var(--green);}
+.badge.draft{background:var(--gray1); color:var(--txt2);}
+.badge.suspended{background:var(--amber2); color:var(--amber);}
+.badge.retired{background:var(--danger2); color:var(--danger);}
+.badge.due{background:var(--amber2); color:var(--amber);}
+.badge.overdue{background:var(--danger2); color:var(--danger);}
+.badge.ok{background:var(--green2); color:var(--green);}
+.badge.warn{background:var(--amber2); color:var(--amber);}
+.badge.crit{background:var(--danger2); color:var(--danger);}
+.badge.dot::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor; display:inline-block;}
+.badge.dpia{background:#F3E8FF; color:var(--purple);}
+
+/* Risk pills */
+.risk{display:inline-block; padding:2px 8px; border-radius:10px; font-size:10.5px; font-weight:600;}
+.risk.low{background:var(--green2); color:var(--green);}
+.risk.medium{background:var(--blue2); color:var(--blue);}
+.risk.high{background:var(--amber2); color:var(--amber);}
+.risk.critical{background:var(--danger2); color:var(--danger);}
+
+/* DSAR timeline */
+.dsar-list{display:flex; flex-direction:column; gap:10px;}
+.dsar-row{display:grid; grid-template-columns:auto 1fr auto auto; gap:14px; padding:12px 14px; background:#fff; border:1px solid var(--gray1); border-radius:8px; align-items:center;}
+.dsar-row.warn{border-color:var(--amber); background:linear-gradient(90deg, var(--amber2), #fff 30%);}
+.dsar-row.crit{border-color:var(--danger); background:linear-gradient(90deg, var(--danger2), #fff 30%);}
+.dsar-avatar{width:36px; height:36px; border-radius:50%; background:var(--gray1); color:var(--txt); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.dsar-info .name{font-weight:600; font-size:12.5px;}
+.dsar-info .meta{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.dsar-deadline{text-align:right;}
+.dsar-deadline .days{font-size:11px; font-weight:600;}
+.dsar-deadline .when{font-size:10px; color:var(--txt3);}
+
+/* Retention */
+.retention-row{display:grid; grid-template-columns:160px 1fr 100px 100px 100px auto; gap:14px; padding:10px 12px; align-items:center; border-bottom:1px solid var(--gray1); font-size:12px;}
+.retention-row.head{font-weight:500; font-size:10.5px; text-transform:uppercase; color:var(--txt2); letter-spacing:.4px; padding-bottom:8px;}
+.bar{height:6px; background:var(--gray1); border-radius:3px; overflow:hidden;}
+.bar > div{height:100%; background:linear-gradient(90deg, var(--green), var(--amber), var(--danger)); border-radius:3px;}
+
+/* Subprocessors */
+.subproc-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;}
+.subproc{background:#fff; padding:12px; border-radius:8px; border:1px solid var(--gray1);}
+.subproc-name{font-size:13px; font-weight:600; margin-bottom:2px;}
+.subproc-role{font-size:11px; color:var(--txt2);}
+.subproc-meta{font-size:10.5px; color:var(--txt3); margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;}
+.subproc-meta span{padding:2px 7px; background:var(--gray1); border-radius:8px;}
+
+/* Stats */
+.stat-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:10px;}
+.stat{background:var(--off); padding:11px 12px; border-radius:8px;}
+.stat-num{font-size:18px; font-weight:600;}
+.stat-lbl{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px;}
+
+@media (max-width:980px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .subproc-grid{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:repeat(2, 1fr);}
+  .retention-row{grid-template-columns:1fr; gap:6px;}
+  .retention-row.head{display:none;}
+  .dsar-row{grid-template-columns:auto 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="assets/gpc-color.png" alt="GPC" class="brand-logo">
+      <div class="brand-text"><span class="brand-name">GPC</span><span class="brand-sub">Gestão de Pessoas</span></div>
+    </div>
+    <div class="sidebar-section">Você</div>
+    <nav class="sidebar-nav">
+      <a href="r2_people_home.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12 12 4l9 8"/><path d="M5 10v10h14V10"/></svg>Início</a>
+      <a href="r2_people_minha_trajetoria.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>Minha jornada</a>
+      <div class="sidebar-section">Admin · LGPD</div>
+      <a href="r2_people_lgpd_cockpit.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>Cockpit LGPD</a>
+      <a href="r2_people_auditoria.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5l4-4M5 11l4 4"/><circle cx="16" cy="12" r="5"/></svg>Auditoria & Logs</a>
+      <a href="r2_people_acessos.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7-8 7s-8-2-8-7V6l8-3 8 3z"/></svg>Acessos & Perfis</a>
+      <a href="r2_people_configuracoes.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</a>
+    </nav>
+    <div class="sidebar-footer"><span>R2 Soluções</span><span class="v">v0.11</span></div>
+  </aside>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title">Cockpit <strong>LGPD</strong></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar">CM</div>
+      <div class="user-info"><span class="user-name">Carla Moreira</span><span class="user-role">DPO · R2</span></div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Cockpit do DPO</h1>
+        <p>Visão consolidada de ROPA, DSAR, retenção, consentimentos e treinamentos · spec D7</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">Exportar relatório</button>
+        <button class="btn-primary">+ Nova atividade ROPA</button>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-icon">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>
+      </div>
+      <div class="hero-text">
+        <h2>Compliance hoje: <strong>OK</strong></h2>
+        <p>14 atividades ROPA ativas · 3 DSARs em andamento (todas dentro do SLA) · 0 incidentes abertos · 1 treinamento expirando em 22d</p>
+      </div>
+      <div class="hero-action">
+        <button>Convocar comitê</button>
+        <button class="primary">Abrir DSAR</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">DSAR · prazo médio</div>
+        <div class="kpi-value green">4.2d</div>
+        <div class="kpi-trend up">↓ 0.6d vs mês anterior · meta &lt; 5d</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">DSARs abertas</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-trend">Todas no SLA</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">Atividades ROPA · revisão</div>
+        <div class="kpi-value">2</div>
+        <div class="kpi-trend">Vencem em 60d</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Incidentes P1/P2 90d</div>
+        <div class="kpi-value green">0</div>
+        <div class="kpi-trend up">Trending OK</div>
+      </div>
+      <div class="kpi purple">
+        <div class="kpi-label">Treinamentos OK</div>
+        <div class="kpi-value">98%</div>
+        <div class="kpi-trend">1 expirando · gerente avisado</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="dsar">DSAR · solicitações</div>
+      <div class="tab" data-tab="ropa">ROPA · atividades</div>
+      <div class="tab" data-tab="retencao">Retenção</div>
+      <div class="tab" data-tab="consents">Consentimentos</div>
+      <div class="tab" data-tab="subprocs">Sub-operadores</div>
+      <div class="tab" data-tab="treinamentos">Treinamentos</div>
+    </div>
+
+    <!-- DSAR -->
+    <div class="tab-pane active" id="tab-dsar">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Solicitações ativas (3)</div>
+            <div class="card-sub">Prazo legal 15d · meta interna por tipo (5-10d)</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-secondary">Filtrar</button>
+            <button class="btn-primary">+ DSAR manual</button>
+          </div>
+        </div>
+        <div class="dsar-list">
+          <div class="dsar-row">
+            <div class="dsar-avatar">FL</div>
+            <div class="dsar-info">
+              <div class="name">Fernanda Lima · access</div>
+              <div class="meta">solicitado em 14/05 · escopo: dados pessoais + avaliações · status: <span class="badge ok dot">in_progress</span></div>
+            </div>
+            <div class="dsar-deadline">
+              <div class="days">5d restantes</div>
+              <div class="when">SLA interno 22/05</div>
+            </div>
+            <div><button class="btn-secondary">Abrir</button></div>
+          </div>
+          <div class="dsar-row warn">
+            <div class="dsar-avatar">RP</div>
+            <div class="dsar-info">
+              <div class="name">Roberto Pacheco · erase</div>
+              <div class="meta">ex-colaborador (saída 03/2024) · CPF hash 4a3f...8b · pediu remoção total · grace period 30d</div>
+            </div>
+            <div class="dsar-deadline">
+              <div class="days">2d restantes</div>
+              <div class="when">SLA interno 19/05</div>
+            </div>
+            <div><button class="btn-secondary">Abrir</button></div>
+          </div>
+          <div class="dsar-row">
+            <div class="dsar-avatar">GA</div>
+            <div class="dsar-info">
+              <div class="name">Gabriel Almeida · portability</div>
+              <div class="meta">solicitado em 16/05 · candidato vaga interna · status: <span class="badge ok dot">in_progress</span></div>
+            </div>
+            <div class="dsar-deadline">
+              <div class="days">6d restantes</div>
+              <div class="when">SLA interno 23/05</div>
+            </div>
+            <div><button class="btn-secondary">Abrir</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Histórico · últimos 30 dias</div></div>
+        <div class="stat-grid">
+          <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Completadas</div></div>
+          <div class="stat"><div class="stat-num">8</div><div class="stat-lbl">Acesso/Portabilidade</div></div>
+          <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Erase</div></div>
+          <div class="stat"><div class="stat-num">1</div><div class="stat-lbl">Rejeitada (sem identidade)</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROPA -->
+    <div class="tab-pane" id="tab-ropa">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Atividades de tratamento (14)</div>
+            <div class="card-sub">Art. 37 LGPD · revisão anual obrigatória</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-secondary">Exportar ROPA PDF</button>
+            <button class="btn-primary">+ Nova atividade</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Atividade</th><th>Base legal</th><th>Risco</th><th>Próxima revisão</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr><td><strong>Cadastro de empregados</strong><br><span style="color:var(--txt2); font-size:11px;">CTPS, endereço, dependentes</span></td><td>Art 7º II (obrig. legal)</td><td><span class="risk low">baixo</span></td><td>15/03/2027</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>Atestados médicos</strong><br><span style="color:var(--txt2); font-size:11px;">CID, médico, dias</span></td><td>Art 11 II.f (saúde ocup.)</td><td><span class="risk high">alto</span> <span class="badge dpia">DPIA</span></td><td>15/07/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>Folha de pagamento</strong></td><td>Art 7º II + V</td><td><span class="risk medium">médio</span></td><td>10/06/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>Avaliações 9-Box, PDI</strong></td><td>Art 7º V (contrato)</td><td><span class="risk medium">médio</span></td><td>20/08/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>1:1s e feedbacks</strong></td><td>Art 7º V</td><td><span class="risk low">baixo</span></td><td>20/08/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>OKRs e metas</strong></td><td>Art 7º V</td><td><span class="risk low">baixo</span></td><td>20/08/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>Movimentações (promo/transfer/desl)</strong></td><td>Art 7º II + V</td><td><span class="risk medium">médio</span></td><td>05/09/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>Pesquisas identificadas (clima)</strong></td><td>Art 7º I (consentimento)</td><td><span class="risk high">alto</span></td><td>15/06/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>Login audit + MFA</strong></td><td>Art 7º II + IX (lég. interesse)</td><td><span class="risk medium">médio</span></td><td>30/04/2027</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+            <tr><td><strong>Comunicações internas</strong></td><td>Art 7º V</td><td><span class="risk low">baixo</span></td><td>10/11/2026</td><td><span class="badge active">active</span></td><td><button class="btn-secondary" style="padding:5px 10px;">Ver</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Retenção -->
+    <div class="tab-pane" id="tab-retencao">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Políticas de retenção · CLT + LGPD</div></div>
+        <div>
+          <div class="retention-row head">
+            <div>Categoria</div><div>Base legal</div><div>Hot</div><div>Cold</div><div>Hard delete</div><div></div>
+          </div>
+          <div class="retention-row">
+            <div><strong>medical_certificates</strong></div>
+            <div>CLT art 6 + Lei 8.213</div>
+            <div>5 anos</div><div>15 anos</div><div>20 anos</div>
+            <div><span class="badge ok">ativa</span></div>
+          </div>
+          <div class="retention-row">
+            <div><strong>payroll</strong></div>
+            <div>DL 5452 + IN RFB</div>
+            <div>5 anos</div><div>25 anos</div><div>nunca</div>
+            <div><span class="badge ok">ativa</span></div>
+          </div>
+          <div class="retention-row">
+            <div><strong>personal_data_active</strong></div>
+            <div>LGPD art 16</div>
+            <div>vínculo+</div><div>5 anos</div><div>via DSAR</div>
+            <div><span class="badge ok">ativa</span></div>
+          </div>
+          <div class="retention-row">
+            <div><strong>evaluations</strong></div>
+            <div>LGPD art 15 §3º</div>
+            <div>5 anos</div><div>—</div><div>5 anos</div>
+            <div><span class="badge ok">ativa</span></div>
+          </div>
+          <div class="retention-row">
+            <div><strong>login_audit</strong></div>
+            <div>LGPD art 37</div>
+            <div>2 anos</div><div>3 anos</div><div>nunca</div>
+            <div><span class="badge ok">ativa</span></div>
+          </div>
+          <div class="retention-row">
+            <div><strong>notifications</strong></div>
+            <div>sem obrigação</div>
+            <div>90 dias</div><div>1 ano</div><div>1 ano</div>
+            <div><span class="badge ok">ativa</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Última execução · 01/05/2026 03:15</div></div>
+        <div class="stat-grid">
+          <div class="stat"><div class="stat-num">1.847</div><div class="stat-lbl">Movidos hot→cold</div></div>
+          <div class="stat"><div class="stat-num">42</div><div class="stat-lbl">Hard deleted</div></div>
+          <div class="stat"><div class="stat-num">0</div><div class="stat-lbl">Erros</div></div>
+          <div class="stat"><div class="stat-num">28s</div><div class="stat-lbl">Duração</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consentimentos -->
+    <div class="tab-pane" id="tab-consents">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Consentimentos ativos por propósito</div></div>
+        <table>
+          <thead><tr><th>Propósito</th><th>Versão da política</th><th>Outorgados</th><th>Revogados últimos 30d</th><th>Cobertura</th></tr></thead>
+          <tbody>
+            <tr><td><strong>marketing</strong> · comunicações R2</td><td>v3.2</td><td>148</td><td>4</td><td><div class="bar"><div style="width:40%;"></div></div></td></tr>
+            <tr><td><strong>analytics</strong> · cookies não-essenciais</td><td>v3.2</td><td>192</td><td>12</td><td><div class="bar"><div style="width:52%;"></div></div></td></tr>
+            <tr><td><strong>identified_survey</strong> · pesquisa de clima</td><td>v3.2</td><td>312</td><td>2</td><td><div class="bar"><div style="width:85%;"></div></div></td></tr>
+            <tr><td><strong>external_photo</strong> · foto em comunicações externas</td><td>v3.0</td><td>89</td><td>0</td><td><div class="bar"><div style="width:24%;"></div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sub-operadores -->
+    <div class="tab-pane" id="tab-subprocs">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Sub-operadores ativos (6)</div>
+          <button class="btn-secondary">Publicar lista</button>
+        </div>
+        <div class="subproc-grid">
+          <div class="subproc"><div class="subproc-name">Supabase</div><div class="subproc-role">Banco + Auth + Storage</div><div class="subproc-meta"><span>US-East/EU</span><span>DPA ✓</span><span>todos os dados</span></div></div>
+          <div class="subproc"><div class="subproc-name">Vercel</div><div class="subproc-role">Hospedagem app</div><div class="subproc-meta"><span>Edge global</span><span>DPA ✓</span><span>logs HTTP</span></div></div>
+          <div class="subproc"><div class="subproc-name">Logflare</div><div class="subproc-role">Logs centralizados</div><div class="subproc-meta"><span>US</span><span>DPA ✓</span><span>sem PII</span></div></div>
+          <div class="subproc"><div class="subproc-name">SendGrid</div><div class="subproc-role">E-mail transacional</div><div class="subproc-meta"><span>US</span><span>DPA + SCC</span><span>e-mail + nome</span></div></div>
+          <div class="subproc"><div class="subproc-name">ClamAV (auto)</div><div class="subproc-role">Antivírus uploads</div><div class="subproc-meta"><span>BR</span><span>self-host</span><span>arquivos temp</span></div></div>
+          <div class="subproc"><div class="subproc-name">Backblaze B2</div><div class="subproc-role">Backups encriptados</div><div class="subproc-meta"><span>EU</span><span>DPA ✓</span><span>dumps cifrados</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Treinamentos -->
+    <div class="tab-pane" id="tab-treinamentos">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Treinamentos por audiência</div></div>
+        <table>
+          <thead><tr><th>Audiência</th><th>Curso</th><th>Frequência</th><th>Conformidade</th><th>Atrasados</th></tr></thead>
+          <tbody>
+            <tr><td>Equipe R2 (toda)</td><td>LGPD básico + práticas seguras</td><td>Onboarding + anual</td><td><span class="badge ok">98%</span></td><td>1</td></tr>
+            <tr><td>Engenharia</td><td>OWASP + RLS + secrets</td><td>Onboarding + semestral</td><td><span class="badge ok">100%</span></td><td>0</td></tr>
+            <tr><td>Suporte</td><td>Tratamento de DSAR e dúvidas</td><td>Onboarding + anual</td><td><span class="badge ok">100%</span></td><td>0</td></tr>
+            <tr><td>Liderança</td><td>Cenários de incidente, ANPD</td><td>Anual</td><td><span class="badge ok">100%</span></td><td>0</td></tr>
+            <tr><td>Tenants (Encarregados)</td><td>Operação compliance</td><td>Contratação + anual</td><td><span class="badge warn">86%</span></td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
