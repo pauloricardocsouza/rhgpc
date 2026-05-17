@@ -609,6 +609,7 @@
     letter-spacing: 0.08em;
     color: var(--text-faint);
   }
+.mobile-hamburger{display:none !important;}
 </style>
 </head>
 <body>
@@ -1282,5 +1283,36 @@ function rerender() {
 rerender();
 </script>
 
+<script>
+/* Mobile drawer · injeta hamburger + backdrop e controla toggle. Idempotente. */
+(function(){
+  if (window.__rhgpcMobileInit) return;
+  window.__rhgpcMobileInit = true;
+  document.addEventListener('DOMContentLoaded', function(){
+    var sb = document.querySelector('.sidebar');
+    var tb = document.querySelector('.topbar');
+    if (!sb || !tb) return;
+
+    // Backdrop
+    var bd = document.createElement('div');
+    bd.className = 'sidebar-backdrop';
+    document.body.appendChild(bd);
+
+    // Hamburger no inicio da topbar
+    var hb = document.createElement('button');
+    hb.className = 'mobile-hamburger';
+    hb.setAttribute('aria-label', 'Abrir menu');
+    hb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+    tb.insertBefore(hb, tb.firstChild);
+
+    function close(){ sb.classList.remove('open'); bd.classList.remove('show'); }
+    function open(){ sb.classList.add('open'); bd.classList.add('show'); }
+    hb.addEventListener('click', function(){ sb.classList.contains('open') ? close() : open(); });
+    bd.addEventListener('click', close);
+    sb.addEventListener('click', function(e){ if (e.target.tagName === 'A') close(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+  });
+})();
+</script>
 </body>
 </html>
