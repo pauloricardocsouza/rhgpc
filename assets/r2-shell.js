@@ -249,7 +249,8 @@
     { title: 'Security · DevSec Console', url: 'r2_people_security_admin.html', cat: 'Admin', icon: '🔒', kw: 'security devsec csp owasp vulnerability cve honeytoken secret rotacao pentest hardening' },
     { title: 'Hub Admin · operação consolidada', url: 'r2_people_admin_hub.html', cat: 'Admin', icon: '🎛️', kw: 'hub admin centro operacao consolidado cockpit landing entry point super admin' },
     { title: 'Tenant Setup · wizard de primeira execução', url: 'r2_people_tenant_setup.html', cat: 'Admin', icon: '🧙', kw: 'onboarding wizard tenant setup primeira execucao branding mfa configuracao inicial' },
-    { title: 'Billing & Plano · tenant_admin', url: 'r2_people_billing.html', cat: 'Admin', icon: '💳', kw: 'billing plano fatura invoice assinatura subscription seat quota pagamento cartao pix upgrade' }
+    { title: 'Billing & Plano · tenant_admin', url: 'r2_people_billing.html', cat: 'Admin', icon: '💳', kw: 'billing plano fatura invoice assinatura subscription seat quota pagamento cartao pix upgrade' },
+    { title: 'DR Console · Backups & Disaster Recovery', url: 'r2_people_dr_console.html', cat: 'Admin', icon: '🛟', kw: 'dr disaster recovery backup pitr restore drill smoke test rpo rto retention devops failover ransomware' }
   ];
 
   function openSearch() {
