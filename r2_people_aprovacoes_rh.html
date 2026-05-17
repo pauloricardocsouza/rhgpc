@@ -1,17 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>R2 People - Aprovações RH</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
-  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
   --green:#1E7B4B; --green2:#D4EDDF;
   --danger:#C0392B; --danger2:#FDECEA;
   --amber:#854F0B; --amber2:#FEF3E2;
@@ -24,13 +25,13 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
-body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
 .app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
 
 /* Sidebar */
 .sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
 .sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
-.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-logo{width:auto; height:30px; display:block; flex-shrink:0;}
 .brand-text{display:flex; flex-direction:column; line-height:1.1;}
 .brand-name{font-weight:600; font-size:14px;}
 .brand-sub{font-size:10.5px; color:var(--gray3);}
@@ -466,7 +467,7 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -833,7 +834,7 @@ const movements = [
   {
     id:'m1', priority:'urgent',
     type:'salary', typeName:'Ajuste salarial',
-    employee:{name:'Carlos Eduardo Lopes', initials:'CL', color:'#F5831F', position:'Analista Pleno', dept:'Compras', emp:'Labuta', tom:'ATP - Atacado'},
+    employee:{name:'Carlos Eduardo Lopes', initials:'CL', color:'#F58634', position:'Analista Pleno', dept:'Compras', emp:'Labuta', tom:'ATP - Atacado'},
     from:'R$ 4.100,00', to:'R$ 4.500,00 (+9,8%)', delta:'+R$ 400,00 mensal',
     requester:'Talita Comercial',
     requestedAt:'há 6 dias',
@@ -911,7 +912,7 @@ const movements = [
   {
     id:'m7', priority:'normal',
     type:'salary', typeName:'Ajuste salarial',
-    employee:{name:'Beatriz Lopes Almeida', initials:'BL', color:'#2B4A7A', position:'Analista Sênior', dept:'Financeiro', emp:'GPC', tom:'GPC Financeiro'},
+    employee:{name:'Beatriz Lopes Almeida', initials:'BL', color:'#2E476F', position:'Analista Sênior', dept:'Financeiro', emp:'GPC', tom:'GPC Financeiro'},
     from:'R$ 5.200,00', to:'R$ 5.500,00 (+5,8%)', delta:'+R$ 300,00 mensal',
     requester:'João Carvalho',
     requestedAt:'há 4 horas',
@@ -1141,7 +1142,7 @@ function renderCharts(){
       labels:['Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar','Abr'],
       datasets:[
         {label:'Promoção',     data:[3,4,2,5,4,6,3,2,7,5,4,6], backgroundColor:'#1E7B4B', stack:'a', borderRadius:3, maxBarThickness:18},
-        {label:'Ajuste salarial',data:[8,7,9,11,10,12,8,5,14,12,11,15], backgroundColor:'#F5831F', stack:'a', borderRadius:3, maxBarThickness:18},
+        {label:'Ajuste salarial',data:[8,7,9,11,10,12,8,5,14,12,11,15], backgroundColor:'#F58634', stack:'a', borderRadius:3, maxBarThickness:18},
         {label:'Mudança setor', data:[2,1,3,2,4,3,2,1,5,3,2,4], backgroundColor:'#854F0B', stack:'a', borderRadius:3, maxBarThickness:18},
         {label:'Mudança filial',data:[1,2,1,3,2,2,1,1,3,2,2,3], backgroundColor:'#6D28D9', stack:'a', borderRadius:3, maxBarThickness:18},
         {label:'Demissão',     data:[4,3,5,4,6,5,8,4,6,5,7,5], backgroundColor:'#C0392B', stack:'a', borderRadius:3, maxBarThickness:18}

@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>R2 People - Empty states</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
-  --orange:#F5831F; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --orange2:#FFF8EB; --red:#E82227; --red2:#FDECEA;
   --purple:#6D28D9; --purple2:#F0E6FA;
   --green:#1E7B4B; --green2:#D4EDDF;
   --amber:#854F0B; --amber2:#FEF3E2;
@@ -25,12 +26,12 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
-body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
 .app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
 
 .sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
 .sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
-.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-logo{width:auto; height:30px; display:block; flex-shrink:0;}
 .brand-text{display:flex; flex-direction:column; line-height:1.1;}
 .brand-name{font-weight:600; font-size:14px;}
 .brand-sub{font-size:10.5px; color:var(--gray3);}
@@ -350,7 +351,7 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -478,11 +479,11 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
             <div class="es-illustration">
               <span class="es-shape-bg navy"></span>
               <svg viewBox="0 0 100 100" fill="none">
-                <rect x="20" y="35" width="60" height="40" rx="4" stroke="#2B4A7A" stroke-width="2.5" fill="#fff"/>
-                <line x1="30" y1="48" x2="58" y2="48" stroke="#2B4A7A" stroke-width="2" stroke-linecap="round" opacity=".4"/>
-                <line x1="30" y1="56" x2="64" y2="56" stroke="#2B4A7A" stroke-width="2" stroke-linecap="round" opacity=".3"/>
-                <line x1="30" y1="64" x2="50" y2="64" stroke="#2B4A7A" stroke-width="2" stroke-linecap="round" opacity=".25"/>
-                <circle cx="76" cy="34" r="11" fill="#F5831F"/>
+                <rect x="20" y="35" width="60" height="40" rx="4" stroke="#2E476F" stroke-width="2.5" fill="#fff"/>
+                <line x1="30" y1="48" x2="58" y2="48" stroke="#2E476F" stroke-width="2" stroke-linecap="round" opacity=".4"/>
+                <line x1="30" y1="56" x2="64" y2="56" stroke="#2E476F" stroke-width="2" stroke-linecap="round" opacity=".3"/>
+                <line x1="30" y1="64" x2="50" y2="64" stroke="#2E476F" stroke-width="2" stroke-linecap="round" opacity=".25"/>
+                <circle cx="76" cy="34" r="11" fill="#F58634"/>
                 <path d="M76 30v6M73 33h6" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
               </svg>
             </div>
@@ -558,11 +559,11 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
             <div class="es-illustration">
               <span class="es-shape-bg amber"></span>
               <svg viewBox="0 0 100 100" fill="none">
-                <circle cx="44" cy="44" r="22" stroke="#F5831F" stroke-width="3" fill="#fff"/>
-                <line x1="62" y1="62" x2="78" y2="78" stroke="#F5831F" stroke-width="4" stroke-linecap="round"/>
-                <path d="M36 44h16" stroke="#F5831F" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="22" cy="80" r="3" fill="#F5831F" opacity=".4"/>
-                <circle cx="78" cy="22" r="2.5" fill="#F5831F" opacity=".5"/>
+                <circle cx="44" cy="44" r="22" stroke="#F58634" stroke-width="3" fill="#fff"/>
+                <line x1="62" y1="62" x2="78" y2="78" stroke="#F58634" stroke-width="4" stroke-linecap="round"/>
+                <path d="M36 44h16" stroke="#F58634" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="22" cy="80" r="3" fill="#F58634" opacity=".4"/>
+                <circle cx="78" cy="22" r="2.5" fill="#F58634" opacity=".5"/>
               </svg>
             </div>
             <h2 class="es-title">Nada encontrado para essa busca</h2>
@@ -599,11 +600,11 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
             <div class="es-illustration">
               <span class="es-shape-bg orange"></span>
               <svg viewBox="0 0 100 100" fill="none">
-                <path d="M22 38a8 8 0 018-8h36a8 8 0 018 8v18a8 8 0 01-8 8H46l-12 12V64h-4a8 8 0 01-8-8z" fill="#F5831F" opacity=".15" stroke="#F5831F" stroke-width="2.5"/>
-                <circle cx="40" cy="48" r="2" fill="#F5831F"/>
-                <circle cx="50" cy="48" r="2" fill="#F5831F"/>
-                <circle cx="60" cy="48" r="2" fill="#F5831F"/>
-                <path d="M75 25l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#F5831F"/>
+                <path d="M22 38a8 8 0 018-8h36a8 8 0 018 8v18a8 8 0 01-8 8H46l-12 12V64h-4a8 8 0 01-8-8z" fill="#F58634" opacity=".15" stroke="#F58634" stroke-width="2.5"/>
+                <circle cx="40" cy="48" r="2" fill="#F58634"/>
+                <circle cx="50" cy="48" r="2" fill="#F58634"/>
+                <circle cx="60" cy="48" r="2" fill="#F58634"/>
+                <path d="M75 25l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="#F58634"/>
               </svg>
             </div>
             <h2 class="es-title">Seus primeiros feedbacks aparecem aqui</h2>
@@ -636,14 +637,14 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
             <div class="es-illustration">
               <span class="es-shape-bg amber"></span>
               <svg viewBox="0 0 100 100" fill="none">
-                <rect x="22" y="28" width="56" height="50" rx="4" fill="#fff" stroke="#F5831F" stroke-width="2.5"/>
-                <rect x="22" y="28" width="56" height="12" rx="4" fill="#F5831F" opacity=".15"/>
-                <line x1="34" y1="22" x2="34" y2="34" stroke="#F5831F" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="66" y1="22" x2="66" y2="34" stroke="#F5831F" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="22" y1="48" x2="78" y2="48" stroke="#F5831F" stroke-width="1.5" opacity=".3"/>
-                <line x1="38" y1="40" x2="38" y2="78" stroke="#F5831F" stroke-width="1.5" opacity=".3"/>
-                <line x1="62" y1="40" x2="62" y2="78" stroke="#F5831F" stroke-width="1.5" opacity=".3"/>
-                <text x="50" y="68" font-family="system-ui" font-size="14" font-weight="700" fill="#F5831F" text-anchor="middle" opacity=".7">0</text>
+                <rect x="22" y="28" width="56" height="50" rx="4" fill="#fff" stroke="#F58634" stroke-width="2.5"/>
+                <rect x="22" y="28" width="56" height="12" rx="4" fill="#F58634" opacity=".15"/>
+                <line x1="34" y1="22" x2="34" y2="34" stroke="#F58634" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="66" y1="22" x2="66" y2="34" stroke="#F58634" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="22" y1="48" x2="78" y2="48" stroke="#F58634" stroke-width="1.5" opacity=".3"/>
+                <line x1="38" y1="40" x2="38" y2="78" stroke="#F58634" stroke-width="1.5" opacity=".3"/>
+                <line x1="62" y1="40" x2="62" y2="78" stroke="#F58634" stroke-width="1.5" opacity=".3"/>
+                <text x="50" y="68" font-family="system-ui" font-size="14" font-weight="700" fill="#F58634" text-anchor="middle" opacity=".7">0</text>
               </svg>
             </div>
             <h2 class="es-title">Nenhum colaborador no escopo atual</h2>
@@ -729,11 +730,11 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
             <div class="es-illustration">
               <span class="es-shape-bg amber"></span>
               <svg viewBox="0 0 100 100" fill="none">
-                <path d="M50 18l8 16 18 2.5L62 50l3 18-15-9-15 9 3-18-14-13.5L42 34z" fill="#F5831F" opacity=".15" stroke="#F5831F" stroke-width="2.5" stroke-linejoin="round"/>
-                <path d="M50 26l5 10 11 1.5L58 46l2 11-10-6-10 6 2-11-8-8.5L45 36z" fill="#F5831F"/>
-                <circle cx="22" cy="22" r="4" fill="#F5831F" opacity=".4"/>
-                <circle cx="78" cy="78" r="3" fill="#F5831F" opacity=".5"/>
-                <circle cx="80" cy="28" r="2.5" fill="#F5831F" opacity=".6"/>
+                <path d="M50 18l8 16 18 2.5L62 50l3 18-15-9-15 9 3-18-14-13.5L42 34z" fill="#F58634" opacity=".15" stroke="#F58634" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M50 26l5 10 11 1.5L58 46l2 11-10-6-10 6 2-11-8-8.5L45 36z" fill="#F58634"/>
+                <circle cx="22" cy="22" r="4" fill="#F58634" opacity=".4"/>
+                <circle cx="78" cy="78" r="3" fill="#F58634" opacity=".5"/>
+                <circle cx="80" cy="28" r="2.5" fill="#F58634" opacity=".6"/>
               </svg>
             </div>
             <h2 class="es-title">Sua jornada de conquistas começa agora</h2>
@@ -771,11 +772,11 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
             <div class="es-illustration">
               <span class="es-shape-bg navy"></span>
               <svg viewBox="0 0 100 100" fill="none">
-                <circle cx="35" cy="38" r="11" fill="#fff" stroke="#2B4A7A" stroke-width="2.5"/>
-                <path d="M22 68a13 13 0 0126 0z" fill="#fff" stroke="#2B4A7A" stroke-width="2.5"/>
-                <circle cx="62" cy="38" r="9" fill="#F4F7FC" stroke="#2B4A7A" stroke-width="2" stroke-dasharray="3 3"/>
-                <path d="M52 64a10 10 0 0120 0z" fill="#F4F7FC" stroke="#2B4A7A" stroke-width="2" stroke-dasharray="3 3"/>
-                <circle cx="78" cy="22" r="7" fill="#F5831F"/>
+                <circle cx="35" cy="38" r="11" fill="#fff" stroke="#2E476F" stroke-width="2.5"/>
+                <path d="M22 68a13 13 0 0126 0z" fill="#fff" stroke="#2E476F" stroke-width="2.5"/>
+                <circle cx="62" cy="38" r="9" fill="#F4F7FC" stroke="#2E476F" stroke-width="2" stroke-dasharray="3 3"/>
+                <path d="M52 64a10 10 0 0120 0z" fill="#F4F7FC" stroke="#2E476F" stroke-width="2" stroke-dasharray="3 3"/>
+                <circle cx="78" cy="22" r="7" fill="#F58634"/>
                 <path d="M78 19v6M75 22h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
               </svg>
             </div>

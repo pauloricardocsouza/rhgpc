@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>R2 People - Acessos e Perfis</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
-  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
   --green:#1E7B4B; --green2:#D4EDDF;
   --danger:#C0392B; --danger2:#FDECEA;
   --amber:#854F0B; --amber2:#FEF3E2;
@@ -23,13 +24,13 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
-body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
 .app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
 
 /* Sidebar */
 .sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
 .sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
-.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-logo{width:auto; height:30px; display:block; flex-shrink:0;}
 .brand-text{display:flex; flex-direction:column; line-height:1.1;}
 .brand-name{font-weight:600; font-size:14px;}
 .brand-sub{font-size:10.5px; color:var(--gray3);}
@@ -454,7 +455,7 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -751,7 +752,7 @@ const profiles = [
   },
   {
     id:'pf2', name:'Admin RH Corporativo', desc:'Gestão completa de pessoas no grupo, sem acesso a configurações de sistema',
-    color:'#2B4A7A', icon:'⚛', isSystem:true, active:true, users:3,
+    color:'#2E476F', icon:'⚛', isSystem:true, active:true, users:3,
     pageCount:12,
     scope:{employers:'all', units:'all', depts:'all', hierarchy:'all'},
     special:['approve_movements','import_csv','export_sensitive','reset_passwords']
@@ -779,7 +780,7 @@ const profiles = [
   },
   {
     id:'pf6', name:'Líder de Departamento', desc:'Vê apenas seu departamento dentro de sua filial de trabalho',
-    color:'#F5831F', icon:'◰', isSystem:false, active:true, users:18,
+    color:'#F58634', icon:'◰', isSystem:false, active:true, users:18,
     pageCount:7,
     scope:{employers:'all', units:'self', depts:'self', hierarchy:'recursive'},
     special:['approve_movements']
@@ -809,17 +810,17 @@ const profiles = [
 
 // Atribuições (sample)
 const assignments = [
-  {user:'Ricardo Silva',     initials:'RS', color:'#2B4A7A', empUnit:'GPC',    workUnit:'GPC Tecnologia',  dept:'TI / BI',         profile:'Super Admin',                override:false},
+  {user:'Ricardo Silva',     initials:'RS', color:'#2E476F', empUnit:'GPC',    workUnit:'GPC Tecnologia',  dept:'TI / BI',         profile:'Super Admin',                override:false},
   {user:'Maria Santos',      initials:'MS', color:'#6D28D9', empUnit:'GPC',    workUnit:'Matriz Adm.',     dept:'Diretoria',       profile:'Diretor',                    override:false},
   {user:'Patrícia Mello',    initials:'PM', color:'#1E7B4B', empUnit:'GPC',    workUnit:'GPC RH',          dept:'RH / DP',         profile:'Admin RH Corporativo',       override:true},
-  {user:'Larissa Pereira',   initials:'LP', color:'#F5831F', empUnit:'Labuta', workUnit:'GPC RH',          dept:'RH / DP',         profile:'RH Prestadora · Labuta',     override:false},
+  {user:'Larissa Pereira',   initials:'LP', color:'#F58634', empUnit:'Labuta', workUnit:'GPC RH',          dept:'RH / DP',         profile:'RH Prestadora · Labuta',     override:false},
   {user:'Sandra Gomes',      initials:'SG', color:'#E82227', empUnit:'GPC',    workUnit:'Cestão L1',       dept:'Operações',       profile:'Gerente de Filial · Cestão L1', override:false},
   {user:'João Carvalho',     initials:'JC', color:'#854F0B', empUnit:'GPC',    workUnit:'GPC Financeiro',  dept:'Financeiro',      profile:'Líder de Departamento',      override:false},
   {user:'Roberto Almeida',   initials:'RA', color:'#3D5F95', empUnit:'GPC',    workUnit:'ATP - Varejo',    dept:'Operações',       profile:'Gerente de Filial',          override:false},
-  {user:'Carlos Eduardo',    initials:'CE', color:'#F5831F', empUnit:'Labuta', workUnit:'ATP - Varejo',    dept:'Compras',         profile:'Coordenador',                override:false},
+  {user:'Carlos Eduardo',    initials:'CE', color:'#F58634', empUnit:'Labuta', workUnit:'ATP - Varejo',    dept:'Compras',         profile:'Coordenador',                override:false},
   {user:'Helena Cardoso',    initials:'HC', color:'#1F3A6B', empUnit:'GPC',    workUnit:'GPC Financeiro',  dept:'Tesouraria',      profile:'Coordenador',                override:false},
   {user:'Fernanda Lima',     initials:'FL', color:'#E82227', empUnit:'Labuta', workUnit:'Cestão L1',       dept:'Financeiro',      profile:'Colaborador',                override:false},
-  {user:'Beatriz Lopes',     initials:'BL', color:'#2B4A7A', empUnit:'GPC',    workUnit:'GPC Financeiro',  dept:'Financeiro',      profile:'Colaborador',                override:false},
+  {user:'Beatriz Lopes',     initials:'BL', color:'#2E476F', empUnit:'GPC',    workUnit:'GPC Financeiro',  dept:'Financeiro',      profile:'Colaborador',                override:false},
   {user:'Felipe Oliveira',   initials:'FO', color:'#854F0B', empUnit:'Segure', workUnit:'Cestão L1',       dept:'Prev. Perdas',    profile:'Coordenador',                override:false}
 ];
 
@@ -927,7 +928,7 @@ function renderPages(){
     <tr class="row">
       <td class="cell-main">
         <div class="profile-cell">
-          <div class="profile-icon" style="background:${pg.sensitive?'#FDECEA':'#E8EFF8'}; color:${pg.sensitive?'#C0392B':'#2B4A7A'}; font-size:14px;">${pg.sensitive?'⚠':'⛁'}</div>
+          <div class="profile-icon" style="background:${pg.sensitive?'#FDECEA':'#E8EFF8'}; color:${pg.sensitive?'#C0392B':'#2E476F'}; font-size:14px;">${pg.sensitive?'⚠':'⛁'}</div>
           <div class="profile-info">
             <div class="profile-name">${pg.name}</div>
             <div class="profile-desc" style="font-family:'JetBrains Mono',monospace; font-size:11px;">${pg.code}</div>
@@ -956,7 +957,7 @@ document.querySelectorAll('.tab').forEach(t=>{
 });
 
 /* ============= WIZARD ============= */
-let wizState = {step:1, profileId:null, name:'', desc:'', color:'#2B4A7A', icon:'⚙', pages:{}, scope:{employers:'all', units:'all', depts:'all', hierarchy:'all', specific:{employers:[], units:[], depts:[]}}, special:[]};
+let wizState = {step:1, profileId:null, name:'', desc:'', color:'#2E476F', icon:'⚙', pages:{}, scope:{employers:'all', units:'all', depts:'all', hierarchy:'all', specific:{employers:[], units:[], depts:[]}}, special:[]};
 
 function openProfileWizard(id){
   if(id){
@@ -971,7 +972,7 @@ function openProfileWizard(id){
     document.getElementById('pmTitle').textContent = `Editar perfil: ${p.name}`;
     document.getElementById('pmSub').textContent = p.isSystem ? 'Perfil do sistema (algumas configurações são bloqueadas)' : 'Configure permissões e escopo de visibilidade';
   } else {
-    wizState = {step:1, profileId:null, name:'', desc:'', color:'#2B4A7A', icon:'⚙', pages:{}, scope:{employers:'all', units:'all', depts:'all', hierarchy:'all', specific:{employers:[], units:[], depts:[]}}, special:[]};
+    wizState = {step:1, profileId:null, name:'', desc:'', color:'#2E476F', icon:'⚙', pages:{}, scope:{employers:'all', units:'all', depts:'all', hierarchy:'all', specific:{employers:[], units:[], depts:[]}}, special:[]};
     document.getElementById('pmTitle').textContent = 'Novo perfil de acesso';
     document.getElementById('pmSub').textContent = 'Configure permissões e escopo de visibilidade';
   }
@@ -998,7 +999,7 @@ function renderWizardStep(){
 
 function renderWizStep1(){
   document.getElementById('pmFoot').textContent = 'Defina nome, descrição e visual do perfil';
-  const colors = ['#1A2D4F','#2B4A7A','#3D5F95','#6D28D9','#1E7B4B','#F5831F','#854F0B','#E82227','#C0392B','#5A7090'];
+  const colors = ['#1A2D4F','#2E476F','#3D5F95','#6D28D9','#1E7B4B','#F58634','#854F0B','#E82227','#C0392B','#5A7090'];
   const icons = ['⚡','⚛','⚙','★','⌂','◰','◇','☉','⌕','◉'];
 
   document.getElementById('pmBody').innerHTML = `

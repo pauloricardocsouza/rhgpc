@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GPC · Grupo Pinto Cerqueira · logo oficial (versão colorida) -->
+<!-- Aproximação SVG do logo oficial. Para substituir pelo arquivo
+     definitivo, basta salvar 'gpc-color.png' (ou .svg) neste mesmo path
+     e ajustar a referência em _cofreCriarShell se a extensão mudar. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 130" role="img" aria-label="GPC Grupo Pinto Cerqueira">
+  <defs>
+    <style>
+      .navy   { fill: #2E476F; }
+      .orange { fill: #F58634; }
+      .navy-italic { fill: #2E476F; font-family: 'Archivo', sans-serif; font-weight: 700; font-style: italic; }
+    </style>
+  </defs>
+
+  <!-- Letras GPC: tipografia Archivo Black, kerning apertado -->
+  <text x="0" y="80" class="navy"
+        font-family="Archivo, Arial Black, sans-serif"
+        font-weight="900"
+        font-size="100"
+        letter-spacing="-7">GPC</text>
+
+  <!-- Arco laranja em cima do C (canto superior direito) -->
+  <path d="M 218 6 Q 252 11 256 32"
+        stroke="#F58634"
+        stroke-width="9"
+        fill="none"
+        stroke-linecap="round"/>
+
+  <!-- Tagline -->
+  <text x="0" y="118"
+        class="navy-italic"
+        font-size="14"
+        letter-spacing="0.5">GRUPO PINTO CERQUEIRA</text>
+</svg>

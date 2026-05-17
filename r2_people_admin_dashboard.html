@@ -1,17 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>R2 People - Dashboard RH</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
 :root{
-  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
-  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
   --green:#1E7B4B; --green2:#D4EDDF;
   --danger:#C0392B; --danger2:#FDECEA;
   --amber:#854F0B; --amber2:#FEF3E2;
@@ -24,7 +25,7 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
-body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
 
 /* ===== Layout ===== */
 .app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
@@ -357,7 +358,7 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
   <!-- ============= SIDEBAR ============= -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -1045,7 +1046,7 @@ const data = {
 
   cycleStatus:[
     {label:'Submetidas',  value:573, color:'#1E7B4B'},
-    {label:'Em andamento',value:108, color:'#F5831F'},
+    {label:'Em andamento',value:108, color:'#F58634'},
     {label:'Pendentes',   value:53,  color:'#C0392B'}
   ],
 
@@ -1096,10 +1097,10 @@ const data = {
 
   pendentesNominais:[
     {name:'Roberto Almeida',     dept:'ATP Sr. Bonfim',    due:'urgent', dueText:'venceu', initials:'RA', color:'#E82227'},
-    {name:'Tatiana Souza',       dept:'CD Logística',      due:'urgent', dueText:'venceu', initials:'TS', color:'#F5831F'},
+    {name:'Tatiana Souza',       dept:'CD Logística',      due:'urgent', dueText:'venceu', initials:'TS', color:'#F58634'},
     {name:'José Carlos',         dept:'Cestão Inhambupe',  due:'2 dias', initials:'JC', color:'#6D28D9'},
     {name:'Mariana Pinto',       dept:'ATP - Atacado',     due:'4 dias', initials:'MP', color:'#1E7B4B'},
-    {name:'Felipe Oliveira',     dept:'Comercial',         due:'5 dias', initials:'FO', color:'#2B4A7A'}
+    {name:'Felipe Oliveira',     dept:'Comercial',         due:'5 dias', initials:'FO', color:'#2E476F'}
   ],
 
   porUnidade:{
@@ -1151,8 +1152,8 @@ const data = {
 
   topPerformers:[
     {name:'Carla Reis',         dept:'CD Logística',  score:'4,9', initials:'CR', color:'#1E7B4B'},
-    {name:'Ricardo Silva',      dept:'TI / BI',       score:'4,9', initials:'RS', color:'#2B4A7A'},
-    {name:'Pedro Lima',         dept:'ATP - Varejo',  score:'4,8', initials:'PL', color:'#F5831F'},
+    {name:'Ricardo Silva',      dept:'TI / BI',       score:'4,9', initials:'RS', color:'#2E476F'},
+    {name:'Pedro Lima',         dept:'ATP - Varejo',  score:'4,8', initials:'PL', color:'#F58634'},
     {name:'Ana Beatriz Souza',  dept:'Cestão L1',     score:'4,8', initials:'AS', color:'#6D28D9'},
     {name:'Marina Costa',       dept:'Comercial',     score:'4,7', initials:'MC', color:'#E82227'}
   ],
@@ -1175,12 +1176,12 @@ const data = {
   tipoFb:{
     labels:['Positivo','Construtivo','Resposta a pedido'],
     values:[1296, 393, 218],
-    colors:['#1E7B4B','#F5831F','#2B4A7A']
+    colors:['#1E7B4B','#F58634','#2E476F']
   },
 
   topEmissores:[
-    {name:'Maria Santos',     dept:'Diretoria',     count:48, initials:'MS', color:'#2B4A7A'},
-    {name:'João Carvalho',    dept:'CD Logística',  count:41, initials:'JC', color:'#F5831F'},
+    {name:'Maria Santos',     dept:'Diretoria',     count:48, initials:'MS', color:'#2E476F'},
+    {name:'João Carvalho',    dept:'CD Logística',  count:41, initials:'JC', color:'#F58634'},
     {name:'Patrícia Mello',   dept:'RH / DP',       count:38, initials:'PM', color:'#6D28D9'},
     {name:'Carlos Augusto',   dept:'ATP - Atacado', count:35, initials:'CA', color:'#E82227'},
     {name:'Sandra Gomes',     dept:'Cestão L1',     count:32, initials:'SG', color:'#1E7B4B'}
@@ -1188,8 +1189,8 @@ const data = {
 
   topReceptores:[
     {name:'Carla Reis',       dept:'CD Logística',  count:62, initials:'CR', color:'#1E7B4B'},
-    {name:'Ricardo Silva',    dept:'TI / BI',       count:54, initials:'RS', color:'#2B4A7A'},
-    {name:'Pedro Lima',       dept:'ATP - Varejo',  count:48, initials:'PL', color:'#F5831F'},
+    {name:'Ricardo Silva',    dept:'TI / BI',       count:54, initials:'RS', color:'#2E476F'},
+    {name:'Pedro Lima',       dept:'ATP - Varejo',  count:48, initials:'PL', color:'#F58634'},
     {name:'Marina Costa',     dept:'Comercial',     count:42, initials:'MC', color:'#6D28D9'},
     {name:'Helena Ribeiro',   dept:'Cestão Inh.',   count:38, initials:'HR', color:'#E82227'}
   ],
@@ -1335,7 +1336,7 @@ function chMov(){
       datasets:[
         {type:'bar', label:'Admissões', data:data.admissions, backgroundColor:'rgba(30,123,75,0.85)', borderRadius:4, maxBarThickness:18, stack:'flow'},
         {type:'bar', label:'Desligamentos', data:data.dismissals, backgroundColor:'rgba(192,57,43,0.85)', borderRadius:4, maxBarThickness:18, stack:'flow'},
-        {type:'line', label:'Quadro total', data:data.totalHeadcount, borderColor:'#2B4A7A', backgroundColor:'#2B4A7A', tension:.35, pointRadius:3, pointHoverRadius:5, borderWidth:2.5, yAxisID:'y2'}
+        {type:'line', label:'Quadro total', data:data.totalHeadcount, borderColor:'#2E476F', backgroundColor:'#2E476F', tension:.35, pointRadius:3, pointHoverRadius:5, borderWidth:2.5, yAxisID:'y2'}
       ]
     },
     options:{
@@ -1348,7 +1349,7 @@ function chMov(){
       scales:{
         x:{grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#8FA3BE'}},
         y:{grid:{color:'rgba(0,0,0,.04)'}, ticks:{color:'#8FA3BE', callback:v=>Math.abs(v)}},
-        y2:{position:'right', grid:{display:false}, ticks:{color:'#2B4A7A', font:{weight:'500'}}, beginAtZero:false}
+        y2:{position:'right', grid:{display:false}, ticks:{color:'#2E476F', font:{weight:'500'}}, beginAtZero:false}
       }
     }
   });
@@ -1394,7 +1395,7 @@ function chFaixa(){
     type:'bar',
     data:{
       labels:data.faixaEtaria.labels,
-      datasets:[{label:'Colaboradores', data:data.faixaEtaria.values, backgroundColor:['#3D5F95','#2B4A7A','#1F3A6B','#F5831F','#854F0B'], borderRadius:6, maxBarThickness:36}]
+      datasets:[{label:'Colaboradores', data:data.faixaEtaria.values, backgroundColor:['#3D5F95','#2E476F','#1F3A6B','#F58634','#854F0B'], borderRadius:6, maxBarThickness:36}]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
@@ -1412,7 +1413,7 @@ function chProgTipo(){
       labels:data.progTipo.labels,
       datasets:[
         {label:'Submetidas', data:data.progTipo.submitted, backgroundColor:'#1E7B4B', borderRadius:4, stack:'a'},
-        {label:'Em andamento', data:data.progTipo.inProgress, backgroundColor:'#F5831F', borderRadius:4, stack:'a'},
+        {label:'Em andamento', data:data.progTipo.inProgress, backgroundColor:'#F58634', borderRadius:4, stack:'a'},
         {label:'Pendentes', data:data.progTipo.pending, backgroundColor:'#C0392B', borderRadius:4, stack:'a'}
       ]
     },
@@ -1433,7 +1434,7 @@ function chProgDia(){
       datasets:[{
         label:'Submetidas (acumulado)',
         data:data.progDiario.submitted,
-        borderColor:'#2B4A7A',
+        borderColor:'#2E476F',
         backgroundColor:'rgba(43,74,122,.12)',
         tension:.35, pointRadius:0, pointHoverRadius:5, borderWidth:2.5, fill:true
       }]
@@ -1452,7 +1453,7 @@ function chPorUnidade(){
     type:'bar',
     data:{
       labels:data.porUnidade.labels,
-      datasets:[{label:'Colaboradores', data:data.porUnidade.values, backgroundColor:'#2B4A7A', borderRadius:4, maxBarThickness:18}]
+      datasets:[{label:'Colaboradores', data:data.porUnidade.values, backgroundColor:'#2E476F', borderRadius:4, maxBarThickness:18}]
     },
     options:{
       responsive:true, maintainAspectRatio:false, indexAxis:'y',
@@ -1466,7 +1467,7 @@ function chGenero(){
   killChart('chGenero');
   CHARTS.chGenero = new Chart(document.getElementById('chGenero'), {
     type:'doughnut',
-    data:{labels:data.genero.labels, datasets:[{data:data.genero.values, backgroundColor:['#2B4A7A','#F5831F'], borderWidth:0}]},
+    data:{labels:data.genero.labels, datasets:[{data:data.genero.values, backgroundColor:['#2E476F','#F58634'], borderWidth:0}]},
     options:{
       responsive:true, maintainAspectRatio:false, cutout:'65%',
       plugins:{legend:{position:'bottom', labels:{boxWidth:10, boxHeight:10, padding:10}}, tooltip:TT}
@@ -1489,7 +1490,7 @@ function chPiramide(){
     type:'bar',
     data:{
       labels:data.piramide.labels,
-      datasets:[{data:data.piramide.values, backgroundColor:['#1A2D4F','#1F3A6B','#2B4A7A','#3D5F95','#6F90BC','#A8C0DD'], borderRadius:6, maxBarThickness:30}]
+      datasets:[{data:data.piramide.values, backgroundColor:['#1A2D4F','#1F3A6B','#2E476F','#3D5F95','#6F90BC','#A8C0DD'], borderRadius:6, maxBarThickness:30}]
     },
     options:{
       responsive:true, maintainAspectRatio:false, indexAxis:'y',
@@ -1507,7 +1508,7 @@ function chNotas(){
       labels:data.notas.labels,
       datasets:[{data:data.notas.values, backgroundColor:data.notas.values.map((_,i)=>{
         if(i<3) return '#C0392B';
-        if(i<5) return '#F5831F';
+        if(i<5) return '#F58634';
         return '#1E7B4B';
       }), borderRadius:6, maxBarThickness:32}]
     },
@@ -1521,7 +1522,7 @@ function chNotaEvol(){
     type:'line',
     data:{
       labels:data.notaEvol.labels,
-      datasets:[{data:data.notaEvol.values, borderColor:'#2B4A7A', backgroundColor:'rgba(43,74,122,.1)', tension:.4, pointRadius:4, pointBackgroundColor:'#F5831F', pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:2.5, fill:true}]
+      datasets:[{data:data.notaEvol.values, borderColor:'#2E476F', backgroundColor:'rgba(43,74,122,.1)', tension:.4, pointRadius:4, pointBackgroundColor:'#F58634', pointBorderColor:'#fff', pointBorderWidth:2, borderWidth:2.5, fill:true}]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
@@ -1537,7 +1538,7 @@ function chCompetencias(){
     type:'radar',
     data:{
       labels:data.competencias.labels,
-      datasets:[{label:'Média', data:data.competencias.values, borderColor:'#2B4A7A', backgroundColor:'rgba(43,74,122,.18)', pointBackgroundColor:'#F5831F', pointBorderColor:'#fff', pointRadius:3, borderWidth:2}]
+      datasets:[{label:'Média', data:data.competencias.values, borderColor:'#2E476F', backgroundColor:'rgba(43,74,122,.18)', pointBackgroundColor:'#F58634', pointBorderColor:'#fff', pointRadius:3, borderWidth:2}]
     },
     options:{
       responsive:true, maintainAspectRatio:false,
@@ -1555,7 +1556,7 @@ function chVolume(){
       labels:data.volumeMonths,
       datasets:[
         {type:'bar', label:'Feedbacks positivos', data:data.fbPositivo, backgroundColor:'#1E7B4B', borderRadius:3, stack:'fb', maxBarThickness:22},
-        {type:'bar', label:'Feedbacks construtivos', data:data.fbConstrutivo, backgroundColor:'#F5831F', borderRadius:3, stack:'fb', maxBarThickness:22},
+        {type:'bar', label:'Feedbacks construtivos', data:data.fbConstrutivo, backgroundColor:'#F58634', borderRadius:3, stack:'fb', maxBarThickness:22},
         {type:'line', label:'Elogios', data:data.elogios, borderColor:'#6D28D9', backgroundColor:'#6D28D9', tension:.35, pointRadius:3, pointHoverRadius:5, borderWidth:2.5}
       ]
     },

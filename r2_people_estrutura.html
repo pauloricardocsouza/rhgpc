@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>R2 People - Estrutura Organizacional</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
-  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
   --green:#1E7B4B; --green2:#D4EDDF;
   --danger:#C0392B; --danger2:#FDECEA;
   --amber:#854F0B; --amber2:#FEF3E2;
@@ -23,14 +24,14 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
-body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
 
 .app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
 
 /* Sidebar */
 .sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
 .sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
-.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-logo{width:auto; height:30px; display:block; flex-shrink:0;}
 .brand-text{display:flex; flex-direction:column; line-height:1.1;}
 .brand-name{font-weight:600; font-size:14px;}
 .brand-sub{font-size:10.5px; color:var(--gray3);}
@@ -426,7 +427,7 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -812,14 +813,14 @@ const positions = [
 ];
 
 const positionLevels = {
-  'Estagiário':  {tag:'tag-blue',   color:'#2B4A7A'},
+  'Estagiário':  {tag:'tag-blue',   color:'#2E476F'},
   'Operacional': {tag:'tag-blue',   color:'#3D5F95'},
   'Júnior':      {tag:'tag-green',  color:'#1E7B4B'},
   'Pleno':       {tag:'tag-purple', color:'#6D28D9'},
   'Sênior':      {tag:'tag-amber',  color:'#854F0B'},
   'Encarregado': {tag:'tag-orange', color:'#854F0B'},
   'Coordenador': {tag:'tag-amber',  color:'#854F0B'},
-  'Gerente':     {tag:'tag-orange', color:'#F5831F'},
+  'Gerente':     {tag:'tag-orange', color:'#F58634'},
   'Diretoria':   {tag:'tag-blue',   color:'#1A2D4F'}
 };
 
@@ -988,7 +989,7 @@ function renderPositions(){
   const list = positions.filter(p=>!posFilter || p.name.toLowerCase().includes(posFilter) || p.code.toLowerCase().includes(posFilter));
 
   tbody.innerHTML = list.map(p=>{
-    const lvl = positionLevels[p.level] || {tag:'tag-blue', color:'#2B4A7A'};
+    const lvl = positionLevels[p.level] || {tag:'tag-blue', color:'#2E476F'};
     const dept = p.deptId ? depts.find(d=>d.id===p.deptId)?.name : null;
     return `
       <tr class="row" onclick="openModal('position','${p.id}')">

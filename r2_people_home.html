@@ -1,21 +1,22 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>R2 People - Home</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
 :root{
   /* ==== Paleta GPC (mantida) ==== */
-  --navy:#2B4A7A;
+  --navy:#2E476F;
   --navy2:#1F3A6B;
   --navy3:#3D5F95;
   --dark:#1A2D4F;
-  --orange:#F5831F;
+  --orange:#F58634;
   --red:#E82227;
   --purple:#6D28D9;
   --green:#1E7B4B;
@@ -44,7 +45,7 @@
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
 body{
-  font-family:'Sora', sans-serif;
+  font-family:'Archivo',sans-serif;
   background:var(--off);
   color:var(--txt);
   font-size:13px;
@@ -295,7 +296,7 @@ body{
   color:var(--txt);
   margin-top:6px;
   letter-spacing:-.5px;
-  font-family:'Sora', sans-serif;
+  font-family:'Archivo',sans-serif;
 }
 .kpi-sub{
   font-size:11.5px;
@@ -654,7 +655,7 @@ body{
   <!-- ============= SIDEBAR ============= -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -958,19 +959,19 @@ const data = {
   totalHeadcount:[336,335,338,342,348,349,344,341,353,354,352,358],
   cycleStatus:[
     {label:'Submetidas',  value:286, color:'#1E7B4B'},
-    {label:'Em andamento',value:54,  color:'#F5831F'},
+    {label:'Em andamento',value:54,  color:'#F58634'},
     {label:'Pendentes',   value:27,  color:'#C0392B'}
   ],
   birthdays:[
-    {name:'Ana Beatriz Souza',     dept:'Cestão L1',         day:'29/04', initials:'AS', color:'#2B4A7A'},
+    {name:'Ana Beatriz Souza',     dept:'Cestão L1',         day:'29/04', initials:'AS', color:'#2E476F'},
     {name:'Carlos Henrique Pinto', dept:'ATP - Atacado',     day:'30/04', initials:'CP', color:'#6D28D9'},
     {name:'Daniela Ferreira',      dept:'Administrativo',    day:'02/05', initials:'DF', color:'#1E7B4B'},
-    {name:'Eduardo Mendes',        dept:'CD Logística',      day:'04/05', initials:'EM', color:'#F5831F'},
+    {name:'Eduardo Mendes',        dept:'CD Logística',      day:'04/05', initials:'EM', color:'#F58634'},
     {name:'Fernanda Lima',         dept:'TI / BI',           day:'06/05', initials:'FL', color:'#E82227'}
   ],
   vacations:[
-    {name:'Gabriel Almeida',  dept:'ATP - Varejo',        until:'12/05', initials:'GA', color:'#2B4A7A'},
-    {name:'Helena Ribeiro',   dept:'Cestão Inhambupe',    until:'05/05', initials:'HR', color:'#F5831F'},
+    {name:'Gabriel Almeida',  dept:'ATP - Varejo',        until:'12/05', initials:'GA', color:'#2E476F'},
+    {name:'Helena Ribeiro',   dept:'Cestão Inhambupe',    until:'05/05', initials:'HR', color:'#F58634'},
     {name:'Igor Vasconcelos', dept:'Comercial',           until:'18/05', initials:'IV', color:'#6D28D9'},
     {name:'Juliana Reis',     dept:'Financeiro',          until:'22/05', initials:'JR', color:'#1E7B4B'},
     {name:'Lucas Barbosa',    dept:'Cestão L1',           until:'28/04', initials:'LB', color:'#E82227'}
@@ -1049,8 +1050,8 @@ function renderHeadcountChart(){
           type:'line',
           label:'Quadro total',
           data:data.totalHeadcount,
-          borderColor:'#2B4A7A',
-          backgroundColor:'#2B4A7A',
+          borderColor:'#2E476F',
+          backgroundColor:'#2E476F',
           tension:.35,
           pointRadius:3,
           pointHoverRadius:5,
@@ -1083,7 +1084,7 @@ function renderHeadcountChart(){
         y2:{
           position:'right',
           grid:{display:false},
-          ticks:{color:'#2B4A7A', font:{weight:'500'}},
+          ticks:{color:'#2E476F', font:{weight:'500'}},
           beginAtZero:false
         }
       }

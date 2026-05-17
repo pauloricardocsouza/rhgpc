@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>R2 People - Colaboradores</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
-  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
   --green:#1E7B4B; --green2:#D4EDDF;
   --danger:#C0392B; --danger2:#FDECEA;
   --amber:#854F0B; --amber2:#FEF3E2;
@@ -22,13 +23,13 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
-body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
 .app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
 
 /* Sidebar */
 .sidebar{grid-area:sidebar; background:var(--dark); color:#fff; display:flex; flex-direction:column; overflow:hidden; z-index:30;}
 .sidebar-brand{height:var(--topbar-h); padding:0 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.08);}
-.brand-logo{width:34px; height:34px; border-radius:8px; background:linear-gradient(135deg,var(--navy3),var(--orange)); display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:14px;}
+.brand-logo{width:auto; height:30px; display:block; flex-shrink:0;}
 .brand-text{display:flex; flex-direction:column; line-height:1.1;}
 .brand-name{font-weight:600; font-size:14px;}
 .brand-sub{font-size:10.5px; color:var(--gray3);}
@@ -419,7 +420,7 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -782,38 +783,38 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
 /* ============= MOCK DATA: 30 COLABORADORES ============= */
 const employees = [
   // GPC (próprios)
-  {id:1,  initials:'RS', color:'#2B4A7A', name:'Ricardo Silva',         cpf:'***.***.***-01', position:'Coord. de BI',         dept:'TI',         emp:'GPC',     tom:'GPC TI',         manager:'Maria Santos',     contract:'CLT', tenure:'3,1 anos', tenureCat:'3-5', salary:7500,  status:'active',   age:34, lastEval:4.7, hire:'2023-03-15'},
+  {id:1,  initials:'RS', color:'#2E476F', name:'Ricardo Silva',         cpf:'***.***.***-01', position:'Coord. de BI',         dept:'TI',         emp:'GPC',     tom:'GPC TI',         manager:'Maria Santos',     contract:'CLT', tenure:'3,1 anos', tenureCat:'3-5', salary:7500,  status:'active',   age:34, lastEval:4.7, hire:'2023-03-15'},
   {id:2,  initials:'MS', color:'#6D28D9', name:'Maria Santos',          cpf:'***.***.***-02', position:'Diretora Financeira',  dept:'Financeiro', emp:'GPC',     tom:'GPC Matriz',     manager:null,               contract:'CLT', tenure:'8,4 anos', tenureCat:'5+', salary:25000, status:'active',   age:48, lastEval:4.6, hire:'2018-01-10'},
   {id:3,  initials:'PM', color:'#1E7B4B', name:'Patrícia Mello',        cpf:'***.***.***-03', position:'Coord. de RH',         dept:'RH',         emp:'GPC',     tom:'GPC RH',         manager:'Maria Santos',     contract:'CLT', tenure:'4,2 anos', tenureCat:'3-5', salary:8200,  status:'active',   age:39, lastEval:4.5, hire:'2022-02-20'},
   {id:4,  initials:'JC', color:'#854F0B', name:'João Carvalho',         cpf:'***.***.***-04', position:'Líder Financeiro',     dept:'Financeiro', emp:'GPC',     tom:'GPC Financeiro', manager:'Maria Santos',     contract:'CLT', tenure:'5,7 anos', tenureCat:'5+', salary:9500,  status:'active',   age:42, lastEval:4.4, hire:'2020-08-10'},
-  {id:5,  initials:'BL', color:'#2B4A7A', name:'Beatriz Lopes Almeida', cpf:'***.***.***-05', position:'Analista Sênior',      dept:'Financeiro', emp:'GPC',     tom:'GPC Financeiro', manager:'João Carvalho',    contract:'CLT', tenure:'2,8 anos', tenureCat:'1-3', salary:5500,  status:'active',   age:31, lastEval:4.3, hire:'2023-06-15'},
+  {id:5,  initials:'BL', color:'#2E476F', name:'Beatriz Lopes Almeida', cpf:'***.***.***-05', position:'Analista Sênior',      dept:'Financeiro', emp:'GPC',     tom:'GPC Financeiro', manager:'João Carvalho',    contract:'CLT', tenure:'2,8 anos', tenureCat:'1-3', salary:5500,  status:'active',   age:31, lastEval:4.3, hire:'2023-06-15'},
   {id:6,  initials:'HC', color:'#3D5F95', name:'Helena Cardoso',        cpf:'***.***.***-06', position:'Analista Sênior',      dept:'Financeiro', emp:'GPC',     tom:'GPC Financeiro', manager:'João Carvalho',    contract:'CLT', tenure:'3,4 anos', tenureCat:'3-5', salary:5400,  status:'vacation', age:35, lastEval:4.2, hire:'2022-12-01'},
   {id:7,  initials:'SG', color:'#E82227', name:'Sandra Gomes',          cpf:'***.***.***-07', position:'Gerente de Loja',      dept:'Operações',  emp:'GPC',     tom:'Cestão L1',      manager:'Maria Santos',     contract:'CLT', tenure:'6,9 anos', tenureCat:'5+', salary:11000, status:'active',   age:44, lastEval:4.5, hire:'2019-07-12'},
   {id:8,  initials:'RA', color:'#3D5F95', name:'Roberto Almeida',       cpf:'***.***.***-08', position:'Gerente de Loja',      dept:'Operações',  emp:'GPC',     tom:'ATP-Varejo',     manager:'Maria Santos',     contract:'CLT', tenure:'7,3 anos', tenureCat:'5+', salary:10500, status:'active',   age:46, lastEval:4.3, hire:'2019-02-08'},
-  {id:9,  initials:'TC', color:'#F5831F', name:'Talita Comercial',     cpf:'***.***.***-09', position:'Diretora Comercial',   dept:'Comercial',  emp:'GPC',     tom:'GPC Matriz',     manager:'Maria Santos',     contract:'CLT', tenure:'5,1 anos', tenureCat:'5+', salary:18000, status:'active',   age:41, lastEval:4.7, hire:'2021-03-05'},
+  {id:9,  initials:'TC', color:'#F58634', name:'Talita Comercial',     cpf:'***.***.***-09', position:'Diretora Comercial',   dept:'Comercial',  emp:'GPC',     tom:'GPC Matriz',     manager:'Maria Santos',     contract:'CLT', tenure:'5,1 anos', tenureCat:'5+', salary:18000, status:'active',   age:41, lastEval:4.7, hire:'2021-03-05'},
   {id:10, initials:'CA', color:'#1E7B4B', name:'Carlos Augusto',        cpf:'***.***.***-10', position:'Auditor Sênior',       dept:'Auditoria',  emp:'GPC',     tom:'GPC Matriz',     manager:'Maria Santos',     contract:'CLT', tenure:'4,5 anos', tenureCat:'3-5', salary:8800,  status:'active',   age:43, lastEval:4.4, hire:'2021-10-15'},
 
   // Labuta (terceirizada · alocada em várias filiais GPC)
   {id:11, initials:'FL', color:'#E82227', name:'Fernanda Lima dos Santos', cpf:'***.***.***-11', position:'Analista Pleno',  dept:'Financeiro', emp:'Labuta', tom:'Cestão L1',     manager:'João Carvalho',    contract:'TER', tenure:'2,3 anos', tenureCat:'1-3', salary:3900,  status:'active',   age:33, lastEval:4.1, hire:'2024-01-15'},
-  {id:12, initials:'CE', color:'#F5831F', name:'Carlos Eduardo Lopes',  cpf:'***.***.***-12', position:'Analista Pleno',       dept:'Comercial',  emp:'Labuta', tom:'ATP-Atacado',    manager:'Talita Comercial', contract:'TER', tenure:'1,8 anos', tenureCat:'1-3', salary:4100,  status:'active',   age:30, lastEval:4.0, hire:'2024-08-22'},
+  {id:12, initials:'CE', color:'#F58634', name:'Carlos Eduardo Lopes',  cpf:'***.***.***-12', position:'Analista Pleno',       dept:'Comercial',  emp:'Labuta', tom:'ATP-Atacado',    manager:'Talita Comercial', contract:'TER', tenure:'1,8 anos', tenureCat:'1-3', salary:4100,  status:'active',   age:30, lastEval:4.0, hire:'2024-08-22'},
   {id:13, initials:'DV', color:'#6D28D9', name:'Daniela Vieira Matos',  cpf:'***.***.***-13', position:'Analista Júnior',      dept:'Financeiro', emp:'Labuta', tom:'Cestão L1',     manager:'João Carvalho',    contract:'TER', tenure:'1,2 anos', tenureCat:'1-3', salary:2800,  status:'active',   age:27, lastEval:4.3, hire:'2025-02-10'},
   {id:14, initials:'GP', color:'#854F0B', name:'Gabriel Pinto Souza',   cpf:'***.***.***-14', position:'Estagiário',           dept:'Financeiro', emp:'Labuta', tom:'Cestão L1',     manager:'João Carvalho',    contract:'EST', tenure:'0,7 anos', tenureCat:'<1', salary:1400,  status:'active',   age:21, lastEval:null, hire:'2025-08-05'},
-  {id:15, initials:'OP', color:'#2B4A7A', name:'Otávio Pereira',        cpf:'***.***.***-15', position:'Operador de Caixa',    dept:'Operações',  emp:'Labuta', tom:'Cestão L1',     manager:'Sandra Gomes',     contract:'TER', tenure:'2,1 anos', tenureCat:'1-3', salary:1620,  status:'active',   age:24, lastEval:3.8, hire:'2024-03-12'},
+  {id:15, initials:'OP', color:'#2E476F', name:'Otávio Pereira',        cpf:'***.***.***-15', position:'Operador de Caixa',    dept:'Operações',  emp:'Labuta', tom:'Cestão L1',     manager:'Sandra Gomes',     contract:'TER', tenure:'2,1 anos', tenureCat:'1-3', salary:1620,  status:'active',   age:24, lastEval:3.8, hire:'2024-03-12'},
   {id:16, initials:'JM', color:'#1E7B4B', name:'Júlia Machado',         cpf:'***.***.***-16', position:'Operadora de Caixa',   dept:'Operações',  emp:'Labuta', tom:'ATP-Varejo',    manager:'Roberto Almeida',  contract:'TER', tenure:'1,5 anos', tenureCat:'1-3', salary:1620,  status:'leave',    age:28, lastEval:4.0, hire:'2024-10-30'},
-  {id:17, initials:'PF', color:'#F5831F', name:'Pedro Felipe',          cpf:'***.***.***-17', position:'Repositor',            dept:'Operações',  emp:'Labuta', tom:'ATP-Varejo',    manager:'Roberto Almeida',  contract:'TER', tenure:'0,9 anos', tenureCat:'<1', salary:1620,  status:'active',   age:22, lastEval:3.5, hire:'2025-06-18'},
+  {id:17, initials:'PF', color:'#F58634', name:'Pedro Felipe',          cpf:'***.***.***-17', position:'Repositor',            dept:'Operações',  emp:'Labuta', tom:'ATP-Varejo',    manager:'Roberto Almeida',  contract:'TER', tenure:'0,9 anos', tenureCat:'<1', salary:1620,  status:'active',   age:22, lastEval:3.5, hire:'2025-06-18'},
   {id:18, initials:'AS', color:'#6D28D9', name:'Ana Beatriz Souza',     cpf:'***.***.***-18', position:'Analista de Marketing',dept:'Comercial',  emp:'Labuta', tom:'GPC Matriz',     manager:'Talita Comercial', contract:'TER', tenure:'2,6 anos', tenureCat:'1-3', salary:4500,  status:'active',   age:29, lastEval:4.4, hire:'2023-10-22'},
   {id:19, initials:'EM', color:'#854F0B', name:'Eduardo Mendes',        cpf:'***.***.***-19', position:'Conferente',           dept:'Logística',  emp:'Labuta', tom:'CD Logística',  manager:'João Carvalho CD', contract:'TER', tenure:'3,2 anos', tenureCat:'3-5', salary:2200,  status:'active',   age:36, lastEval:4.0, hire:'2023-02-28'},
   {id:20, initials:'LR', color:'#1E7B4B', name:'Larissa Rocha',         cpf:'***.***.***-20', position:'Operadora de Caixa',   dept:'Operações',  emp:'Labuta', tom:'Cestão Inh.',    manager:'Helena Ribeiro',   contract:'TER', tenure:'1,1 anos', tenureCat:'1-3', salary:1620,  status:'vacation', age:25, lastEval:3.9, hire:'2025-03-15'},
-  {id:21, initials:'IV', color:'#2B4A7A', name:'Igor Vasconcelos',      cpf:'***.***.***-21', position:'Açougueiro',           dept:'Operações',  emp:'Labuta', tom:'Cestão L1',     manager:'Sandra Gomes',     contract:'TER', tenure:'4,1 anos', tenureCat:'3-5', salary:2400,  status:'active',   age:38, lastEval:4.1, hire:'2022-04-08'},
+  {id:21, initials:'IV', color:'#2E476F', name:'Igor Vasconcelos',      cpf:'***.***.***-21', position:'Açougueiro',           dept:'Operações',  emp:'Labuta', tom:'Cestão L1',     manager:'Sandra Gomes',     contract:'TER', tenure:'4,1 anos', tenureCat:'3-5', salary:2400,  status:'active',   age:38, lastEval:4.1, hire:'2022-04-08'},
   {id:22, initials:'NF', color:'#3D5F95', name:'Natália Ferreira',      cpf:'***.***.***-22', position:'Auxiliar Financeiro',  dept:'Financeiro', emp:'Labuta', tom:'GPC Financeiro', manager:'João Carvalho',    contract:'TER', tenure:'0,5 anos', tenureCat:'<1', salary:2200,  status:'active',   age:23, lastEval:null, hire:'2025-10-20'},
 
   // Limpactiva
   {id:23, initials:'JS', color:'#1E7B4B', name:'José da Silva',         cpf:'***.***.***-23', position:'Aux. de Limpeza',      dept:'Limpeza',    emp:'Limpactiva', tom:'ATP-Varejo',  manager:null,               contract:'TER', tenure:'5,3 anos', tenureCat:'5+', salary:1518,  status:'active',   age:51, lastEval:null, hire:'2020-12-01'},
   {id:24, initials:'MA', color:'#854F0B', name:'Maria Aparecida',       cpf:'***.***.***-24', position:'Aux. de Limpeza',      dept:'Limpeza',    emp:'Limpactiva', tom:'Cestão L1',   manager:null,               contract:'TER', tenure:'2,8 anos', tenureCat:'1-3', salary:1518,  status:'active',   age:46, lastEval:null, hire:'2023-06-10'},
-  {id:25, initials:'AL', color:'#F5831F', name:'Antônio Lopes',         cpf:'***.***.***-25', position:'Aux. de Limpeza',      dept:'Limpeza',    emp:'Limpactiva', tom:'CD Logística',manager:null,               contract:'TER', tenure:'1,4 anos', tenureCat:'1-3', salary:1518,  status:'active',   age:39, lastEval:null, hire:'2024-12-15'},
+  {id:25, initials:'AL', color:'#F58634', name:'Antônio Lopes',         cpf:'***.***.***-25', position:'Aux. de Limpeza',      dept:'Limpeza',    emp:'Limpactiva', tom:'CD Logística',manager:null,               contract:'TER', tenure:'1,4 anos', tenureCat:'1-3', salary:1518,  status:'active',   age:39, lastEval:null, hire:'2024-12-15'},
 
   // Segure (vigilância)
-  {id:26, initials:'SR', color:'#2B4A7A', name:'Sérgio Rodrigues',      cpf:'***.***.***-26', position:'Vigilante',            dept:'Operações',  emp:'Segure', tom:'Cestão L1',      manager:null,               contract:'TER', tenure:'6,1 anos', tenureCat:'5+', salary:2100,  status:'active',   age:48, lastEval:null, hire:'2020-02-15'},
+  {id:26, initials:'SR', color:'#2E476F', name:'Sérgio Rodrigues',      cpf:'***.***.***-26', position:'Vigilante',            dept:'Operações',  emp:'Segure', tom:'Cestão L1',      manager:null,               contract:'TER', tenure:'6,1 anos', tenureCat:'5+', salary:2100,  status:'active',   age:48, lastEval:null, hire:'2020-02-15'},
   {id:27, initials:'MG', color:'#6D28D9', name:'Marcos Gonçalves',      cpf:'***.***.***-27', position:'Vigilante',            dept:'Operações',  emp:'Segure', tom:'ATP-Varejo',     manager:null,               contract:'TER', tenure:'3,5 anos', tenureCat:'3-5', salary:2100,  status:'active',   age:42, lastEval:null, hire:'2022-09-20'},
   {id:28, initials:'WP', color:'#854F0B', name:'Wagner Pereira',        cpf:'***.***.***-28', position:'Vigilante',            dept:'Operações',  emp:'Segure', tom:'CD Logística',   manager:null,               contract:'TER', tenure:'2,2 anos', tenureCat:'1-3', salary:2100,  status:'active',   age:37, lastEval:null, hire:'2024-02-28'},
 

@@ -260,3 +260,5 @@ Para reonboarding em nova sessão Claude, ler [`MIGRATION_PROMPT.md`](MIGRATION_
 ## Licença
 
 Privado · R2 Soluções Empresariais.
+
+

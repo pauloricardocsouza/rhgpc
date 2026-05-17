@@ -1,16 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>R2 People - Movimentação de Pessoal</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --navy:#2B4A7A; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
-  --orange:#F5831F; --red:#E82227; --purple:#6D28D9;
+  --navy:#2E476F; --navy2:#1F3A6B; --navy3:#3D5F95; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
   --green:#1E7B4B; --green2:#D4EDDF;
   --danger:#C0392B; --danger2:#FDECEA;
   --amber:#854F0B; --amber2:#FEF3E2;
@@ -24,7 +25,7 @@
 }
 *{box-sizing:border-box; margin:0; padding:0;}
 html,body{height:100%; overflow-x:hidden;}
-body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5; -webkit-font-smoothing:antialiased;}
 
 /* ===== Layout ===== */
 .app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
@@ -488,7 +489,7 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-logo">R2</div>
+      <img class="brand-logo" src="assets/gpc-color.svg" alt="GPC">
       <div class="brand-text">
         <span class="brand-name">R2 People</span>
         <span class="brand-sub">Gestão de Pessoas</span>
@@ -709,8 +710,8 @@ body{font-family:'Sora',sans-serif; background:var(--off); color:var(--txt); fon
 // Simulando contexto: João Carvalho é Líder Financeiro do Cestão Loja 1
 // Por RLS, ele só vê os 8 colaboradores do seu setor + sua filial
 const visibleEmployees = [
-  {id:'u1', name:'Beatriz Lopes',     dept:'Financeiro', position:'Analista Sênior',   unit:'Cestão L1', initials:'BL', color:'#2B4A7A', salary:5200},
-  {id:'u2', name:'Carlos Eduardo',    dept:'Financeiro', position:'Analista Pleno',    unit:'Cestão L1', initials:'CE', color:'#F5831F', salary:4100},
+  {id:'u1', name:'Beatriz Lopes',     dept:'Financeiro', position:'Analista Sênior',   unit:'Cestão L1', initials:'BL', color:'#2E476F', salary:5200},
+  {id:'u2', name:'Carlos Eduardo',    dept:'Financeiro', position:'Analista Pleno',    unit:'Cestão L1', initials:'CE', color:'#F58634', salary:4100},
   {id:'u3', name:'Daniela Vieira',    dept:'Financeiro', position:'Analista Júnior',   unit:'Cestão L1', initials:'DV', color:'#6D28D9', salary:2800},
   {id:'u4', name:'Eduardo Mendes',    dept:'Financeiro', position:'Auxiliar Financeiro',unit:'Cestão L1', initials:'EM', color:'#1E7B4B', salary:2200},
   {id:'u5', name:'Fernanda Lima',     dept:'Financeiro', position:'Analista Pleno',    unit:'Cestão L1', initials:'FL', color:'#E82227', salary:3900},
@@ -845,7 +846,7 @@ const movements = [
 /* ============= TIPOS DE MOVIMENTAÇÃO ============= */
 const movementTypes = [
   {id:'department_change', name:'Mudança de setor',     desc:'Transferir para outro departamento', icon:'⇄', cls:'mt-dept', color:'#854F0B', bg:'#FEF3E2'},
-  {id:'position_change',   name:'Mudança de função',    desc:'Alterar cargo/função na mesma área', icon:'⚙', cls:'mt-pos',  color:'#2B4A7A', bg:'#E8EFF8'},
+  {id:'position_change',   name:'Mudança de função',    desc:'Alterar cargo/função na mesma área', icon:'⚙', cls:'mt-pos',  color:'#2E476F', bg:'#E8EFF8'},
   {id:'unit_change',       name:'Mudança de filial',    desc:'Transferir para outra unidade',      icon:'⌂', cls:'mt-unit', color:'#6D28D9', bg:'#F0E6FA'},
   {id:'promotion',         name:'Promoção',             desc:'Subir de nível na carreira',         icon:'↑', cls:'mt-promo',color:'#1E7B4B', bg:'#D4EDDF'},
   {id:'salary_adjustment', name:'Ajuste salarial',      desc:'Mérito ou equiparação',              icon:'$', cls:'mt-salary',color:'#854F0B', bg:'#FCE6CD'},
