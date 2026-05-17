@@ -95,14 +95,77 @@ html[data-theme="dark"] .legend-card,
 html[data-theme="dark"] .history-card,
 html[data-theme="dark"] .cohort-card,
 html[data-theme="dark"] .wizard,
-html[data-theme="dark"] .pdi-card {
+html[data-theme="dark"] .pdi-card,
+html[data-theme="dark"] .tenants-card,
+html[data-theme="dark"] .objective-card,
+html[data-theme="dark"] .filters-bar,
+html[data-theme="dark"] .modal,
+html[data-theme="dark"] .pulse-card,
+html[data-theme="dark"] .demo-card,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .tab-panel {
   background: #16202E !important;
   border-color: #253C5E !important;
 }
 html[data-theme="dark"] .kpi-value,
-html[data-theme="dark"] .page-title {
+html[data-theme="dark"] .page-title,
+html[data-theme="dark"] .obj-title,
+html[data-theme="dark"] .tenant-name,
+html[data-theme="dark"] .kr-title,
+html[data-theme="dark"] .module-title {
   color: var(--txt) !important;
 }
+
+/* Cards table no dark · linhas e hover */
+html[data-theme="dark"] .tenants-table th { color: var(--txt3) !important; border-color: #253C5E !important; }
+html[data-theme="dark"] .tenants-table td { border-color: #253C5E !important; color: var(--txt2) !important; }
+html[data-theme="dark"] .tenants-table tr:hover td { background: #1B2D48 !important; }
+
+/* Off bg (var(--off)) no dark · vira escuro escuro */
+html[data-theme="dark"] .kr-item,
+html[data-theme="dark"] .trend-row,
+html[data-theme="dark"] .history-item,
+html[data-theme="dark"] .pdi-objective,
+html[data-theme="dark"] .aq-card,
+html[data-theme="dark"] .step-item:not(.active),
+html[data-theme="dark"] .summary-card,
+html[data-theme="dark"] .module-icon {
+  background: #1B2D48 !important;
+  color: var(--txt2) !important;
+}
+
+/* Backgrounds inline #fff hardcoded · seletores de atributo */
+html[data-theme="dark"] [style*="background:#fff"]:not(.user-avatar-tb):not(.brand-logo):not(.sidebar-brand-logo) {
+  background: #16202E !important;
+}
+
+/* Hover · texto escuro em backgrounds claros */
+html[data-theme="dark"] .filter-pill { background: #1B2D48 !important; color: var(--txt2) !important; }
+html[data-theme="dark"] .filter-pill.active { background: var(--navy) !important; color: #fff !important; }
+html[data-theme="dark"] .filter-pill:hover { background: #253C5E !important; }
+
+/* Btns secondary no dark */
+html[data-theme="dark"] .btn-secondary { background: #1B2D48 !important; color: var(--txt) !important; border-color: #253C5E !important; }
+html[data-theme="dark"] .btn-secondary:hover { background: #253C5E !important; }
+html[data-theme="dark"] .btn-ghost { color: var(--txt2) !important; border-color: #253C5E !important; }
+html[data-theme="dark"] .btn-ghost:hover { background: #1B2D48 !important; color: var(--txt) !important; }
+
+/* Banners coloridos · ajustar opacidade no dark */
+html[data-theme="dark"] .privacy-banner,
+html[data-theme="dark"] .checkin-banner,
+html[data-theme="dark"] .notice-banner {
+  background: rgba(46, 71, 111, 0.2) !important;
+}
+
+/* Persona switcher (toggle de pessoas no topo) */
+html[data-theme="dark"] .persona-switcher { background: #1B2D48 !important; }
+html[data-theme="dark"] .persona-btn.active { background: #253C5E !important; color: var(--txt) !important; }
+html[data-theme="dark"] .scope-tabs { background: #1B2D48 !important; }
+html[data-theme="dark"] .scope-tab.active { background: #253C5E !important; color: var(--txt) !important; }
+
+/* Cycle pill (purple) no dark */
+html[data-theme="dark"] .cycle-pill { background: rgba(109, 40, 217, 0.18) !important; color: #C4B5FD !important; }
 
 /* Form inputs dark */
 html[data-theme="dark"] .form-input,
