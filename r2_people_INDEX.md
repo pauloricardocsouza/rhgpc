@@ -1,9 +1,11 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.9 · 17 de maio de 2026
+**Versão**: 2.10 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
+
+**Mudança em v2.10** · adicionado **spec M10 (Configurações do tenant)** — último spec funcional faltando, cobrindo `tenants.settings` JSONB + 3 tabelas (`tenant_webhooks`, `tenant_api_keys`, `settings_history`), 6 abas (Geral/Branding/Notif/Integrações/Billing/Workspace), 9 RPCs e 25+ testes meta. Mais **schema SQL v10 consolidado** unindo 4 áreas em um único arquivo: movimentações (snapshot before/after JSONB c/ trigger de protocol), auth enterprise (SSO providers, MFA TOTP + recovery codes, tenant invitations, login audit, session revocations, rate-limit 3-camadas), settings runtime (webhooks c/ HMAC, api_keys), e history_views (LGPD audit + recent_employee_views c/ trigger de trim). 12+ tabelas, GRANTs e RLS habilitado em loop.
 
 **Mudança em v2.9** · adicionado **r2_people_showcase.html** (página entry-point comercial com 50+ cards navegáveis) + **3 specs novos** (`spec_m5_avaliacoes`, `spec_m8_metas`, `spec_m9_relatorios`) totalizando 10 specs prontos para Postgres + **schema v9** com 8 módulos novos (Notifications, Comunicados, Vagas, Treinamentos, Climate, eNPS, OKRs, Cargos&Salários) com 20 tabelas e 12 ENUMs + **política de Atestados** (3ª política LGPD do produto).
 
@@ -971,6 +973,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.6 | 4 specs técnicas + 2 HTMLs parking lot + docs comerciais |
 | 2.7 | 3 specs adicionais + 9-Box visual + termos/manual |
 | 2.8 | Identidade visual Cofre + 12 páginas novas + shell compartilhado |
-| **2.9** | **Showcase entry-point + 3 specs (M5/M8/M9) + schema v9 + privacy atestados** |
+| 2.9 | Showcase entry-point + 3 specs (M5/M8/M9) + schema v9 + privacy atestados |
+| **2.10** | **Spec M10 Configurações (último spec) + schema v10 consolidado (movs+auth+settings+history)** |
 
 ---
