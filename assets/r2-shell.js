@@ -244,7 +244,8 @@
     { title: 'Showcase · 57 telas', url: 'r2_people_showcase.html', cat: 'Home', icon: '🎨', kw: 'demo overview todas paginas visao geral' },
     { title: 'Importação', url: 'r2_people_importacao.html', cat: 'Admin', icon: '📥', kw: 'csv excel upload' },
     { title: 'Cockpit LGPD · DPO', url: 'r2_people_lgpd_cockpit.html', cat: 'Admin', icon: '🛡️', kw: 'dpo ropa dsar retencao consentimento sub operadores treinamento privacidade compliance' },
-    { title: 'Notif. & Webhooks · Admin', url: 'r2_people_notificacoes_admin.html', cat: 'Admin', icon: '📡', kw: 'webhook dlq fila pgmq email runtime hmac retry catalogo eventos' }
+    { title: 'Notif. & Webhooks · Admin', url: 'r2_people_notificacoes_admin.html', cat: 'Admin', icon: '📡', kw: 'webhook dlq fila pgmq email runtime hmac retry catalogo eventos' },
+    { title: 'Observability · SLOs & Incidentes', url: 'r2_people_observability_admin.html', cat: 'Admin', icon: '📈', kw: 'slo error budget incident postmortem alerta logs metrica grafana prometheus tempo cto' }
   ];
 
   function openSearch() {
