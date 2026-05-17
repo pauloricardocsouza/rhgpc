@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.25 · 17 de maio de 2026
+**Versão**: 2.26 · 17 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -989,6 +989,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.22 | Página HTML Tenant Setup wizard (timeline 7 passos + step card passo 4 + pré-views MFA/branding/política · materializa M13) |
 | 2.23 | Schema SQL v12 (Onboarding + Billing + Quotas · materializa M13 + adiciona plans/subscriptions/invoices/seats c/ enforcement) |
 | 2.24 | Página HTML Billing & Plano (hero plano vigente + 5 quotas vivas + faturas + métodos pagto + seats + 3 planos compare + usage log) |
-| **2.25** | **Página HTML DR Console (postura hero + 4 RPO/RTO tiers + 6 abas: backups multi-camada + retenção + 4 cenários + drills + smoke + dr_events)** |
+| 2.25 | Página HTML DR Console (postura hero + 4 RPO/RTO tiers + 6 abas: backups multi-camada + retenção + 4 cenários + drills + smoke + dr_events) |
+| **2.26** | **Hub Admin atualizado para 6 cockpits (grid 3x2 + Billing + DR cards + status banner 6 pills + 2 quick actions novos)** |
 
 ---
