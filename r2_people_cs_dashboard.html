@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · CS Dashboard · Health Score</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px; --radius-lg:14px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar · padrão Cofre */
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+/* Topbar · padrão Cofre */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#1E7B4B,#6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main · padrão Cofre */
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:18px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:16px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:14px 15px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.green::before{background:var(--green);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--danger);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:600; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+
+/* Health legend */
+.health-legend{display:flex; gap:14px; margin-bottom:18px; padding:12px 16px; background:#fff; border-radius:var(--radius); border:1px solid var(--gray1);}
+.health-legend-item{display:flex; align-items:center; gap:6px; font-size:11.5px;}
+.health-dot{width:12px; height:12px; border-radius:50%;}
+.health-dot.champion{background:linear-gradient(135deg, var(--green), #14573A);}
+.health-dot.healthy{background:var(--green);}
+.health-dot.attention{background:var(--amber);}
+.health-dot.risk{background:#E07B00;}
+.health-dot.critical{background:var(--danger);}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:9px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+tr:hover td{background:var(--off);}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.cat-champion{background:linear-gradient(90deg, var(--green2), #C5E4D2); color:var(--green); font-weight:700;}
+.cat-healthy{background:var(--green2); color:var(--green);}
+.cat-attention{background:var(--amber2); color:var(--amber);}
+.cat-risk{background:#FFE3CC; color:#9E5500;}
+.cat-critical{background:var(--danger2); color:var(--danger); font-weight:700;}
+
+/* Health score badge */
+.score-badge{display:inline-flex; align-items:center; gap:6px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.score-num{font-size:14px;}
+.score-num.high{color:var(--green);}
+.score-num.mid{color:var(--amber);}
+.score-num.low{color:var(--danger);}
+.score-trend{font-size:10px; color:var(--txt3);}
+.score-trend.up{color:var(--green);}
+.score-trend.down{color:var(--danger);}
+
+/* Distribution chart */
+.dist-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;}
+.dist-card{background:#fff; padding:14px; border-radius:10px; box-shadow:var(--shadow-card); text-align:center;}
+.dist-num{font-size:32px; font-weight:700; font-family:'JetBrains Mono', monospace; letter-spacing:-1px; line-height:1; margin:8px 0 4px;}
+.dist-lbl{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600;}
+.dist-pct{font-size:11px; color:var(--txt3); margin-top:3px;}
+
+/* Intervention queue */
+.interv-row{display:grid; grid-template-columns:auto 1fr auto auto; gap:14px; padding:12px 14px; background:#fff; border:1px solid var(--gray1); border-radius:8px; margin-bottom:6px; align-items:center;}
+.interv-row.risk{border-color:var(--amber); background:linear-gradient(90deg, var(--amber2), #fff 35%);}
+.interv-row.crit{border-color:var(--danger); background:linear-gradient(90deg, var(--danger2), #fff 35%);}
+.interv-tag{padding:3px 10px; border-radius:10px; font-size:10.5px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.interv-info strong{font-size:13px; font-weight:600;}
+.interv-info .meta{font-size:11px; color:var(--txt2); margin-top:1px;}
+.interv-cta{font-size:11px; color:var(--txt3); font-family:'JetBrains Mono', monospace; text-align:right;}
+
+/* Expansion hooks */
+.hook-row{display:grid; grid-template-columns:auto 1fr auto auto; gap:14px; padding:11px 14px; background:var(--off); border-radius:8px; margin-bottom:6px; align-items:center; font-size:12.5px;}
+.hook-tenant{font-weight:600;}
+.hook-signal{font-size:11px; color:var(--txt2);}
+.hook-offer{font-size:11px; font-family:'JetBrains Mono', monospace; color:var(--orange); font-weight:600;}
+
+@media (max-width:980px){
+  .kpi-grid, .dist-grid{grid-template-columns:repeat(2, 1fr);}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">CS · success</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_cs_dashboard.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>CS Dashboard</a>
+      <a class="nav-item" href="r2_people_admin_hub.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Hub Admin</a>
+      <a class="nav-item" href="r2_people_billing.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Billing & Plano</a>
+      <a class="nav-item" href="r2_people_tenants.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21V12h6v9"/></svg>Tenants</a>
+      <a class="nav-item" href="r2_people_lgpd_cockpit.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>Cockpit LGPD</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>CS</span><span class="sep">›</span><span>Success</span><span class="sep">›</span><span class="crumb">Health Dashboard</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">MC</div>
+      <div class="user-info"><span class="user-name">Marina Carvalho</span><span class="user-role">CSM Sênior · R2 Soluções</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Customer Success <span class="sep">·</span> Carteira ativa <span class="sep">·</span> Spec C2</div>
+        <h1 class="page-title">Health Score &amp; <em>intervenções</em></h1>
+        <p class="page-subtitle">5 tenants ativos · health score recalculado toda madrugada de segunda · ações priorizadas por categoria.</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">Exportar carteira</button>
+        <button class="btn-primary">+ Registrar intervenção</button>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">Health médio carteira</div>
+        <div class="kpi-value">74</div>
+        <div class="kpi-trend">+3 vs mês anterior · meta &gt; 70</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">NRR 90d</div>
+        <div class="kpi-value">108%</div>
+        <div class="kpi-trend">+3pp vs trimestre · meta &gt; 105%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Churn anual</div>
+        <div class="kpi-value">5.2%</div>
+        <div class="kpi-trend">meta &lt; 8% · projeção 12m</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">Intervenções pendentes</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-trend">2 atenção · 1 risco</div>
+      </div>
+      <div class="kpi purple">
+        <div class="kpi-label">Expansão MRR potencial</div>
+        <div class="kpi-value">R$ 4.2k</div>
+        <div class="kpi-trend">5 hooks abertos · 2 quentes</div>
+      </div>
+    </div>
+
+    <!-- Health legend / dist -->
+    <div class="health-legend">
+      <div class="health-legend-item"><span class="health-dot champion"></span><strong>Champion</strong> 80+</div>
+      <div class="health-legend-item"><span class="health-dot healthy"></span><strong>Saudável</strong> 60–79</div>
+      <div class="health-legend-item"><span class="health-dot attention"></span><strong>Atenção</strong> 40–59</div>
+      <div class="health-legend-item"><span class="health-dot risk"></span><strong>Risco</strong> 20–39</div>
+      <div class="health-legend-item"><span class="health-dot critical"></span><strong>Crítico</strong> 0–19</div>
+    </div>
+
+    <!-- Distribution -->
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-title">Distribuição da carteira</div><div class="card-sub">5 tenants · meta &gt; 75% em saudável ou melhor</div></div>
+      </div>
+      <div class="dist-grid">
+        <div class="dist-card"><div class="dist-lbl">Champion</div><div class="dist-num" style="color:var(--green);">1</div><div class="dist-pct">20% · GPC</div></div>
+        <div class="dist-card"><div class="dist-lbl">Saudável</div><div class="dist-num" style="color:var(--green);">2</div><div class="dist-pct">40% · Labuta, Limpactiva</div></div>
+        <div class="dist-card"><div class="dist-lbl">Atenção</div><div class="dist-num" style="color:var(--amber);">1</div><div class="dist-pct">20% · Segure</div></div>
+        <div class="dist-card"><div class="dist-lbl">Risco</div><div class="dist-num" style="color:#E07B00;">1</div><div class="dist-pct">20% · Filadélfia</div></div>
+        <div class="dist-card"><div class="dist-lbl">Crítico</div><div class="dist-num" style="color:var(--danger);">0</div><div class="dist-pct">—</div></div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="carteira">Carteira</div>
+      <div class="tab" data-tab="intervencoes">Intervenções</div>
+      <div class="tab" data-tab="expansao">Expansão</div>
+      <div class="tab" data-tab="renovacoes">Renovações</div>
+      <div class="tab" data-tab="kpis">KPIs detalhados</div>
+    </div>
+
+    <!-- Carteira -->
+    <div class="tab-pane active" id="tab-carteira">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">5 tenants ativos · ordenado por health</div></div></div>
+        <table>
+          <thead><tr><th>Tenant</th><th>Plano</th><th>MRR</th><th>Adoção líderes</th><th>DAU/MAU</th><th>Health</th><th>Categoria</th><th>Próxima ação</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>GPC</strong><br><span style="color:var(--txt2); font-size:11px;">Grupo Pinto Cerqueira · 367 colaboradores</span></td>
+              <td><span class="badge cat-healthy">Pro</span></td>
+              <td>R$ 979</td>
+              <td>82%</td>
+              <td>0.34</td>
+              <td><span class="score-badge"><span class="score-num high">88</span><span class="score-trend up">↗ +2</span></span></td>
+              <td><span class="badge cat-champion">⭐ champion</span></td>
+              <td style="font-size:11px;">Pedir case · convite webinar</td>
+            </tr>
+            <tr>
+              <td><strong>Labuta</strong><br><span style="color:var(--txt2); font-size:11px;">128 colaboradores</span></td>
+              <td><span class="badge cat-healthy">Pro</span></td>
+              <td>R$ 829</td>
+              <td>74%</td>
+              <td>0.28</td>
+              <td><span class="score-badge"><span class="score-num high">76</span><span class="score-trend up">↗ +1</span></span></td>
+              <td><span class="badge cat-healthy">saudável</span></td>
+              <td style="font-size:11px;">QBR programado 15/06</td>
+            </tr>
+            <tr>
+              <td><strong>Limpactiva</strong><br><span style="color:var(--txt2); font-size:11px;">62 colaboradores</span></td>
+              <td><span class="badge cat-healthy">Starter</span></td>
+              <td>R$ 389</td>
+              <td>68%</td>
+              <td>0.22</td>
+              <td><span class="score-badge"><span class="score-num high">68</span><span class="score-trend">→ 0</span></span></td>
+              <td><span class="badge cat-healthy">saudável</span></td>
+              <td style="font-size:11px;">Check-in mensal próxima sexta</td>
+            </tr>
+            <tr>
+              <td><strong>Segure</strong><br><span style="color:var(--txt2); font-size:11px;">32 colaboradores</span></td>
+              <td><span class="badge cat-attention">Starter</span></td>
+              <td>R$ 299</td>
+              <td>48%</td>
+              <td>0.18</td>
+              <td><span class="score-badge"><span class="score-num mid">52</span><span class="score-trend down">↘ -4</span></span></td>
+              <td><span class="badge cat-attention">atenção</span></td>
+              <td style="font-size:11px;">1:1 c/ champion hoje 16h</td>
+            </tr>
+            <tr>
+              <td><strong>Filadélfia</strong><br><span style="color:var(--txt2); font-size:11px;">94 colaboradores · webhook ERP em DLQ</span></td>
+              <td><span class="badge cat-risk">Pro</span></td>
+              <td>R$ 879</td>
+              <td>32%</td>
+              <td>0.12</td>
+              <td><span class="score-badge"><span class="score-num low">28</span><span class="score-trend down">↘ -8</span></span></td>
+              <td><span class="badge cat-risk">risco</span></td>
+              <td style="font-size:11px;"><strong style="color:var(--danger);">War room hoje 14h</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Intervenções -->
+    <div class="tab-pane" id="tab-intervencoes">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Fila de intervenções (3)</div><div class="card-sub">priorizadas por health + tempo desde última ação</div></div>
+          <button class="btn-primary">+ Nova intervenção</button>
+        </div>
+        <div class="interv-row crit">
+          <span class="interv-tag cat-risk">RISCO · 28</span>
+          <div class="interv-info">
+            <strong>Filadélfia · War Room hoje 14h</strong>
+            <div class="meta">DAU caindo 30%/MoM · ERP webhook 8 falhas seguidas em DLQ · champion sumido há 14d · MRR R$ 879 em risco</div>
+          </div>
+          <div class="interv-cta">CTO+CS Manager<br>14:00 hoje</div>
+          <button class="btn-primary" style="padding:7px 12px;">Abrir war room</button>
+        </div>
+        <div class="interv-row risk">
+          <span class="interv-tag cat-attention">ATENÇÃO · 52</span>
+          <div class="interv-info">
+            <strong>Segure · 1:1 com champion</strong>
+            <div class="meta">Adoção líderes caiu de 68% → 48% · módulo OKRs não foi ativado · 0 avaliação registrada último mês</div>
+          </div>
+          <div class="interv-cta">Marina<br>16:00 hoje</div>
+          <button class="btn-secondary" style="padding:7px 12px;">Abrir Zoom</button>
+        </div>
+        <div class="interv-row">
+          <span class="interv-tag cat-healthy">SAUDÁVEL · 76</span>
+          <div class="interv-info">
+            <strong>Labuta · QBR formal trimestral</strong>
+            <div class="meta">Diretora cliente disponível 15/06 · pauta: recap uso + ROI + sondagem upsell para Pro+seats</div>
+          </div>
+          <div class="interv-cta">Marina<br>15/06 10:00</div>
+          <button class="btn-secondary" style="padding:7px 12px;">Preparar PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expansão -->
+    <div class="tab-pane" id="tab-expansao">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Hooks de expansão automáticos (5)</div><div class="card-sub">disparados pelo schema v12 quota_usage_log + signals</div></div>
+        </div>
+        <div class="hook-row">
+          <span class="badge cat-champion">QUENTE</span>
+          <div>
+            <div class="hook-tenant">GPC</div>
+            <div class="hook-signal">Quota seats 78%/500 · cresceu 12 seats/30d · CFO mencionou abertura</div>
+          </div>
+          <div class="hook-offer">+50 seats = +R$ 750/mês</div>
+          <button class="btn-primary" style="padding:7px 12px;">Propor</button>
+        </div>
+        <div class="hook-row">
+          <span class="badge cat-champion">QUENTE</span>
+          <div>
+            <div class="hook-tenant">Labuta</div>
+            <div class="hook-signal">Pediu feature OKRs cascateados · só disponível em Pro+Enterprise</div>
+          </div>
+          <div class="hook-offer">Upgrade Enterprise = +R$ 1.620/mês</div>
+          <button class="btn-primary" style="padding:7px 12px;">Propor no QBR</button>
+        </div>
+        <div class="hook-row">
+          <span class="badge cat-healthy">MORNO</span>
+          <div>
+            <div class="hook-tenant">GPC</div>
+            <div class="hook-signal">API calls 68%/100k 4 meses recorrente · risco de exceder em julho</div>
+          </div>
+          <div class="hook-offer">Worker OCR dedicado = +R$ 199/mês</div>
+          <button class="btn-secondary" style="padding:7px 12px;">Sondar</button>
+        </div>
+        <div class="hook-row">
+          <span class="badge cat-attention">FRIO</span>
+          <div>
+            <div class="hook-tenant">Limpactiva</div>
+            <div class="hook-signal">Storage 78%/5GB · pode precisar upgrade Pro nos próximos 60d</div>
+          </div>
+          <div class="hook-offer">Upgrade Pro = +R$ 500/mês</div>
+          <button class="btn-secondary" style="padding:7px 12px;">Aguardar</button>
+        </div>
+        <div class="hook-row">
+          <span class="badge cat-attention">FRIO</span>
+          <div>
+            <div class="hook-tenant">Labuta</div>
+            <div class="hook-signal">Diretora mencionou pen-test em call passada</div>
+          </div>
+          <div class="hook-offer">Pen-test compartilhado (Enterprise) = +R$ 1.620/mês</div>
+          <button class="btn-secondary" style="padding:7px 12px;">QBR</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Renovações -->
+    <div class="tab-pane" id="tab-renovacoes">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Próximas renovações (próximos 90 dias)</div></div></div>
+        <table>
+          <thead><tr><th>Tenant</th><th>Renovação</th><th>D-X</th><th>Plano atual</th><th>Risco</th><th>Proposta</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Segure</strong></td><td>22/06/2026</td><td>D-35</td><td>Starter mensal</td><td><span class="badge cat-attention">médio</span></td><td>Manter Starter + descontão anual 10%</td><td><span class="badge cat-attention">conversando</span></td></tr>
+            <tr><td><strong>Limpactiva</strong></td><td>10/07/2026</td><td>D-53</td><td>Starter mensal</td><td><span class="badge cat-healthy">baixo</span></td><td>Upgrade Pro anual (15% off + storage extra)</td><td><span class="badge cat-healthy">aguardando</span></td></tr>
+            <tr><td><strong>Labuta</strong></td><td>02/08/2026</td><td>D-76</td><td>Pro mensal</td><td><span class="badge cat-healthy">muito baixo</span></td><td>Pro anual + add-on OCR dedicado</td><td><span class="badge cat-healthy">QBR agendado</span></td></tr>
+            <tr><td><strong>GPC</strong></td><td>15/08/2026</td><td>D-89</td><td>Pro mensal</td><td><span class="badge cat-champion">advocate</span></td><td>Upgrade Enterprise anual (com white-label)</td><td><span class="badge cat-champion">quente</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="tab-pane" id="tab-kpis">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">10 KPIs · meta vs realizado (últimos 90d)</div></div></div>
+        <table>
+          <thead><tr><th>Métrica</th><th>Meta</th><th>Realizado</th><th>Δ</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>NRR</strong> (Net Revenue Retention)</td><td>&gt; 105%</td><td>108%</td><td>+3pp</td><td><span class="badge cat-healthy">acima</span></td></tr>
+            <tr><td><strong>GRR</strong> (Gross Revenue Retention)</td><td>&gt; 92%</td><td>94.2%</td><td>+2.2pp</td><td><span class="badge cat-healthy">acima</span></td></tr>
+            <tr><td><strong>Churn anual logo</strong></td><td>&lt; 8%</td><td>5.2% (proj)</td><td>-2.8pp</td><td><span class="badge cat-champion">excelente</span></td></tr>
+            <tr><td><strong>Churn anual MRR</strong></td><td>&lt; 10%</td><td>4.8% (proj)</td><td>-5.2pp</td><td><span class="badge cat-champion">excelente</span></td></tr>
+            <tr><td><strong>% saudável ou melhor</strong></td><td>&gt; 75%</td><td>60%</td><td>-15pp</td><td><span class="badge cat-attention">abaixo</span></td></tr>
+            <tr><td><strong>Time-to-value</strong> (TTV)</td><td>&lt; 14 dias</td><td>11 dias</td><td>-3d</td><td><span class="badge cat-healthy">acima</span></td></tr>
+            <tr><td><strong>Adoção líderes 60d</strong></td><td>&gt; 60%</td><td>61%</td><td>+1pp</td><td><span class="badge cat-healthy">no alvo</span></td></tr>
+            <tr><td><strong>NPS</strong></td><td>&gt; 50</td><td>62</td><td>+12</td><td><span class="badge cat-champion">excelente</span></td></tr>
+            <tr><td><strong>CSAT por CSM</strong></td><td>&gt; 4.5</td><td>4.7</td><td>+0.2</td><td><span class="badge cat-healthy">acima</span></td></tr>
+            <tr><td><strong>Expansão MRR % base</strong></td><td>&gt; 15% ano</td><td>11.4% (90d × 4)</td><td>-3.6pp</td><td><span class="badge cat-attention">abaixo</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

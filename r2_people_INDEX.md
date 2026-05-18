@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.31 · 18 de maio de 2026
+**Versão**: 2.32 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -995,6 +995,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.28 | Página HTML Preços públicos · landing comercial (toggle mensal/anual + 3 planos compare + 5 add-ons + tabela detalhada 22 linhas + 8 FAQs + CTA bottom) |
 | 2.29 | Página HTML Landing principal comercial (hero + mockup app + 6 pain points + 3 pilares + stats faixa + case GPC + 12 módulos + final CTA · fecha funil de aquisição) |
 | 2.30 | Spec C2 Customer Success Playbook (health score 8 sinais + 5 categorias champion→critical + plano 30/60/90 + 4 intervenções + expansão MRR + 22 testes meta · fecha série C) |
-| **2.31** | **PADRONIZAÇÃO COFRE batch · 4 commits · ~50 páginas refatoradas para padrão visual único (sidebar centralizada + mono sections + ::before bar active + footer "Desenvolvido por R2" + topbar mono + page-eyebrow utility) · 4 scripts PowerShell idempotentes em scripts/** |
+| 2.31 | PADRONIZAÇÃO COFRE batch · 4 commits · ~50 páginas refatoradas para padrão visual único (sidebar centralizada + mono sections + ::before bar active + footer "Desenvolvido por R2" + topbar mono + page-eyebrow utility) · 4 scripts PowerShell idempotentes em scripts/ |
+| **2.32** | **Página CS Dashboard · materializa spec C2 já no padrão Cofre desde o início (carteira 5 tenants + distribuição + 3 intervenções priorizadas + 5 hooks expansão + 4 renovações + 10 KPIs) · persona Marina Carvalho CSM Sênior** |
 
 ---
