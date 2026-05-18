@@ -79,7 +79,7 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
 .hub-stat .lbl{font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:rgba(255,255,255,.65);}
 
 /* Status banner */
-.status-banner{display:grid; grid-template-columns:repeat(6, 1fr); gap:10px; margin-bottom:20px;}
+.status-banner{display:grid; grid-template-columns:repeat(7, 1fr); gap:10px; margin-bottom:20px;}
 .status-pill{background:#fff; padding:11px 14px; border-radius:10px; border:1px solid var(--gray1); display:flex; align-items:center; gap:10px;}
 .status-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
 .status-dot.green{background:var(--green); box-shadow:0 0 0 4px rgba(30,123,75,.15);}
@@ -101,6 +101,7 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
 .cockpit-icon.notif{background:linear-gradient(135deg, #1F4FA0, #2E476F);}
 .cockpit-icon.bill{background:linear-gradient(135deg, #1E7B4B, #2E476F);}
 .cockpit-icon.dr{background:linear-gradient(135deg, #1F4FA0, #1E7B4B);}
+.cockpit-icon.cs{background:linear-gradient(135deg, #1E7B4B, #6D28D9);}
 .cockpit-icon svg{stroke:#fff;}
 .cockpit-title{font-size:15px; font-weight:600;}
 .cockpit-persona{font-size:10.5px; color:var(--txt2); margin-top:1px;}
@@ -121,7 +122,7 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
 /* Quick actions */
 .quick-section{margin-bottom:20px;}
 .quick-title{font-size:11px; text-transform:uppercase; letter-spacing:.8px; color:var(--txt2); font-weight:600; margin-bottom:10px;}
-.quick-grid{display:grid; grid-template-columns:repeat(8, 1fr); gap:8px;}
+.quick-grid{display:grid; grid-template-columns:repeat(9, 1fr); gap:8px;}
 .quick-btn{background:#fff; padding:14px 12px; border-radius:10px; border:1px solid var(--gray1); text-align:center; cursor:pointer; text-decoration:none; color:inherit; transition:all .12s;}
 .quick-btn:hover{border-color:var(--orange); background:#FEF8F2;}
 .quick-btn svg{width:22px; height:22px; color:var(--navy); margin-bottom:5px;}
@@ -174,6 +175,7 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
       <a href="r2_people_notificacoes_admin.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Notif. & Webhooks</a>
       <a href="r2_people_billing.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Billing & Plano</a>
       <a href="r2_people_dr_console.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.21-8.57"/><polyline points="21 4 21 10 15 10"/></svg>DR Console</a>
+      <a href="r2_people_cs_dashboard.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>CS Dashboard</a>
       <a href="r2_people_auditoria.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5l4-4M5 11l4 4"/><circle cx="16" cy="12" r="5"/></svg>Auditoria & Logs</a>
       <a href="r2_people_configuracoes.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</a>
     </nav>
@@ -194,7 +196,7 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
 
   <main class="main">
     <div style="margin-bottom:14px;">
-      <div class="page-eyebrow">Administração <span class="sep">·</span> Hub <span class="sep">·</span> 6 cockpits operacionais</div>
+      <div class="page-eyebrow">Administração <span class="sep">·</span> Hub <span class="sep">·</span> 7 cockpits operacionais</div>
       <h1 class="page-title">Centro de <em>operação</em></h1>
       <p class="page-subtitle">Tudo num só lugar para o super_admin tomar decisões rápidas, conferir status do produto e acionar ações críticas.</p>
     </div>
@@ -204,7 +206,7 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
       <div class="hub-hero-content">
         <div>
           <h2 style="font-size:22px; font-weight:700; letter-spacing:-.3px; margin-bottom:6px;">Plataforma operando · 0 P1/P2</h2>
-          <p>6 cockpits dedicados cobrem LGPD, observabilidade, segurança, notificações, billing e disaster recovery — cada um com sua persona responsável.</p>
+          <p>7 cockpits dedicados cobrem LGPD, observabilidade, segurança, notificações, billing, disaster recovery e customer success — cada um com sua persona responsável.</p>
         </div>
         <div class="hub-stats">
           <div class="hub-stat"><div class="num">99.94%</div><div class="lbl">uptime 30d</div></div>
@@ -222,9 +224,10 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
       <div class="status-pill"><span class="status-dot green"></span><div class="status-text"><strong>Security</strong><span class="meta">92/100 · 0 hits</span></div></div>
       <div class="status-pill"><span class="status-dot green"></span><div class="status-text"><strong>Billing</strong><span class="meta">68% API quota</span></div></div>
       <div class="status-pill"><span class="status-dot green"></span><div class="status-text"><strong>DR</strong><span class="meta">smoke 14d OK · WAL 0.4s</span></div></div>
+      <div class="status-pill"><span class="status-dot amber"></span><div class="status-text"><strong>CS</strong><span class="meta">3 intervenções · health 74</span></div></div>
     </div>
 
-    <!-- 6 cockpits -->
+    <!-- 7 cockpits -->
     <div class="cockpit-grid">
       <a href="r2_people_lgpd_cockpit.html" class="cockpit-card">
         <div class="cockpit-head">
@@ -357,6 +360,28 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
         </div>
         <div class="cockpit-footer"><span>6 abas</span><span>→ abrir</span></div>
       </a>
+
+      <a href="r2_people_cs_dashboard.html" class="cockpit-card">
+        <div class="cockpit-head">
+          <div class="cockpit-icon cs">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div>
+            <div class="cockpit-title">CS Dashboard</div>
+            <div class="cockpit-persona">Marina Carvalho · CSM Sênior</div>
+          </div>
+          <span class="cockpit-status warn">3 intervenções</span>
+        </div>
+        <div class="cockpit-body">
+          <p>Health score por tenant, fila de intervenções, hooks de expansão MRR, próximas renovações e KPIs CS. Spec C2 em runtime.</p>
+          <div class="cockpit-metrics">
+            <div class="cockpit-metric"><strong class="ok">74</strong>health médio</div>
+            <div class="cockpit-metric"><strong class="ok">108%</strong>NRR 90d</div>
+            <div class="cockpit-metric"><strong class="bad">1</strong>tenant risco</div>
+          </div>
+        </div>
+        <div class="cockpit-footer"><span>5 abas</span><span>→ abrir</span></div>
+      </a>
     </div>
 
     <!-- Quick actions -->
@@ -402,6 +427,11 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           <span class="lbl">Iniciar drill DR</span>
           <span class="meta">cenário A</span>
+        </a>
+        <a href="r2_people_cs_dashboard.html" class="quick-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span class="lbl">Health score</span>
+          <span class="meta">3 intervenções</span>
         </a>
       </div>
     </div>
