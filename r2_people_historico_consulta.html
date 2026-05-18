@@ -50,7 +50,9 @@ body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); 
 /* Topbar */
 .topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px; z-index:20;}
 .topbar-toggle{display:none; width:36px; height:36px; background:var(--off); border:none; border-radius:8px; cursor:pointer; align-items:center; justify-content:center;}
-.topbar-title{font-size:14px; color:var(--txt2);}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
 .topbar-title strong{color:var(--txt); font-weight:600;}
 .topbar-spacer{flex:1;}
 .user-chip{display:flex; align-items:center; gap:9px; padding:4px 10px 4px 4px; border-radius:24px;}
