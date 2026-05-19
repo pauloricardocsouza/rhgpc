@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.46 · 18 de maio de 2026
+**Versão**: 2.47 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1010,6 +1010,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.43 | Relatório consolidado da sessão autônoma 17-18/05 · `docs/sessao_autonoma_2026_05_18_relatorio.md` documenta 43 commits + 20 specs + 6 schemas SQL + 8 cockpits + padronização Cofre 50 páginas + 3 dimensões completas (produto/operação/comercial) + roadmap próximas sessões |
 | 2.44 | Reposicionamento estratégico (R2 = gestão de pessoas, NÃO DP · Domínio é fonte fiscal) + Spec M17 People Analytics + Spec M16 Integração Domínio ESPECULATIVA |
 | 2.45 | Aniversariantes destacados na home + C1/C3 v1.1 reposicionado + landing hero refeito |
-| **2.46** | **Spec M18 Compliance & Treinamentos (ASO NR-7 + EPI NR-6 + 13 treinamentos NR + termos versionados + docs pessoais c/ vencimento + LTCAT/PPP · 6 tabelas + score 0-100 + integração Domínio dispara wizards admissional/demissional/mudança função · 20+ testes meta) + Spec M19 Benefícios & Dependentes (catálogo c/ 13 tipos + adesão self-service + dependentes c/ alerta 21/24 anos + convênios parceiros c/ rating + reembolso workflow líder→RH→Domínio · 12 tabelas + 7 RPCs · 22+ testes meta) + Schema SQL v15 (Domínio+Analytics+Compliance+Benefícios · 22 tabelas + 6 RPCs + RLS via loop + k-anonymity helper · 100% idempotente)** |
+| 2.46 | Spec M18 Compliance & Treinamentos + Spec M19 Benefícios & Dependentes + Schema SQL v15 |
+| **2.47** | **Página HTML `r2_people_analytics.html` materializa M17 (cockpit Renato Pinto Diretor Operações · 4 exec cards + 5 abas: Headcount/Turnover/D&I/Custo Domínio/Engajamento Cruzado · LGPD k-anonymity ativa · filtros globais período/EMP/TOM/nível · donuts D&I + curva sobrevivência Kaplan-Meier + histograma faixas salariais + 6 cruzamentos eNPS×turnover/9-Box×tempo) + Spec M20 Inbox Unificado do Líder (uma tela: aprovações + calendar consolidado + painel equipe + atividade · auto-aprovação por regra + bulk approve · 18+ testes meta) + Hub Admin para 9 cockpits (adicionado Analytics gradient navy-orange · grid responsive automático · status banner 9 pills)** |
 
 ---

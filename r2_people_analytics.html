@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · People Analytics · Headcount / Turnover / D&I</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #2E476F, #F58634); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:16px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+
+/* Filtros globais */
+.global-filters{background:#fff; padding:12px 16px; border-radius:10px; margin-bottom:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; border:1px solid var(--gray1);}
+.gf-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.1em; font-weight:700;}
+.gf-pill{padding:5px 11px; background:var(--gray1); border-radius:14px; font-size:11.5px; cursor:pointer; border:none; font-family:inherit;}
+.gf-pill.active{background:var(--navy); color:#fff; font-weight:600;}
+.gf-select{padding:5px 10px; border:1px solid var(--gray2); border-radius:7px; font-size:12px; font-family:inherit; background:#fff;}
+
+/* Hero · resumo executivo */
+.exec-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.exec-card{background:#fff; border-radius:12px; padding:16px 18px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.exec-card::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.exec-card.green::before{background:var(--green);}
+.exec-card.warn::before{background:var(--amber);}
+.exec-card.danger::before{background:var(--danger);}
+.exec-card.purple::before{background:var(--purple);}
+.exec-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600;}
+.exec-value{font-size:32px; font-weight:700; margin-top:8px; letter-spacing:-1px; font-family:'JetBrains Mono', monospace; line-height:1;}
+.exec-trend{font-size:11px; color:var(--txt2); margin-top:6px;}
+.exec-trend.up{color:var(--green);}
+.exec-trend.down{color:var(--danger);}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+/* Chart placeholder */
+.chart-area{height:240px; background:linear-gradient(180deg, var(--off), #fff); border-radius:8px; position:relative; padding:12px;}
+.chart-bars{display:flex; align-items:flex-end; gap:6px; height:100%;}
+.chart-bar-group{flex:1; display:flex; align-items:flex-end; gap:2px;}
+.chart-bar{flex:1; background:var(--green); border-radius:3px 3px 0 0; min-height:6px;}
+.chart-bar.dismissal{background:var(--danger); opacity:.7;}
+.chart-bar.admission{background:var(--green); opacity:.85;}
+.chart-x{display:flex; justify-content:space-between; margin-top:8px; font-size:10px; color:var(--txt3); font-family:'JetBrains Mono', monospace;}
+
+/* Branch ranking */
+.branch-row{display:grid; grid-template-columns:160px 1fr 60px; gap:12px; padding:8px 0; align-items:center; font-size:12.5px;}
+.branch-name{font-weight:500;}
+.branch-bar{height:14px; background:var(--gray1); border-radius:7px; position:relative; overflow:hidden;}
+.branch-bar-fill{height:100%; background:linear-gradient(90deg, var(--navy), var(--blue)); border-radius:7px;}
+.branch-bar-fill.high-turnover{background:linear-gradient(90deg, var(--orange), var(--danger));}
+.branch-count{text-align:right; font-family:'JetBrains Mono', monospace; font-weight:600;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:8px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+td.num{font-family:'JetBrains Mono', monospace; text-align:right; font-weight:600;}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.ok{background:var(--green2); color:var(--green);}
+.badge.warn{background:var(--amber2); color:var(--amber);}
+.badge.crit{background:var(--danger2); color:var(--danger);}
+.badge.regretted{background:var(--danger); color:#fff;}
+.badge.benchmark{background:var(--blue2); color:var(--blue);}
+
+/* D&I donut chart placeholder */
+.di-row{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+.donut{background:#fff; border-radius:10px; padding:16px; border:1px solid var(--gray1); text-align:center;}
+.donut-title{font-size:11px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600; margin-bottom:10px;}
+.donut-svg{width:120px; height:120px; margin:0 auto;}
+.donut-legend{margin-top:10px; display:flex; flex-direction:column; gap:4px; font-size:11px;}
+.donut-legend-row{display:flex; justify-content:space-between; align-items:center;}
+.donut-dot{width:9px; height:9px; border-radius:2px; display:inline-block; margin-right:6px;}
+
+/* Survival curve */
+.survival-line{height:120px; position:relative; padding:8px; background:linear-gradient(180deg, var(--off), #fff); border-radius:8px;}
+.survival-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; text-align:center;}
+.survival-cell .month{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.3px;}
+.survival-cell .pct{font-size:18px; font-weight:700; font-family:'JetBrains Mono', monospace; margin-top:3px;}
+.survival-cell .pct.good{color:var(--green);}
+.survival-cell .pct.warn{color:var(--amber);}
+.survival-cell .pct.bad{color:var(--danger);}
+
+/* Cost by branch */
+.cost-row{display:grid; grid-template-columns:170px 80px 100px 1fr 120px; gap:12px; padding:10px 12px; align-items:center; border-bottom:1px solid var(--gray1); font-size:12.5px;}
+.cost-row.head{font-weight:500; font-size:10.5px; text-transform:uppercase; color:var(--txt2); letter-spacing:.4px; padding-bottom:6px;}
+.cost-bar{height:8px; background:var(--gray1); border-radius:4px; overflow:hidden;}
+.cost-bar-fill{height:100%; background:linear-gradient(90deg, var(--navy), var(--blue));}
+.cost-total{text-align:right; font-family:'JetBrains Mono', monospace; font-weight:700;}
+.cost-source{font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--purple); margin-left:8px;}
+
+/* Salary histogram */
+.sal-hist{display:flex; align-items:flex-end; gap:6px; height:160px; padding:10px; background:linear-gradient(180deg, var(--off), #fff); border-radius:8px;}
+.sal-bar{flex:1; background:linear-gradient(180deg, var(--navy), var(--blue)); border-radius:3px 3px 0 0; position:relative; min-height:10px;}
+.sal-bar-count{position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:700; font-family:'JetBrains Mono', monospace;}
+.sal-bar-range{text-align:center; font-size:9.5px; color:var(--txt2); margin-top:6px; font-family:'JetBrains Mono', monospace;}
+
+/* Engagement cross */
+.cross-card{background:#fff; padding:14px; border-radius:10px; border:1px solid var(--gray1);}
+.cross-card h4{font-size:12px; font-weight:600; margin-bottom:8px;}
+.cross-card p{font-size:11.5px; color:var(--txt2); line-height:1.5;}
+.cross-insight{margin-top:8px; padding:8px 11px; background:var(--blue2); border-left:3px solid var(--blue); border-radius:0 6px 6px 0; font-size:11.5px; color:var(--navy);}
+
+@media (max-width:980px){
+  .exec-grid{grid-template-columns:repeat(2, 1fr);}
+  .di-row{grid-template-columns:1fr;}
+  .survival-grid{grid-template-columns:repeat(2, 1fr);}
+  .cost-row{grid-template-columns:1fr; gap:6px;}
+  .cost-row.head{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Diretoria · análise</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_analytics.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>People Analytics</a>
+      <a class="nav-item" href="r2_people_admin_dashboard.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard RH</a>
+      <a class="nav-item" href="r2_people_cs_dashboard.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>CS Dashboard</a>
+      <a class="nav-item" href="r2_people_admin_hub.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Hub Admin</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Diretoria</span><span class="sep">›</span><span>Análise</span><span class="sep">›</span><span class="crumb">People Analytics</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">RP</div>
+      <div class="user-info"><span class="user-name">Renato Pinto</span><span class="user-role">Diretor Operações</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Diretoria <span class="sep">·</span> análise · Spec M17</div>
+        <h1 class="page-title">People <em>Analytics</em></h1>
+        <p class="page-subtitle">Headcount, turnover, retenção, D&I e custo · todos LGPD-safe c/ k-anonymity quando agregado &lt; 5 · refresh diário 03:00 BRT</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">📄 PDF executivo</button>
+        <button class="btn-secondary">📊 CSV</button>
+        <button class="btn-primary">📅 QBR mensal</button>
+      </div>
+    </div>
+
+    <!-- Filtros globais -->
+    <div class="global-filters">
+      <span class="gf-label">Período</span>
+      <button class="gf-pill">30d</button>
+      <button class="gf-pill">90d</button>
+      <button class="gf-pill active">6m</button>
+      <button class="gf-pill">12m</button>
+      <button class="gf-pill">YTD</button>
+      <span style="margin-left:12px;" class="gf-label">EMP</span>
+      <select class="gf-select"><option>Todas (4)</option><option>GPC</option><option>Labuta</option><option>Limpactiva</option><option>Segure</option></select>
+      <span class="gf-label">TOM</span>
+      <select class="gf-select"><option>Todas (14)</option></select>
+      <span class="gf-label">Nível</span>
+      <select class="gf-select"><option>Todos</option><option>Operacional</option><option>Coord.</option><option>Gerência</option><option>Diretoria</option></select>
+    </div>
+
+    <!-- Exec hero -->
+    <div class="exec-grid">
+      <div class="exec-card green">
+        <div class="exec-label">Headcount atual</div>
+        <div class="exec-value">367</div>
+        <div class="exec-trend up">▲ +12 vs mês ant. (admiss. 19 · deslig. 7)</div>
+      </div>
+      <div class="exec-card warn">
+        <div class="exec-label">Turnover 12m anualizado</div>
+        <div class="exec-value">28.4%</div>
+        <div class="exec-trend">Voluntário 21.2% · Involuntário 7.2% · <span class="badge benchmark">setor varejo: 50%</span></div>
+      </div>
+      <div class="exec-card purple">
+        <div class="exec-label">Custo total folha (mai/2026)</div>
+        <div class="exec-value">R$ 487k<span class="cost-source">Domínio</span></div>
+        <div class="exec-trend up">▲ +R$ 18k vs abril · 32.4% sobre receita</div>
+      </div>
+      <div class="exec-card">
+        <div class="exec-label">eNPS último ciclo (Q2/2026)</div>
+        <div class="exec-value">62</div>
+        <div class="exec-trend up">▲ +5 vs Q1 · 286 respondentes (78% adesão)</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="headcount">Headcount</div>
+      <div class="tab" data-tab="turnover">Turnover & Retenção</div>
+      <div class="tab" data-tab="diversity">D&I</div>
+      <div class="tab" data-tab="cost">Custo (Domínio)</div>
+      <div class="tab" data-tab="engagement">Engajamento cruzado</div>
+    </div>
+
+    <!-- HEADCOUNT -->
+    <div class="tab-pane active" id="tab-headcount">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Evolução · últimos 12 meses</div><div class="card-sub">Verde = admissões · vermelho = desligamentos</div></div></div>
+        <div class="chart-area">
+          <div class="chart-bars">
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:30%;"></div><div class="chart-bar dismissal" style="height:18%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:22%;"></div><div class="chart-bar dismissal" style="height:25%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:28%;"></div><div class="chart-bar dismissal" style="height:20%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:24%;"></div><div class="chart-bar dismissal" style="height:14%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:38%;"></div><div class="chart-bar dismissal" style="height:22%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:30%;"></div><div class="chart-bar dismissal" style="height:28%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:18%;"></div><div class="chart-bar dismissal" style="height:32%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:14%;"></div><div class="chart-bar dismissal" style="height:22%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:48%;"></div><div class="chart-bar dismissal" style="height:16%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:26%;"></div><div class="chart-bar dismissal" style="height:24%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:24%;"></div><div class="chart-bar dismissal" style="height:30%;"></div></div>
+            <div class="chart-bar-group"><div class="chart-bar admission" style="height:50%;"></div><div class="chart-bar dismissal" style="height:18%;"></div></div>
+          </div>
+          <div class="chart-x"><span>Jun/25</span><span>Set/25</span><span>Dez/25</span><span>Mar/26</span><span>Mai/26</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Distribuição por filial</div><div class="card-sub">14 unidades · click para drill-down</div></div></div>
+        <div class="branch-row"><div class="branch-name">Cestão Loja 1</div><div class="branch-bar"><div class="branch-bar-fill" style="width:100%;"></div></div><div class="branch-count">91</div></div>
+        <div class="branch-row"><div class="branch-name">ATP - Varejo</div><div class="branch-bar"><div class="branch-bar-fill" style="width:86%;"></div></div><div class="branch-count">78</div></div>
+        <div class="branch-row"><div class="branch-name">Cestão Inhambupe</div><div class="branch-bar"><div class="branch-bar-fill" style="width:51%;"></div></div><div class="branch-count">46</div></div>
+        <div class="branch-row"><div class="branch-name">ATP - Atacado</div><div class="branch-bar"><div class="branch-bar-fill" style="width:46%;"></div></div><div class="branch-count">42</div></div>
+        <div class="branch-row"><div class="branch-name">CD Logística</div><div class="branch-bar"><div class="branch-bar-fill" style="width:41%;"></div></div><div class="branch-count">37</div></div>
+        <div class="branch-row"><div class="branch-name">Administrativo</div><div class="branch-bar"><div class="branch-bar-fill" style="width:26%;"></div></div><div class="branch-count">24</div></div>
+        <div class="branch-row"><div class="branch-name">Comercial</div><div class="branch-bar"><div class="branch-bar-fill" style="width:15%;"></div></div><div class="branch-count">14</div></div>
+        <div class="branch-row"><div class="branch-name">Financeiro</div><div class="branch-bar"><div class="branch-bar-fill" style="width:12%;"></div></div><div class="branch-count">11</div></div>
+        <div class="branch-row"><div class="branch-name">TI / BI</div><div class="branch-bar"><div class="branch-bar-fill" style="width:10%;"></div></div><div class="branch-count">9</div></div>
+        <div class="branch-row"><div class="branch-name">Prevenção de Perdas</div><div class="branch-bar"><div class="branch-bar-fill" style="width:9%;"></div></div><div class="branch-count">8</div></div>
+        <div class="branch-row"><div class="branch-name">RH / DP</div><div class="branch-bar"><div class="branch-bar-fill" style="width:8%;"></div></div><div class="branch-count">7</div></div>
+      </div>
+    </div>
+
+    <!-- TURNOVER -->
+    <div class="tab-pane" id="tab-turnover">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Turnover 12m por filial</div><div class="card-sub">Voluntário · involuntário · regretted (champion que saiu)</div></div></div>
+        <table>
+          <thead><tr><th>Filial</th><th class="num">Voluntário</th><th class="num">Involuntário</th><th class="num">Regretted</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Cestão Loja 1</strong></td><td class="num">38.4%</td><td class="num">12.1%</td><td class="num">3</td><td><span class="badge crit">crítico</span></td></tr>
+            <tr><td><strong>ATP - Varejo</strong></td><td class="num">26.8%</td><td class="num">9.2%</td><td class="num">1</td><td><span class="badge warn">atenção</span></td></tr>
+            <tr><td><strong>Cestão Inhambupe</strong></td><td class="num">19.2%</td><td class="num">6.8%</td><td class="num">0</td><td><span class="badge ok">ok</span></td></tr>
+            <tr><td><strong>ATP - Atacado</strong></td><td class="num">14.5%</td><td class="num">4.8%</td><td class="num">0</td><td><span class="badge ok">ok</span></td></tr>
+            <tr><td><strong>CD Logística</strong></td><td class="num">22.1%</td><td class="num">8.2%</td><td class="num">1</td><td><span class="badge warn">atenção</span></td></tr>
+            <tr><td><strong>Administrativo</strong></td><td class="num">8.4%</td><td class="num">4.1%</td><td class="num">0</td><td><span class="badge ok">excelente</span></td></tr>
+            <tr><td><strong>Comercial</strong></td><td class="num">14.2%</td><td class="num">7.1%</td><td class="num">0</td><td><span class="badge ok">ok</span></td></tr>
+            <tr><td><strong>TI / BI</strong></td><td class="num">11.1%</td><td class="num">0.0%</td><td class="num">0</td><td><span class="badge ok">ok</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Curva de sobrevivência</div><div class="card-sub">% de admitidos em 2025 ainda na empresa</div></div></div>
+        <div class="survival-grid">
+          <div class="survival-cell"><div class="month">3 meses</div><div class="pct good">94%</div></div>
+          <div class="survival-cell"><div class="month">6 meses</div><div class="pct good">82%</div></div>
+          <div class="survival-cell"><div class="month">12 meses</div><div class="pct warn">68%</div></div>
+          <div class="survival-cell"><div class="month">24 meses</div><div class="pct warn">52%</div></div>
+          <div class="survival-cell"><div class="month">36 meses</div><div class="pct bad">38%</div></div>
+        </div>
+        <p style="font-size:11.5px; color:var(--txt2); margin-top:12px;">⚠ Drop maior é entre 6 e 12 meses (14pp) · investigar onboarding pós-trial e clima primeiros 6 meses · benchmark setor varejo: 45% em 12m, R2 GPC 23pp acima.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Top motivos de saída</div></div></div>
+        <table>
+          <thead><tr><th>Motivo</th><th class="num">Qtd 12m</th><th class="num">% do total</th></tr></thead>
+          <tbody>
+            <tr><td>Salário (foi pra concorrente)</td><td class="num">28</td><td class="num">31.4%</td></tr>
+            <tr><td>Distância/transporte</td><td class="num">18</td><td class="num">20.2%</td></tr>
+            <tr><td>Liderança (conflito direto)</td><td class="num">14</td><td class="num">15.7%</td></tr>
+            <tr><td>Mudança de cidade</td><td class="num">9</td><td class="num">10.1%</td></tr>
+            <tr><td>Crescimento de carreira</td><td class="num">8</td><td class="num">9.0%</td></tr>
+            <tr><td>Família / pessoal</td><td class="num">7</td><td class="num">7.9%</td></tr>
+            <tr><td>Outros</td><td class="num">5</td><td class="num">5.6%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- D&I -->
+    <div class="tab-pane" id="tab-diversity">
+      <div class="card" style="background:linear-gradient(135deg, var(--blue2), #fff); border:1px solid var(--blue);">
+        <p style="font-size:12px; color:var(--navy);">🔒 <strong>LGPD k-anonymity ativa</strong>: agregados com menos de 5 pessoas aparecem como "&lt;5" para evitar reidentificação. D&I é via auto-declaração opcional · 287 colaboradores (78%) declararam.</p>
+      </div>
+
+      <div class="di-row">
+        <div class="donut">
+          <div class="donut-title">Distribuição de gênero</div>
+          <svg class="donut-svg" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--gray1)" stroke-width="3.5"/>
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="#6D28D9" stroke-width="3.5" stroke-dasharray="58 42" stroke-dashoffset="25" transform="rotate(-90 18 18)"/>
+          </svg>
+          <div class="donut-legend">
+            <div class="donut-legend-row"><span><span class="donut-dot" style="background:#6D28D9;"></span>Mulheres</span><span><strong>58%</strong> · 166</span></div>
+            <div class="donut-legend-row"><span><span class="donut-dot" style="background:var(--gray3);"></span>Homens</span><span><strong>42%</strong> · 121</span></div>
+            <div class="donut-legend-row" style="border-top:1px solid var(--gray1); padding-top:5px; margin-top:3px;"><span style="color:var(--txt2);">Em liderança</span><span><strong>38%</strong> mulheres · gap -20pp</span></div>
+          </div>
+        </div>
+
+        <div class="donut">
+          <div class="donut-title">Distribuição racial</div>
+          <svg class="donut-svg" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--gray1)" stroke-width="3.5"/>
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--orange)" stroke-width="3.5" stroke-dasharray="48 52" stroke-dashoffset="25" transform="rotate(-90 18 18)"/>
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--green)" stroke-width="3.5" stroke-dasharray="32 68" stroke-dashoffset="-23" transform="rotate(-90 18 18)"/>
+          </svg>
+          <div class="donut-legend">
+            <div class="donut-legend-row"><span><span class="donut-dot" style="background:var(--orange);"></span>Parda</span><span><strong>48%</strong> · 138</span></div>
+            <div class="donut-legend-row"><span><span class="donut-dot" style="background:var(--green);"></span>Preta</span><span><strong>32%</strong> · 92</span></div>
+            <div class="donut-legend-row"><span><span class="donut-dot" style="background:var(--gray3);"></span>Branca</span><span><strong>18%</strong> · 52</span></div>
+            <div class="donut-legend-row"><span><span class="donut-dot" style="background:var(--navy);"></span>Outras</span><span><strong>2%</strong> · &lt;5</span></div>
+          </div>
+        </div>
+
+        <div class="donut">
+          <div class="donut-title">PcD · Lei 8.213</div>
+          <svg class="donut-svg" viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--gray1)" stroke-width="3.5"/>
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--green)" stroke-width="3.5" stroke-dasharray="12 88" stroke-dashoffset="25" transform="rotate(-90 18 18)"/>
+          </svg>
+          <div class="donut-legend">
+            <div class="donut-legend-row"><span><strong>4.4%</strong> PcD</span><span>16 pessoas</span></div>
+            <div class="donut-legend-row" style="color:var(--green);"><span>Meta legal</span><span><strong>4%</strong> · ✓ acima</span></div>
+            <div class="donut-legend-row" style="border-top:1px solid var(--gray1); padding-top:5px;"><span>Física</span><span>9</span></div>
+            <div class="donut-legend-row"><span>Auditiva</span><span>&lt;5</span></div>
+            <div class="donut-legend-row"><span>Visual</span><span>&lt;5</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;">
+        <div class="card-head"><div><div class="card-title">Equidade salarial · gap por gênero (mesmo cargo)</div></div></div>
+        <table>
+          <thead><tr><th>Cargo</th><th class="num">Mediana M</th><th class="num">Mediana H</th><th class="num">Gap</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Operador caixa</td><td class="num">R$ 1.612</td><td class="num">R$ 1.628</td><td class="num">-1.0%</td><td><span class="badge ok">equidade</span></td></tr>
+            <tr><td>Analista pleno</td><td class="num">R$ 4.380</td><td class="num">R$ 4.520</td><td class="num">-3.1%</td><td><span class="badge ok">equidade</span></td></tr>
+            <tr><td>Coordenadora/or</td><td class="num">R$ 7.200</td><td class="num">R$ 8.100</td><td class="num">-11.1%</td><td><span class="badge warn">atenção</span></td></tr>
+            <tr><td>Gerência</td><td class="num">R$ 12.500</td><td class="num">R$ 14.800</td><td class="num">-15.5%</td><td><span class="badge crit">revisar</span></td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:11.5px; color:var(--txt2); margin-top:10px;">⚠ Gap em níveis sêniores merece atenção jurídica · pode caracterizar tratamento desigual conforme CLT art 461.</p>
+      </div>
+    </div>
+
+    <!-- COST -->
+    <div class="tab-pane" id="tab-cost">
+      <div class="card" style="background:linear-gradient(135deg, #F3E8FF, #fff); border:1px solid var(--purple);">
+        <p style="font-size:12px; color:var(--purple);">📊 <strong>Dados do Sistema Domínio</strong> · sincronizado em 06/05/2026 18:30 BRT (folha mai/2026 fechada) · próxima atualização: jun/2026 quando Domínio fechar</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Custo por filial · maio/2026</div></div></div>
+        <div class="cost-row head"><div>Filial</div><div>Headcount</div><div>Média</div><div>Total</div><div>Encargos</div></div>
+        <div class="cost-row"><div><strong>Cestão Loja 1</strong></div><div>91</div><div>R$ 3.150</div><div class="cost-bar"><div class="cost-bar-fill" style="width:100%;"></div></div><div class="cost-total">R$ 287k <span class="badge benchmark">59% encargos</span></div></div>
+        <div class="cost-row"><div><strong>ATP - Varejo</strong></div><div>78</div><div>R$ 2.890</div><div class="cost-bar"><div class="cost-bar-fill" style="width:78%;"></div></div><div class="cost-total">R$ 225k</div></div>
+        <div class="cost-row"><div><strong>Cestão Inhambupe</strong></div><div>46</div><div>R$ 2.760</div><div class="cost-bar"><div class="cost-bar-fill" style="width:43%;"></div></div><div class="cost-total">R$ 127k</div></div>
+        <div class="cost-row"><div><strong>ATP - Atacado</strong></div><div>42</div><div>R$ 3.420</div><div class="cost-bar"><div class="cost-bar-fill" style="width:50%;"></div></div><div class="cost-total">R$ 144k</div></div>
+        <div class="cost-row"><div><strong>CD Logística</strong></div><div>37</div><div>R$ 3.180</div><div class="cost-bar"><div class="cost-bar-fill" style="width:41%;"></div></div><div class="cost-total">R$ 118k</div></div>
+        <div class="cost-row"><div><strong>Administrativo</strong></div><div>24</div><div>R$ 6.200</div><div class="cost-bar"><div class="cost-bar-fill" style="width:51%;"></div></div><div class="cost-total">R$ 149k</div></div>
+        <div class="cost-row"><div><strong>TI / BI</strong></div><div>9</div><div>R$ 8.400</div><div class="cost-bar"><div class="cost-bar-fill" style="width:26%;"></div></div><div class="cost-total">R$ 76k</div></div>
+        <div class="cost-row"><div style="font-weight:700;">TOTAL</div><div style="font-weight:700;">367</div><div></div><div></div><div class="cost-total" style="font-size:14px; color:var(--navy);">R$ 487k</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Histograma de faixas salariais</div><div class="card-sub">Distribuição agregada · sem expor individual</div></div></div>
+        <div class="sal-hist">
+          <div class="sal-bar" style="height:14%;"><span class="sal-bar-count">28</span><div class="sal-bar-range">R$ 1-2k</div></div>
+          <div class="sal-bar" style="height:50%;"><span class="sal-bar-count">102</span><div class="sal-bar-range">R$ 2-3k</div></div>
+          <div class="sal-bar" style="height:74%;"><span class="sal-bar-count">151</span><div class="sal-bar-range">R$ 3-4k</div></div>
+          <div class="sal-bar" style="height:34%;"><span class="sal-bar-count">68</span><div class="sal-bar-range">R$ 4-5k</div></div>
+          <div class="sal-bar" style="height:14%;"><span class="sal-bar-count">28</span><div class="sal-bar-range">R$ 5-7k</div></div>
+          <div class="sal-bar" style="height:6%;"><span class="sal-bar-count">12</span><div class="sal-bar-range">R$ 7-10k</div></div>
+          <div class="sal-bar" style="height:5%;"><span class="sal-bar-count">10</span><div class="sal-bar-range">R$ 10-15k</div></div>
+          <div class="sal-bar" style="height:4%;"><span class="sal-bar-count">8</span><div class="sal-bar-range">R$ 15k+</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENGAGEMENT -->
+    <div class="tab-pane" id="tab-engagement">
+      <div class="di-row">
+        <div class="cross-card">
+          <h4>📊 eNPS × Turnover por filial</h4>
+          <p>Filiais com eNPS abaixo de 40 tem turnover 2.3× maior · correlação clara.</p>
+          <div class="cross-insight">🔍 Cestão Loja 1: eNPS 28 + turnover 38% → ação prioritária · investigar liderança direta</div>
+        </div>
+        <div class="cross-card">
+          <h4>⭐ 9-Box × Tempo de empresa</h4>
+          <p>72% dos "champions" do 9-Box tem &gt; 3 anos de casa · investir em retenção desse grupo gera mais ROI que reposição.</p>
+          <div class="cross-insight">🔍 5 champions com &lt; 1 ano: blindar c/ 1:1 quinzenal + PDI agressivo</div>
+        </div>
+        <div class="cross-card">
+          <h4>📈 PDI ativos × Promoções</h4>
+          <p>Colaboradores com PDI ativo tem 3.8× mais chance de promoção em 12m.</p>
+          <div class="cross-insight">🔍 Apenas 47% do quadro tem PDI ativo · meta levar a 75% em 6m</div>
+        </div>
+      </div>
+
+      <div class="di-row" style="margin-top:14px;">
+        <div class="cross-card">
+          <h4>💬 1:1s × eNPS individual</h4>
+          <p>Times c/ 1:1 quinzenal regular tem eNPS médio +18pts vs times sem.</p>
+          <div class="cross-insight">🔍 8 líderes não fazem 1:1 há &gt; 60 dias · cobrar adoção</div>
+        </div>
+        <div class="cross-card">
+          <h4>🩺 Atestados × Adoção liderança</h4>
+          <p>Líderes com adoção baixa do sistema tem +27% atestados na equipe.</p>
+          <div class="cross-insight">🔍 Top 3 líderes em atestado: João C, Maria T, Pedro S · investigar clima</div>
+        </div>
+        <div class="cross-card">
+          <h4>🎯 OKR check-ins × Performance</h4>
+          <p>Times c/ check-in semanal de OKR alcançam 1.6× mais objetivos.</p>
+          <div class="cross-insight">🔍 42% dos OKRs sem check-in há &gt; 14d</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+document.querySelectorAll('.gf-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    p.parentElement.querySelectorAll('.gf-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
