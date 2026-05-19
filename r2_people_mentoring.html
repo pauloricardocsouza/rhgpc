@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Mentoring · Pareamento Mentor & Mentee</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #F58634, #2E476F); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:16px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-orange{background:var(--orange); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit;}
+
+/* Role toggle */
+.role-toggle{display:flex; gap:6px; background:var(--gray1); padding:4px; border-radius:10px; margin-bottom:18px; width:max-content;}
+.role-toggle button{padding:8px 16px; border-radius:7px; border:none; background:transparent; font-family:inherit; font-size:12.5px; font-weight:600; cursor:pointer; color:var(--txt2);}
+.role-toggle button.active{background:#fff; color:var(--navy); box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+/* Hero · meu perfil mentoring */
+.mentor-hero{background:linear-gradient(115deg, #6D28D9 0%, #F58634 100%); color:#fff; border-radius:14px; padding:22px 26px; margin-bottom:16px; position:relative; overflow:hidden; display:grid; grid-template-columns:auto 1fr auto; gap:20px; align-items:center;}
+.mentor-hero::before{content:''; position:absolute; right:-50px; top:-50px; width:200px; height:200px; background:radial-gradient(circle, rgba(255,255,255,.18), transparent 60%); border-radius:50%;}
+.mentor-hero-avatar{position:relative; z-index:1; width:72px; height:72px; border-radius:50%; background:rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:700; border:3px solid rgba(255,255,255,.3);}
+.mentor-hero-info{position:relative; z-index:1;}
+.mentor-hero-tag{font-family:'JetBrains Mono', monospace; font-size:10px; text-transform:uppercase; letter-spacing:.2em; color:rgba(255,255,255,.75); margin-bottom:4px;}
+.mentor-hero h2{font-size:20px; font-weight:700; margin-bottom:4px;}
+.mentor-hero p{font-size:12.5px; color:rgba(255,255,255,.85);}
+.mentor-hero-stats{display:flex; gap:18px; margin-top:12px;}
+.mentor-hero-stat{font-size:11px; color:rgba(255,255,255,.7);}
+.mentor-hero-stat strong{display:block; font-size:22px; font-weight:800; font-family:'JetBrains Mono', monospace; color:#fff;}
+.mentor-hero-action button{padding:10px 18px; background:#fff; color:var(--purple); border:none; border-radius:8px; font-weight:700; cursor:pointer; font-family:inherit; font-size:12.5px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* Match card */
+.match-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:12px;}
+.match-card{background:#fff; border-radius:12px; padding:18px; box-shadow:var(--shadow-card); border-top:3px solid var(--purple); display:flex; flex-direction:column;}
+.match-head{display:grid; grid-template-columns:auto 1fr auto; gap:11px; align-items:center; margin-bottom:12px;}
+.match-avatar{width:54px; height:54px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px;}
+.match-name{font-size:14.5px; font-weight:700;}
+.match-role{font-size:11px; color:var(--txt2); margin-top:1px;}
+.match-fit{padding:4px 11px; border-radius:13px; font-size:11px; font-weight:700; font-family:'JetBrains Mono', monospace; background:var(--green2); color:var(--green);}
+.match-fit.high{background:linear-gradient(135deg, var(--green), #14573A); color:#fff;}
+.match-fit.med{background:var(--amber2); color:var(--amber);}
+.match-skills{margin-bottom:12px;}
+.match-skills-label{font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px; font-weight:600; margin-bottom:6px;}
+.match-skills-list{display:flex; flex-wrap:wrap; gap:5px;}
+.skill-tag{padding:3px 9px; border-radius:11px; font-size:10.5px; font-weight:600; background:var(--blue2); color:var(--blue);}
+.skill-tag.matched{background:var(--green2); color:var(--green); font-weight:700;}
+.match-bio{font-size:11.5px; color:var(--txt2); line-height:1.5; padding:10px 12px; background:var(--off); border-radius:8px; margin-bottom:12px; font-style:italic;}
+.match-meta{display:flex; justify-content:space-between; font-size:11px; color:var(--txt2); margin-bottom:12px;}
+.match-actions{display:flex; gap:6px; margin-top:auto;}
+.match-actions button{flex:1; padding:8px; font-size:12px; font-weight:600; border-radius:7px; border:none; cursor:pointer; font-family:inherit;}
+.match-actions .invite{background:var(--orange); color:#fff;}
+.match-actions .invite:hover{background:#D67324;}
+.match-actions .skip{background:var(--gray1); color:var(--txt2);}
+
+/* Pair active card */
+.pair-card{background:#fff; border-radius:12px; padding:16px 18px; box-shadow:var(--shadow-card); margin-bottom:10px; display:grid; grid-template-columns:auto 1fr auto auto; gap:14px; align-items:center; border-left:3px solid var(--green);}
+.pair-card.proposed{border-left-color:var(--amber);}
+.pair-card.completed{border-left-color:var(--gray3); opacity:.7;}
+.pair-faces{display:flex;}
+.pair-faces > div{width:40px; height:40px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; border:2px solid #fff;}
+.pair-faces > div:nth-child(2){margin-left:-12px;}
+.pair-info strong{font-size:13px; font-weight:700;}
+.pair-info .topic{font-size:11.5px; color:var(--txt2); margin-top:2px;}
+.pair-meta{text-align:right; font-size:10.5px;}
+.pair-meta .freq{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:11px; color:var(--purple);}
+.pair-meta .next{color:var(--txt2);}
+.pair-status{padding:3px 9px; border-radius:11px; font-size:10.5px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.status-active{background:var(--green2); color:var(--green);}
+.status-proposed{background:var(--amber2); color:var(--amber);}
+.status-completed{background:var(--gray1); color:var(--txt2);}
+
+/* Programa stats (admin RH) */
+.admin-section{display:none;}
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; padding:14px 16px; border-radius:11px; box-shadow:var(--shadow-card); border-top:3px solid var(--purple);}
+.kpi.green{border-top-color:var(--green);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:700; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.card-title{font-size:14px; font-weight:600;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:9px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+
+@media (max-width:980px){
+  .match-grid{grid-template-columns:1fr;}
+  .mentor-hero{grid-template-columns:1fr;}
+  .mentor-hero-stats{flex-wrap:wrap;}
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Carreira · desenvolvimento</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_mentoring.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><circle cx="17" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M13 21v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2"/></svg>Mentoring</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>Meu PDI</a>
+      <a class="nav-item" href="r2_people_skill_matrix.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Skill Matrix</a>
+      <a class="nav-item" href="r2_people_minha_trajetoria.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>Minha trajetória</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Carreira</span><span class="sep">›</span><span>Desenvolvimento</span><span class="sep">›</span><span class="crumb">Mentoring</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info"><span class="user-name">Fernanda Lima</span><span class="user-role">Analista Pleno · TI/BI · mentor & mentee</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Carreira <span class="sep">·</span> Mentoring <span class="sep">·</span> Spec M22</div>
+        <h1 class="page-title">Programa de <em>mentoring</em></h1>
+        <p class="page-subtitle">Matching opt-in baseado em skills · você pode ser mentor (oferecer), mentee (buscar) ou ambos · frequência combinada entre as partes</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">Editar perfil mentoring</button>
+        <button class="btn-orange">+ Buscar mentor</button>
+      </div>
+    </div>
+
+    <!-- Role toggle -->
+    <div class="role-toggle">
+      <button class="active" data-role="meu">👤 Meu perfil</button>
+      <button data-role="buscar">🔍 Buscar mentor</button>
+      <button data-role="pares">🤝 Meus pares</button>
+      <button data-role="admin">👔 Admin (programa)</button>
+    </div>
+
+    <!-- MEU PERFIL -->
+    <div class="role-pane" id="role-meu">
+      <div class="mentor-hero">
+        <div class="mentor-hero-avatar">FL</div>
+        <div class="mentor-hero-info">
+          <div class="mentor-hero-tag">⭐ Mentor & Mentee · 7 anos casa</div>
+          <h2>Você participa do programa há 14 meses</h2>
+          <p>3 mentorias completadas como mentor · 2 em andamento como mentee · NPS médio recebido 4.8/5</p>
+          <div class="mentor-hero-stats">
+            <div class="mentor-hero-stat">Como mentor<strong>5</strong></div>
+            <div class="mentor-hero-stat">Como mentee<strong>3</strong></div>
+            <div class="mentor-hero-stat">Skills oferecidas<strong>4</strong></div>
+            <div class="mentor-hero-stat">Skills buscadas<strong>2</strong></div>
+          </div>
+        </div>
+        <div class="mentor-hero-action">
+          <button>Editar perfil</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">📚 Suas skills no programa</div></div></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div>
+            <div style="font-size:11px; color:var(--green); font-weight:700; text-transform:uppercase; letter-spacing:.3px; margin-bottom:8px;">✓ Você oferece (4)</div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px;">
+              <span class="skill-tag" style="background:var(--green2); color:var(--green);">SQL avançado (5)</span>
+              <span class="skill-tag" style="background:var(--green2); color:var(--green);">Python pandas (5)</span>
+              <span class="skill-tag" style="background:var(--green2); color:var(--green);">Tableau/PBI (4)</span>
+              <span class="skill-tag" style="background:var(--green2); color:var(--green);">LGPD básico (3)</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:var(--blue); font-weight:700; text-transform:uppercase; letter-spacing:.3px; margin-bottom:8px;">🎯 Você busca (2)</div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px;">
+              <span class="skill-tag">Stakeholder management</span>
+              <span class="skill-tag">Inglês conversacional</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px; padding:12px 14px; background:var(--blue2); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; font-size:11.5px; color:var(--navy);">
+          💡 <strong>Sugestão:</strong> Carlos Oliveira (Analista Sênior) tem 4.5 em Stakeholder mgmt e está disponível para mentor. Quer ver perfil?
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSCAR -->
+    <div class="role-pane" id="role-buscar" style="display:none;">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">🎯 Buscando mentor em "Stakeholder management"</div><div style="font-size:11px; color:var(--txt2);">Algoritmo encontrou 3 candidatos compatíveis · ordenados por fit score</div></div></div>
+      </div>
+
+      <div class="match-grid">
+        <div class="match-card">
+          <div class="match-head">
+            <div class="match-avatar" style="background:linear-gradient(135deg,#6D28D9,#2E476F);">CO</div>
+            <div>
+              <div class="match-name">Carlos Oliveira</div>
+              <div class="match-role">Analista Sênior · TI/BI · 8 anos casa</div>
+            </div>
+            <span class="match-fit high">fit 92</span>
+          </div>
+          <div class="match-skills">
+            <div class="match-skills-label">Skills oferecidas (4)</div>
+            <div class="match-skills-list">
+              <span class="skill-tag matched">Stakeholder mgmt (4)</span>
+              <span class="skill-tag matched">Inglês (4)</span>
+              <span class="skill-tag">Comunicação (5)</span>
+              <span class="skill-tag">SQL avançado (5)</span>
+            </div>
+          </div>
+          <div class="match-bio">"Trabalho com BI há 12 anos. Adoro ensinar SQL avançado e ajudar pessoal técnico a se comunicar bem com áreas de negócio."</div>
+          <div class="match-meta">
+            <span>📅 Quartas 14-15h</span>
+            <span>⭐ 4.7 (8 mentorias)</span>
+          </div>
+          <div class="match-actions">
+            <button class="invite">✉ Convidar</button>
+            <button class="skip">Pular</button>
+          </div>
+        </div>
+
+        <div class="match-card">
+          <div class="match-head">
+            <div class="match-avatar" style="background:linear-gradient(135deg,#F58634,#C0392B);">HR</div>
+            <div>
+              <div class="match-name">Helena Ribeiro</div>
+              <div class="match-role">Gerente ATP Atacado · 8 anos casa</div>
+            </div>
+            <span class="match-fit">fit 78</span>
+          </div>
+          <div class="match-skills">
+            <div class="match-skills-label">Skills oferecidas (3)</div>
+            <div class="match-skills-list">
+              <span class="skill-tag matched">Stakeholder mgmt (5)</span>
+              <span class="skill-tag">Liderança (5)</span>
+              <span class="skill-tag">Gestão conflito (4)</span>
+            </div>
+          </div>
+          <div class="match-bio">"Operação de varejo me ensinou muito sobre influenciar áreas que não te reportam. Posso compartilhar isso com quem está saindo de IC para gestão."</div>
+          <div class="match-meta">
+            <span>📅 Sextas 16-17h</span>
+            <span>⭐ 4.9 (5 mentorias)</span>
+          </div>
+          <div class="match-actions">
+            <button class="invite">✉ Convidar</button>
+            <button class="skip">Pular</button>
+          </div>
+        </div>
+
+        <div class="match-card">
+          <div class="match-head">
+            <div class="match-avatar" style="background:linear-gradient(135deg,#1E7B4B,#2E476F);">PM</div>
+            <div>
+              <div class="match-name">Patrícia Mello</div>
+              <div class="match-role">Coord RH · 10 anos casa</div>
+            </div>
+            <span class="match-fit med">fit 65</span>
+          </div>
+          <div class="match-skills">
+            <div class="match-skills-label">Skills oferecidas (3)</div>
+            <div class="match-skills-list">
+              <span class="skill-tag matched">Stakeholder mgmt (4)</span>
+              <span class="skill-tag">Comunicação (5)</span>
+              <span class="skill-tag">LGPD avançado (5)</span>
+            </div>
+          </div>
+          <div class="match-bio">"RH me deu ferramentas pra navegar dinâmicas complexas entre líderes. Disponível pra trocar com colaboradores que querem evoluir."</div>
+          <div class="match-meta">
+            <span>📅 Ad-hoc agendamento</span>
+            <span>⭐ 4.6 (12 mentorias)</span>
+          </div>
+          <div class="match-actions">
+            <button class="invite">✉ Convidar</button>
+            <button class="skip">Pular</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:16px; padding:12px 16px; background:var(--off); border-radius:10px; font-size:11.5px; color:var(--txt2);">
+        🔒 Mentores que são <strong>seu líder direto</strong> foram filtrados (regra anti-viés) · diferença mínima de 2 anos de casa aplicada
+      </div>
+    </div>
+
+    <!-- MEUS PARES -->
+    <div class="role-pane" id="role-pares" style="display:none;">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">🤝 Pares ativos (2)</div></div></div>
+
+        <div class="pair-card">
+          <div class="pair-faces">
+            <div style="background:#F58634;">FL</div>
+            <div style="background:#6D28D9;">CO</div>
+          </div>
+          <div class="pair-info">
+            <strong>Você (mentee) ↔ Carlos Oliveira (mentor)</strong>
+            <div class="topic">Tópico: Stakeholder management · iniciado há 8 semanas</div>
+          </div>
+          <div class="pair-meta">
+            <div class="freq">QUARTAS</div>
+            <div class="next">próximo: 22/05 14h</div>
+          </div>
+          <span class="pair-status status-active">ATIVO</span>
+        </div>
+
+        <div class="pair-card">
+          <div class="pair-faces">
+            <div style="background:#F58634;">FL</div>
+            <div style="background:#1F4FA0;">MC</div>
+          </div>
+          <div class="pair-info">
+            <strong>Você (mentor) ↔ Marina Costa (mentee)</strong>
+            <div class="topic">Tópico: SQL avançado + Python pandas · iniciado há 12 semanas</div>
+          </div>
+          <div class="pair-meta">
+            <div class="freq">QUINZENAL</div>
+            <div class="next">próximo: 28/05 10h</div>
+          </div>
+          <span class="pair-status status-active">ATIVO</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">📩 Propostas pendentes (1)</div></div></div>
+        <div class="pair-card proposed">
+          <div class="pair-faces">
+            <div style="background:#F58634;">FL</div>
+            <div style="background:#1E7B4B;">AS</div>
+          </div>
+          <div class="pair-info">
+            <strong>Ana Souza convidou você para mentoria</strong>
+            <div class="topic">Tópico: Tableau / Power BI · solicitação 14/05</div>
+          </div>
+          <div class="pair-meta">
+            <div class="freq">SEMANAL</div>
+            <div class="next">propõe quintas 11h</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn-orange" style="padding:6px 12px; font-size:11.5px;">Aceitar</button>
+            <button class="btn-secondary" style="padding:6px 12px; font-size:11.5px;">Recusar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">📚 Histórico (3 completadas)</div></div></div>
+        <div class="pair-card completed">
+          <div class="pair-faces">
+            <div style="background:#F58634;">FL</div>
+            <div style="background:#E82227;">TA</div>
+          </div>
+          <div class="pair-info">
+            <strong>Você ↔ Tiago Almeida (mentee)</strong>
+            <div class="topic">SQL avançado · 12 sessões · jan-abr/2026 · ⭐ 5/5</div>
+          </div>
+          <div class="pair-meta">
+            <div class="next">concluído 28/04</div>
+          </div>
+          <span class="pair-status status-completed">COMPLETO</span>
+        </div>
+        <div class="pair-card completed">
+          <div class="pair-faces">
+            <div style="background:#F58634;">FL</div>
+            <div style="background:#1F4FA0;">BC</div>
+          </div>
+          <div class="pair-info">
+            <strong>Você ↔ Beatriz Cunha (mentee)</strong>
+            <div class="topic">Python pandas · 8 sessões · out-dez/2025 · ⭐ 5/5</div>
+          </div>
+          <div class="pair-meta">
+            <div class="next">concluído 18/12</div>
+          </div>
+          <span class="pair-status status-completed">COMPLETO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="role-pane" id="role-admin" style="display:none;">
+      <div class="kpi-grid">
+        <div class="kpi green">
+          <div class="kpi-label">Mentores ativos</div>
+          <div class="kpi-value">42</div>
+          <div class="kpi-trend">11% do quadro · meta 15% ano</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Pares em andamento</div>
+          <div class="kpi-value">28</div>
+          <div class="kpi-trend">+6 últimos 30 dias</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-label">NPS programa</div>
+          <div class="kpi-value">68</div>
+          <div class="kpi-trend">▲ +8 vs trimestre anterior</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Conclusões 90d</div>
+          <div class="kpi-value">17</div>
+          <div class="kpi-trend">94% c/ rating ≥ 4</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">🌟 Top mentores</div></div></div>
+        <table>
+          <thead><tr><th>Mentor</th><th>Pares ativos</th><th>Concluídas</th><th>Rating médio</th><th>Skills mais buscadas</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Rafael Vieira</strong> · Tech Lead TI</td><td>4</td><td>14</td><td>⭐ 4.9</td><td>Python · SQL</td></tr>
+            <tr><td><strong>Patrícia Mello</strong> · Coord RH</td><td>3</td><td>12</td><td>⭐ 4.7</td><td>Stakeholder mgmt · LGPD</td></tr>
+            <tr><td><strong>Carlos Oliveira</strong> · Analista Sr</td><td>2</td><td>8</td><td>⭐ 4.8</td><td>Stakeholder · Comunicação</td></tr>
+            <tr><td><strong>Helena Ribeiro</strong> · Gerente ATP</td><td>2</td><td>5</td><td>⭐ 4.9</td><td>Liderança · Gestão conflito</td></tr>
+            <tr><td><strong>Fernanda Lima</strong> · Analista Pleno</td><td>1</td><td>3</td><td>⭐ 4.8</td><td>SQL · Python</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="border-left:3px solid var(--amber);">
+        <div class="card-head"><div><div class="card-title">⚠ Pares c/ baixo NPS · revisar matching</div></div></div>
+        <table>
+          <thead><tr><th>Par</th><th>Tópico</th><th>Sessões</th><th>NPS</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr><td>Pedro Lima ↔ Ana Souza</td><td>Tableau</td><td>3</td><td>⭐ 2/5</td><td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">Mediar</button></td></tr>
+            <tr><td>Lucas Santos ↔ Beatriz Cunha</td><td>SQL básico</td><td>5</td><td>⭐ 3/5</td><td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">Conversar</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.role-toggle button').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.role-toggle button').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    document.querySelectorAll('.role-pane').forEach(p => p.style.display = 'none');
+    document.getElementById('role-' + b.dataset.role).style.display = '';
+  });
+});
+</script>
+</body>
+</html>

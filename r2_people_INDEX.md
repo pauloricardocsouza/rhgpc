@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.54 · 18 de maio de 2026
+**Versão**: 2.55 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1018,6 +1018,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.51 | Schema v16 + Spec M21 Varejo Multi-loja + Spec C4 Partner Program + Página Aniversariantes |
 | 2.52 | Páginas Multi-loja + Quadro Honra + Partner Portal + Spec D10 Mobile-First |
 | 2.53 | Schema v17 + Trilhas UI + Spec M22 Sucessão & Carreira |
-| **2.54** | **Schema SQL v18 (M22 materializada · 10 tabelas + 7 RPCs + trigger auto-schedule review 6m + seed catálogo 19 skills GPC + RLS sensitive p/ sucessão · skills_catalog + position_skills_required + employee_skills + succession_plans + succession_candidates + mentoring_profiles + mentoring_pairs + career_interests + career_paths + career_path_steps · pwa_versions bump v0.18) + Página HTML `r2_people_sucessao.html` materializa M22 sucessão (persona Renato Pinto Diretor · banner confidencial vermelho restrição NDA · 4 KPIs c/ 2 sem sucessor primário danger · 4 abas: Cargos críticos c/ cards flow holder→sucessores incluindo 2 GAPs CFO+Inhambupe e 2 OK Diretor Ops+Coord RH c/ skills gap tags + Gaps urgentes 2 cargos · Organograma visual · Readiness 23 pessoas pipeline) + Página HTML `r2_people_skill_matrix.html` materializa M22 heatmap (persona Patrícia Mello Coord RH · filtros depto+cargo+vista leader/self/média · 4 KPIs · heatmap TI/BI 9 pessoas × 7 skills c/ celulas 5 níveis cor + actual/expected fonte mono + gap borda red destacada · Gaps coletivos 3 cards Python critical/Stakeholder/Inglês c/ ações + Top stars 3 mentores potenciais Rafael/Fernanda/Carlos)** |
+| 2.54 | Schema v18 + Sucessão UI + Skill Matrix UI |
+| **2.55** | **Página HTML `r2_people_mentoring.html` materializa M22 mentoring (persona Fernanda Lima mentor & mentee · role toggle 4 modos: Meu perfil/Buscar mentor/Meus pares/Admin programa · hero gradient purple-orange c/ 4 stats + skills oferecidas verde vs buscadas azul · busca 3 match-cards c/ fit score 92/78/65 + skills overlap destacadas + bio + meta horário + ações Convidar/Pular · pares ativos 2 pair-cards c/ faces overlap + frequência + próximo + status + propostas pendentes 1 c/ aceitar/recusar + histórico completado 2 · admin c/ 4 KPIs programa NPS 68 + top mentores Rafael 14 mentorias 4.9 + revisão matching baixo NPS) + Hub Admin atualizado para 11 cockpits (adiciona Sucessão succession gradient purple-dark + Skill Matrix skills gradient blue-green · sidebar c/ 2 nav-items novos · page-eyebrow "11 cockpits" + hero text estendido · status banner auto-fit responsive · 2 status pills novas Sucessão red 2 gaps + Skills amber 3 gaps coletivos)** |
 
 ---

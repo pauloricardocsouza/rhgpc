@@ -265,7 +265,8 @@
     { title: 'Partner Portal · contadores R2', url: 'r2_people_partner_portal.html', cat: 'Home', icon: '🤝', kw: 'partner portal contador escritorio gold tier comissao mrr recorrente referral roberto costa 29 clientes platinum 50 white label materiais treinamentos pagamentos pix' },
     { title: 'Trilhas Operacionais · Caixa, Repositor, ASG', url: 'r2_people_trilhas_funcao.html', cat: 'Carreira', icon: '🎓', kw: 'trilhas operacionais funcao caixa repositor asg vigilante gerente loja modulos quiz certificado ana beatriz pdv atendimento estorno sangria bottleneck' },
     { title: 'Plano de Sucessão · Cargos Críticos', url: 'r2_people_sucessao.html', cat: 'Admin', icon: '🌳', kw: 'sucessao cargos criticos diretor cfo gerente loja primary secondary tertiary ready_now 6m 12m 24m succession plan marcos santana carla reis daniela ferreira gap missing organograma sigilo' },
-    { title: 'Skill Matrix · Heatmap por equipe', url: 'r2_people_skill_matrix.html', cat: 'Admin', icon: '🎯', kw: 'skill matrix competencias heatmap colaborador self leader assessment ti bi python pandas sql tableau stakeholder ingles gap coletivo mentor potencial fernanda lima rafael vieira carlos oliveira' }
+    { title: 'Skill Matrix · Heatmap por equipe', url: 'r2_people_skill_matrix.html', cat: 'Admin', icon: '🎯', kw: 'skill matrix competencias heatmap colaborador self leader assessment ti bi python pandas sql tableau stakeholder ingles gap coletivo mentor potencial fernanda lima rafael vieira carlos oliveira' },
+    { title: 'Mentoring · Pareamento mentor/mentee', url: 'r2_people_mentoring.html', cat: 'Carreira', icon: '🤝', kw: 'mentoring mentor mentee matching automatico skills oferecidas buscadas fernanda lima carlos oliveira rafael vieira helena ribeiro patricia mello pares ativos propostas historico admin programa nps' }
   ];
 
   function openSearch() {
