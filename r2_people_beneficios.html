@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Meus Benefícios · Catálogo, Convênios, Dependentes, Reembolso</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #1E7B4B, #F58634); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:16px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-orange{background:var(--orange); color:#fff; border:none; padding:9px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;}
+.btn-orange:hover{background:#D67324;}
+
+/* Hero pacote total */
+.hero-pkg{background:linear-gradient(115deg, #2E476F 0%, #6D28D9 100%); color:#fff; border-radius:14px; padding:24px 28px; margin-bottom:16px; position:relative; overflow:hidden;}
+.hero-pkg::before{content:''; position:absolute; right:-50px; top:-50px; width:200px; height:200px; background:radial-gradient(circle, rgba(245,131,52,.22), transparent 65%); border-radius:50%;}
+.hero-pkg-content{position:relative; z-index:1; display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center;}
+.hero-pkg h2{font-size:18px; font-weight:600; margin-bottom:4px;}
+.hero-pkg p{font-size:12.5px; color:rgba(255,255,255,.78); margin-bottom:14px;}
+.hero-pkg-stats{display:flex; gap:24px;}
+.hero-pkg-stat{font-size:11px; color:rgba(255,255,255,.7);}
+.hero-pkg-stat strong{display:block; font-size:24px; font-weight:700; font-family:'JetBrains Mono', monospace; color:#fff; letter-spacing:-.5px;}
+.hero-pkg-action button{padding:11px 22px; border-radius:8px; border:1px solid rgba(255,255,255,.3); background:transparent; color:#fff; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit;}
+.hero-pkg-action button.primary{background:var(--orange); border-color:var(--orange);}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* Benefit cards */
+.benefit-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;}
+.benefit-card{background:#fff; border-radius:12px; padding:16px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); position:relative; overflow:hidden; display:flex; flex-direction:column;}
+.benefit-card.active{border-color:var(--green);}
+.benefit-card.active::before{content:'ATIVO'; position:absolute; top:10px; right:10px; padding:2px 8px; background:var(--green); color:#fff; font-size:9px; font-weight:700; border-radius:8px; font-family:'JetBrains Mono', monospace; letter-spacing:.3px;}
+.benefit-icon{width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg, var(--navy), var(--blue)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:10px;}
+.benefit-icon.health{background:linear-gradient(135deg, #1E7B4B, #14573A);}
+.benefit-icon.food{background:linear-gradient(135deg, #F58634, #D67324);}
+.benefit-icon.transport{background:linear-gradient(135deg, #1F4FA0, #2E476F);}
+.benefit-icon.education{background:linear-gradient(135deg, #6D28D9, #1F4FA0);}
+.benefit-icon.leisure{background:linear-gradient(135deg, #C0392B, #6D28D9);}
+.benefit-icon.family{background:linear-gradient(135deg, #F58634, #6D28D9);}
+.benefit-icon.financial{background:linear-gradient(135deg, #2E476F, #1E7B4B);}
+.benefit-name{font-size:14px; font-weight:700; margin-bottom:3px;}
+.benefit-desc{font-size:11.5px; color:var(--txt2); margin-bottom:10px; line-height:1.45; flex:1;}
+.benefit-meta{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
+.benefit-pill{padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.benefit-pill.free{background:var(--green2); color:var(--green);}
+.benefit-pill.cost{background:var(--amber2); color:var(--amber);}
+.benefit-pill.cat{background:var(--gray1); color:var(--txt2);}
+.benefit-action{display:flex; gap:6px; margin-top:auto;}
+.benefit-action button{flex:1; padding:8px; font-size:11.5px; font-weight:600; border-radius:7px; border:none; cursor:pointer; font-family:inherit;}
+.benefit-action .adhere{background:var(--orange); color:#fff;}
+.benefit-action .adhere:hover{background:#D67324;}
+.benefit-action .cancel{background:#fff; color:var(--danger); border:1px solid var(--danger2);}
+.benefit-action .info{background:var(--gray1); color:var(--txt); border:none;}
+
+/* Dependents */
+.dep-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;}
+.dep-card{background:#fff; border-radius:12px; padding:14px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); display:flex; align-items:center; gap:12px;}
+.dep-card.alert{border-color:var(--amber); background:linear-gradient(90deg, var(--amber2), #fff 50%);}
+.dep-avatar{width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg, var(--orange), var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; flex-shrink:0;}
+.dep-info{flex:1; min-width:0;}
+.dep-name{font-size:13.5px; font-weight:600;}
+.dep-meta{font-size:11px; color:var(--txt2); margin-top:1px;}
+.dep-pills{display:flex; gap:4px; flex-wrap:wrap; margin-top:5px;}
+.dep-pill{padding:1px 7px; border-radius:9px; font-size:9.5px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.dep-pill.ir{background:var(--blue2); color:var(--blue);}
+.dep-pill.health{background:var(--green2); color:var(--green);}
+.dep-pill.va{background:var(--amber2); color:var(--amber);}
+.dep-pill.pcd{background:#F3E8FF; color:var(--purple);}
+
+/* Reimbursement */
+.reimb-row{display:grid; grid-template-columns:42px 1fr auto auto auto auto; gap:12px; padding:10px 12px; background:#fff; border:1px solid var(--gray1); border-radius:8px; margin-bottom:6px; align-items:center;}
+.reimb-icon{width:36px; height:36px; border-radius:8px; background:var(--blue2); color:var(--blue); display:flex; align-items:center; justify-content:center; font-size:16px;}
+.reimb-info strong{font-size:12.5px; font-weight:600;}
+.reimb-info .meta{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.reimb-amount{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:13px;}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.pending{background:var(--amber2); color:var(--amber);}
+.badge.approved{background:var(--green2); color:var(--green);}
+.badge.paid{background:var(--green); color:#fff;}
+.badge.rejected{background:var(--danger2); color:var(--danger);}
+
+/* Partner perks */
+.perk-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px;}
+.perk-card{background:#fff; border-radius:12px; padding:14px; box-shadow:var(--shadow-card); border:1px solid var(--gray1); display:flex; flex-direction:column; cursor:pointer; transition:transform .12s;}
+.perk-card:hover{transform:translateY(-2px); border-color:var(--orange);}
+.perk-head{display:flex; gap:10px; align-items:center; margin-bottom:10px;}
+.perk-logo{width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg, var(--navy), var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; flex-shrink:0; font-family:'JetBrains Mono', monospace;}
+.perk-name{font-size:13.5px; font-weight:700;}
+.perk-cat{font-size:10.5px; color:var(--txt2);}
+.perk-discount{font-size:22px; font-weight:700; color:var(--orange); font-family:'JetBrains Mono', monospace; margin:6px 0;}
+.perk-desc{font-size:11px; color:var(--txt2); line-height:1.4; margin-bottom:10px;}
+.perk-meta{display:flex; justify-content:space-between; align-items:center; font-size:10.5px; color:var(--txt2); padding-top:8px; border-top:1px solid var(--gray1);}
+.perk-rating{color:var(--amber); font-weight:600;}
+.perk-clicks{font-family:'JetBrains Mono', monospace;}
+
+@media (max-width:980px){
+  .hero-pkg-content{grid-template-columns:1fr;}
+  .hero-pkg-stats{justify-content:flex-start; flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Você</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item" href="r2_people_minha_trajetoria.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>Minha jornada</a>
+      <a class="nav-item active" href="r2_people_beneficios.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>Meus Benefícios</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>Meu PDI</a>
+      <a class="nav-item" href="r2_people_notificacoes.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Notificações</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Você</span><span class="sep">›</span><span class="crumb">Meus Benefícios</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">FL</div>
+      <div class="user-info"><span class="user-name">Fernanda Lima</span><span class="user-role">Analista Pleno · TI / BI</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Você <span class="sep">·</span> Benefícios <span class="sep">·</span> Spec M19</div>
+        <h1 class="page-title">Meus <em>benefícios</em></h1>
+        <p class="page-subtitle">Catálogo da GPC · adesão self-service · dependentes · convênios parceiros · reembolso · sem mandar e-mail pro RH</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">📄 Total Rewards (PDF)</button>
+        <button class="btn-orange">+ Solicitar reembolso</button>
+      </div>
+    </div>
+
+    <!-- Hero pacote total -->
+    <div class="hero-pkg">
+      <div class="hero-pkg-content">
+        <div>
+          <h2>Seu pacote total · maio/2026</h2>
+          <p>Salário + benefícios + bônus que a GPC investe em você todo mês.</p>
+          <div class="hero-pkg-stats">
+            <div class="hero-pkg-stat">Salário base<strong>R$ 4.500</strong></div>
+            <div class="hero-pkg-stat">Benefícios<strong>R$ 1.180</strong></div>
+            <div class="hero-pkg-stat">Encargos empresa<strong>R$ 2.250</strong></div>
+            <div class="hero-pkg-stat">Total empresa<strong>R$ 7.930</strong></div>
+          </div>
+        </div>
+        <div class="hero-pkg-action">
+          <button class="primary">Ver detalhamento</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="meus">✅ Meus benefícios</div>
+      <div class="tab" data-tab="disponiveis">💼 Disponíveis</div>
+      <div class="tab" data-tab="dependentes">👨‍👩‍👧 Dependentes</div>
+      <div class="tab" data-tab="reembolso">💰 Reembolsos</div>
+      <div class="tab" data-tab="convenios">🤝 Convênios parceiros</div>
+    </div>
+
+    <!-- MEUS -->
+    <div class="tab-pane active" id="tab-meus">
+      <div class="benefit-grid">
+        <div class="benefit-card active">
+          <div class="benefit-icon food">🍽️</div>
+          <div class="benefit-name">Vale-refeição</div>
+          <div class="benefit-desc">R$ 28/dia útil · cartão Alelo · 22 dias úteis em maio</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">R$ 616/mês</span>
+            <span class="benefit-pill cat">obrigatório CCT</span>
+          </div>
+          <div class="benefit-action">
+            <button class="info">Ver extrato</button>
+          </div>
+        </div>
+
+        <div class="benefit-card active">
+          <div class="benefit-icon food">🛒</div>
+          <div class="benefit-name">Vale-alimentação</div>
+          <div class="benefit-desc">R$ 420 fixo/mês · cartão Alelo · uso supermercado</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">R$ 420/mês</span>
+            <span class="benefit-pill cat">obrigatório CCT</span>
+          </div>
+          <div class="benefit-action">
+            <button class="info">Ver extrato</button>
+          </div>
+        </div>
+
+        <div class="benefit-card active">
+          <div class="benefit-icon health">🩺</div>
+          <div class="benefit-name">Plano de saúde Unimed</div>
+          <div class="benefit-desc">Apartamento · cobertura nacional · 1 dependente incluso (Lucas)</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">R$ 142,80 coparticipação</span>
+            <span class="benefit-pill cat">opcional</span>
+          </div>
+          <div class="benefit-action">
+            <button class="info">Carteirinha</button>
+            <button class="cancel">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="benefit-card active">
+          <div class="benefit-icon leisure">🏋️</div>
+          <div class="benefit-name">Gympass · Wellhub</div>
+          <div class="benefit-desc">Plano Silver · acesso a 22 academias na região + apps fitness</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">R$ 29,90/mês</span>
+            <span class="benefit-pill cat">opcional · empresa subsidia 70%</span>
+          </div>
+          <div class="benefit-action">
+            <button class="info">Abrir app</button>
+            <button class="cancel">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="benefit-card active">
+          <div class="benefit-icon health">💊</div>
+          <div class="benefit-name">Telemedicina Conexa</div>
+          <div class="benefit-desc">Consultas ilimitadas online · 24/7 · 12 especialidades</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill free">grátis</span>
+            <span class="benefit-pill cat">automático</span>
+          </div>
+          <div class="benefit-action">
+            <button class="info">Agendar consulta</button>
+          </div>
+        </div>
+
+        <div class="benefit-card active">
+          <div class="benefit-icon family">🎁</div>
+          <div class="benefit-name">Day off de aniversário</div>
+          <div class="benefit-desc">Folga remunerada na semana do seu aniversário · 1 dia/ano</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill free">grátis</span>
+            <span class="benefit-pill cat">automático</span>
+          </div>
+          <div class="benefit-action">
+            <button class="info">Agendar (06/2026)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISPONÍVEIS -->
+    <div class="tab-pane" id="tab-disponiveis">
+      <div style="margin-bottom:14px; padding:11px 14px; background:var(--blue2); border-left:3px solid var(--blue); border-radius:0 8px 8px 0; font-size:12px; color:var(--navy);">
+        💡 7 benefícios disponíveis para o seu cargo (Analista Pleno · TI/BI) · clique "Aderir" para começar
+      </div>
+
+      <div class="benefit-grid">
+        <div class="benefit-card">
+          <div class="benefit-icon health">🦷</div>
+          <div class="benefit-name">Plano odontológico Odontoprev</div>
+          <div class="benefit-desc">Cobertura completa · ortodontia inclusa · sem carência para urgência</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">R$ 32,50/mês</span>
+            <span class="benefit-pill cat">opcional</span>
+          </div>
+          <div class="benefit-action">
+            <button class="adhere">+ Aderir</button>
+            <button class="info">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon financial">💼</div>
+          <div class="benefit-name">Previdência privada (PGBL)</div>
+          <div class="benefit-desc">Empresa faz matching de 5% se você contribuir 5% · isenção IR até R$ 1.500/mês</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">% salário escolhido</span>
+            <span class="benefit-pill cat">requer aprovação</span>
+          </div>
+          <div class="benefit-action">
+            <button class="adhere">+ Simular</button>
+            <button class="info">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon health">❤️</div>
+          <div class="benefit-name">Seguro de vida em grupo</div>
+          <div class="benefit-desc">Cobertura R$ 50k morte + R$ 25k invalidez · auxílio funeral · empresa paga 50%</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">R$ 18/mês</span>
+            <span class="benefit-pill cat">opcional</span>
+          </div>
+          <div class="benefit-action">
+            <button class="adhere">+ Aderir</button>
+            <button class="info">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon education">🎓</div>
+          <div class="benefit-name">Auxílio educação</div>
+          <div class="benefit-desc">Reembolso de até R$ 800/mês em curso técnico/superior/MBA · cursos alinhados ao cargo</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill free">empresa paga</span>
+            <span class="benefit-pill cat">requer aprovação líder + RH</span>
+          </div>
+          <div class="benefit-action">
+            <button class="adhere">+ Solicitar</button>
+            <button class="info">Política</button>
+          </div>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon family">👶</div>
+          <div class="benefit-name">Auxílio creche</div>
+          <div class="benefit-desc">Reembolso mensalidade creche/escola filhos até 6 anos · CCT garante R$ 350/filho</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill free">empresa paga</span>
+            <span class="benefit-pill cat">requer dependente</span>
+          </div>
+          <div class="benefit-action">
+            <button class="adhere">+ Solicitar</button>
+            <button class="info">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon transport">🚌</div>
+          <div class="benefit-name">Vale-transporte</div>
+          <div class="benefit-desc">Desconto de até 6% do salário · você opta in ou opt-out</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill cost">até 6% salário</span>
+            <span class="benefit-pill cat">opt-out</span>
+          </div>
+          <div class="benefit-action">
+            <button class="adhere">+ Aderir</button>
+            <button class="info">Detalhes</button>
+          </div>
+        </div>
+
+        <div class="benefit-card">
+          <div class="benefit-icon family">🎫</div>
+          <div class="benefit-name">Vale-cultura</div>
+          <div class="benefit-desc">R$ 50/mês para livros, cinema, museu, teatro · cartão pré-pago Sodexo</div>
+          <div class="benefit-meta">
+            <span class="benefit-pill free">empresa paga</span>
+            <span class="benefit-pill cat">opcional</span>
+          </div>
+          <div class="benefit-action">
+            <button class="adhere">+ Aderir</button>
+            <button class="info">Detalhes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPENDENTES -->
+    <div class="tab-pane" id="tab-dependentes">
+      <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:14px; font-weight:700;">3 dependentes cadastrados</h3>
+        <button class="btn-primary">+ Adicionar dependente</button>
+      </div>
+
+      <div class="dep-grid">
+        <div class="dep-card">
+          <div class="dep-avatar">RL</div>
+          <div class="dep-info">
+            <div class="dep-name">Rodrigo Lima</div>
+            <div class="dep-meta">Cônjuge · 36 anos · desde 14/08/2018</div>
+            <div class="dep-pills">
+              <span class="dep-pill ir">IR</span>
+              <span class="dep-pill health">Saúde</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dep-card">
+          <div class="dep-avatar">LL</div>
+          <div class="dep-info">
+            <div class="dep-name">Lucas Lima</div>
+            <div class="dep-meta">Filho · 8 anos · nascido 03/2018</div>
+            <div class="dep-pills">
+              <span class="dep-pill ir">IR</span>
+              <span class="dep-pill health">Saúde</span>
+              <span class="dep-pill va">VA</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dep-card alert">
+          <div class="dep-avatar">CL</div>
+          <div class="dep-info">
+            <div class="dep-name">Clara Lima</div>
+            <div class="dep-meta">Filha · 20 anos · universitária USP</div>
+            <div class="dep-pills">
+              <span class="dep-pill ir">IR até 12/2026</span>
+              <span class="dep-pill health">Saúde</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; padding:11px 14px; background:var(--amber2); border-left:3px solid var(--amber); border-radius:0 8px 8px 0; font-size:12px;">
+        ⚠ <strong>Clara Lima</strong> completa 21 anos em <strong>03/12/2026</strong> · vai perder dependência IR (a menos que renove comprovante de universidade até 24 anos) · alerta enviado em 03/09/2026
+      </div>
+    </div>
+
+    <!-- REEMBOLSOS -->
+    <div class="tab-pane" id="tab-reembolso">
+      <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h3 style="font-size:14px; font-weight:700;">5 solicitações neste ano</h3>
+          <p style="font-size:11.5px; color:var(--txt2);">Aprovadas: 4 (R$ 1.847,00) · Pendentes: 1 · Rejeitadas: 0</p>
+        </div>
+        <button class="btn-orange">+ Nova solicitação</button>
+      </div>
+
+      <div class="reimb-row">
+        <div class="reimb-icon">💊</div>
+        <div class="reimb-info">
+          <strong>Telemedicina · psicóloga</strong>
+          <div class="meta">14/05/2026 · NF anexa · justificativa: continuidade tratamento</div>
+        </div>
+        <div class="reimb-amount">R$ 240,00</div>
+        <span class="badge pending">aguarda líder</span>
+        <span style="font-size:10.5px; color:var(--txt2);">há 4d</span>
+        <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Ver</button>
+      </div>
+
+      <div class="reimb-row">
+        <div class="reimb-icon">📚</div>
+        <div class="reimb-info">
+          <strong>Auxílio educação · MBA</strong>
+          <div class="meta">02/05/2026 · NF anexa · mensalidade abril FGV</div>
+        </div>
+        <div class="reimb-amount">R$ 800,00</div>
+        <span class="badge approved">aprovado</span>
+        <span style="font-size:10.5px; color:var(--txt2);">15d</span>
+        <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">PDF</button>
+      </div>
+
+      <div class="reimb-row">
+        <div class="reimb-icon">👓</div>
+        <div class="reimb-info">
+          <strong>Óculos de grau</strong>
+          <div class="meta">14/04/2026 · NF anexa · PT médica anexa · armação + lente</div>
+        </div>
+        <div class="reimb-amount">R$ 482,00</div>
+        <span class="badge paid">pago folha</span>
+        <span style="font-size:10.5px; color:var(--txt2);">35d</span>
+        <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">PDF</button>
+      </div>
+
+      <div class="reimb-row">
+        <div class="reimb-icon">🎓</div>
+        <div class="reimb-info">
+          <strong>Curso inglês</strong>
+          <div class="meta">10/03/2026 · NF Wizard · mensalidade fevereiro</div>
+        </div>
+        <div class="reimb-amount">R$ 420,00</div>
+        <span class="badge paid">pago PIX</span>
+        <span style="font-size:10.5px; color:var(--txt2);">70d</span>
+        <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">PDF</button>
+      </div>
+
+      <div class="reimb-row">
+        <div class="reimb-icon">💊</div>
+        <div class="reimb-info">
+          <strong>Telemedicina · clínico geral</strong>
+          <div class="meta">28/02/2026 · NF anexa</div>
+        </div>
+        <div class="reimb-amount">R$ 145,00</div>
+        <span class="badge paid">pago folha</span>
+        <span style="font-size:10.5px; color:var(--txt2);">80d</span>
+        <button class="btn-secondary" style="padding:5px 10px; font-size:11px;">PDF</button>
+      </div>
+    </div>
+
+    <!-- CONVÊNIOS -->
+    <div class="tab-pane" id="tab-convenios">
+      <div style="margin-bottom:14px;">
+        <h3 style="font-size:14px; font-weight:700;">15 convênios disponíveis pra você</h3>
+        <p style="font-size:11.5px; color:var(--txt2);">Use seu crachá GPC ou código exclusivo · descontos válidos para colaboradores e dependentes</p>
+      </div>
+
+      <div class="perk-grid">
+        <div class="perk-card">
+          <div class="perk-head">
+            <div class="perk-logo" style="background:linear-gradient(135deg,#FFC107,#FF9800);">SF</div>
+            <div><div class="perk-name">Smart Fit</div><div class="perk-cat">Academia · Salvador</div></div>
+          </div>
+          <div class="perk-discount">30% OFF</div>
+          <div class="perk-desc">Mensalidade Bronze, Smart, Black em qualquer unidade Salvador · primeiros 6 meses</div>
+          <div class="perk-meta">
+            <span class="perk-rating">⭐ 4.7 · 28 avaliações</span>
+            <span class="perk-clicks">42 cliques este mês</span>
+          </div>
+        </div>
+
+        <div class="perk-card">
+          <div class="perk-head">
+            <div class="perk-logo" style="background:linear-gradient(135deg,#E53935,#C62828);">DR</div>
+            <div><div class="perk-name">Drogasil</div><div class="perk-cat">Farmácia · nacional</div></div>
+          </div>
+          <div class="perk-discount">15% OFF</div>
+          <div class="perk-desc">Medicamentos genéricos e referência · perfumaria 10% · informar CPF cadastrado</div>
+          <div class="perk-meta">
+            <span class="perk-rating">⭐ 4.5 · 41 avaliações</span>
+            <span class="perk-clicks">87 cliques este mês</span>
+          </div>
+        </div>
+
+        <div class="perk-card">
+          <div class="perk-head">
+            <div class="perk-logo" style="background:linear-gradient(135deg,#7B1FA2,#4A148C);">CK</div>
+            <div><div class="perk-name">Cinemark</div><div class="perk-cat">Lazer · nacional</div></div>
+          </div>
+          <div class="perk-discount">50% OFF</div>
+          <div class="perk-desc">Ingressos meia-entrada todos os dias · 4 unidades em Salvador · código mensal renovado</div>
+          <div class="perk-meta">
+            <span class="perk-rating">⭐ 4.8 · 36 avaliações</span>
+            <span class="perk-clicks">68 cliques este mês</span>
+          </div>
+        </div>
+
+        <div class="perk-card">
+          <div class="perk-head">
+            <div class="perk-logo" style="background:linear-gradient(135deg,#1976D2,#0D47A1);">UN</div>
+            <div><div class="perk-name">Faculdade UNIME</div><div class="perk-cat">Educação · Salvador</div></div>
+          </div>
+          <div class="perk-discount">20% OFF</div>
+          <div class="perk-desc">Mensalidade graduação, pós, MBA · matrícula com comprovante CTPS · estende a dependentes</div>
+          <div class="perk-meta">
+            <span class="perk-rating">⭐ 4.3 · 12 avaliações</span>
+            <span class="perk-clicks">14 cliques este mês</span>
+          </div>
+        </div>
+
+        <div class="perk-card">
+          <div class="perk-head">
+            <div class="perk-logo" style="background:linear-gradient(135deg,#388E3C,#1B5E20);">NU</div>
+            <div><div class="perk-name">Natura</div><div class="perk-cat">Cosméticos · online</div></div>
+          </div>
+          <div class="perk-discount">12% OFF</div>
+          <div class="perk-desc">Linha completa · código exclusivo na finalização · entrega no endereço cadastrado</div>
+          <div class="perk-meta">
+            <span class="perk-rating">⭐ 4.2 · 9 avaliações</span>
+            <span class="perk-clicks">22 cliques este mês</span>
+          </div>
+        </div>
+
+        <div class="perk-card">
+          <div class="perk-head">
+            <div class="perk-logo" style="background:linear-gradient(135deg,#FF6B35,#C62828);">PB</div>
+            <div><div class="perk-name">Pizza do Beto</div><div class="perk-cat">Restaurante · Salvador</div></div>
+          </div>
+          <div class="perk-discount">10% OFF</div>
+          <div class="perk-desc">Almoço e jantar · falar nome GPC no caixa · não acumula c/ outras promoções</div>
+          <div class="perk-meta">
+            <span class="perk-rating">⭐ 4.9 · 18 avaliações</span>
+            <span class="perk-clicks">31 cliques este mês</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; text-align:center;">
+        <button class="btn-secondary">Ver todos os 15 convênios →</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

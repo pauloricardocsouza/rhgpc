@@ -256,7 +256,9 @@
     { title: 'CS Dashboard · Health Score & intervenções', url: 'r2_people_cs_dashboard.html', cat: 'Admin', icon: '❤️', kw: 'cs customer success health score nrr churn intervencao expansao renovacao mrr qbr csm marina champion saudavel atencao risco critico' },
     { title: 'API Console · Keys & Usage', url: 'r2_people_api_console.html', cat: 'Admin', icon: '🔑', kw: 'api console rest graphql sdk apikey api key bcrypt rate limit idempotency openapi typescript python php go quota usage endpoint diego' },
     { title: 'People Analytics · Diretoria', url: 'r2_people_analytics.html', cat: 'Admin', icon: '📊', kw: 'analytics diretoria turnover retencao headcount d&i diversidade equidade salarial custo dominio enps renato pinto kanonymity sobrevivencia kaplan meier' },
-    { title: 'Inbox do Líder · Aprovações & Equipe', url: 'r2_people_inbox_lider.html', cat: 'Gestor', icon: '📥', kw: 'inbox lider aprovacao bulk approve calendar consolidado equipe joao carvalho atestado ferias reembolso treinamento bloqueador sla painel subordinado' }
+    { title: 'Inbox do Líder · Aprovações & Equipe', url: 'r2_people_inbox_lider.html', cat: 'Gestor', icon: '📥', kw: 'inbox lider aprovacao bulk approve calendar consolidado equipe joao carvalho atestado ferias reembolso treinamento bloqueador sla painel subordinado' },
+    { title: 'Compliance Trabalhista · NR-7 / NR-6 / Termos', url: 'r2_people_compliance.html', cat: 'Admin', icon: '✅', kw: 'compliance trabalhista aso nr7 nr6 epi treinamento nr10 nr11 nr35 antiassedio lgpd termos versionados documentos pessoais cnh ltcat periculosidade insalubridade patricia score' },
+    { title: 'Meus Benefícios · Catálogo + Convênios + Reembolso', url: 'r2_people_beneficios.html', cat: 'Você', icon: '💎', kw: 'beneficios catalogo adesao plano saude vr va vt gympass odontoprev seguro vida previdencia conveios parceiros smart fit drogasil cinemark dependentes reembolso telemedicina psicologa fernanda lima total rewards' }
   ];
 
   function openSearch() {

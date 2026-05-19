@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Compliance Trabalhista · ASO / EPI / NR / Termos</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.compliance-pill{display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:20px; background:var(--amber2); color:var(--amber); font-size:11px; font-weight:600;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #1E7B4B, #1F4FA0); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:16px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+
+/* Score hero */
+.score-hero{background:linear-gradient(115deg, #0F1B2E 0%, #2E476F 100%); color:#fff; border-radius:14px; padding:24px 28px; margin-bottom:16px; display:grid; grid-template-columns:auto 1fr auto; gap:22px; align-items:center; position:relative; overflow:hidden;}
+.score-hero::before{content:''; position:absolute; right:-60px; top:-60px; width:240px; height:240px; background:radial-gradient(circle, rgba(245,131,52,.18), transparent 65%); border-radius:50%;}
+.score-ring{position:relative; z-index:1; width:96px; height:96px; border-radius:50%; background:conic-gradient(var(--orange) 0% 78%, rgba(255,255,255,.12) 78% 100%); display:flex; align-items:center; justify-content:center;}
+.score-ring::before{content:''; position:absolute; inset:6px; border-radius:50%; background:#0F1B2E;}
+.score-ring-value{position:relative; z-index:2; font-size:24px; font-weight:700; font-family:'JetBrains Mono', monospace;}
+.score-text{position:relative; z-index:1;}
+.score-text h2{font-size:20px; font-weight:600; margin-bottom:4px;}
+.score-text p{font-size:12.5px; color:rgba(255,255,255,.78); line-height:1.55;}
+.score-text p strong{color:#fff;}
+.score-action{position:relative; z-index:1; display:flex; flex-direction:column; gap:7px; text-align:right;}
+.score-action button{padding:9px 16px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:transparent; color:#fff; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit;}
+.score-action button.primary{background:var(--orange); border-color:var(--orange);}
+
+/* KPI grid */
+.kpi-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:16px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.green::before{background:var(--green);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--danger);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:700; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-value.danger{color:var(--danger);}
+.kpi-value.green{color:var(--green);}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:9px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+td.num{font-family:'JetBrains Mono', monospace; text-align:right; font-weight:600;}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.ok{background:var(--green2); color:var(--green);}
+.badge.expiring{background:var(--amber2); color:var(--amber);}
+.badge.expired{background:var(--danger2); color:var(--danger);}
+.badge.missing{background:var(--danger); color:#fff;}
+.badge.dot::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor; display:inline-block;}
+
+/* Heatmap treinamentos */
+.heatmap{display:grid; grid-template-columns:160px repeat(8, 1fr); gap:3px; font-size:10.5px;}
+.heatmap-head{padding:6px 4px; font-weight:600; text-align:center; background:var(--off); border-radius:5px; font-family:'JetBrains Mono', monospace; font-size:9px; text-transform:uppercase; letter-spacing:.2px;}
+.heatmap-row-label{padding:7px 8px; font-weight:500; font-size:11px;}
+.heatmap-cell{padding:7px 4px; text-align:center; border-radius:5px; font-size:10px; font-weight:700; font-family:'JetBrains Mono', monospace; cursor:pointer;}
+.heatmap-cell.ok{background:var(--green2); color:var(--green);}
+.heatmap-cell.expiring{background:var(--amber2); color:var(--amber);}
+.heatmap-cell.expired{background:var(--danger2); color:var(--danger);}
+.heatmap-cell.na{background:var(--gray1); color:var(--txt3);}
+
+/* Termos rows */
+.term-row{display:grid; grid-template-columns:1fr auto auto auto auto; gap:14px; padding:11px 14px; background:#fff; border:1px solid var(--gray1); border-radius:8px; margin-bottom:6px; align-items:center;}
+.term-info strong{font-size:13px; font-weight:600;}
+.term-info .meta{font-size:11px; color:var(--txt2); margin-top:1px;}
+.term-pct{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:14px;}
+.term-pct.ok{color:var(--green);}
+.term-pct.warn{color:var(--amber);}
+
+/* Alert banner */
+.alert-banner{background:linear-gradient(90deg, var(--danger2), #fff 30%); border-left:3px solid var(--danger); padding:12px 16px; border-radius:0 8px 8px 0; margin-bottom:14px;}
+.alert-banner strong{color:var(--danger);}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">RH · compliance</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_compliance.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M21 12c0 5-3.5 7-9 7s-9-2-9-7V6l9-3 9 3z"/></svg>Compliance</a>
+      <a class="nav-item" href="r2_people_atestados.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>Atestados</a>
+      <a class="nav-item" href="r2_people_colaboradores_lista.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+      <a class="nav-item" href="r2_people_admin_dashboard.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard RH</a>
+      <a class="nav-item" href="r2_people_lgpd_cockpit.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>Cockpit LGPD</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>RH</span><span class="sep">›</span><span class="crumb">Compliance Trabalhista</span></div>
+    <span class="compliance-pill">⚠ 12 itens vencendo em 30d</span>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info"><span class="user-name">Patrícia Mello</span><span class="user-role">Coord RH · GPC</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">RH <span class="sep">·</span> Compliance trabalhista <span class="sep">·</span> Spec M18</div>
+        <h1 class="page-title">Compliance <em>trabalhista</em></h1>
+        <p class="page-subtitle">ASO (NR-7) · EPI (NR-6) · treinamentos NR · termos versionados · documentos pessoais · LTCAT · alertas antes da multa do MTE</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">Exportar auditoria PDF</button>
+        <button class="btn-primary">+ Novo ASO em lote</button>
+      </div>
+    </div>
+
+    <!-- Score hero -->
+    <div class="score-hero">
+      <div class="score-ring"><div class="score-ring-value">78</div></div>
+      <div class="score-text">
+        <h2>Compliance score: <strong>78/100</strong></h2>
+        <p>342/367 ASOs em dia (93%) · 218/220 EPIs assinados · 8 treinamentos NR vencendo em 30d · 4 termos com versão nova pendente aceite · <strong>0 multas em fiscalização nos últimos 24 meses</strong>.</p>
+      </div>
+      <div class="score-action">
+        <button>Histórico</button>
+        <button class="primary">Cobrar pendências</button>
+      </div>
+    </div>
+
+    <!-- Banner alerta -->
+    <div class="alert-banner">
+      <strong>🚨 Pedro Souza · ASO admissional vencido há 12 dias</strong> — operação bloqueada pela NR-7. Agendar exame hoje (custo de fiscalização: até R$ 8k por colaborador).
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">ASOs em dia</div>
+        <div class="kpi-value">342<span style="font-size:12px; color:var(--txt2); font-weight:500; margin-left:4px;">/367</span></div>
+        <div class="kpi-trend">93% · meta 100% (NR-7)</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">ASOs vencendo 30d</div>
+        <div class="kpi-value">18</div>
+        <div class="kpi-trend">11 em 30d · 5 em 7d · 2 vencidos</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">EPIs assinados</div>
+        <div class="kpi-value">218<span style="font-size:12px; color:var(--txt2); font-weight:500; margin-left:4px;">/220</span></div>
+        <div class="kpi-trend">99% · 2 pendentes assinatura</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">Treinamentos NR vencendo</div>
+        <div class="kpi-value">8</div>
+        <div class="kpi-trend">3 NR-35 + 2 NR-10 + 3 antiassédio</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Termos · aceite pendente</div>
+        <div class="kpi-value">42<span style="font-size:12px; color:var(--txt2); font-weight:500; margin-left:4px;">/367</span></div>
+        <div class="kpi-trend">v3.2 política privacidade · 88% aceite</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="aso">🩺 ASOs (NR-7)</div>
+      <div class="tab" data-tab="epi">🦺 EPIs (NR-6)</div>
+      <div class="tab" data-tab="treinamentos">🎓 Treinamentos NR</div>
+      <div class="tab" data-tab="termos">📜 Termos & Políticas</div>
+      <div class="tab" data-tab="documentos">📄 Documentos pessoais</div>
+      <div class="tab" data-tab="ltcat">⚠ LTCAT & Hazard</div>
+    </div>
+
+    <!-- ASO -->
+    <div class="tab-pane active" id="tab-aso">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">ASOs · próximos 60 dias</div><div class="card-sub">Ordenado por urgência · NR-7 PCMSO</div></div>
+          <button class="btn-primary">+ Agendar exame</button>
+        </div>
+        <table>
+          <thead><tr><th>Colaborador</th><th>Tipo</th><th>Última realização</th><th>Validade</th><th>Status</th><th>Médico</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Pedro Souza</strong> · Atendente Cestão L1</td><td>admissional</td><td>—</td><td>—</td><td><span class="badge missing">faltando 12d</span></td><td>—</td><td><button class="btn-primary" style="padding:5px 10px; font-size:11px;">Agendar</button></td></tr>
+            <tr><td><strong>Ana Beatriz Souza</strong> · Cestão L1</td><td>periódico</td><td>22/05/2025</td><td>22/05/2026</td><td><span class="badge expired">vencido 4d</span></td><td>Dr. Silva CRM-BA 18934</td><td><button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Reagendar</button></td></tr>
+            <tr><td><strong>Carlos Henrique</strong> · ATP Atacado</td><td>periódico</td><td>06/06/2025</td><td>06/06/2026</td><td><span class="badge expiring">vence 19d</span></td><td>Dra. Paula CRM-BA 22011</td><td><button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Agendar</button></td></tr>
+            <tr><td><strong>Eduardo Mendes</strong> · CD Logística</td><td>periódico</td><td>10/06/2025</td><td>10/06/2026</td><td><span class="badge expiring">vence 23d</span></td><td>Dr. Silva CRM-BA 18934</td><td><button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Agendar</button></td></tr>
+            <tr><td><strong>Fernanda Lima</strong> · TI / BI</td><td>periódico</td><td>15/06/2025</td><td>15/06/2026</td><td><span class="badge expiring">vence 28d</span></td><td>Dra. Paula CRM-BA 22011</td><td><button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Agendar</button></td></tr>
+            <tr><td><strong>Helena Ribeiro</strong> · Inhambupe</td><td>retorno trabalho</td><td>—</td><td>—</td><td><span class="badge missing">após afast. 35d</span></td><td>—</td><td><button class="btn-primary" style="padding:5px 10px; font-size:11px;">Agendar</button></td></tr>
+            <tr><td><strong>Demais 342 colaboradores</strong></td><td>—</td><td>—</td><td>—</td><td><span class="badge ok">em dia</span></td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- EPI -->
+    <div class="tab-pane" id="tab-epi">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Entregas pendentes de assinatura (2)</div><div class="card-sub">NR-6 · responsável: almoxarifado</div></div></div>
+        <table>
+          <thead><tr><th>Colaborador</th><th>EPI</th><th>CA</th><th>Entregue em</th><th>Aguarda</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Lucas Barbosa</strong></td><td>Bota PVC cano longo branca</td><td>CA 38291</td><td>15/05/2026</td><td><span class="badge expiring">3 dias</span></td></tr>
+            <tr><td><strong>Pedro Souza</strong></td><td>Capacete tipo II + óculos</td><td>CA 42010 + 38112</td><td>16/05/2026</td><td><span class="badge expiring">2 dias</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Matriz EPI × Cargo (resumo)</div></div></div>
+        <table>
+          <thead><tr><th>Cargo</th><th class="num">Pessoas</th><th>EPIs obrigatórios</th><th class="num">% em dia</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Operador empilhadeira</strong></td><td class="num">8</td><td>Capacete · bota PVC · luva PVC · óculos · abafador</td><td class="num"><span class="badge ok">100%</span></td></tr>
+            <tr><td><strong>Repositor</strong></td><td class="num">92</td><td>Bota PVC · luva nitrílica · faixa lombar</td><td class="num"><span class="badge ok">98%</span></td></tr>
+            <tr><td><strong>Frente de loja / caixa</strong></td><td class="num">68</td><td>nenhum (área administrativa)</td><td class="num"><span class="badge ok">n/a</span></td></tr>
+            <tr><td><strong>Auxiliar de limpeza</strong></td><td class="num">12</td><td>Luva nitrílica · bota PVC · óculos · máscara</td><td class="num"><span class="badge expiring">91%</span></td></tr>
+            <tr><td><strong>Manutenção elétrica</strong></td><td class="num">4</td><td>Capacete classe B · bota dielétrica · luva isolante 1000V · óculos</td><td class="num"><span class="badge ok">100%</span></td></tr>
+            <tr><td><strong>Vigilante</strong></td><td class="num">7</td><td>Colete refletivo · bota tática</td><td class="num"><span class="badge ok">100%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Treinamentos -->
+    <div class="tab-pane" id="tab-treinamentos">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Heatmap · treinamentos NR por filial</div><div class="card-sub">Verde = 100% em dia · amber = ≤ 30d vencer · vermelho = vencido · cinza = n/a</div></div></div>
+        <div class="heatmap">
+          <div></div>
+          <div class="heatmap-head">NR-1</div>
+          <div class="heatmap-head">NR-6 EPI</div>
+          <div class="heatmap-head">NR-10</div>
+          <div class="heatmap-head">NR-11</div>
+          <div class="heatmap-head">NR-23 Brigada</div>
+          <div class="heatmap-head">NR-35 Alt.</div>
+          <div class="heatmap-head">Antiassédio</div>
+          <div class="heatmap-head">LGPD</div>
+
+          <div class="heatmap-row-label">Cestão Loja 1 (91)</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell ok">98%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell expiring">88%</div>
+          <div class="heatmap-cell ok">95%</div>
+
+          <div class="heatmap-row-label">ATP - Varejo (78)</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">94%</div>
+          <div class="heatmap-cell ok">92%</div>
+
+          <div class="heatmap-row-label">CD Logística (37)</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell expired">75% ❗</div>
+          <div class="heatmap-cell expiring">87%</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell expiring">92%</div>
+          <div class="heatmap-cell ok">96%</div>
+          <div class="heatmap-cell ok">94%</div>
+
+          <div class="heatmap-row-label">ATP - Atacado (42)</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell ok">95%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">93%</div>
+          <div class="heatmap-cell ok">91%</div>
+
+          <div class="heatmap-row-label">Administrativo (24)</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell ok">100%</div>
+
+          <div class="heatmap-row-label">TI / BI (9)</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell na">n/a</div>
+          <div class="heatmap-cell ok">100%</div>
+          <div class="heatmap-cell ok">100%</div>
+        </div>
+        <p style="font-size:11.5px; color:var(--txt2); margin-top:14px;">⚠ CD Logística: NR-10 (eletricidade) com 25% vencido · agendar reciclagem urgente · 3 eletricistas afetados.</p>
+      </div>
+    </div>
+
+    <!-- Termos -->
+    <div class="tab-pane" id="tab-termos">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Termos & políticas vigentes</div><div class="card-sub">% de aceite no quadro atual · força aceite em nova versão</div></div></div>
+        <div class="term-row">
+          <div class="term-info"><strong>Política de Privacidade · v3.2</strong><div class="meta">Vigente desde 15/04/2026 · obrigatório anual</div></div>
+          <div class="term-pct warn">88%</div>
+          <div style="font-size:11px; color:var(--txt2);">325/367 aceites</div>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Forçar pendentes</button>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Ver PDF</button>
+        </div>
+        <div class="term-row">
+          <div class="term-info"><strong>Código de Ética · v2026.04</strong><div class="meta">Vigente desde 01/04/2026 · obrigatório anual</div></div>
+          <div class="term-pct ok">94%</div>
+          <div style="font-size:11px; color:var(--txt2);">344/367 aceites</div>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Forçar pendentes</button>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Ver PDF</button>
+        </div>
+        <div class="term-row">
+          <div class="term-info"><strong>Política Antiassédio · v2026.04 (Lei 14.457)</strong><div class="meta">Vigente desde 22/04/2026 · obrigatório anual</div></div>
+          <div class="term-pct warn">82%</div>
+          <div style="font-size:11px; color:var(--txt2);">301/367 aceites</div>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Forçar pendentes</button>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Ver PDF</button>
+        </div>
+        <div class="term-row">
+          <div class="term-info"><strong>Termo de Uso Equipamento Empresa · v2.1</strong><div class="meta">Obrigatório p/ quem usa notebook empresa · 67 colaboradores</div></div>
+          <div class="term-pct ok">100%</div>
+          <div style="font-size:11px; color:var(--txt2);">67/67 aceites</div>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">—</button>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Ver PDF</button>
+        </div>
+        <div class="term-row">
+          <div class="term-info"><strong>Acordo de Confidencialidade (NDA) · v1.4</strong><div class="meta">Áreas sensíveis: TI, Financeiro, Diretoria · 42 colaboradores</div></div>
+          <div class="term-pct ok">98%</div>
+          <div style="font-size:11px; color:var(--txt2);">41/42 aceites</div>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Forçar 1</button>
+          <button class="btn-secondary" style="padding:6px 11px; font-size:11px;">Ver PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documentos -->
+    <div class="tab-pane" id="tab-documentos">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Documentos vencendo (próximos 90d)</div></div></div>
+        <table>
+          <thead><tr><th>Colaborador</th><th>Documento</th><th>Número</th><th>Vencimento</th><th>Status</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Eduardo Mendes</strong></td><td>CNH categoria E</td><td>03847291011</td><td>28/06/2026</td><td><span class="badge expiring">vence 41d</span></td><td><button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Cobrar</button></td></tr>
+            <tr><td><strong>João Carvalho</strong></td><td>CNH categoria B</td><td>04102837492</td><td>15/07/2026</td><td><span class="badge expiring">vence 58d</span></td><td><button class="btn-secondary" style="padding:5px 10px; font-size:11px;">Cobrar</button></td></tr>
+            <tr><td><strong>Operador Empilhadeira X</strong></td><td>Cartão CNH-AT (NR-11)</td><td>—</td><td>02/06/2026</td><td><span class="badge expiring">vence 15d</span></td><td><button class="btn-primary" style="padding:5px 10px; font-size:11px;">Renovar</button></td></tr>
+            <tr><td><strong>Médico ocupacional</strong></td><td>Registro CRM-BA</td><td>18934</td><td>31/12/2026</td><td><span class="badge ok">227d</span></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- LTCAT -->
+    <div class="tab-pane" id="tab-ltcat">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">LTCAT vigente</div></div></div>
+        <table>
+          <thead><tr><th>Filial</th><th>Eng. responsável</th><th>CREA</th><th>Emissão</th><th>Validade</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>CD Logística</td><td>Eng. Roberto Almeida</td><td>BA-040912</td><td>14/03/2024</td><td>14/03/2026</td><td><span class="badge expired">VENCIDO ❗</span></td></tr>
+            <tr><td>Cestão Loja 1</td><td>Eng. Roberto Almeida</td><td>BA-040912</td><td>22/06/2024</td><td>22/06/2026</td><td><span class="badge expiring">36d</span></td></tr>
+            <tr><td>ATP Atacado</td><td>Eng. Maria Lopes</td><td>BA-038112</td><td>10/09/2024</td><td>10/09/2026</td><td><span class="badge ok">115d</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Cargos com periculosidade/insalubridade</div></div></div>
+        <table>
+          <thead><tr><th>Cargo</th><th>Pessoas</th><th>Tipo</th><th>Grau</th><th>Base</th><th>EPI neutraliza?</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Eletricista manutenção</strong></td><td>4</td><td>Periculosidade</td><td>30%</td><td>Energia elétrica (NR-16)</td><td><span class="badge ok">Sim (laudo)</span></td></tr>
+            <tr><td><strong>Vigilante armado</strong></td><td>3</td><td>Periculosidade</td><td>30%</td><td>Atividades de segurança</td><td><span class="badge expired">Não aplica</span></td></tr>
+            <tr><td><strong>Aux. limpeza</strong></td><td>12</td><td>Insalubridade</td><td>Mínimo (10%)</td><td>Agentes biológicos (banheiros)</td><td><span class="badge ok">Sim (laudo · neutraliza)</span></td></tr>
+            <tr><td><strong>Operador empilhadeira</strong></td><td>8</td><td>Insalubridade</td><td>Médio (20%)</td><td>Ruído &gt; 85dB CD</td><td><span class="badge expiring">Parcial · EPI reduz adicional</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

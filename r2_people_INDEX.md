@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.48 · 18 de maio de 2026
+**Versão**: 2.49 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1012,6 +1012,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.45 | Aniversariantes destacados na home + C1/C3 v1.1 reposicionado + landing hero refeito |
 | 2.46 | Spec M18 Compliance & Treinamentos + Spec M19 Benefícios & Dependentes + Schema SQL v15 |
 | 2.47 | Página HTML Analytics M17 + Spec M20 Inbox Líder + Hub 9 cockpits |
-| **2.48** | **Página HTML `r2_people_inbox_lider.html` materializa M20 (persona João Carvalho Líder Financeiro 11 subordinados) · layout 3-painéis (main + side equipe) · 4 KPIs do dia (8 aprovações urgent, 4 1:1s ok, 2 ausências warn, 3 alertas urgent) · 3 abas (Inbox priorizado bloqueador→urgente→normal + Calendar mensal 5 tipos eventos coloridos hoje destacado + Atividade feed 8 últimas ações) · 8 inbox items demo c/ inline actions aprovar/rejeitar + auto-aprovação badge verde para elegíveis (< R$100 reembolso, férias pré-planejadas, atestado ciência) · painel equipe 11 cards c/ avatar+status+score+pills (champion verde, sem 1:1 amber, ASO atrasado red) · mock interativo (botões removem item)** |
+| 2.48 | Página HTML Inbox do Líder (M20) · persona João Carvalho 11 subordinados |
+| **2.49** | **Página HTML `r2_people_compliance.html` materializa M18 (persona Patrícia Mello Coord RH · score 78/100 hero c/ ring SVG · 5 KPIs ASOs/EPIs/treinamentos/termos · 6 abas: ASOs 60d c/ Pedro Souza bloqueador + EPIs 2 assinaturas pendentes + matriz cargo + Heatmap treinamentos NR por filial 6 filiais × 8 normas c/ CD Logística NR-10 75% red + Termos 5 políticas c/ % aceite + Documentos vencendo CNH + LTCAT 3 filiais c/ 1 VENCIDO + Hazard 4 cargos c/ EPI neutraliza) · banner alerta vermelho ASO admissional vencido 12d) + Página HTML `r2_people_beneficios.html` materializa M19 (persona Fernanda Lima Analista Pleno · hero pacote total navy→purple gradient c/ R$ 7.930 total empresa · 5 abas: Meus 6 benefícios ativos + Disponíveis 7 c/ "Aderir" CTA orange + Dependentes 3 cards c/ alerta IR Clara 21 anos + Reembolsos 5 c/ status badges + Convênios parceiros 6 cards c/ rating estrelas + clicks)** |
 
 ---
