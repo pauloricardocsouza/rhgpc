@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · API Console · Keys & Usage</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+/* Sidebar · padrão Cofre */
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+/* Topbar · padrão Cofre */
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #1F4FA0, #6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+/* Main · padrão Cofre */
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:18px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:7px;}
+.btn-primary:hover{background:var(--navy2);}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary:hover{background:var(--gray1);}
+.btn-danger{background:#fff; color:var(--danger); border:1px solid var(--danger2); padding:6px 11px; border-radius:7px; font-size:11.5px; cursor:pointer; font-family:inherit;}
+.btn-danger:hover{background:var(--danger2);}
+
+/* KPI grid */
+.kpi-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; border-radius:var(--radius); padding:13px 14px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.kpi::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.kpi.green::before{background:var(--green);}
+.kpi.amber::before{background:var(--amber);}
+.kpi.red::before{background:var(--danger);}
+.kpi.purple::before{background:var(--purple);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:500;}
+.kpi-value{font-size:22px; font-weight:600; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:9px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+tr:hover td{background:var(--off);}
+td code, td .keyprefix{font-family:'JetBrains Mono', monospace; font-size:11px; background:var(--gray1); padding:2px 7px; border-radius:5px;}
+
+.badge{display:inline-flex; align-items:center; gap:4px; padding:3px 8px; border-radius:14px; font-size:10.5px; font-weight:500;}
+.badge.ok{background:var(--green2); color:var(--green);}
+.badge.warn{background:var(--amber2); color:var(--amber);}
+.badge.crit{background:var(--danger2); color:var(--danger);}
+.badge.live{background:var(--green2); color:var(--green); font-family:'JetBrains Mono', monospace; font-weight:700;}
+.badge.test{background:var(--amber2); color:var(--amber); font-family:'JetBrains Mono', monospace; font-weight:700;}
+.badge.revoked{background:var(--danger2); color:var(--danger);}
+.badge.scope{background:var(--blue2); color:var(--blue); font-family:'JetBrains Mono', monospace; font-size:10px;}
+.badge.expired{background:var(--gray1); color:var(--txt2);}
+
+/* Quota progress */
+.quota-bar{height:8px; background:var(--gray1); border-radius:4px; overflow:hidden; margin-top:6px;}
+.quota-bar > div{height:100%; border-radius:4px;}
+.quota-bar > div.ok{background:var(--green);}
+.quota-bar > div.warn{background:var(--amber);}
+.quota-bar > div.crit{background:var(--danger);}
+
+/* API key newly created card */
+.new-key-card{background:linear-gradient(135deg, var(--blue2), #fff); border:1px solid var(--blue); border-radius:12px; padding:18px; margin-bottom:16px;}
+.new-key-card h3{font-size:14px; font-weight:600; margin-bottom:6px;}
+.new-key-card p{font-size:12px; color:var(--txt2); margin-bottom:12px;}
+.key-display{background:#fff; border:1px solid var(--gray2); border-radius:8px; padding:12px 14px; display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono', monospace; font-size:13px; word-break:break-all;}
+.key-display .copy{background:var(--navy); color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:11px; font-weight:600;}
+.warning-box{background:var(--amber2); border-left:3px solid var(--amber); padding:10px 14px; border-radius:6px; margin-top:12px; font-size:11.5px; color:var(--amber);}
+
+/* Code blocks */
+pre{background:#0F1B2E; color:#A8B5C8; padding:14px 16px; border-radius:8px; overflow-x:auto; font-family:'JetBrains Mono', monospace; font-size:11.5px; line-height:1.6;}
+pre .k{color:#F58634;}      /* keyword */
+pre .s{color:#1E7B4B;}      /* string */
+pre .c{color:#5A7090;}      /* comment */
+pre .v{color:#1F4FA0;}      /* variable */
+
+/* Usage chart placeholder */
+.usage-chart{background:var(--off); border-radius:8px; padding:14px; margin-bottom:14px;}
+.chart-bars{display:flex; align-items:flex-end; gap:4px; height:120px; margin-top:14px;}
+.chart-bar{flex:1; background:var(--blue); border-radius:3px 3px 0 0; min-height:6px; position:relative;}
+.chart-bar.peak{background:var(--orange);}
+.chart-bar.error{background:var(--danger);}
+.chart-x{display:flex; justify-content:space-between; margin-top:8px; font-size:10px; color:var(--txt3); font-family:'JetBrains Mono', monospace;}
+
+/* SDK card */
+.sdk-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;}
+.sdk-card{background:#fff; border:1px solid var(--gray1); border-radius:10px; padding:14px;}
+.sdk-card h4{display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; margin-bottom:6px;}
+.sdk-card h4 .v{font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--txt2); font-weight:600;}
+.sdk-card .install{background:var(--gray1); padding:8px 12px; border-radius:6px; font-family:'JetBrains Mono', monospace; font-size:11px; margin-bottom:8px;}
+.sdk-card .links{display:flex; gap:10px; font-size:11px;}
+.sdk-card .links a{color:var(--navy); text-decoration:none;}
+.sdk-card .links a:hover{color:var(--orange);}
+
+@media (max-width:980px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .sdk-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Admin · integrações</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_api_console.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M14 4l-4 16"/></svg>API Console</a>
+      <a class="nav-item" href="r2_people_notificacoes_admin.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>Notif. & Webhooks</a>
+      <a class="nav-item" href="r2_people_billing.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/></svg>Billing & Plano</a>
+      <a class="nav-item" href="r2_people_admin_hub.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Hub Admin</a>
+      <a class="nav-item" href="r2_people_configuracoes.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>Configurações</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Admin</span><span class="sep">›</span><span>Integrações</span><span class="sep">›</span><span class="crumb">API Console</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">DI</div>
+      <div class="user-info"><span class="user-name">Diego Ito</span><span class="user-role">Dev Integrações · GPC</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Administração <span class="sep">·</span> Integrações <span class="sep">·</span> Spec D9</div>
+        <h1 class="page-title">API <em>Console</em></h1>
+        <p class="page-subtitle">Gerencie API keys, monitore consumo, consulte SDKs e documentação. REST + GraphQL · v1 estável.</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">Abrir docs.r2-people.com</button>
+        <button class="btn-primary">+ Nova API key</button>
+      </div>
+    </div>
+
+    <!-- New key created (mostrado uma vez) -->
+    <div class="new-key-card">
+      <h3>🔑 Nova chave criada · "ERP Senior · prod"</h3>
+      <p>Copie agora — esta é a única vez que mostraremos a chave em texto claro. Após sair desta tela, só os primeiros 12 caracteres ficam visíveis.</p>
+      <div class="key-display">
+        <span style="flex:1; color:var(--navy);">r2_live_5b8a3f9c2b1e7d4a8f6c3b9e2a1d5f7c8e4b9a2d6f3c7e1b5a9d4f8c2e6b</span>
+        <button class="copy">📋 Copiar</button>
+      </div>
+      <div class="warning-box">⚠ Nunca commite essa key em repositório git. Use variável de ambiente: <code style="font-family:'JetBrains Mono', monospace;">R2_API_KEY</code></div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">API calls hoje</div>
+        <div class="kpi-value">12.4k</div>
+        <div class="kpi-trend">+8% vs ontem · meta diária ~ 3.3k</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">Quota mensal</div>
+        <div class="kpi-value">68%</div>
+        <div class="kpi-trend">68.412 / 100.000 · plano Pro</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">P95 latência</div>
+        <div class="kpi-value">142ms</div>
+        <div class="kpi-trend">SLO &lt; 500ms · margem 72%</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Error rate 24h</div>
+        <div class="kpi-value">0.02%</div>
+        <div class="kpi-trend">3 errors em 12.4k · 2 401, 1 500</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Keys ativas</div>
+        <div class="kpi-value">5</div>
+        <div class="kpi-trend">4 live + 1 test</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="keys">API Keys</div>
+      <div class="tab" data-tab="usage">Uso & Métricas</div>
+      <div class="tab" data-tab="endpoints">Endpoints</div>
+      <div class="tab" data-tab="sdks">SDKs & Quickstart</div>
+      <div class="tab" data-tab="graphql">GraphQL Explorer</div>
+      <div class="tab" data-tab="webhooks">Webhooks</div>
+    </div>
+
+    <!-- API Keys -->
+    <div class="tab-pane active" id="tab-keys">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">API Keys do tenant (5)</div>
+            <div class="card-sub">Cada key tem scopes, allowed_ips e expira opcional · bcrypt cost 12</div>
+          </div>
+          <button class="btn-primary">+ Nova key</button>
+        </div>
+        <table>
+          <thead><tr><th>Nome</th><th>Prefix</th><th>Modo</th><th>Scopes</th><th>IPs</th><th>Último uso</th><th>Criada</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>ERP Senior · prod</strong><br><span style="color:var(--txt2); font-size:11px;">Diego Ito · há 5min</span></td>
+              <td><span class="keyprefix">r2_live_5b8a</span></td>
+              <td><span class="badge live">live</span></td>
+              <td><span class="badge scope">write:movements</span> <span class="badge scope">read:employees</span></td>
+              <td>2 IPs</td>
+              <td>2min atrás</td>
+              <td>18/05/2026</td>
+              <td><span class="badge ok">ativa</span></td>
+              <td><button class="btn-danger">Revogar</button></td>
+            </tr>
+            <tr>
+              <td><strong>BI Looker</strong></td>
+              <td><span class="keyprefix">r2_live_8c2e</span></td>
+              <td><span class="badge live">live</span></td>
+              <td><span class="badge scope">read:*</span></td>
+              <td>—</td>
+              <td>14min atrás</td>
+              <td>02/04/2026</td>
+              <td><span class="badge ok">ativa</span></td>
+              <td><button class="btn-danger">Revogar</button></td>
+            </tr>
+            <tr>
+              <td><strong>Worker OCR Tesseract</strong></td>
+              <td><span class="keyprefix">r2_live_d4f1</span></td>
+              <td><span class="badge live">live</span></td>
+              <td><span class="badge scope">write:medical-certificates</span></td>
+              <td>1 IP</td>
+              <td>1h atrás</td>
+              <td>15/04/2026</td>
+              <td><span class="badge ok">ativa</span></td>
+              <td><button class="btn-danger">Revogar</button></td>
+            </tr>
+            <tr>
+              <td><strong>AD Sync · Azure</strong></td>
+              <td><span class="keyprefix">r2_live_a3e8</span></td>
+              <td><span class="badge live">live</span></td>
+              <td><span class="badge scope">write:users</span> <span class="badge scope">read:employees</span></td>
+              <td>3 IPs</td>
+              <td>6h atrás</td>
+              <td>22/03/2026</td>
+              <td><span class="badge ok">ativa</span></td>
+              <td><button class="btn-danger">Revogar</button></td>
+            </tr>
+            <tr>
+              <td><strong>Postman testes</strong></td>
+              <td><span class="keyprefix">r2_test_f9c3</span></td>
+              <td><span class="badge test">test</span></td>
+              <td><span class="badge scope">read:*</span> <span class="badge scope">write:*</span></td>
+              <td>—</td>
+              <td>3 dias atrás</td>
+              <td>10/05/2026</td>
+              <td><span class="badge ok">ativa</span></td>
+              <td><button class="btn-danger">Revogar</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:11.5px; color:var(--txt2); margin-top:12px;">Histórico inclui 8 keys revogadas (auditável via <a href="r2_people_auditoria.html" style="color:var(--orange);">Auditoria & Logs</a>).</p>
+      </div>
+    </div>
+
+    <!-- Usage -->
+    <div class="tab-pane" id="tab-usage">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Uso por dia · últimos 14 dias</div></div></div>
+        <div class="usage-chart">
+          <div class="chart-bars">
+            <div class="chart-bar" style="height:45%;"></div>
+            <div class="chart-bar" style="height:52%;"></div>
+            <div class="chart-bar" style="height:48%;"></div>
+            <div class="chart-bar" style="height:62%;"></div>
+            <div class="chart-bar peak" style="height:88%;"></div>
+            <div class="chart-bar" style="height:71%;"></div>
+            <div class="chart-bar" style="height:65%;"></div>
+            <div class="chart-bar" style="height:58%;"></div>
+            <div class="chart-bar" style="height:54%;"></div>
+            <div class="chart-bar" style="height:67%;"></div>
+            <div class="chart-bar peak" style="height:92%;"></div>
+            <div class="chart-bar" style="height:78%;"></div>
+            <div class="chart-bar" style="height:82%;"></div>
+            <div class="chart-bar" style="height:74%;"></div>
+          </div>
+          <div class="chart-x"><span>04/05</span><span>11/05</span><span>14/05</span><span>18/05</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Quotas em uso · plano Pro</div></div></div>
+        <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:18px;">
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><strong>API calls / mês</strong><span style="font-family:'JetBrains Mono', monospace;">68.412 / 100.000</span></div>
+            <div class="quota-bar"><div class="warn" style="width:68%;"></div></div>
+            <p style="font-size:11px; color:var(--txt2); margin-top:4px;">Reset em 14/06 · ritmo OK</p>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><strong>API keys ativas</strong><span style="font-family:'JetBrains Mono', monospace;">5 / 50</span></div>
+            <div class="quota-bar"><div class="ok" style="width:10%;"></div></div>
+            <p style="font-size:11px; color:var(--txt2); margin-top:4px;">+45 disponíveis</p>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><strong>Webhooks outbound</strong><span style="font-family:'JetBrains Mono', monospace;">4 / 10</span></div>
+            <div class="quota-bar"><div class="ok" style="width:40%;"></div></div>
+            <p style="font-size:11px; color:var(--txt2); margin-top:4px;">+6 webhooks possíveis</p>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px;"><strong>GraphQL subscriptions</strong><span style="font-family:'JetBrains Mono', monospace;">3 / 25</span></div>
+            <div class="quota-bar"><div class="ok" style="width:12%;"></div></div>
+            <p style="font-size:11px; color:var(--txt2); margin-top:4px;">Max 5 por user</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Top endpoints (7d)</div></div></div>
+        <table>
+          <thead><tr><th>Endpoint</th><th>Requests</th><th>P50</th><th>P95</th><th>Erros</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET /v1/employees</code></td><td>34.812</td><td>48ms</td><td>112ms</td><td><span class="badge ok">0.01%</span></td></tr>
+            <tr><td><code>POST /v1/movements</code></td><td>1.842</td><td>98ms</td><td>248ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td><code>POST /v1/medical-certificates</code></td><td>312</td><td>156ms</td><td>422ms</td><td><span class="badge ok">0.3%</span></td></tr>
+            <tr><td><code>GET /v1/payroll-runs</code></td><td>62</td><td>78ms</td><td>184ms</td><td><span class="badge ok">0.0%</span></td></tr>
+            <tr><td><code>POST /graphql</code></td><td>892</td><td>122ms</td><td>312ms</td><td><span class="badge warn">1.2%</span></td></tr>
+            <tr><td><code>GET /v1/notifications</code></td><td>14.218</td><td>32ms</td><td>88ms</td><td><span class="badge ok">0.0%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Endpoints -->
+    <div class="tab-pane" id="tab-endpoints">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">22 resources REST disponíveis · v1</div></div></div>
+        <table>
+          <thead><tr><th>Resource</th><th>Verbos</th><th>Scope</th></tr></thead>
+          <tbody>
+            <tr><td><code>/v1/employees</code></td><td>GET, POST, PATCH, DELETE</td><td><span class="badge scope">*:employees</span></td></tr>
+            <tr><td><code>/v1/movements</code></td><td>GET, POST</td><td><span class="badge scope">*:movements</span></td></tr>
+            <tr><td><code>/v1/medical-certificates</code></td><td>GET, POST</td><td><span class="badge scope">*:medical-certificates</span></td></tr>
+            <tr><td><code>/v1/vacations</code></td><td>GET, POST, PATCH</td><td><span class="badge scope">*:vacations</span></td></tr>
+            <tr><td><code>/v1/payroll-runs</code></td><td>GET</td><td><span class="badge scope">read:payroll-runs</span></td></tr>
+            <tr><td><code>/v1/evaluations</code></td><td>GET, POST, PATCH</td><td><span class="badge scope">*:evaluations</span></td></tr>
+            <tr><td><code>/v1/okrs</code></td><td>GET, POST, PATCH</td><td><span class="badge scope">*:okrs</span></td></tr>
+            <tr><td><code>/v1/oneonones</code></td><td>GET, POST, PATCH</td><td><span class="badge scope">*:oneonones</span></td></tr>
+            <tr><td><code>/v1/notifications</code></td><td>GET</td><td><span class="badge scope">read:notifications</span></td></tr>
+            <tr><td><code>/v1/users</code></td><td>GET, POST (invite)</td><td><span class="badge scope">*:users</span></td></tr>
+            <tr><td><code>/v1/tenants/current</code></td><td>GET</td><td><span class="badge scope">read:tenant</span></td></tr>
+            <tr><td><code>/v1/webhooks</code></td><td>GET, POST, PATCH, DELETE</td><td><span class="badge scope">*:webhooks</span></td></tr>
+            <tr><td><code>/v1/api-keys</code></td><td>GET, POST, DELETE</td><td><span class="badge scope">*:api-keys</span></td></tr>
+            <tr><td><code>/v1/audit-log</code></td><td>GET</td><td><span class="badge scope">read:audit (DPO)</span></td></tr>
+            <tr><td><code>/v1/dsar</code></td><td>POST (público), GET (DPO)</td><td><span class="badge scope">read:dsar (DPO)</span></td></tr>
+            <tr><td><code>/v1/quotas</code></td><td>GET</td><td><span class="badge scope">read:quotas</span></td></tr>
+            <tr><td><code>/v1/health</code></td><td>GET</td><td>público</td></tr>
+            <tr><td colspan="3" style="text-align:center; color:var(--txt2); font-size:11.5px;">+ 5 resources adicionais · <a href="#" style="color:var(--orange);">ver tudo em docs.r2-people.com</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SDKs -->
+    <div class="tab-pane" id="tab-sdks">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">SDKs oficiais</div><div class="card-sub">types completos · auto-retry + idempotency · versionados em sync com a API</div></div></div>
+        <div class="sdk-grid">
+          <div class="sdk-card">
+            <h4>📦 TypeScript / Node.js <span class="v">v1.4.2</span></h4>
+            <div class="install">npm install @r2-people/sdk</div>
+            <div class="links">
+              <a href="#">📖 Docs</a>
+              <a href="#">🔧 GitHub</a>
+              <a href="#">📝 Changelog</a>
+            </div>
+          </div>
+          <div class="sdk-card">
+            <h4>🐍 Python <span class="v">v1.4.0</span></h4>
+            <div class="install">pip install r2-people</div>
+            <div class="links">
+              <a href="#">📖 Docs</a>
+              <a href="#">🔧 GitHub</a>
+              <a href="#">📝 Changelog</a>
+            </div>
+          </div>
+          <div class="sdk-card">
+            <h4>🐘 PHP <span class="v" style="color:var(--amber);">em beta</span></h4>
+            <div class="install">composer require r2-people/sdk-php</div>
+            <div class="links">
+              <a href="#">📖 Docs</a>
+              <a href="#">🔧 GitHub</a>
+            </div>
+          </div>
+          <div class="sdk-card">
+            <h4>🐹 Go <span class="v" style="color:var(--txt3);">em roadmap (M+6)</span></h4>
+            <div class="install">go get github.com/r2-people/sdk-go</div>
+            <div class="links">
+              <a href="#" style="color:var(--txt3);">⏳ planejado</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Quickstart · TypeScript</div></div></div>
+<pre><span class="c">// Instale o SDK</span>
+<span class="k">npm</span> install @r2-people/sdk
+
+<span class="c">// Configure</span>
+<span class="k">import</span> { R2People } <span class="k">from</span> <span class="s">'@r2-people/sdk'</span>;
+<span class="k">const</span> client = <span class="k">new</span> R2People({ apiKey: process.env.<span class="v">R2_API_KEY</span> });
+
+<span class="c">// Liste employees</span>
+<span class="k">const</span> employees = <span class="k">await</span> client.employees.list({
+  status: <span class="s">'active'</span>,
+  limit: <span class="s">50</span>
+});
+
+<span class="c">// Crie movement com idempotência</span>
+<span class="k">const</span> movement = <span class="k">await</span> client.movements.create({
+  employeeId: <span class="s">'abc-...'</span>,
+  type: <span class="s">'PROMOTION'</span>,
+  effectiveDate: <span class="s">'2026-06-01'</span>
+}, { idempotencyKey: crypto.randomUUID() });</pre>
+      </div>
+    </div>
+
+    <!-- GraphQL -->
+    <div class="tab-pane" id="tab-graphql">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">GraphQL · queries em lote</div><div class="card-sub">depth max 8 · cost-analysis 1000 · subscriptions max 5/user</div></div>
+          <button class="btn-primary">Abrir Apollo Sandbox</button>
+        </div>
+<pre><span class="c"># Exemplo: minha equipe com salários (se permissão view_salary)</span>
+<span class="k">query</span> MyTeam($managerId: ID!) {
+  employee(id: $managerId) {
+    fullName
+    directReports {
+      fullName
+      position { title }
+      currentSalary(viewerHasPermission: <span class="s">true</span>)
+      lastEvaluation { score date }
+    }
+  }
+}</pre>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Subscriptions ativas (3 / 5 limite)</div></div></div>
+        <table>
+          <thead><tr><th>Subscription</th><th>Cliente</th><th>Conectado há</th><th>Eventos recebidos</th></tr></thead>
+          <tbody>
+            <tr><td><code>notificationsForUser</code></td><td>App mobile · iOS</td><td>2h 14min</td><td>28</td></tr>
+            <tr><td><code>movementsForTenant</code></td><td>Dashboard BI</td><td>5h 02min</td><td>4</td></tr>
+            <tr><td><code>notificationsForUser</code></td><td>Web · Patrícia M</td><td>14min</td><td>3</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Webhooks shortcut -->
+    <div class="tab-pane" id="tab-webhooks">
+      <div class="card">
+        <div class="card-head">
+          <div><div class="card-title">Webhooks</div><div class="card-sub">Configuração e logs ficam na página dedicada</div></div>
+          <a href="r2_people_notificacoes_admin.html" class="btn-primary">Abrir Notif. & Webhooks →</a>
+        </div>
+        <p style="font-size:13px; color:var(--txt2);">Use a página <strong>Notif. & Webhooks</strong> para gerenciar outbound (M12 · R2 → seu sistema) e inbound (M14 · seu sistema → R2), com signing HMAC, retry exponencial e dedupe automático.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

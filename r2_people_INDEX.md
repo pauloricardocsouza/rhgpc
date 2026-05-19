@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.37 · 18 de maio de 2026
+**Versão**: 2.38 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1001,6 +1001,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.34 | Spec D8 Multi-tenant Isolation Patterns (5 padrões policy + framework pgtap + attack matrix 20 ataques + rls_denial_log + auditoria checklist + storage/realtime/edge isolation + 25+ testes meta · fecha D-series com D2-D8) |
 | 2.35 | Spec M14 Webhooks Inbound (par com M12 outbound) · endpoint HMAC + 9 sistemas suportados (Senior/Totvs/Sankhya/AD/Dimep/etc) + 4 handlers padrão (payroll/AD/attendance) + dedupe via inbound_event_dedupe + rate-limit 3 camadas + RLS signing_secret protegido + 25+ testes meta |
 | 2.36 | Schema SQL v13 (Isolation + Inbound) materializa D8+M14 em SQL executável · rls_denial_log c/ auto-classify + 4 tabelas inbound + 4 handlers RPC + HMAC validator + create_endpoint c/ secret gen + rotate_secret + cleanup TTL · seeds 11 handlers mapeados · RLS c/ signing_secret REVOKE authenticated |
-| **2.37** | **Spec D9 API Pública (REST v1 + GraphQL + SDKs TS/Python/PHP/Go) · 22 resources REST + 3 métodos auth (JWT/ApiKey/OAuth) + idempotency-key + rate-limit 3 camadas por plano + RFC 7807 errors + cursor pagination + versioning policy 24m + 3 tabelas (api_keys/idempotency/usage_log) + 30+ testes meta** |
+| 2.37 | Spec D9 API Pública (REST v1 + GraphQL + SDKs TS/Python/PHP/Go) · 22 resources REST + 3 métodos auth (JWT/ApiKey/OAuth) + idempotency-key + rate-limit 3 camadas por plano + RFC 7807 errors + cursor pagination + versioning policy 24m + 3 tabelas (api_keys/idempotency/usage_log) + 30+ testes meta |
+| **2.38** | **Página HTML API Console · materializa spec D9 (5 KPIs uso + 6 abas: API Keys table + Usage chart 14d + Endpoints catalog + SDKs quickstart TS/Python/PHP/Go + GraphQL Explorer link Apollo Sandbox + Webhooks shortcut) · persona Diego Ito Dev Integrações · already no padrão Cofre** |
 
 ---
