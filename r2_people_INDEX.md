@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.49 · 18 de maio de 2026
+**Versão**: 2.50 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1013,6 +1013,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.46 | Spec M18 Compliance & Treinamentos + Spec M19 Benefícios & Dependentes + Schema SQL v15 |
 | 2.47 | Página HTML Analytics M17 + Spec M20 Inbox Líder + Hub 9 cockpits |
 | 2.48 | Página HTML Inbox do Líder (M20) · persona João Carvalho 11 subordinados |
-| **2.49** | **Página HTML `r2_people_compliance.html` materializa M18 (persona Patrícia Mello Coord RH · score 78/100 hero c/ ring SVG · 5 KPIs ASOs/EPIs/treinamentos/termos · 6 abas: ASOs 60d c/ Pedro Souza bloqueador + EPIs 2 assinaturas pendentes + matriz cargo + Heatmap treinamentos NR por filial 6 filiais × 8 normas c/ CD Logística NR-10 75% red + Termos 5 políticas c/ % aceite + Documentos vencendo CNH + LTCAT 3 filiais c/ 1 VENCIDO + Hazard 4 cargos c/ EPI neutraliza) · banner alerta vermelho ASO admissional vencido 12d) + Página HTML `r2_people_beneficios.html` materializa M19 (persona Fernanda Lima Analista Pleno · hero pacote total navy→purple gradient c/ R$ 7.930 total empresa · 5 abas: Meus 6 benefícios ativos + Disponíveis 7 c/ "Aderir" CTA orange + Dependentes 3 cards c/ alerta IR Clara 21 anos + Reembolsos 5 c/ status badges + Convênios parceiros 6 cards c/ rating estrelas + clicks)** |
+| 2.49 | Páginas HTML Compliance (M18) + Benefícios (M19) materializam specs c/ personas dedicadas |
+| **2.50** | **Relatório consolidado bloco pós-reposicionamento · `docs/sessao_autonoma_2026_05_18_bloco_pos_reposicionamento.md` documenta 5 commits + 3 specs (M18/M19/M20) + Schema SQL v15 + 4 páginas HTML (Analytics/Inbox Líder/Compliance/Benefícios) + 3 personas novas (Renato Pinto Diretor + João Carvalho Líder + Fernanda Lima Colaboradora) · 11 perspectivas distintas no sistema · 25 specs totais documentadas · 6 schemas SQL · 9 cockpits operacionais · roadmap próximas opções (M21 varejo GPC, D10 mobile, Schema v16, dependentes wizard, aniversariantes, C4 partner program) · 6 direções abertas pra discussão (doc Domínio, pricing benefícios, CCT BA, matriz EPI, eNPS real, auditoria visual)** |
 
 ---
