@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.40 · 18 de maio de 2026
+**Versão**: 2.41 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1004,6 +1004,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.37 | Spec D9 API Pública (REST v1 + GraphQL + SDKs TS/Python/PHP/Go) · 22 resources REST + 3 métodos auth (JWT/ApiKey/OAuth) + idempotency-key + rate-limit 3 camadas por plano + RFC 7807 errors + cursor pagination + versioning policy 24m + 3 tabelas (api_keys/idempotency/usage_log) + 30+ testes meta |
 | 2.38 | Página HTML API Console · materializa spec D9 (5 KPIs uso + 6 abas: API Keys table + Usage chart 14d + Endpoints catalog + SDKs quickstart TS/Python/PHP/Go + GraphQL Explorer link Apollo Sandbox + Webhooks shortcut) · persona Diego Ito Dev Integrações · already no padrão Cofre |
 | 2.39 | Hub Admin atualizado para 8 cockpits (adiciona API Console gradient blue-purple) · status banner 8 pills + quick actions 10 botões · agora cobre todo o ecossistema operacional R2 People |
-| **2.40** | **Schema SQL v14 (API Pública) materializa D9 em SQL executável · api_keys c/ bcrypt cost 12 + key_prefix lookup indexado + idempotency_keys TTL 24h + api_usage_log particionado · 8 RPCs (create/validate/revoke/idempotency check+save/log_request/cleanup/stats) + view v_api_keys_safe + RLS c/ key_hash REVOKE FROM authenticated + GRANTs por coluna** |
+| 2.40 | Schema SQL v14 (API Pública) materializa D9 em SQL executável · api_keys c/ bcrypt cost 12 + key_prefix lookup indexado + idempotency_keys TTL 24h + api_usage_log particionado · 8 RPCs (create/validate/revoke/idempotency check+save/log_request/cleanup/stats) + view v_api_keys_safe + RLS c/ key_hash REVOKE FROM authenticated + GRANTs por coluna |
+| **2.41** | **Spec M15 Mobile-first PWA · decisão PWA-first vs nativo + Next.js Service Worker + manifest c/ shortcuts e Share Target + offline-first c/ outbox pattern e conflict resolution + Web Push c/ quiet hours + WebAuthn biometria + câmera+OCR client-side + 25+ testes meta + roadmap nativo M+3** |
 
 ---
