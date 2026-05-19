@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.47 · 18 de maio de 2026
+**Versão**: 2.48 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1011,6 +1011,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.44 | Reposicionamento estratégico (R2 = gestão de pessoas, NÃO DP · Domínio é fonte fiscal) + Spec M17 People Analytics + Spec M16 Integração Domínio ESPECULATIVA |
 | 2.45 | Aniversariantes destacados na home + C1/C3 v1.1 reposicionado + landing hero refeito |
 | 2.46 | Spec M18 Compliance & Treinamentos + Spec M19 Benefícios & Dependentes + Schema SQL v15 |
-| **2.47** | **Página HTML `r2_people_analytics.html` materializa M17 (cockpit Renato Pinto Diretor Operações · 4 exec cards + 5 abas: Headcount/Turnover/D&I/Custo Domínio/Engajamento Cruzado · LGPD k-anonymity ativa · filtros globais período/EMP/TOM/nível · donuts D&I + curva sobrevivência Kaplan-Meier + histograma faixas salariais + 6 cruzamentos eNPS×turnover/9-Box×tempo) + Spec M20 Inbox Unificado do Líder (uma tela: aprovações + calendar consolidado + painel equipe + atividade · auto-aprovação por regra + bulk approve · 18+ testes meta) + Hub Admin para 9 cockpits (adicionado Analytics gradient navy-orange · grid responsive automático · status banner 9 pills)** |
+| 2.47 | Página HTML Analytics M17 + Spec M20 Inbox Líder + Hub 9 cockpits |
+| **2.48** | **Página HTML `r2_people_inbox_lider.html` materializa M20 (persona João Carvalho Líder Financeiro 11 subordinados) · layout 3-painéis (main + side equipe) · 4 KPIs do dia (8 aprovações urgent, 4 1:1s ok, 2 ausências warn, 3 alertas urgent) · 3 abas (Inbox priorizado bloqueador→urgente→normal + Calendar mensal 5 tipos eventos coloridos hoje destacado + Atividade feed 8 últimas ações) · 8 inbox items demo c/ inline actions aprovar/rejeitar + auto-aprovação badge verde para elegíveis (< R$100 reembolso, férias pré-planejadas, atestado ciência) · painel equipe 11 cards c/ avatar+status+score+pills (champion verde, sem 1:1 amber, ASO atrasado red) · mock interativo (botões removem item)** |
 
 ---

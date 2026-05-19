@@ -255,7 +255,8 @@
     { title: 'Home comercial · landing principal', url: 'r2_people_landing.html', cat: 'Home', icon: '🚀', kw: 'home landing principal comercial marketing valor proposicao hero pilares case gpc trial visitante site publico' },
     { title: 'CS Dashboard · Health Score & intervenções', url: 'r2_people_cs_dashboard.html', cat: 'Admin', icon: '❤️', kw: 'cs customer success health score nrr churn intervencao expansao renovacao mrr qbr csm marina champion saudavel atencao risco critico' },
     { title: 'API Console · Keys & Usage', url: 'r2_people_api_console.html', cat: 'Admin', icon: '🔑', kw: 'api console rest graphql sdk apikey api key bcrypt rate limit idempotency openapi typescript python php go quota usage endpoint diego' },
-    { title: 'People Analytics · Diretoria', url: 'r2_people_analytics.html', cat: 'Admin', icon: '📊', kw: 'analytics diretoria turnover retencao headcount d&i diversidade equidade salarial custo dominio enps renato pinto kanonymity sobrevivencia kaplan meier' }
+    { title: 'People Analytics · Diretoria', url: 'r2_people_analytics.html', cat: 'Admin', icon: '📊', kw: 'analytics diretoria turnover retencao headcount d&i diversidade equidade salarial custo dominio enps renato pinto kanonymity sobrevivencia kaplan meier' },
+    { title: 'Inbox do Líder · Aprovações & Equipe', url: 'r2_people_inbox_lider.html', cat: 'Gestor', icon: '📥', kw: 'inbox lider aprovacao bulk approve calendar consolidado equipe joao carvalho atestado ferias reembolso treinamento bloqueador sla painel subordinado' }
   ];
 
   function openSearch() {

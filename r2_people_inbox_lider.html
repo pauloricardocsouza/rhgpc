@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Inbox do Líder · Aprovações & Equipe</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.nav-badge{margin-left:auto; background:var(--orange); color:#fff; font-size:9.5px; padding:1px 7px; border-radius:9px; font-weight:700; font-family:'JetBrains Mono',monospace;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #2E476F, #6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow:hidden; display:grid; grid-template-columns:1fr 340px; gap:14px; padding:18px 22px 22px;}
+.col-main{overflow-y:auto; padding-right:6px;}
+.col-side{overflow-y:auto;}
+
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:6px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:24px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:9px 14px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:8px 12px; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:inherit;}
+
+/* Hero · 4 KPIs do dia */
+.day-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:14px;}
+.day-card{background:#fff; padding:11px 13px; border-radius:10px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.day-card::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.day-card.urgent::before{background:var(--danger);}
+.day-card.warn::before{background:var(--amber);}
+.day-card.ok::before{background:var(--green);}
+.day-label{font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px; font-weight:600;}
+.day-value{font-size:24px; font-weight:700; margin-top:4px; letter-spacing:-.6px; font-family:'JetBrains Mono', monospace;}
+.day-detail{font-size:10.5px; color:var(--txt2); margin-top:2px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:14px;}
+.tab{padding:9px 14px; cursor:pointer; font-size:12px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+.card{background:#fff; border-radius:var(--radius); padding:14px; box-shadow:var(--shadow-card); margin-bottom:12px;}
+
+/* Bulk bar */
+.bulk-bar{display:flex; gap:8px; align-items:center; padding:9px 12px; background:var(--blue2); border-radius:8px; margin-bottom:10px;}
+.bulk-bar .count{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--navy);}
+.bulk-bar button{padding:5px 10px; font-size:11px; border:none; border-radius:5px; cursor:pointer; font-family:inherit;}
+.bulk-bar .btn-approve-all{background:var(--green); color:#fff; font-weight:600;}
+.bulk-bar .btn-by-type{background:#fff; color:var(--navy); border:1px solid var(--gray2);}
+
+/* Inbox items */
+.inbox-item{display:grid; grid-template-columns:36px 1fr auto; gap:11px; padding:10px 12px; background:#fff; border:1px solid var(--gray1); border-radius:9px; margin-bottom:6px; align-items:center; transition:all .12s;}
+.inbox-item:hover{border-color:var(--navy);}
+.inbox-item.urgent{border-left:3px solid var(--amber);}
+.inbox-item.blocker{border-left:3px solid var(--danger); background:linear-gradient(90deg, var(--danger2), #fff 35%);}
+.item-icon{width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px;}
+.item-icon.vacation{background:var(--amber2); color:var(--amber);}
+.item-icon.aso{background:var(--danger2); color:var(--danger);}
+.item-icon.movement{background:var(--blue2); color:var(--blue);}
+.item-icon.reimbursement{background:#F3E8FF; color:var(--purple);}
+.item-icon.training{background:var(--green2); color:var(--green);}
+.item-icon.certificate{background:#FCE6CD; color:var(--amber);}
+.item-info strong{font-size:12.5px; font-weight:600; display:block;}
+.item-meta{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.item-meta .wait{font-family:'JetBrains Mono', monospace; font-weight:600;}
+.item-meta .wait.long{color:var(--danger);}
+.item-actions{display:flex; gap:5px; align-items:center;}
+.btn-sm{padding:5px 10px; font-size:11px; font-weight:600; border:none; border-radius:6px; cursor:pointer; font-family:inherit;}
+.btn-sm.approve{background:var(--green); color:#fff;}
+.btn-sm.approve:hover{background:#155F36;}
+.btn-sm.reject{background:#fff; color:var(--danger); border:1px solid var(--danger2);}
+.btn-sm.reject:hover{background:var(--danger2);}
+.btn-sm-icon{width:28px; height:28px; padding:0; background:var(--gray1); border:none; border-radius:6px; cursor:pointer; font-size:13px;}
+.btn-sm-icon:hover{background:var(--gray2);}
+
+/* Calendar mini */
+.cal-grid{display:grid; grid-template-columns:repeat(7, 1fr); gap:4px;}
+.cal-day-name{text-align:center; font-size:10px; color:var(--txt3); text-transform:uppercase; letter-spacing:.3px; font-family:'JetBrains Mono', monospace; padding:4px 0; font-weight:700;}
+.cal-day{aspect-ratio:1; background:var(--off); border-radius:6px; padding:5px; font-size:11px; position:relative; cursor:pointer;}
+.cal-day:hover{background:var(--gray1);}
+.cal-day.today{background:var(--navy); color:#fff;}
+.cal-day.outside{opacity:.3;}
+.cal-day .events{display:flex; gap:1px; margin-top:3px; flex-wrap:wrap;}
+.cal-evt{width:5px; height:5px; border-radius:50%;}
+.cal-evt.oneonone{background:var(--blue);}
+.cal-evt.vacation{background:var(--amber);}
+.cal-evt.absence{background:var(--danger);}
+.cal-evt.birthday{background:var(--orange);}
+.cal-evt.deadline{background:var(--purple);}
+
+/* Painel equipe (sidebar direita) */
+.team-side h3{font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.14em; margin-bottom:8px;}
+.team-card{background:#fff; padding:11px 13px; border-radius:9px; margin-bottom:7px; border:1px solid var(--gray1);}
+.team-card.alert{border-left:3px solid var(--amber);}
+.team-card.alert-red{border-left:3px solid var(--danger);}
+.team-card.champion{border-left:3px solid var(--green);}
+.team-card-head{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+.team-avatar{width:32px; height:32px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:11px; flex-shrink:0;}
+.team-name{font-size:12px; font-weight:600;}
+.team-status{font-size:10px; color:var(--txt2); margin-top:1px;}
+.team-status.active{color:var(--green);}
+.team-status.vacation{color:var(--amber);}
+.team-status.medical{color:var(--danger);}
+.team-meta{display:flex; gap:4px; flex-wrap:wrap; margin-top:6px;}
+.team-pill{padding:1px 7px; border-radius:9px; font-size:9.5px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.team-pill.ok{background:var(--green2); color:var(--green);}
+.team-pill.warn{background:var(--amber2); color:var(--amber);}
+.team-pill.crit{background:var(--danger2); color:var(--danger);}
+.team-pill.box-champion{background:#F3E8FF; color:var(--purple);}
+.team-pill.box-contributor{background:var(--blue2); color:var(--blue);}
+.team-pill.box-risk{background:var(--danger2); color:var(--danger);}
+.team-score{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:11px;}
+
+/* Activity feed */
+.activity-item{display:grid; grid-template-columns:26px 1fr auto; gap:8px; padding:7px 0; border-bottom:1px solid var(--gray1); font-size:11.5px; align-items:center;}
+.activity-item:last-child{border-bottom:none;}
+.activity-icon{width:24px; height:24px; border-radius:50%; background:var(--gray1); display:flex; align-items:center; justify-content:center; font-size:11px;}
+.activity-text strong{font-weight:600;}
+.activity-time{font-size:9.5px; color:var(--txt3); font-family:'JetBrains Mono', monospace;}
+
+@media (max-width:1080px){
+  .main{grid-template-columns:1fr; overflow:auto;}
+  .col-side{display:none;}
+  .day-grid{grid-template-columns:repeat(2, 1fr);}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Líder · operação</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_inbox_lider.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Inbox<span class="nav-badge">8</span></a>
+      <a class="nav-item" href="r2_people_oneonones.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>1:1s</a>
+      <a class="nav-item" href="r2_people_avaliacao.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>Avaliações</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>PDI</a>
+      <a class="nav-item" href="r2_people_okrs.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>OKRs</a>
+      <a class="nav-item" href="r2_people_analytics.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analytics</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Líder</span><span class="sep">›</span><span class="crumb">Inbox</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">JC</div>
+      <div class="user-info"><span class="user-name">João Carvalho</span><span class="user-role">Líder Financeiro · 11 subordinados</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Coluna principal -->
+    <div class="col-main">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Líder <span class="sep">·</span> Operação <span class="sep">·</span> Spec M20</div>
+          <h1 class="page-title">Inbox &amp; <em>equipe</em></h1>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn-secondary">⚙ Auto-aprovação</button>
+          <button class="btn-secondary">📥 Digest semanal</button>
+        </div>
+      </div>
+
+      <!-- Hero · 4 KPIs do dia -->
+      <div class="day-grid">
+        <div class="day-card urgent">
+          <div class="day-label">Aprovações pendentes</div>
+          <div class="day-value">8</div>
+          <div class="day-detail">3 críticas · 5 hoje · 12 semana</div>
+        </div>
+        <div class="day-card ok">
+          <div class="day-label">1:1s desta semana</div>
+          <div class="day-value">4</div>
+          <div class="day-detail">3 agendadas · 1 sem pauta</div>
+        </div>
+        <div class="day-card warn">
+          <div class="day-label">Equipe ausente hoje</div>
+          <div class="day-value">2</div>
+          <div class="day-detail">1 férias · 1 atestado</div>
+        </div>
+        <div class="day-card urgent">
+          <div class="day-label">Sinais de alerta</div>
+          <div class="day-value">3</div>
+          <div class="day-detail">2 atestado recorrente · 1 sem 1:1 90d</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" data-tab="inbox">📥 Inbox</div>
+        <div class="tab" data-tab="calendar">📅 Calendar</div>
+        <div class="tab" data-tab="activity">📜 Atividade</div>
+      </div>
+
+      <!-- INBOX -->
+      <div class="tab-pane active" id="tab-inbox">
+        <div class="bulk-bar">
+          <span class="count">8 pendentes</span>
+          <button class="btn-approve-all">✓ Aprovar todos elegíveis (5)</button>
+          <button class="btn-by-type">Por tipo ▾</button>
+          <span style="margin-left:auto; font-size:10.5px; color:var(--txt2);">Ordenado por urgência → SLA → mais antigo</span>
+        </div>
+
+        <!-- Bloqueador -->
+        <div class="inbox-item blocker">
+          <div class="item-icon aso">🩺</div>
+          <div class="item-info">
+            <strong>ASO admissional vencido · Pedro Souza</strong>
+            <div class="item-meta">Admitido há 12d · <span class="wait long">bloqueia operação</span> · NR-7</div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">Agendar exame</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+
+        <!-- Urgente · 2d -->
+        <div class="inbox-item urgent">
+          <div class="item-icon vacation">🏖️</div>
+          <div class="item-info">
+            <strong>Fernanda Lima pediu férias</strong>
+            <div class="item-meta">15-20 junho (6 dias) · <span class="wait long">aguarda 2d 4h</span></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">✓ Aprovar</button>
+            <button class="btn-sm reject">✗ Rejeitar</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+
+        <!-- Urgente · 1d -->
+        <div class="inbox-item urgent">
+          <div class="item-icon movement">↗</div>
+          <div class="item-info">
+            <strong>Ana Beatriz · solicitação de promoção</strong>
+            <div class="item-meta">Analista Pleno → Sênior · +R$ 1.200 · <span class="wait">aguarda 1d 6h</span></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">✓ Aprovar</button>
+            <button class="btn-sm reject">✗ Rejeitar</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+
+        <!-- Normais -->
+        <div class="inbox-item">
+          <div class="item-icon reimbursement">💰</div>
+          <div class="item-info">
+            <strong>Carlos Henrique · reembolso telemedicina</strong>
+            <div class="item-meta">R$ 87,00 · NF anexa · <span class="wait">aguarda 6h</span> · <em style="color:var(--green);">elegível auto-aprovação &lt; R$100</em></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">✓ Aprovar</button>
+            <button class="btn-sm reject">✗ Rejeitar</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+
+        <div class="inbox-item">
+          <div class="item-icon reimbursement">💰</div>
+          <div class="item-info">
+            <strong>Daniela Ferreira · reembolso curso inglês</strong>
+            <div class="item-meta">R$ 420,00 · 1 mensalidade · <span class="wait">aguarda 8h</span></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">✓ Aprovar</button>
+            <button class="btn-sm reject">✗ Rejeitar</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+
+        <div class="inbox-item">
+          <div class="item-icon training">🎓</div>
+          <div class="item-info">
+            <strong>Eduardo Mendes · agendar NR-11 (empilhadeira)</strong>
+            <div class="item-meta">Reciclagem bienal · sugerido 25/05 · <span class="wait">aguarda 11h</span></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">✓ Aprovar data</button>
+            <button class="btn-sm-icon">📅</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+
+        <div class="inbox-item">
+          <div class="item-icon vacation">🏖️</div>
+          <div class="item-info">
+            <strong>Igor Vasconcelos pediu férias</strong>
+            <div class="item-meta">8-22 julho (15 dias) · período pré-planejado · <em style="color:var(--green);">auto-elegível</em> · <span class="wait">aguarda 3h</span></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">✓ Aprovar</button>
+            <button class="btn-sm reject">✗ Rejeitar</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+
+        <div class="inbox-item">
+          <div class="item-icon certificate">📄</div>
+          <div class="item-info">
+            <strong>Juliana Reis · atestado 2 dias</strong>
+            <div class="item-meta">06-07/05 · CID protegido · validado RH · <em style="color:var(--green);">apenas ciência</em> · <span class="wait">há 1h</span></div>
+          </div>
+          <div class="item-actions">
+            <button class="btn-sm approve">✓ Ciente</button>
+            <button class="btn-sm-icon">👁</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div class="tab-pane" id="tab-calendar">
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <strong style="font-size:14px;">Maio 2026</strong>
+            <div style="display:flex; gap:5px;">
+              <span style="font-size:10.5px; padding:2px 8px; background:var(--blue2); color:var(--blue); border-radius:10px;">● 1:1s</span>
+              <span style="font-size:10.5px; padding:2px 8px; background:var(--amber2); color:var(--amber); border-radius:10px;">● Férias</span>
+              <span style="font-size:10.5px; padding:2px 8px; background:var(--danger2); color:var(--danger); border-radius:10px;">● Atestado</span>
+              <span style="font-size:10.5px; padding:2px 8px; background:#FCE6CD; color:#9E5500; border-radius:10px;">● Aniversário</span>
+              <span style="font-size:10.5px; padding:2px 8px; background:#F3E8FF; color:var(--purple); border-radius:10px;">● Prazo</span>
+            </div>
+          </div>
+          <div class="cal-grid">
+            <div class="cal-day-name">Dom</div><div class="cal-day-name">Seg</div><div class="cal-day-name">Ter</div><div class="cal-day-name">Qua</div><div class="cal-day-name">Qui</div><div class="cal-day-name">Sex</div><div class="cal-day-name">Sáb</div>
+            <div class="cal-day outside">27</div><div class="cal-day outside">28</div><div class="cal-day outside">29</div><div class="cal-day outside">30</div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div>
+            <div class="cal-day">4</div><div class="cal-day">5<div class="events"><span class="cal-evt absence"></span></div></div><div class="cal-day">6<div class="events"><span class="cal-evt absence"></span><span class="cal-evt oneonone"></span></div></div><div class="cal-day">7<div class="events"><span class="cal-evt absence"></span></div></div><div class="cal-day">8<div class="events"><span class="cal-evt oneonone"></span></div></div><div class="cal-day">9</div><div class="cal-day">10</div>
+            <div class="cal-day">11</div><div class="cal-day">12<div class="events"><span class="cal-evt vacation"></span></div></div><div class="cal-day">13<div class="events"><span class="cal-evt vacation"></span><span class="cal-evt oneonone"></span></div></div><div class="cal-day">14<div class="events"><span class="cal-evt vacation"></span></div></div><div class="cal-day">15<div class="events"><span class="cal-evt vacation"></span><span class="cal-evt deadline"></span></div></div><div class="cal-day">16<div class="events"><span class="cal-evt vacation"></span></div></div><div class="cal-day">17<div class="events"><span class="cal-evt vacation"></span></div></div>
+            <div class="cal-day today">18<div class="events"><span class="cal-evt birthday"></span><span class="cal-evt birthday"></span><span class="cal-evt oneonone"></span></div></div><div class="cal-day">19</div><div class="cal-day">20<div class="events"><span class="cal-evt birthday"></span><span class="cal-evt oneonone"></span></div></div><div class="cal-day">21</div><div class="cal-day">22<div class="events"><span class="cal-evt birthday"></span><span class="cal-evt oneonone"></span></div></div><div class="cal-day">23<div class="events"><span class="cal-evt birthday"></span></div></div><div class="cal-day">24<div class="events"><span class="cal-evt birthday"></span></div></div>
+            <div class="cal-day">25<div class="events"><span class="cal-evt deadline"></span></div></div><div class="cal-day">26<div class="events"><span class="cal-evt birthday"></span><span class="cal-evt oneonone"></span></div></div><div class="cal-day">27<div class="events"><span class="cal-evt birthday"></span></div></div><div class="cal-day">28<div class="events"><span class="cal-evt deadline"></span></div></div><div class="cal-day">29<div class="events"><span class="cal-evt birthday"></span></div></div><div class="cal-day">30</div><div class="cal-day">31<div class="events"><span class="cal-evt birthday"></span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ATIVIDADE -->
+      <div class="tab-pane" id="tab-activity">
+        <div class="card">
+          <h3 style="font-size:13px; font-weight:600; margin-bottom:10px;">Atividade recente da equipe</h3>
+          <div class="activity-item">
+            <div class="activity-icon">📄</div>
+            <div class="activity-text"><strong>Juliana Reis</strong> submeteu atestado de 2 dias (06-07/05)</div>
+            <div class="activity-time">há 1h</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🎯</div>
+            <div class="activity-text"><strong>Eduardo Mendes</strong> atualizou OKR Q2.1 para 80%</div>
+            <div class="activity-time">há 3h</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🎓</div>
+            <div class="activity-text"><strong>Carlos Henrique</strong> completou treinamento LGPD com nota 88</div>
+            <div class="activity-time">há 5h</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🏖️</div>
+            <div class="activity-text"><strong>Maria Tavares</strong> programou férias 1-15/agosto</div>
+            <div class="activity-time">ontem</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">💬</div>
+            <div class="activity-text"><strong>Você</strong> registrou 1:1 com Fernanda Lima · 3 ações combinadas</div>
+            <div class="activity-time">ontem</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">📝</div>
+            <div class="activity-text"><strong>Ana Beatriz</strong> atualizou PDI · 2 novas competências adicionadas</div>
+            <div class="activity-time">2 dias</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">⭐</div>
+            <div class="activity-text"><strong>Pedro Souza</strong> recebeu elogio público de Daniela Ferreira</div>
+            <div class="activity-time">2 dias</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">🌡️</div>
+            <div class="activity-text"><strong>9 da equipe</strong> responderam pulso semanal de clima (mood 8.2)</div>
+            <div class="activity-time">3 dias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coluna lateral · Painel equipe -->
+    <aside class="col-side team-side">
+      <h3>👥 Minha equipe (11)</h3>
+
+      <div class="team-card alert-red">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#E82227;">PS</div>
+          <div><div class="team-name">Pedro Souza</div><div class="team-status active">🟢 Ativo · novo 12d</div></div>
+          <span class="team-score" style="color:var(--danger); margin-left:auto;">42</span>
+        </div>
+        <div class="team-meta">
+          <span class="team-pill crit">ASO atrasado</span>
+          <span class="team-pill warn">sem 1:1</span>
+        </div>
+      </div>
+
+      <div class="team-card alert">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#6D28D9;">CH</div>
+          <div><div class="team-name">Carlos Henrique</div><div class="team-status active">🟢 Ativo</div></div>
+          <span class="team-score" style="color:var(--amber); margin-left:auto;">68</span>
+        </div>
+        <div class="team-meta">
+          <span class="team-pill warn">4 atestados 90d</span>
+          <span class="team-pill box-contributor">contribuidor</span>
+        </div>
+      </div>
+
+      <div class="team-card champion">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#1E7B4B;">FL</div>
+          <div><div class="team-name">Fernanda Lima</div><div class="team-status active">🟢 Ativo · próx 1:1 sex</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">94</span>
+        </div>
+        <div class="team-meta">
+          <span class="team-pill box-champion">champion ⭐</span>
+          <span class="team-pill ok">PDI ativo</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#F58634;">EM</div>
+          <div><div class="team-name">Eduardo Mendes</div><div class="team-status active">🟢 Ativo</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">88</span>
+        </div>
+        <div class="team-meta">
+          <span class="team-pill box-contributor">contribuidor</span>
+          <span class="team-pill ok">NR-11 ✓</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#1F4FA0;">AB</div>
+          <div><div class="team-name">Ana Beatriz</div><div class="team-status active">🎂 hoje</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">86</span>
+        </div>
+        <div class="team-meta">
+          <span class="team-pill box-champion">champion ⭐</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#2E476F;">DF</div>
+          <div><div class="team-name">Daniela Ferreira</div><div class="team-status vacation">🏖️ férias até 20/05</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">82</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#6D28D9;">JR</div>
+          <div><div class="team-name">Juliana Reis</div><div class="team-status medical">🩺 atestado 07/05</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">80</span>
+        </div>
+      </div>
+
+      <div class="team-card alert">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#1E7B4B;">MT</div>
+          <div><div class="team-name">Maria Tavares</div><div class="team-status active">🟢 Ativo</div></div>
+          <span class="team-score" style="color:var(--amber); margin-left:auto;">62</span>
+        </div>
+        <div class="team-meta">
+          <span class="team-pill warn">sem 1:1 90d</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#F58634;">IV</div>
+          <div><div class="team-name">Igor Vasconcelos</div><div class="team-status active">🟢 Ativo</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">78</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#E82227;">HR</div>
+          <div><div class="team-name">Helena Ribeiro</div><div class="team-status active">🟢 Ativo</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">75</span>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-card-head">
+          <div class="team-avatar" style="background:#2E476F;">LB</div>
+          <div><div class="team-name">Lucas Barbosa</div><div class="team-status active">🟢 Ativo · novo 30d</div></div>
+          <span class="team-score" style="color:var(--green); margin-left:auto;">72</span>
+        </div>
+        <div class="team-meta">
+          <span class="team-pill ok">PDI iniciado</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+// Aprovar / rejeitar mock (otimista · remove item)
+document.querySelectorAll('.inbox-item').forEach(item => {
+  item.querySelectorAll('.btn-sm.approve, .btn-sm.reject').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      item.style.transition = 'all .3s'; item.style.opacity = '0'; item.style.transform = 'translateX(40px)';
+      setTimeout(() => item.remove(), 300);
+    });
+  });
+});
+</script>
+</body>
+</html>
