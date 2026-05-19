@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Plano de Sucessão · Cargos Críticos</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.restricted-pill{display:inline-flex; align-items:center; gap:6px; padding:5px 11px; border-radius:20px; background:var(--danger2); color:var(--danger); font-size:11px; font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #6D28D9, #1A2D4F); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:16px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+
+/* Confidential banner */
+.conf-banner{background:linear-gradient(90deg, var(--danger2), #fff 30%); border-left:3px solid var(--danger); padding:11px 16px; border-radius:0 8px 8px 0; margin-bottom:14px; display:flex; align-items:center; gap:10px; font-size:12px;}
+.conf-banner strong{color:var(--danger);}
+
+/* KPIs hero */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; padding:14px 16px; border-radius:11px; box-shadow:var(--shadow-card); border-top:3px solid var(--navy);}
+.kpi.danger{border-top-color:var(--danger);}
+.kpi.warn{border-top-color:var(--amber);}
+.kpi.green{border-top-color:var(--green);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:700; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-value.danger{color:var(--danger);}
+.kpi-value.warn{color:var(--amber);}
+.kpi-value.green{color:var(--green);}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* Cargo crítico card */
+.cargo-card{background:#fff; border-radius:14px; padding:20px 22px; box-shadow:var(--shadow-card); margin-bottom:12px; border-left:4px solid var(--navy);}
+.cargo-card.critical{border-left-color:var(--danger);}
+.cargo-card.high{border-left-color:var(--amber);}
+.cargo-card.gap{background:linear-gradient(90deg, var(--danger2), #fff 35%);}
+.cargo-head{display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; margin-bottom:14px;}
+.cargo-icon{width:46px; height:46px; border-radius:10px; background:linear-gradient(135deg, var(--navy), var(--purple)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;}
+.cargo-name{font-size:16px; font-weight:700; margin-bottom:2px;}
+.cargo-meta{font-size:11.5px; color:var(--txt2);}
+.cargo-criticality{padding:4px 11px; border-radius:13px; font-size:10.5px; font-weight:700; font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:.18em;}
+.crit-critical{background:var(--danger); color:#fff;}
+.crit-high{background:var(--amber); color:#fff;}
+.crit-medium{background:var(--blue); color:#fff;}
+.crit-low{background:var(--gray2); color:var(--txt);}
+
+/* Holder + sucessores */
+.succession-flow{display:grid; grid-template-columns:1fr auto 2fr; gap:18px; align-items:center;}
+.holder-block{background:linear-gradient(135deg, #1F3A6B, #2E476F); color:#fff; padding:16px; border-radius:11px; text-align:center;}
+.holder-tag{font-family:'JetBrains Mono', monospace; font-size:9px; text-transform:uppercase; letter-spacing:.2em; opacity:.75; margin-bottom:8px;}
+.holder-avatar{width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg, var(--orange), #FFC56F); color:var(--dark); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px; margin:0 auto 8px;}
+.holder-name{font-size:13.5px; font-weight:700;}
+.holder-tenure{font-size:11px; opacity:.8; margin-top:2px;}
+.flow-arrow{color:var(--gray3); font-size:24px;}
+
+.successors-block{display:flex; flex-direction:column; gap:8px;}
+.successor-row{display:grid; grid-template-columns:auto 1fr auto auto; gap:11px; padding:10px 13px; background:var(--off); border-radius:9px; align-items:center;}
+.successor-row.primary{border-left:3px solid var(--green); background:linear-gradient(90deg, var(--green2), var(--off));}
+.successor-row.secondary{border-left:3px solid var(--blue); background:linear-gradient(90deg, var(--blue2), var(--off));}
+.successor-row.tertiary{border-left:3px solid var(--gray3);}
+.successor-row.missing{border-left:3px solid var(--danger); background:linear-gradient(90deg, var(--danger2), var(--off));}
+.successor-avatar{width:34px; height:34px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.successor-info strong{font-size:12.5px; font-weight:600; display:block;}
+.successor-info .meta{font-size:10.5px; color:var(--txt2); margin-top:1px;}
+.successor-priority{padding:2px 8px; border-radius:9px; font-size:9.5px; font-weight:700; font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:.14em;}
+.priority-primary{background:var(--green); color:#fff;}
+.priority-secondary{background:var(--blue); color:#fff;}
+.priority-tertiary{background:var(--gray3); color:#fff;}
+.readiness-pill{padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; font-family:'JetBrains Mono', monospace;}
+.ready-now{background:var(--green2); color:var(--green);}
+.ready-6m{background:#FFE3CC; color:#9E5500;}
+.ready-12m{background:var(--amber2); color:var(--amber);}
+.ready-24m{background:var(--gray1); color:var(--txt2);}
+.ready-missing{background:var(--danger); color:#fff;}
+
+.skills-gap{margin-top:12px; padding-top:12px; border-top:1px solid var(--gray1);}
+.skills-gap-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.4px; font-weight:600; margin-bottom:6px;}
+.skills-gap-list{display:flex; flex-wrap:wrap; gap:5px;}
+.skills-gap-tag{padding:3px 9px; border-radius:11px; font-size:10.5px; font-weight:600; background:var(--amber2); color:var(--amber);}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.card-title{font-size:14px; font-weight:600;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:9px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+
+@media (max-width:980px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+  .succession-flow{grid-template-columns:1fr;}
+  .flow-arrow{transform:rotate(90deg);}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Diretoria · estratégico</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_sucessao.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Sucessão</a>
+      <a class="nav-item" href="r2_people_skill_matrix.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Skill Matrix</a>
+      <a class="nav-item" href="r2_people_analytics.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>People Analytics</a>
+      <a class="nav-item" href="r2_people_admin_hub.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Hub Admin</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Diretoria</span><span class="sep">›</span><span class="crumb">Plano de Sucessão</span></div>
+    <span class="restricted-pill">🔒 view_succession_plans</span>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">RP</div>
+      <div class="user-info"><span class="user-name">Renato Pinto</span><span class="user-role">Diretor Operações</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Estratégico <span class="sep">·</span> Carreira <span class="sep">·</span> Spec M22</div>
+        <h1 class="page-title">Plano de <em>Sucessão</em></h1>
+        <p class="page-subtitle">Se essa pessoa sair amanhã, quem assume? · 12 cargos críticos mapeados · review semestral obrigatório</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">📥 Exportar PDF (NDA)</button>
+        <button class="btn-primary">+ Mapear novo cargo</button>
+      </div>
+    </div>
+
+    <div class="conf-banner">
+      <span style="font-size:18px;">🔒</span>
+      <div><strong>Informação confidencial</strong> · acesso restrito a Diretoria + RH sênior + DPO · cada acesso registrado em audit log · exportações exigem NDA digital aceito</div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">Cargos mapeados</div>
+        <div class="kpi-value">12<span style="font-size:14px; color:var(--txt2); font-weight:500; margin-left:4px;">/15</span></div>
+        <div class="kpi-trend">80% dos críticos · faltam 3</div>
+      </div>
+      <div class="kpi danger">
+        <div class="kpi-label">Sem sucessor primário</div>
+        <div class="kpi-value danger">2</div>
+        <div class="kpi-trend">CFO + Gerente Cestão Inhambupe</div>
+      </div>
+      <div class="kpi warn">
+        <div class="kpi-label">Próximas revisões</div>
+        <div class="kpi-value warn">5</div>
+        <div class="kpi-trend">3 vencidas · 2 nos próximos 30d</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Pessoas em desenvolvimento</div>
+        <div class="kpi-value">23</div>
+        <div class="kpi-trend">8 ready_now · 9 6m · 6 12m</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="criticos">🔴 Cargos críticos (12)</div>
+      <div class="tab" data-tab="gaps">⚠ Gaps urgentes (2)</div>
+      <div class="tab" data-tab="organograma">🌳 Organograma</div>
+      <div class="tab" data-tab="readiness">📋 Readiness</div>
+    </div>
+
+    <!-- CRÍTICOS -->
+    <div class="tab-pane active" id="tab-criticos">
+
+      <!-- Cargo GAP · sem sucessor -->
+      <div class="cargo-card gap critical">
+        <div class="cargo-head">
+          <div class="cargo-icon" style="background:linear-gradient(135deg,#C0392B,#1A2D4F);">💰</div>
+          <div>
+            <div class="cargo-name">CFO · Diretor Financeiro</div>
+            <div class="cargo-meta">⚠ Sem sucessor primário identificado · revisão atrasada há 47 dias</div>
+          </div>
+          <span class="cargo-criticality crit-critical">crítico</span>
+        </div>
+        <div class="succession-flow">
+          <div class="holder-block">
+            <div class="holder-tag">Titular</div>
+            <div class="holder-avatar">MS</div>
+            <div class="holder-name">Marcos Santana</div>
+            <div class="holder-tenure">20 anos casa · cofundador</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="successors-block">
+            <div class="successor-row missing">
+              <div class="successor-avatar" style="background:var(--danger);">?</div>
+              <div class="successor-info">
+                <strong style="color:var(--danger);">SUCESSOR PRIMÁRIO NÃO IDENTIFICADO</strong>
+                <div class="meta">Maior risco operacional da empresa · ação imediata</div>
+              </div>
+              <span class="successor-priority priority-primary">primário</span>
+              <span class="readiness-pill ready-missing">FALTANDO</span>
+            </div>
+            <div class="successor-row tertiary">
+              <div class="successor-avatar" style="background:#2E476F;">JC</div>
+              <div class="successor-info">
+                <strong>João Carvalho</strong>
+                <div class="meta">Líder Financeiro · 5 anos casa · pode evoluir em 24m</div>
+              </div>
+              <span class="successor-priority priority-tertiary">terciário</span>
+              <span class="readiness-pill ready-24m">24 meses</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cargo crítico OK -->
+      <div class="cargo-card critical">
+        <div class="cargo-head">
+          <div class="cargo-icon" style="background:linear-gradient(135deg,#F58634,#C0392B);">⚙</div>
+          <div>
+            <div class="cargo-name">Diretor de Operações</div>
+            <div class="cargo-meta">Plano atualizado em 15/04/2026 · próxima revisão 15/10/2026</div>
+          </div>
+          <span class="cargo-criticality crit-critical">crítico</span>
+        </div>
+        <div class="succession-flow">
+          <div class="holder-block">
+            <div class="holder-tag">Titular</div>
+            <div class="holder-avatar">RP</div>
+            <div class="holder-name">Renato Pinto</div>
+            <div class="holder-tenure">15 anos casa</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="successors-block">
+            <div class="successor-row primary">
+              <div class="successor-avatar" style="background:#1E7B4B;">CR</div>
+              <div class="successor-info">
+                <strong>Carla Reis</strong>
+                <div class="meta">Coord Logística ATP · 12 anos casa · 9-Box champion</div>
+              </div>
+              <span class="successor-priority priority-primary">primário</span>
+              <span class="readiness-pill ready-6m">6 meses</span>
+            </div>
+            <div class="successor-row secondary">
+              <div class="successor-avatar" style="background:#6D28D9;">HR</div>
+              <div class="successor-info">
+                <strong>Helena Ribeiro</strong>
+                <div class="meta">Gerente ATP Atacado · 8 anos casa</div>
+              </div>
+              <span class="successor-priority priority-secondary">secundário</span>
+              <span class="readiness-pill ready-12m">12 meses</span>
+            </div>
+            <div class="successor-row tertiary">
+              <div class="successor-avatar" style="background:#1F4FA0;">ML</div>
+              <div class="successor-info">
+                <strong>Marcelo Lima</strong>
+                <div class="meta">Gerente Cestão L1 · 6 anos casa</div>
+              </div>
+              <span class="successor-priority priority-tertiary">terciário</span>
+              <span class="readiness-pill ready-24m">24 meses</span>
+            </div>
+          </div>
+        </div>
+        <div class="skills-gap">
+          <div class="skills-gap-label">Gap a desenvolver no primário (Carla)</div>
+          <div class="skills-gap-list">
+            <span class="skills-gap-tag">DRE / DFC</span>
+            <span class="skills-gap-tag">Stakeholder management</span>
+            <span class="skills-gap-tag">Inglês conversacional</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Outro cargo crítico GAP -->
+      <div class="cargo-card gap high">
+        <div class="cargo-head">
+          <div class="cargo-icon" style="background:linear-gradient(135deg,#854F0B,#C0392B);">🏪</div>
+          <div>
+            <div class="cargo-name">Gerente Cestão Inhambupe</div>
+            <div class="cargo-meta">⚠ Vago há 14 dias · sem sucessor primário · NPS loja caindo</div>
+          </div>
+          <span class="cargo-criticality crit-high">alta</span>
+        </div>
+        <div class="succession-flow">
+          <div class="holder-block" style="background:linear-gradient(135deg,#C0392B,#1A2D4F);">
+            <div class="holder-tag">Titular</div>
+            <div class="holder-avatar" style="background:var(--gray2); color:var(--txt2);">?</div>
+            <div class="holder-name">VAGO</div>
+            <div class="holder-tenure">desde 04/05/2026</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="successors-block">
+            <div class="successor-row missing">
+              <div class="successor-avatar" style="background:var(--danger);">?</div>
+              <div class="successor-info">
+                <strong style="color:var(--danger);">Promover internamente ou contratar</strong>
+                <div class="meta">Loja em risco operacional · absent 8.4%</div>
+              </div>
+              <span class="successor-priority priority-primary">primário</span>
+              <span class="readiness-pill ready-missing">DECIDIR</span>
+            </div>
+            <div class="successor-row secondary">
+              <div class="successor-avatar" style="background:#1E7B4B;">SL</div>
+              <div class="successor-info">
+                <strong>Sandra Lima</strong>
+                <div class="meta">Sub-gerente Cestão L1 · 4 anos casa · interesse declarado</div>
+              </div>
+              <span class="successor-priority priority-secondary">secundário</span>
+              <span class="readiness-pill ready-now">PRONTA AGORA</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cargo crítico Coordenadora RH -->
+      <div class="cargo-card high">
+        <div class="cargo-head">
+          <div class="cargo-icon" style="background:linear-gradient(135deg,#1E7B4B,#2E476F);">👥</div>
+          <div>
+            <div class="cargo-name">Coordenadora de RH</div>
+            <div class="cargo-meta">Plano atualizado em 02/03/2026 · próxima revisão 02/09/2026</div>
+          </div>
+          <span class="cargo-criticality crit-high">alta</span>
+        </div>
+        <div class="succession-flow">
+          <div class="holder-block">
+            <div class="holder-tag">Titular</div>
+            <div class="holder-avatar">PM</div>
+            <div class="holder-name">Patrícia Mello</div>
+            <div class="holder-tenure">10 anos casa</div>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="successors-block">
+            <div class="successor-row primary">
+              <div class="successor-avatar" style="background:#1E7B4B;">DF</div>
+              <div class="successor-info">
+                <strong>Daniela Ferreira</strong>
+                <div class="meta">Assistente RH · 7 anos casa · MBA em curso</div>
+              </div>
+              <span class="successor-priority priority-primary">primário</span>
+              <span class="readiness-pill ready-12m">12 meses</span>
+            </div>
+            <div class="successor-row secondary">
+              <div class="successor-avatar" style="background:#F58634;">JR</div>
+              <div class="successor-info">
+                <strong>Juliana Reis</strong>
+                <div class="meta">Analista RH · 5 anos casa</div>
+              </div>
+              <span class="successor-priority priority-secondary">secundário</span>
+              <span class="readiness-pill ready-24m">24 meses</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAPS -->
+    <div class="tab-pane" id="tab-gaps">
+      <div class="card" style="border-left:3px solid var(--danger);">
+        <div class="card-head"><div><div class="card-title">⚠ 2 cargos críticos sem sucessor primário</div></div></div>
+        <table>
+          <thead><tr><th>Cargo</th><th>Criticidade</th><th>Titular</th><th>Tempo sem revisão</th><th>Risco</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>CFO · Diretor Financeiro</strong></td>
+              <td><span class="cargo-criticality crit-critical">crítico</span></td>
+              <td>Marcos Santana (20 anos)</td>
+              <td>47 dias atrasada</td>
+              <td>Continuidade · acesso a contas, relação banco</td>
+              <td><button class="btn-primary" style="padding:5px 11px; font-size:11px;">Mapear agora</button></td>
+            </tr>
+            <tr>
+              <td><strong>Gerente Cestão Inhambupe</strong></td>
+              <td><span class="cargo-criticality crit-high">alta</span></td>
+              <td>VAGO desde 04/05</td>
+              <td>n/a</td>
+              <td>Operacional · NPS loja caindo</td>
+              <td><button class="btn-primary" style="padding:5px 11px; font-size:11px;">Promover Sandra Lima</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="border-left:3px solid var(--amber);">
+        <div class="card-head"><div><div class="card-title">3 cargos faltam mapear</div></div></div>
+        <table>
+          <thead><tr><th>Cargo</th><th>Justificativa criticidade</th><th>Ação</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Líder Comercial</strong></td><td>Detém relacionamento c/ 3 grandes clientes corporativos</td><td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">+ Mapear</button></td></tr>
+            <tr><td><strong>Gerente CD Logística</strong></td><td>Operação 24h · perda significaria parada de loja</td><td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">+ Mapear</button></td></tr>
+            <tr><td><strong>Analista TI Sênior</strong></td><td>Único c/ conhecimento do legacy do ERP customizado</td><td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">+ Mapear</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ORGANOGRAMA -->
+    <div class="tab-pane" id="tab-organograma">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">🌳 Organograma c/ sucessão visualizada</div></div></div>
+        <div style="padding:24px; text-align:center; background:var(--off); border-radius:12px;">
+          <div style="display:inline-block; padding:14px 24px; background:linear-gradient(135deg, var(--orange), var(--purple)); color:#fff; border-radius:12px; font-weight:700; font-size:14px;">
+            👑 CEO · Marcos Santana (20 anos)
+            <div style="font-size:11px; opacity:.8; margin-top:4px;">⚠ Sem sucessor mapeado</div>
+          </div>
+          <div style="margin:20px 0; color:var(--txt3);">↓</div>
+          <div style="display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
+            <div style="padding:12px 16px; background:#fff; border:2px solid var(--green); border-radius:10px; min-width:200px;">
+              <strong style="font-size:12.5px;">Diretor Operações</strong>
+              <div style="font-size:11px; color:var(--txt2);">Renato Pinto (15a)</div>
+              <div style="font-size:10px; color:var(--green); margin-top:6px;">→ Carla Reis (6m) ✓</div>
+            </div>
+            <div style="padding:12px 16px; background:#fff; border:2px solid var(--danger); border-radius:10px; min-width:200px;">
+              <strong style="font-size:12.5px;">CFO</strong>
+              <div style="font-size:11px; color:var(--txt2);">Marcos Santana (20a)</div>
+              <div style="font-size:10px; color:var(--danger); margin-top:6px;">⚠ Sem primário</div>
+            </div>
+            <div style="padding:12px 16px; background:#fff; border:2px solid var(--green); border-radius:10px; min-width:200px;">
+              <strong style="font-size:12.5px;">Coord RH</strong>
+              <div style="font-size:11px; color:var(--txt2);">Patrícia Mello (10a)</div>
+              <div style="font-size:10px; color:var(--green); margin-top:6px;">→ Daniela (12m) ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- READINESS -->
+    <div class="tab-pane" id="tab-readiness">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">📋 23 pessoas em pipeline de sucessão</div></div></div>
+        <table>
+          <thead><tr><th>Sucessor</th><th>Cargo destino</th><th>Prioridade</th><th>Prontidão</th><th>PDI</th><th>Gap principal</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Sandra Lima</strong></td><td>Gerente Cestão Inhambupe</td><td><span class="successor-priority priority-secondary">2º</span></td><td><span class="readiness-pill ready-now">PRONTA</span></td><td>✓ ativo</td><td>—</td></tr>
+            <tr><td><strong>Carla Reis</strong></td><td>Diretor Operações</td><td><span class="successor-priority priority-primary">1º</span></td><td><span class="readiness-pill ready-6m">6m</span></td><td>✓ ativo</td><td>DRE, Inglês</td></tr>
+            <tr><td><strong>Helena Ribeiro</strong></td><td>Diretor Operações</td><td><span class="successor-priority priority-secondary">2º</span></td><td><span class="readiness-pill ready-12m">12m</span></td><td>✓ ativo</td><td>Stakeholder mgmt</td></tr>
+            <tr><td><strong>Daniela Ferreira</strong></td><td>Coord RH</td><td><span class="successor-priority priority-primary">1º</span></td><td><span class="readiness-pill ready-12m">12m</span></td><td>✓ MBA</td><td>Liderança</td></tr>
+            <tr><td><strong>Marcelo Lima</strong></td><td>Diretor Operações</td><td><span class="successor-priority priority-tertiary">3º</span></td><td><span class="readiness-pill ready-24m">24m</span></td><td>parcial</td><td>Várias</td></tr>
+            <tr><td colspan="6" style="text-align:center; padding:14px; color:var(--txt2); font-size:11.5px;">+ 18 outros sucessores em pipeline · <a href="#" style="color:var(--orange);">ver todos →</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

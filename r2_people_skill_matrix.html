@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Skill Matrix · Competências por Equipe</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #1F4FA0, #1E7B4B); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:16px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+
+.filter-bar{background:#fff; padding:11px 14px; border-radius:10px; margin-bottom:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; border:1px solid var(--gray1);}
+.filter-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.1em; font-weight:700;}
+.filter-select{padding:5px 10px; border:1px solid var(--gray2); border-radius:7px; font-size:12px; font-family:inherit; background:#fff;}
+.filter-pill{padding:5px 11px; background:var(--gray1); border-radius:14px; font-size:11.5px; cursor:pointer; border:none; font-family:inherit;}
+.filter-pill.active{background:var(--navy); color:#fff; font-weight:600;}
+
+/* KPIs */
+.kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.kpi{background:#fff; padding:14px 16px; border-radius:11px; box-shadow:var(--shadow-card); border-top:3px solid var(--navy);}
+.kpi.green{border-top-color:var(--green);}
+.kpi.amber{border-top-color:var(--amber);}
+.kpi.danger{border-top-color:var(--danger);}
+.kpi-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600;}
+.kpi-value{font-size:26px; font-weight:700; margin-top:5px; letter-spacing:-.5px; font-family:'JetBrains Mono', monospace;}
+.kpi-trend{font-size:10.5px; color:var(--txt2); margin-top:3px;}
+
+/* Heatmap */
+.heatmap-wrap{background:#fff; border-radius:12px; padding:16px; box-shadow:var(--shadow-card); margin-bottom:14px; overflow-x:auto;}
+.heatmap-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.heatmap-title{font-size:14px; font-weight:700;}
+.heatmap-legend{display:flex; gap:10px; align-items:center; font-size:10.5px; color:var(--txt2);}
+.legend-box{width:18px; height:18px; border-radius:4px; display:inline-block;}
+.legend-box.l1{background:var(--danger2);}
+.legend-box.l2{background:#FFE3CC;}
+.legend-box.l3{background:var(--amber2);}
+.legend-box.l4{background:#D4EDDF;}
+.legend-box.l5{background:var(--green2);}
+
+.heatmap{display:grid; gap:4px; min-width:900px;}
+.hm-row{display:grid; gap:4px; align-items:center;}
+.hm-employee{padding:8px 11px; font-size:12.5px; font-weight:600; background:var(--off); border-radius:6px;}
+.hm-employee .meta{font-size:10.5px; color:var(--txt2); font-weight:500;}
+.hm-cell{aspect-ratio:1; max-height:50px; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:'JetBrains Mono', monospace; cursor:pointer; transition:transform .12s;}
+.hm-cell:hover{transform:scale(1.06);}
+.hm-cell .actual{font-size:14px; font-weight:800;}
+.hm-cell .expected{font-size:9px; opacity:.7;}
+.hm-cell.l1{background:var(--danger2); color:var(--danger);}
+.hm-cell.l2{background:#FFE3CC; color:#9E5500;}
+.hm-cell.l3{background:var(--amber2); color:var(--amber);}
+.hm-cell.l4{background:#D4EDDF; color:var(--green);}
+.hm-cell.l5{background:var(--green2); color:var(--green);}
+.hm-cell.gap{border:2px solid var(--danger);}
+
+.hm-skill-header{padding:8px 4px; text-align:center; font-size:9.5px; font-weight:700; font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:.14em; color:var(--txt2); writing-mode:horizontal-tb;}
+
+/* Gap card */
+.gap-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-bottom:14px;}
+.gap-card{background:#fff; border-radius:11px; padding:16px; box-shadow:var(--shadow-card); border-left:3px solid var(--amber);}
+.gap-card.critical{border-left-color:var(--danger);}
+.gap-card h4{font-size:14px; font-weight:700; margin-bottom:4px;}
+.gap-card p{font-size:11.5px; color:var(--txt2); margin-bottom:8px;}
+.gap-stats{display:flex; justify-content:space-between; padding-top:10px; border-top:1px solid var(--gray1);}
+.gap-stat{text-align:center; flex:1;}
+.gap-stat strong{display:block; font-size:18px; font-weight:700; font-family:'JetBrains Mono', monospace; color:var(--navy);}
+.gap-stat strong.danger{color:var(--danger);}
+.gap-stat span{font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.3px;}
+.gap-action{margin-top:10px; display:flex; gap:6px;}
+.gap-action button{flex:1; padding:6px 10px; font-size:11px; border-radius:6px; border:1px solid var(--gray2); background:#fff; cursor:pointer; font-family:inherit; color:var(--navy); font-weight:600;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.card-title{font-size:14px; font-weight:600;}
+
+table{width:100%; border-collapse:collapse; font-size:12.5px;}
+th{text-align:left; padding:9px 10px; color:var(--txt2); font-weight:500; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--gray1);}
+td{padding:11px 10px; border-bottom:1px solid var(--gray1); vertical-align:middle;}
+
+@media (max-width:980px){
+  .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">RH · estratégico</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_skill_matrix.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Skill Matrix</a>
+      <a class="nav-item" href="r2_people_sucessao.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Sucessão</a>
+      <a class="nav-item" href="r2_people_pdi.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18M7 14l4-4 4 4 5-5"/></svg>PDIs ativos</a>
+      <a class="nav-item" href="r2_people_analytics.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analytics</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>RH</span><span class="sep">›</span><span>Carreira</span><span class="sep">›</span><span class="crumb">Skill Matrix</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">PM</div>
+      <div class="user-info"><span class="user-name">Patrícia Mello</span><span class="user-role">Coord RH · GPC</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">RH <span class="sep">·</span> Carreira <span class="sep">·</span> Spec M22</div>
+        <h1 class="page-title">Skill <em>Matrix</em></h1>
+        <p class="page-subtitle">Heatmap colaborador × competência · self-assessment + leader-assessment · identifica gaps coletivos pra planejar treinamento</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">📥 Export CSV</button>
+        <button class="btn-secondary">📋 Catálogo skills (19)</button>
+        <button class="btn-primary">+ Avaliar ciclo</button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filter-bar">
+      <span class="filter-label">Departamento</span>
+      <select class="filter-select"><option>TI / BI (9)</option><option>Financeiro (11)</option><option>Cestão L1 (91)</option><option>Toda empresa (367)</option></select>
+      <span class="filter-label">Cargo</span>
+      <select class="filter-select"><option>Todos</option><option>Analista Pleno</option><option>Coord</option><option>Líder</option></select>
+      <span class="filter-label">Vista</span>
+      <button class="filter-pill active">Leader assessment</button>
+      <button class="filter-pill">Self assessment</button>
+      <button class="filter-pill">Média</button>
+    </div>
+
+    <!-- KPIs agregados do time selecionado -->
+    <div class="kpi-grid">
+      <div class="kpi green">
+        <div class="kpi-label">Pessoas avaliadas</div>
+        <div class="kpi-value">9<span style="font-size:14px; color:var(--txt2); font-weight:500; margin-left:4px;">/9</span></div>
+        <div class="kpi-trend">100% TI / BI · último ciclo 30 dias</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">Skill mais crítica</div>
+        <div class="kpi-value">Python</div>
+        <div class="kpi-trend">4/9 pessoas abaixo do esperado</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Nível médio time</div>
+        <div class="kpi-value">3.4<span style="font-size:14px; color:var(--txt2); font-weight:500; margin-left:4px;">/5</span></div>
+        <div class="kpi-trend">▲ +0.3 vs ciclo anterior</div>
+      </div>
+      <div class="kpi danger">
+        <div class="kpi-label">Gaps críticos detectados</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-trend">Python · Stakeholder mgmt · Inglês</div>
+      </div>
+    </div>
+
+    <!-- HEATMAP principal -->
+    <div class="heatmap-wrap">
+      <div class="heatmap-head">
+        <div>
+          <div class="heatmap-title">📊 TI / BI · 9 pessoas × 7 competências esperadas</div>
+          <div style="font-size:11px; color:var(--txt2); margin-top:2px;">Hover na célula mostra detalhe · click abre ficha skill do colaborador</div>
+        </div>
+        <div class="heatmap-legend">
+          <span><span class="legend-box l1"></span> &lt; 50% esperado</span>
+          <span><span class="legend-box l2"></span> 50-70%</span>
+          <span><span class="legend-box l3"></span> 70-90%</span>
+          <span><span class="legend-box l4"></span> 90-100%</span>
+          <span><span class="legend-box l5"></span> Acima esperado</span>
+        </div>
+      </div>
+
+      <div class="heatmap" style="grid-template-columns:200px repeat(7, 1fr);">
+        <!-- Header skills -->
+        <div></div>
+        <div class="hm-skill-header">SQL avançado<br><span style="opacity:.6;">(esp 4)</span></div>
+        <div class="hm-skill-header">Python pandas<br><span style="opacity:.6;">(esp 4)</span></div>
+        <div class="hm-skill-header">Tableau/PBI<br><span style="opacity:.6;">(esp 3)</span></div>
+        <div class="hm-skill-header">Stakeholder<br><span style="opacity:.6;">(esp 3)</span></div>
+        <div class="hm-skill-header">Comunicação<br><span style="opacity:.6;">(esp 3)</span></div>
+        <div class="hm-skill-header">Inglês<br><span style="opacity:.6;">(esp 3)</span></div>
+        <div class="hm-skill-header">LGPD básico<br><span style="opacity:.6;">(esp 2)</span></div>
+
+        <!-- Fernanda Lima -->
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Fernanda Lima<div class="meta">Analista Pleno</div></div>
+          <div class="hm-cell l5"><span class="actual">5</span><span class="expected">/4</span></div>
+          <div class="hm-cell l5"><span class="actual">5</span><span class="expected">/4</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">3</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Carlos Oliveira<div class="meta">Analista Sênior</div></div>
+          <div class="hm-cell l5"><span class="actual">5</span><span class="expected">/4</span></div>
+          <div class="hm-cell l4"><span class="actual">4</span><span class="expected">/4</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">2</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Marina Costa<div class="meta">Analista Júnior</div></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/4</span></div>
+          <div class="hm-cell l2 gap"><span class="actual">1</span><span class="expected">/4</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">2</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Pedro Lima<div class="meta">Analista Pleno</div></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/4</span></div>
+          <div class="hm-cell l2 gap"><span class="actual">1</span><span class="expected">/4</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l2 gap"><span class="actual">1</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l2 gap"><span class="actual">1</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">3</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Lucas Santos<div class="meta">Analista Pleno</div></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/4</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/4</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/3</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">2</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Ana Souza<div class="meta">Analista Júnior</div></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/4</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/4</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">2</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Rafael Vieira<div class="meta">Tech Lead</div></div>
+          <div class="hm-cell l5"><span class="actual">5</span><span class="expected">/4</span></div>
+          <div class="hm-cell l5"><span class="actual">5</span><span class="expected">/4</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">2</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Beatriz Cunha<div class="meta">Analista Júnior</div></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/4</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/4</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l3"><span class="actual">2</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">2</span><span class="expected">/2</span></div>
+        </div>
+
+        <div class="hm-row" style="grid-template-columns:200px repeat(7, 1fr); grid-column:1 / -1;">
+          <div class="hm-employee">Tiago Almeida<div class="meta">Analista Pleno</div></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/4</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/4</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">4</span><span class="expected">/3</span></div>
+          <div class="hm-cell l4"><span class="actual">3</span><span class="expected">/3</span></div>
+          <div class="hm-cell l5"><span class="actual">3</span><span class="expected">/2</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gaps coletivos -->
+    <div class="card">
+      <div class="card-head">
+        <div><div class="card-title">⚠ Gaps coletivos detectados · planejar ação</div></div>
+      </div>
+      <div class="gap-grid">
+        <div class="gap-card critical">
+          <h4>🐍 Python pandas</h4>
+          <p>4 de 9 pessoas abaixo do nível esperado (4) · gap crítico afeta projetos de BI avançado</p>
+          <div class="gap-stats">
+            <div class="gap-stat"><strong class="danger">4</strong><span>abaixo</span></div>
+            <div class="gap-stat"><strong>2.7</strong><span>média atual</span></div>
+            <div class="gap-stat"><strong>4</strong><span>esperado</span></div>
+          </div>
+          <div class="gap-action">
+            <button>+ Curso interno</button>
+            <button>Buscar mentor</button>
+          </div>
+        </div>
+
+        <div class="gap-card">
+          <h4>🤝 Stakeholder management</h4>
+          <p>3 de 9 abaixo · soft skill cross-cargo · pode ser desenvolvida com mentoring</p>
+          <div class="gap-stats">
+            <div class="gap-stat"><strong>3</strong><span>abaixo</span></div>
+            <div class="gap-stat"><strong>2.8</strong><span>média atual</span></div>
+            <div class="gap-stat"><strong>3</strong><span>esperado</span></div>
+          </div>
+          <div class="gap-action">
+            <button>+ Workshop interno</button>
+            <button>Buscar mentor</button>
+          </div>
+        </div>
+
+        <div class="gap-card">
+          <h4>🌐 Inglês conversacional</h4>
+          <p>3 de 9 abaixo · não bloqueante mas limita acesso a documentação técnica</p>
+          <div class="gap-stats">
+            <div class="gap-stat"><strong>3</strong><span>abaixo</span></div>
+            <div class="gap-stat"><strong>2.5</strong><span>média atual</span></div>
+            <div class="gap-stat"><strong>3</strong><span>esperado</span></div>
+          </div>
+          <div class="gap-action">
+            <button>+ Auxílio educação</button>
+            <button>App Babbel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top stars · quem está acima -->
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">⭐ Stars do time · pessoas acima da expectativa</div></div></div>
+      <table>
+        <thead><tr><th>Pessoa</th><th>Cargo</th><th>Skills acima esperado</th><th>Mentor potencial em</th><th>Ação</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Rafael Vieira</strong></td>
+            <td>Tech Lead</td>
+            <td>SQL avançado · Python · Tableau · todos +1</td>
+            <td>Python · Stakeholder mgmt</td>
+            <td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">Inscrever mentor</button></td>
+          </tr>
+          <tr>
+            <td><strong>Fernanda Lima</strong></td>
+            <td>Analista Pleno</td>
+            <td>SQL +1 · Python +1 · Tableau +1 · LGPD +1</td>
+            <td>SQL avançado</td>
+            <td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">Inscrever mentor</button></td>
+          </tr>
+          <tr>
+            <td><strong>Carlos Oliveira</strong></td>
+            <td>Analista Sênior</td>
+            <td>SQL +1 · Stakeholder +1 · Comunicação +1</td>
+            <td>Stakeholder mgmt</td>
+            <td><button class="btn-secondary" style="padding:5px 11px; font-size:11px;">Inscrever mentor</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.filter-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    p.parentElement.querySelectorAll('.filter-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

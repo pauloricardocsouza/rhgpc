@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.53 · 18 de maio de 2026
+**Versão**: 2.54 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1017,6 +1017,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.50 | Relatório consolidado bloco pós-reposicionamento · 25 specs · 6 schemas · 9 cockpits |
 | 2.51 | Schema v16 + Spec M21 Varejo Multi-loja + Spec C4 Partner Program + Página Aniversariantes |
 | 2.52 | Páginas Multi-loja + Quadro Honra + Partner Portal + Spec D10 Mobile-First |
-| **2.53** | **Schema SQL v17 (M21+C4+D10 materializadas · 13 tabelas + 9 RPCs + RLS via loop + seed 6 trilhas operacionais padrão · operational_tracks + hall_of_fame + branch_absenteeism_daily + sales_commissions_summary + partners + partner_referrals + commissions + materials + nps + push_subscriptions + delivery_log + geo_events + pwa_versions · graceful guards) + Página HTML `r2_people_trilhas_funcao.html` materializa M21 trilhas (toggle dual-mode colaborador/gestor RH · persona Ana Beatriz Operadora Caixa progresso 60% · hero gradient blue-purple + track progress card destaque c/ 5 módulos status completed/current/locked + certificados conquistados 4 cards green-gradient · modo gestor c/ 4 KPIs + tabela 6 trilhas configuradas c/ progress bars + bottleneck card 3 módulos c/ quiz fail > 15%) + Spec M22 Sucessão & Carreira (skill matrix self+leader assessment heatmap + plano de sucessão por cargo crítico c/ primary/secondary/tertiary readiness ready_now/6m/12m/24m + mentoring matching automático opt-in c/ 8 critérios + carreira self-request gera PDI direcionado automático + trilha de carreira sugerida por degrau · 8 tabelas + 8 RPCs + 22+ testes meta · permissão sensível p/ sucessão · integração cruzada c/ M17/M18/M21/M20/PDI/9-Box)** |
+| 2.53 | Schema v17 + Trilhas UI + Spec M22 Sucessão & Carreira |
+| **2.54** | **Schema SQL v18 (M22 materializada · 10 tabelas + 7 RPCs + trigger auto-schedule review 6m + seed catálogo 19 skills GPC + RLS sensitive p/ sucessão · skills_catalog + position_skills_required + employee_skills + succession_plans + succession_candidates + mentoring_profiles + mentoring_pairs + career_interests + career_paths + career_path_steps · pwa_versions bump v0.18) + Página HTML `r2_people_sucessao.html` materializa M22 sucessão (persona Renato Pinto Diretor · banner confidencial vermelho restrição NDA · 4 KPIs c/ 2 sem sucessor primário danger · 4 abas: Cargos críticos c/ cards flow holder→sucessores incluindo 2 GAPs CFO+Inhambupe e 2 OK Diretor Ops+Coord RH c/ skills gap tags + Gaps urgentes 2 cargos · Organograma visual · Readiness 23 pessoas pipeline) + Página HTML `r2_people_skill_matrix.html` materializa M22 heatmap (persona Patrícia Mello Coord RH · filtros depto+cargo+vista leader/self/média · 4 KPIs · heatmap TI/BI 9 pessoas × 7 skills c/ celulas 5 níveis cor + actual/expected fonte mono + gap borda red destacada · Gaps coletivos 3 cards Python critical/Stakeholder/Inglês c/ ações + Top stars 3 mentores potenciais Rafael/Fernanda/Carlos)** |
 
 ---
