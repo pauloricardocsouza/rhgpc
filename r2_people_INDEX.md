@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.44 · 18 de maio de 2026
+**Versão**: 2.45 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1008,6 +1008,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.41 | Spec M15 Mobile-first PWA · decisão PWA-first vs nativo + Next.js Service Worker + manifest c/ shortcuts e Share Target + offline-first c/ outbox pattern e conflict resolution + Web Push c/ quiet hours + WebAuthn biometria + câmera+OCR client-side + 25+ testes meta + roadmap nativo M+3 |
 | 2.42 | Spec C3 Marketing & Content (fecha série C trio Marketing/Sales/CS) · 5 pilares conteúdo (CLT/Gestão/LGPD/Calculadoras/Cases) + SEO long-tail PME + webinar mensal c/ 12 pautas + partner program 4 tiers (Referral/Affiliate/Reseller/Strategic) + meta 25k tráfego + R$ 68k MRR · CAC R$ 250 vs R$ 800 outbound · 18+ testes meta |
 | 2.43 | Relatório consolidado da sessão autônoma 17-18/05 · `docs/sessao_autonoma_2026_05_18_relatorio.md` documenta 43 commits + 20 specs + 6 schemas SQL + 8 cockpits + padronização Cofre 50 páginas + 3 dimensões completas (produto/operação/comercial) + roadmap próximas sessões |
-| **2.44** | **Reposicionamento estratégico (R2 = gestão de pessoas, NÃO DP · Domínio é fonte fiscal) + Spec M17 People Analytics (dashboards diretoria: headcount/turnover/retenção/D&I c/ k-anonymity/custo agregado/engajamento cruzado · views materializadas refresh diário · 22+ testes meta) + Spec M16 Integração Domínio ESPECULATIVA (4 modos: API/webhook/file/OCR · 9 áreas de dados sincronizados · dominio_id_map + dominio_sync_jobs · catálogo do que NÃO sincronizamos · roadmap p/ confirmar com doc real)** |
+| 2.44 | Reposicionamento estratégico (R2 = gestão de pessoas, NÃO DP · Domínio é fonte fiscal) + Spec M17 People Analytics + Spec M16 Integração Domínio ESPECULATIVA |
+| **2.45** | **Aniversariantes destacados na home (KPI orange c/ 3 mini-pills + seção dedicada c/ 2 abas Natalício/Empresa + 3 colunas Hoje/Semana/Restante + scroll smooth do KPI · pulse animation no "hoje") + C1 v1.1 reposicionado (frase-mãe "você não troca seu Domínio" + 12 objeções incluindo "Mas vocês fazem folha?" e "E rescisão?" + matriz competitiva c/ linha "Integração nativa Domínio") + C3 v1.1 c/ 6º pilar de conteúdo "Integração com sistemas de DP" (5 ERPs cobertos · mata objeção #3 antes da demo) + landing.html hero refeito ("Você não vai trocar seu Domínio. Vai ganhar o que ele nunca foi feito pra entregar")** |
 
 ---

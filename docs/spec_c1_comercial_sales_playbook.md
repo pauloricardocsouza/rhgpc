@@ -1,28 +1,43 @@
 # Spec C1 · Comercial & Sales Playbook · Lead → Contrato → Go-live
 
 **Status**: especificação · em validação com fundadores R2
-**Versão**: 1.0 · 17 de maio de 2026
+**Versão**: 1.1 · 18 de maio de 2026 (reposicionamento: camada humana sobre Domínio)
 **Escopo**: funil comercial, materiais, pricing, qualificação, processo de venda, contratação, kick-off
-**Depende de**: spec M10 (settings tenant), spec M13 (onboarding wizard), schema v12 (planos/billing)
+**Depende de**: spec M10 (settings tenant), spec M13 (onboarding wizard), spec M16 (Integração Domínio), schema v12 (planos/billing)
 
 ---
 
 ## 1. Posicionamento (uma frase)
 
-> **R2 People** é a plataforma de gestão de pessoas pensada para PMEs brasileiras que precisam digitalizar RH respeitando CLT, LGPD e a complexidade real do mercado (estrutura tripartite, multi-filial, dado de saúde sensível) — sem custo de implementação Enterprise e sem a infantilidade dos SaaS HR genéricos.
+> **R2 People é a camada humana de gestão de pessoas que se conecta ao seu Domínio (ou Senior, Totvs, Sankhya). Você não troca seu sistema de DP — você ganha 1:1 estruturada, PDI, avaliação 9-Box, clima e People Analytics no celular do líder e do colaborador.**
 
-### 1.1 Diferenciação contra os 3 competidores principais
+### 1.1 O que somos e o que NÃO somos
 
-| | **Qulture.Rocks** | **Sólides** | **Senior** | **R2 People** |
+| Somos | Não somos |
+|---|---|
+| Camada de gestão humana (liderança + colaborador) | Sistema de folha de pagamento |
+| Calculadora de NPS, eNPS, turnover, retenção | Calculadora de INSS/FGTS/IRRF |
+| Espelho/refletor de dados financeiros do Domínio | Substituto fiscal do Domínio |
+| Workflow de 1:1, PDI, OKR, avaliação, clima | Gerador de eSocial, RAIS, GPS |
+| LGPD-first para dado pessoal e de saúde | Operador de pensão alimentícia, bloqueio judicial |
+
+**Frase de venda padronizada**: *"Você não vai trocar seu Domínio. Vai dar ao seu líder e ao seu colaborador o que o Domínio nunca foi feito pra entregar."*
+
+### 1.2 Diferenciação contra os 3 competidores principais
+
+| | **Qulture.Rocks** | **Sólides** | **Senior HCM** | **R2 People** |
 |---|---|---|---|---|
+| **Integração nativa Domínio** | ❌ | ❌ | ❌ (concorrente do Domínio) | ✅ M16 (4 modos: API/webhook/CSV/OCR) |
 | Tripartite CTPS ≠ tomador | ❌ | ❌ | ⚠ via custom | ✅ nativo |
 | LGPD-first (CID nunca exposto à liderança) | ⚠ depende config | ⚠ depende | ❌ legado | ✅ arquitetural |
 | Onboarding < 25min (TTFE) | ❌ 2-4 semanas | ❌ 1-2 semanas | ❌ 3-6 meses | ✅ M13 wizard |
 | Preço transparente (sem "fale com vendas") | ⚠ desconto opaco | ⚠ idem | ❌ orçamento | ✅ tabela pública |
 | Atestados c/ OCR client-side | ❌ | ❌ | ❌ | ✅ Tesseract WASM |
 | DPO compartilhado pra cliente PME | ❌ | ❌ | ⚠ pago | ✅ incluso Pro+ |
-| Webhooks HMAC nativos | ⚠ Zapier only | ⚠ idem | ⚠ EDI legado | ✅ schema v10 |
+| Webhooks HMAC nativos (M12 + M14) | ⚠ Zapier only | ⚠ idem | ⚠ EDI legado | ✅ schemas v10+v13 |
+| People Analytics (D&I, turnover, retenção) | ⚠ básico | ⚠ básico | ✅ caro | ✅ M17 nativo |
 | Postura segurança auditável pelo cliente | ❌ | ❌ | ⚠ NDA | ✅ DevSec console |
+| **Custo total de propriedade** | médio (~R$ 1k-3k) | médio (~R$ 800-2k) | alto (R$ 5k+ + impl) | baixo (R$ 299-2.5k transparente) |
 
 ---
 
@@ -291,7 +306,7 @@ Stack tooling:
 
 ## 10. Risk & objection handling
 
-### 10.1 As 10 objeções mais comuns + respostas
+### 10.1 As 12 objeções mais comuns + respostas
 
 1. **"Já temos planilha, funciona"**
    → "Vamos calcular o custo escondido? Em média um RH de 50 pessoas perde 35h/mês em planilha. A R$ 60/h custo total, são R$ 25k/ano só do RH. Pro custa R$ 9.6k/ano."
@@ -299,29 +314,35 @@ Stack tooling:
 2. **"E se vazar dado de saúde?"**
    → "Por arquitetura, atestado com CID nunca aparece para o líder. Só DPO + RH validador veem. Mostro a tela agora?"
 
-3. **"Não posso trocar meu ERP folha agora"**
-   → "Não pedimos. R2 People conversa via webhook com o que você já tem. Mostro um exemplo de fluxo com Senior/Totvs/Sankhya?"
+3. **"Não posso trocar meu Domínio (ou Senior/Totvs/Sankhya) agora"** ⭐ ATUALIZADA
+   → "Justamente — não pedimos. R2 People **é a camada humana acima** do seu DP atual. O Domínio continua calculando folha; R2 mostra holerite no celular do colaborador, dá 1:1 estruturada ao líder, e te entrega dashboards de turnover/eNPS/D&I que o Domínio nunca foi feito pra entregar. Quer ver o spec da nossa integração?"
 
-4. **"Sólides já faz isso e é barato"**
-   → "Para empresa com tripartite, Sólides não modela isso nativo. E nosso pricing por seat acaba sendo equivalente em volume médio."
+4. **"Mas vocês fazem folha de pagamento?"** ⭐ NOVA
+   → "Não. E não é por incompetência — é por escolha. Folha é regulada, fiscal, complexa. Tem 30 anos de mercado e o Domínio é muito bom nisso. Nosso valor é o que vem ANTES (gestão de pessoas) e o que vem DEPOIS (analytics, engajamento) do que o DP faz."
 
-5. **"E LGPD?"**
+5. **"E rescisão? Calculam?"** ⭐ NOVA
+   → "Não recalculamos. Refletimos o que o Domínio calcula. Quando você dispara um desligamento no R2, ele entra como movimentação aprovada, o Domínio executa a rescisão fiscal, e R2 mostra o resumo (valor total, parcelas, prazos) num offboarding estruturado. Sem dupla digitação."
+
+6. **"Sólides já faz isso e é barato"**
+   → "Para empresa com tripartite, Sólides não modela isso nativo. E Sólides não integra com Domínio. Nosso pricing por seat acaba equivalente em volume médio, mas com a integração que zera retrabalho com o DP."
+
+7. **"E LGPD?"**
    → "DPO compartilhado incluso no Pro. ROPA pré-preenchida. DSAR automatizado. Spec D7 detalha tudo, te mando."
 
-6. **"Demora pra implementar?"**
-   → "Em vídeo de 25min você está com plataforma funcional. Mais 1 semana com CS para rollout. Mostro o wizard?"
+8. **"Demora pra implementar?"**
+   → "Em 25min você está com plataforma funcional. Mais 1 semana com CS para rollout. A integração com Domínio entra em paralelo, sem bloquear adoção. Mostro o wizard?"
 
-7. **"E se sair do ar?"**
+9. **"E se sair do ar?"**
    → "SLO 99.5%, dump diário cifrado, smoke test noturno, drill trimestral. DR Console é público para o cliente, te mostro."
 
-8. **"Posso usar minha cor/logo?"**
-   → "Sim, branding por tenant no wizard inicial. Sub-domínio próprio só Enterprise."
+10. **"Posso usar minha cor/logo?"**
+    → "Sim, branding por tenant no wizard inicial. Sub-domínio próprio só Enterprise."
 
-9. **"E API?"**
-   → "REST + webhook outbound HMAC nativo. Catálogo de 10 eventos. Sem custo extra no Pro."
+11. **"E API?"**
+    → "REST v1 + GraphQL + 4 SDKs (TS/Python/PHP/Go). Webhook outbound HMAC (M12) e inbound (M14). Catálogo de 10+ eventos. Sem custo extra no Pro."
 
-10. **"Quanto custa sair?"**
-    → "Nada. Export ZIP completo via DSAR portability. Sem lock-in, sem multa, sem 'phase out fee'."
+12. **"Quanto custa sair?"**
+    → "Nada. Export ZIP completo via DSAR portability. Sem lock-in, sem multa, sem 'phase out fee'. E como você nunca tirou seu DP do Domínio, sair do R2 não rompe nada fiscal."
 
 ### 10.2 Red flags que indicam NÃO fechar
 

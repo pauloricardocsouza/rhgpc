@@ -1,15 +1,21 @@
 # Spec C3 · Marketing & Content · SEO, Conteúdo, Webinars, Partner Program
 
 **Status**: especificação · pré-implementação
-**Versão**: 1.0 · 18 de maio de 2026
+**Versão**: 1.1 · 18 de maio de 2026 (reposicionamento: camada humana sobre Domínio)
 **Escopo**: estratégia de aquisição via conteúdo, SEO, webinars, programa de parceiros, brand voice
-**Depende de**: spec C1 (Sales playbook), spec C2 (CS), persona ICP definida em C1
+**Depende de**: spec C1 (Sales playbook), spec C2 (CS), spec M16 (Integração Domínio), persona ICP definida em C1
 
 ---
 
 ## 1. Filosofia (1 parágrafo)
 
 Não fazemos marketing barulhento. Fazemos **conteúdo útil** que resolve dor real de gestor de RH PME brasileiro — dúvida sobre CLT, exemplo de política LGPD, cálculo de custo de demissão, template de 1:1. O blog do R2 People é o que **um RH júnior abre antes de perguntar pro escritório de contabilidade**. SEO é consequência, não objetivo. Webinar é continuação da conversa, não panfleto.
+
+### 1.1 Mensagem-mãe (todo conteúdo termina alinhado a ela)
+
+> *"Você não precisa trocar seu Domínio (ou Senior, Totvs, Sankhya). R2 People é a **camada humana** que dá ao seu líder 1:1 estruturada, PDI e clima — e ao seu colaborador holerite no celular, banco de horas e férias sem chamar o DP."*
+
+Toda landing, todo webinar, todo blog post fecha com variação dessa frase. Coerência de posicionamento é estratégia barata e rara.
 
 ---
 
@@ -126,6 +132,25 @@ Primeiros 3 cases planejados:
 - GPC (varejo 367 pessoas, 14 unidades, Bahia)
 - Labuta (prestadora 128 pessoas)
 - Limpactiva (limpeza terceirizada 62 pessoas)
+
+### 4.6 Pilar 6 · Integração com sistemas de DP ⭐ NOVO
+
+**Objetivo**: capturar busca de "ERP DP X" (Domínio, Senior, Totvs, Sankhya, Domínio Sistemas) e mostrar que R2 não é competidor — é complemento.
+**Formato**: artigo longform 1500-2000 palavras + screenshot da integração em ação
+**Frequência**: 1 por mês (1 ERP/mês até cobrir os 5 principais)
+**Pauta planejada**:
+
+- "Como integrar Sistema Domínio com R2 People: 4 modos (API/webhook/CSV/OCR)"
+- "Senior HCM + R2 People: usando o melhor dos dois mundos"
+- "Totvs Protheus folha + R2 People na liderança: arquitetura sugerida"
+- "Sankhya + R2 People: receita comum em varejo regional"
+- "Domínio Sistemas + R2 People: setup de 1 hora"
+
+Cada artigo tem **CTA dupla**:
+1. *"Quer ver demo da integração com [ERP]?"* → demo agendada
+2. *"É contador/escritório? Conheça nosso partner program"* → captura partner
+
+Esse pilar **mata a objeção #3** do C1 (*"Não posso trocar meu ERP folha agora"*) antes mesmo de chegar na demo. Cliente entra na demo já entendendo que NÃO precisa trocar.
 
 ---
 
