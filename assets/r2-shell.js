@@ -258,7 +258,8 @@
     { title: 'People Analytics · Diretoria', url: 'r2_people_analytics.html', cat: 'Admin', icon: '📊', kw: 'analytics diretoria turnover retencao headcount d&i diversidade equidade salarial custo dominio enps renato pinto kanonymity sobrevivencia kaplan meier' },
     { title: 'Inbox do Líder · Aprovações & Equipe', url: 'r2_people_inbox_lider.html', cat: 'Gestor', icon: '📥', kw: 'inbox lider aprovacao bulk approve calendar consolidado equipe joao carvalho atestado ferias reembolso treinamento bloqueador sla painel subordinado' },
     { title: 'Compliance Trabalhista · NR-7 / NR-6 / Termos', url: 'r2_people_compliance.html', cat: 'Admin', icon: '✅', kw: 'compliance trabalhista aso nr7 nr6 epi treinamento nr10 nr11 nr35 antiassedio lgpd termos versionados documentos pessoais cnh ltcat periculosidade insalubridade patricia score' },
-    { title: 'Meus Benefícios · Catálogo + Convênios + Reembolso', url: 'r2_people_beneficios.html', cat: 'Você', icon: '💎', kw: 'beneficios catalogo adesao plano saude vr va vt gympass odontoprev seguro vida previdencia conveios parceiros smart fit drogasil cinemark dependentes reembolso telemedicina psicologa fernanda lima total rewards' }
+    { title: 'Meus Benefícios · Catálogo + Convênios + Reembolso', url: 'r2_people_beneficios.html', cat: 'Você', icon: '💎', kw: 'beneficios catalogo adesao plano saude vr va vt gympass odontoprev seguro vida previdencia conveios parceiros smart fit drogasil cinemark dependentes reembolso telemedicina psicologa fernanda lima total rewards' },
+    { title: 'Aniversariantes · Natalícios & Empresa', url: 'r2_people_aniversariantes.html', cat: 'Comunicação', icon: '🎂', kw: 'aniversariantes natalicio empresa anos casa hoje semana mes marcos altos hall of fame ana beatriz carlos henrique marcos santana 20 anos renato pinto 15 patricia mello 10 calendar parabenizar mural' }
   ];
 
   function openSearch() {

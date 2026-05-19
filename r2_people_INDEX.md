@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.50 · 18 de maio de 2026
+**Versão**: 2.51 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1014,6 +1014,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.47 | Página HTML Analytics M17 + Spec M20 Inbox Líder + Hub 9 cockpits |
 | 2.48 | Página HTML Inbox do Líder (M20) · persona João Carvalho 11 subordinados |
 | 2.49 | Páginas HTML Compliance (M18) + Benefícios (M19) materializam specs c/ personas dedicadas |
-| **2.50** | **Relatório consolidado bloco pós-reposicionamento · `docs/sessao_autonoma_2026_05_18_bloco_pos_reposicionamento.md` documenta 5 commits + 3 specs (M18/M19/M20) + Schema SQL v15 + 4 páginas HTML (Analytics/Inbox Líder/Compliance/Benefícios) + 3 personas novas (Renato Pinto Diretor + João Carvalho Líder + Fernanda Lima Colaboradora) · 11 perspectivas distintas no sistema · 25 specs totais documentadas · 6 schemas SQL · 9 cockpits operacionais · roadmap próximas opções (M21 varejo GPC, D10 mobile, Schema v16, dependentes wizard, aniversariantes, C4 partner program) · 6 direções abertas pra discussão (doc Domínio, pricing benefícios, CCT BA, matriz EPI, eNPS real, auditoria visual)** |
+| 2.50 | Relatório consolidado bloco pós-reposicionamento · 25 specs · 6 schemas · 9 cockpits |
+| **2.51** | **Schema SQL v16 (M20 leader_inbox_prefs + RPCs aniversários líder/tenant + bulk_approve + team_panel · 100% idempotente · graceful guards) + Spec M21 Específicos Varejo Multi-Loja (anchor GPC 14 unidades · quadro multi-loja gerente regional + absenteísmo granular por loja+horário+função + quadro de honra 5 categorias automáticas + trilhas operacionais por função: caixa/repositor/ASG/vigilante + comissão consulta espelha Domínio + escala viewer + mobile-first chão de loja · 7 tabelas + 5 RPCs + 20+ testes meta) + Spec C4 Partner Program (canal alt aquisição via contadores + 5 tiers Indicação→Platinum c/ 15-30% MRR recorrente + Partner Portal + clawback 6m + materiais comerciais + KPIs: 30% MRR via partners ano 2 · 7 tabelas + 6 RPCs) + Página `r2_people_aniversariantes.html` dedicada (3 abas: Lista c/ Hoje destaque + Calendar mensal heatmap + Marcos empresa pills coloridas 20/15/10/5/1 anos · persona Ricardo Silva Admin RH · filtros tipo/período/filial · ações Parabenizar/Lembrar/Celebrar)** |
 
 ---

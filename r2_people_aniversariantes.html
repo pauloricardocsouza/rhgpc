@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Aniversariantes · Natalícios & Empresa</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #F58634, #6D28D9); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:16px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-orange{background:var(--orange); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; font-family:inherit;}
+
+/* Hero celebracao */
+.celebrate-hero{background:linear-gradient(115deg, #F58634 0%, #6D28D9 100%); color:#fff; border-radius:14px; padding:24px 28px; margin-bottom:18px; position:relative; overflow:hidden;}
+.celebrate-hero::before{content:''; position:absolute; right:-50px; top:-50px; width:200px; height:200px; background:radial-gradient(circle, rgba(255,255,255,.2), transparent 65%); border-radius:50%;}
+.celebrate-hero::after{content:'🎂'; position:absolute; right:30px; bottom:-20px; font-size:140px; opacity:.15;}
+.celebrate-content{position:relative; z-index:1; display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center;}
+.celebrate-content h2{font-size:22px; font-weight:700; margin-bottom:6px;}
+.celebrate-content p{font-size:13px; color:rgba(255,255,255,.85); max-width:600px;}
+.celebrate-stats{display:flex; gap:18px; margin-top:14px;}
+.celebrate-stat{font-size:11px; color:rgba(255,255,255,.7);}
+.celebrate-stat strong{display:block; font-size:24px; font-weight:700; font-family:'JetBrains Mono', monospace; color:#fff; letter-spacing:-.5px;}
+
+/* Tabs */
+.tabs{display:flex; gap:2px; border-bottom:2px solid var(--gray1); margin-bottom:16px; overflow-x:auto;}
+.tab{padding:10px 16px; cursor:pointer; font-size:12.5px; font-weight:500; color:var(--txt2); border-bottom:2px solid transparent; margin-bottom:-2px; white-space:nowrap;}
+.tab:hover{color:var(--txt);}
+.tab.active{color:var(--navy); border-bottom-color:var(--orange); font-weight:600;}
+.tab-pane{display:none;}
+.tab-pane.active{display:block;}
+
+/* Hoje destaque grande */
+.today-spotlight{background:linear-gradient(135deg, #FFF1E0, #fff); border:2px dashed var(--orange); border-radius:14px; padding:20px; margin-bottom:18px;}
+.today-spotlight h3{font-size:16px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px;}
+.today-people{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:12px;}
+.today-person{background:#fff; padding:14px; border-radius:10px; display:flex; align-items:center; gap:12px; box-shadow:0 2px 8px rgba(245,131,52,.15);}
+.today-avatar{width:54px; height:54px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; flex-shrink:0;}
+.today-info strong{font-size:14px; font-weight:700; display:block;}
+.today-info .meta{font-size:11px; color:var(--txt2); margin-top:2px;}
+.today-action{margin-top:14px; display:flex; justify-content:flex-end; gap:8px;}
+
+/* Calendar mensal (CSS heatmap) */
+.cal-wrap{background:#fff; padding:16px; border-radius:12px; box-shadow:var(--shadow-card);}
+.cal-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.cal-month{font-size:16px; font-weight:700;}
+.cal-grid{display:grid; grid-template-columns:repeat(7, 1fr); gap:5px;}
+.cal-day-name{text-align:center; font-size:10px; color:var(--txt3); text-transform:uppercase; letter-spacing:.3px; font-family:'JetBrains Mono', monospace; padding:6px 0; font-weight:700;}
+.cal-cell{aspect-ratio:1; background:var(--off); border-radius:8px; padding:5px; position:relative; cursor:pointer; transition:transform .12s;}
+.cal-cell:hover{transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.08);}
+.cal-cell.today{background:var(--navy); color:#fff;}
+.cal-cell.outside{opacity:.3;}
+.cal-cell.has-bday{background:linear-gradient(135deg, #FFE3CC, #FCE6CD);}
+.cal-cell.has-empresa{background:linear-gradient(135deg, #F3E8FF, #E7EFFB);}
+.cal-cell.has-both{background:linear-gradient(135deg, #FFE3CC 0%, #F3E8FF 100%);}
+.cal-num{font-size:11px; font-weight:600; font-family:'JetBrains Mono', monospace;}
+.cal-cell.today .cal-num{color:#fff;}
+.cal-people{display:flex; gap:1px; margin-top:3px; flex-wrap:wrap;}
+.cal-mini-avatar{width:14px; height:14px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-size:7px; font-weight:700; border:1px solid #fff;}
+.cal-count{font-size:9px; color:var(--txt2); margin-top:2px; font-family:'JetBrains Mono', monospace; font-weight:600;}
+.cal-cell.today .cal-count{color:rgba(255,255,255,.7);}
+
+/* Person row · listagem completa */
+.person-row{display:grid; grid-template-columns:48px 1fr auto auto auto; gap:14px; padding:12px 14px; background:#fff; border:1px solid var(--gray1); border-radius:10px; margin-bottom:6px; align-items:center; transition:all .12s;}
+.person-row:hover{border-color:var(--orange); transform:translateX(2px);}
+.person-row.today{border-left:3px solid var(--orange); background:linear-gradient(90deg, #FFF1E0, #fff 40%);}
+.person-avatar{width:44px; height:44px; border-radius:50%; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:14px;}
+.person-info strong{font-size:13.5px; font-weight:600; display:block;}
+.person-meta{font-size:11px; color:var(--txt2); margin-top:1px;}
+.person-meta .dept{color:var(--txt);}
+.person-when{text-align:right;}
+.person-when .date{font-family:'JetBrains Mono', monospace; font-weight:700; font-size:13px; color:var(--amber);}
+.person-when .when{font-size:10px; color:var(--txt3); text-transform:uppercase; letter-spacing:.3px;}
+.person-when.today .date{color:var(--orange); font-size:14px;}
+.person-when.empresa .date{color:var(--purple);}
+.person-pill{padding:3px 9px; border-radius:11px; font-size:10px; font-weight:700; font-family:'JetBrains Mono', monospace;}
+.person-pill.years-1{background:var(--blue2); color:var(--blue);}
+.person-pill.years-5{background:var(--green2); color:var(--green);}
+.person-pill.years-10{background:#FCE6CD; color:#9E5500;}
+.person-pill.years-15{background:#F3E8FF; color:var(--purple);}
+.person-pill.years-20{background:linear-gradient(135deg, #FFD700, #FFA500); color:#fff;}
+.person-action button{padding:6px 10px; font-size:11px; border:1px solid var(--gray2); background:#fff; border-radius:6px; cursor:pointer; font-family:inherit; color:var(--navy); font-weight:500;}
+.person-action button:hover{background:var(--orange); color:#fff; border-color:var(--orange);}
+
+/* Filter bar */
+.filter-bar{background:#fff; padding:11px 14px; border-radius:10px; margin-bottom:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; border:1px solid var(--gray1);}
+.filter-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.1em; font-weight:700;}
+.filter-pill{padding:5px 11px; background:var(--gray1); border-radius:14px; font-size:11.5px; cursor:pointer; border:none; font-family:inherit;}
+.filter-pill.active{background:var(--orange); color:#fff; font-weight:600;}
+.filter-select{padding:5px 10px; border:1px solid var(--gray2); border-radius:7px; font-size:12px; font-family:inherit; background:#fff;}
+
+/* Section header */
+.section-head{display:flex; align-items:center; gap:10px; margin:14px 0 10px;}
+.section-head h3{font-size:13px; font-weight:700; font-family:'JetBrains Mono', monospace; text-transform:uppercase; letter-spacing:.1em; color:var(--txt2);}
+.section-head .count{background:var(--gray1); color:var(--txt); padding:2px 9px; border-radius:11px; font-size:10.5px; font-weight:700; font-family:'JetBrains Mono', monospace;}
+
+@media (max-width:980px){
+  .today-people{grid-template-columns:1fr;}
+  .person-row{grid-template-columns:48px 1fr auto;}
+  .person-row > :nth-child(n+4){display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Comunicação</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_aniversariantes.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 12V8H4v4M2 20h20M6 20V4h12v16"/></svg>Aniversariantes</a>
+      <a class="nav-item" href="r2_people_comunicados.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Comunicados</a>
+      <a class="nav-item" href="r2_people_feedback_mural.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9A2 2 0 0 0 19.72 9H14zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Mural de elogios</a>
+      <a class="nav-item" href="r2_people_colaboradores_lista.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Colaboradores</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Comunicação</span><span class="sep">›</span><span class="crumb">Aniversariantes</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">RS</div>
+      <div class="user-info"><span class="user-name">Ricardo Silva</span><span class="user-role">Admin RH</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Comunicação <span class="sep">·</span> Cultura <span class="sep">·</span> Mês de maio/2026</div>
+        <h1 class="page-title">Aniversariantes <em>do mês</em></h1>
+        <p class="page-subtitle">Natalícios e marcos de empresa · clique para parabenizar publicamente no mural · mensagens coletivas via comunicado interno</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">📥 Exportar CSV</button>
+        <button class="btn-orange">🎉 Mensagem coletiva</button>
+      </div>
+    </div>
+
+    <!-- Hero celebracao -->
+    <div class="celebrate-hero">
+      <div class="celebrate-content">
+        <div>
+          <h2>🎉 25 colaboradores para celebrar este mês</h2>
+          <p>22 aniversários naturais + 3 marcos de empresa (Marcos Santana 20 anos · Renato Pinto 15 anos · Patrícia Mello 10 anos). Hoje, 2 pessoas comemoram.</p>
+          <div class="celebrate-stats">
+            <div class="celebrate-stat">Hoje<strong>2</strong></div>
+            <div class="celebrate-stat">Esta semana<strong>5</strong></div>
+            <div class="celebrate-stat">Natalícios mês<strong>22</strong></div>
+            <div class="celebrate-stat">Marcos empresa<strong>3</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOJE · destaque grande -->
+    <div class="today-spotlight">
+      <h3>🎂 Hoje · 18 de maio · 2 aniversariantes</h3>
+      <div class="today-people">
+        <div class="today-person">
+          <div class="today-avatar" style="background:linear-gradient(135deg,#2E476F,#1F4FA0);">AS</div>
+          <div class="today-info">
+            <strong>Ana Beatriz Souza</strong>
+            <div class="meta">Cestão L1 · 32 anos · 🎂</div>
+          </div>
+        </div>
+        <div class="today-person">
+          <div class="today-avatar" style="background:linear-gradient(135deg,#6D28D9,#C0392B);">CP</div>
+          <div class="today-info">
+            <strong>Carlos Henrique Pinto</strong>
+            <div class="meta">ATP - Atacado · 41 anos · 🎂</div>
+          </div>
+        </div>
+      </div>
+      <div class="today-action">
+        <button class="btn-secondary">Postar no mural</button>
+        <button class="btn-orange">Enviar e-mail coletivo</button>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filter-bar">
+      <span class="filter-label">Tipo</span>
+      <button class="filter-pill active">Tudo</button>
+      <button class="filter-pill">🎂 Natalícios</button>
+      <button class="filter-pill">🏢 Empresa</button>
+      <span style="margin-left:12px;" class="filter-label">Período</span>
+      <button class="filter-pill active">Maio</button>
+      <button class="filter-pill">Junho</button>
+      <button class="filter-pill">Próximos 90d</button>
+      <span class="filter-label">Filial</span>
+      <select class="filter-select"><option>Todas (14)</option><option>Cestão L1</option><option>ATP-Varejo</option><option>CD Logística</option></select>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="lista">📋 Lista</div>
+      <div class="tab" data-tab="calendar">📅 Calendar</div>
+      <div class="tab" data-tab="empresa">🏢 Marcos de empresa</div>
+    </div>
+
+    <!-- LISTA -->
+    <div class="tab-pane active" id="tab-lista">
+      <div class="section-head">
+        <h3>🎉 Hoje</h3>
+        <span class="count">2</span>
+      </div>
+      <div class="person-row today">
+        <div class="person-avatar" style="background:#2E476F;">AS</div>
+        <div class="person-info">
+          <strong>Ana Beatriz Souza</strong>
+          <div class="person-meta"><span class="dept">Cestão L1</span> · Atendente Caixa · admitida 03/2022</div>
+        </div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when today"><div class="date">hoje</div><div class="when">faz 32 anos</div></div>
+        <div class="person-action"><button>Parabenizar 🎁</button></div>
+      </div>
+      <div class="person-row today">
+        <div class="person-avatar" style="background:#6D28D9;">CP</div>
+        <div class="person-info">
+          <strong>Carlos Henrique Pinto</strong>
+          <div class="person-meta"><span class="dept">ATP - Atacado</span> · Repositor Sênior · admitido 11/2019</div>
+        </div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when today"><div class="date">hoje</div><div class="when">faz 41 anos</div></div>
+        <div class="person-action"><button>Parabenizar 🎁</button></div>
+      </div>
+
+      <div class="section-head">
+        <h3>📅 Esta semana · até 24/05</h3>
+        <span class="count">5</span>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#1E7B4B;">DF</div>
+        <div class="person-info"><strong>Daniela Ferreira</strong><div class="person-meta"><span class="dept">Administrativo</span> · Assistente RH</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">20/05</div><div class="when">faz 38</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#F58634;">EM</div>
+        <div class="person-info"><strong>Eduardo Mendes</strong><div class="person-meta"><span class="dept">CD Logística</span> · Operador Empilhadeira</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">22/05</div><div class="when">faz 29</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#E82227;">FL</div>
+        <div class="person-info"><strong>Fernanda Lima</strong><div class="person-meta"><span class="dept">TI / BI</span> · Analista Pleno</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">23/05</div><div class="when">faz 34</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#1F4FA0;">GA</div>
+        <div class="person-info"><strong>Gabriel Almeida</strong><div class="person-meta"><span class="dept">ATP - Varejo</span> · Frente de Loja</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">24/05</div><div class="when">faz 26</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+
+      <div class="section-head">
+        <h3>📆 Restante do mês · 25-31/05</h3>
+        <span class="count">15</span>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#6D28D9;">HR</div>
+        <div class="person-info"><strong>Helena Ribeiro</strong><div class="person-meta"><span class="dept">Cestão Inhambupe</span> · Coordenadora</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">26/05</div><div class="when">faz 45</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#1E7B4B;">IV</div>
+        <div class="person-info"><strong>Igor Vasconcelos</strong><div class="person-meta"><span class="dept">Comercial</span> · Vendedor</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">27/05</div><div class="when">faz 31</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#2E476F;">JR</div>
+        <div class="person-info"><strong>Juliana Reis</strong><div class="person-meta"><span class="dept">Financeiro</span> · Analista</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">29/05</div><div class="when">faz 36</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#F58634;">LB</div>
+        <div class="person-info"><strong>Lucas Barbosa</strong><div class="person-meta"><span class="dept">Cestão L1</span> · Repositor</div></div>
+        <div class="person-pill" style="background:transparent;"></div>
+        <div class="person-when"><div class="date">31/05</div><div class="when">faz 24</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+
+      <div style="text-align:center; margin-top:12px;">
+        <button class="btn-secondary">Ver mais 11 do mês →</button>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="tab-pane" id="tab-calendar">
+      <div class="cal-wrap">
+        <div class="cal-head">
+          <div class="cal-month">Maio · 2026</div>
+          <div style="display:flex; gap:8px; align-items:center; font-size:11px;">
+            <span style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; border-radius:3px; background:linear-gradient(135deg,#FFE3CC,#FCE6CD);"></span>🎂 Natalício</span>
+            <span style="display:flex; align-items:center; gap:5px;"><span style="width:12px; height:12px; border-radius:3px; background:linear-gradient(135deg,#F3E8FF,#E7EFFB);"></span>🏢 Empresa</span>
+          </div>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day-name">Dom</div><div class="cal-day-name">Seg</div><div class="cal-day-name">Ter</div><div class="cal-day-name">Qua</div><div class="cal-day-name">Qui</div><div class="cal-day-name">Sex</div><div class="cal-day-name">Sáb</div>
+          <div class="cal-cell outside"><div class="cal-num">27</div></div>
+          <div class="cal-cell outside"><div class="cal-num">28</div></div>
+          <div class="cal-cell outside"><div class="cal-num">29</div></div>
+          <div class="cal-cell outside"><div class="cal-num">30</div></div>
+          <div class="cal-cell"><div class="cal-num">1</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">2</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#2E476F;">D</div></div></div>
+          <div class="cal-cell"><div class="cal-num">3</div></div>
+
+          <div class="cal-cell"><div class="cal-num">4</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">5</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#F58634;">M</div></div></div>
+          <div class="cal-cell"><div class="cal-num">6</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">7</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#6D28D9;">R</div></div></div>
+          <div class="cal-cell"><div class="cal-num">8</div></div>
+          <div class="cal-cell"><div class="cal-num">9</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">10</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#1E7B4B;">B</div><div class="cal-mini-avatar" style="background:#E82227;">G</div></div></div>
+
+          <div class="cal-cell"><div class="cal-num">11</div></div>
+          <div class="cal-cell has-empresa"><div class="cal-num">12</div><div class="cal-count">🏢 15 anos</div></div>
+          <div class="cal-cell"><div class="cal-num">13</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">14</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#1F4FA0;">P</div></div></div>
+          <div class="cal-cell"><div class="cal-num">15</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">16</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#F58634;">L</div></div></div>
+          <div class="cal-cell"><div class="cal-num">17</div></div>
+
+          <div class="cal-cell today has-both"><div class="cal-num">18</div><div class="cal-count">2 🎂</div></div>
+          <div class="cal-cell has-empresa"><div class="cal-num">19</div><div class="cal-count">🏢 20 anos</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">20</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#1E7B4B;">D</div></div></div>
+          <div class="cal-cell"><div class="cal-num">21</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">22</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#F58634;">E</div></div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">23</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#E82227;">F</div></div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">24</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#1F4FA0;">G</div></div></div>
+
+          <div class="cal-cell"><div class="cal-num">25</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">26</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#6D28D9;">H</div></div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">27</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#1E7B4B;">I</div></div></div>
+          <div class="cal-cell"><div class="cal-num">28</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">29</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#2E476F;">J</div></div></div>
+          <div class="cal-cell"><div class="cal-num">30</div></div>
+          <div class="cal-cell has-bday"><div class="cal-num">31</div><div class="cal-people"><div class="cal-mini-avatar" style="background:#F58634;">L</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARCOS DE EMPRESA -->
+    <div class="tab-pane" id="tab-empresa">
+      <div class="section-head">
+        <h3>🏆 Marcos altos · 10+ anos</h3>
+        <span class="count">3</span>
+      </div>
+      <div class="person-row today">
+        <div class="person-avatar" style="background:linear-gradient(135deg,#6D28D9,#2E476F);">MS</div>
+        <div class="person-info">
+          <strong>Marcos Santana</strong>
+          <div class="person-meta"><span class="dept">Diretoria</span> · admitido em 19/05/2006 · cofundador</div>
+        </div>
+        <span class="person-pill years-20">⭐ 20 ANOS</span>
+        <div class="person-when empresa"><div class="date">19/05</div><div class="when">duas décadas</div></div>
+        <div class="person-action"><button>Celebrar 🎉</button></div>
+      </div>
+      <div class="person-row today">
+        <div class="person-avatar" style="background:linear-gradient(135deg,#F58634,#C0392B);">RP</div>
+        <div class="person-info">
+          <strong>Renato Pinto</strong>
+          <div class="person-meta"><span class="dept">Diretoria</span> · Diretor Operações · admitido 12/05/2011</div>
+        </div>
+        <span class="person-pill years-15">15 ANOS</span>
+        <div class="person-when empresa"><div class="date">12/05</div><div class="when">há 6 dias</div></div>
+        <div class="person-action"><button>Celebrar 🎉</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:linear-gradient(135deg,#1E7B4B,#2E476F);">PM</div>
+        <div class="person-info">
+          <strong>Patrícia Mello</strong>
+          <div class="person-meta"><span class="dept">RH / DP</span> · Coordenadora RH · admitida 22/05/2016</div>
+        </div>
+        <span class="person-pill years-10">10 ANOS</span>
+        <div class="person-when empresa"><div class="date">22/05</div><div class="when">esta semana</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+
+      <div class="section-head">
+        <h3>⭐ 5 anos · meia década</h3>
+        <span class="count">2</span>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#2E476F;">JC</div>
+        <div class="person-info"><strong>João Carvalho</strong><div class="person-meta"><span class="dept">Financeiro</span> · Líder Financeiro</div></div>
+        <span class="person-pill years-5">5 ANOS</span>
+        <div class="person-when empresa"><div class="date">15/05</div><div class="when">há 3 dias</div></div>
+        <div class="person-action"><button>Celebrar 🎁</button></div>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#F58634;">FL</div>
+        <div class="person-info"><strong>Fernanda Lima</strong><div class="person-meta"><span class="dept">TI / BI</span> · Analista Pleno</div></div>
+        <span class="person-pill years-5">5 ANOS</span>
+        <div class="person-when empresa"><div class="date">28/05</div><div class="when">próxima semana</div></div>
+        <div class="person-action"><button>Lembrar</button></div>
+      </div>
+
+      <div class="section-head">
+        <h3>🎈 1 ano · primeiro ciclo completo</h3>
+        <span class="count">1</span>
+      </div>
+      <div class="person-row">
+        <div class="person-avatar" style="background:#1F4FA0;">EM</div>
+        <div class="person-info"><strong>Eduardo Mendes</strong><div class="person-meta"><span class="dept">CD Logística</span> · Operador Empilhadeira</div></div>
+        <span class="person-pill years-1">1 ANO</span>
+        <div class="person-when empresa"><div class="date">10/05</div><div class="when">há 8 dias</div></div>
+        <div class="person-action"><button>Celebrar 🎁</button></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+<script>
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-' + t.dataset.tab).classList.add('active');
+  });
+});
+document.querySelectorAll('.filter-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    const sibs = p.parentElement.querySelectorAll('.filter-pill');
+    if (Array.from(sibs).indexOf(p) < Array.from(sibs).length) {
+      // Identifica grupo pelo label anterior
+      let prev = p.previousElementSibling;
+      while (prev && !prev.classList.contains('filter-label')) prev = prev.previousElementSibling;
+      let next = p;
+      const group = [];
+      while (next && !next.classList.contains('filter-label') && next.classList.contains('filter-pill')) {
+        group.push(next);
+        next = next.nextElementSibling;
+      }
+      // limpa active dos vizinhos do grupo
+      let scan = prev ? prev.nextElementSibling : null;
+      while (scan && !scan.classList.contains('filter-label')) {
+        if (scan.classList.contains('filter-pill')) scan.classList.remove('active');
+        scan = scan.nextElementSibling;
+      }
+      p.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
