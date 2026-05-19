@@ -262,7 +262,8 @@
     { title: 'Aniversariantes · Natalícios & Empresa', url: 'r2_people_aniversariantes.html', cat: 'Comunicação', icon: '🎂', kw: 'aniversariantes natalicio empresa anos casa hoje semana mes marcos altos hall of fame ana beatriz carlos henrique marcos santana 20 anos renato pinto 15 patricia mello 10 calendar parabenizar mural' },
     { title: 'Quadro Multi-Loja · Gerente Regional', url: 'r2_people_quadro_multiloja.html', cat: 'Gestor', icon: '🏪', kw: 'quadro multi loja gerente regional carla reis cestao atp inhambupe coverage tempo real absenteismo heatmap semana funcao critica cobertura emergencial' },
     { title: 'Quadro de Honra · Hall of Fame', url: 'r2_people_quadro_honra.html', cat: 'Comunicação', icon: '🏆', kw: 'quadro honra funcionario mes vendedor caixa repositor time loja hall of fame carla reis igor ana beatriz lucas marcos santana cerimonia reconhecimento meritocracia automatica' },
-    { title: 'Partner Portal · contadores R2', url: 'r2_people_partner_portal.html', cat: 'Home', icon: '🤝', kw: 'partner portal contador escritorio gold tier comissao mrr recorrente referral roberto costa 29 clientes platinum 50 white label materiais treinamentos pagamentos pix' }
+    { title: 'Partner Portal · contadores R2', url: 'r2_people_partner_portal.html', cat: 'Home', icon: '🤝', kw: 'partner portal contador escritorio gold tier comissao mrr recorrente referral roberto costa 29 clientes platinum 50 white label materiais treinamentos pagamentos pix' },
+    { title: 'Trilhas Operacionais · Caixa, Repositor, ASG', url: 'r2_people_trilhas_funcao.html', cat: 'Carreira', icon: '🎓', kw: 'trilhas operacionais funcao caixa repositor asg vigilante gerente loja modulos quiz certificado ana beatriz pdv atendimento estorno sangria bottleneck' }
   ];
 
   function openSearch() {
