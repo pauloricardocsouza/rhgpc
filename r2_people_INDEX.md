@@ -1,6 +1,6 @@
 ﻿# R2 People · Índice Consolidado de Artefatos
 
-**Versão**: 2.51 · 18 de maio de 2026
+**Versão**: 2.52 · 18 de maio de 2026
 **Mantido por**: Ricardo Silva · R2 Soluções Empresariais
 **Cliente referência**: Grupo Pinto Cerqueira (GPC) · 367 colaboradores · 14 unidades · Bahia
 **Status**: protótipo iterativo + backend Next.js parcial · pré-MVP
@@ -1015,6 +1015,7 @@ A Camada 1 não morre quando a feature é portada · ela continua servindo como 
 | 2.48 | Página HTML Inbox do Líder (M20) · persona João Carvalho 11 subordinados |
 | 2.49 | Páginas HTML Compliance (M18) + Benefícios (M19) materializam specs c/ personas dedicadas |
 | 2.50 | Relatório consolidado bloco pós-reposicionamento · 25 specs · 6 schemas · 9 cockpits |
-| **2.51** | **Schema SQL v16 (M20 leader_inbox_prefs + RPCs aniversários líder/tenant + bulk_approve + team_panel · 100% idempotente · graceful guards) + Spec M21 Específicos Varejo Multi-Loja (anchor GPC 14 unidades · quadro multi-loja gerente regional + absenteísmo granular por loja+horário+função + quadro de honra 5 categorias automáticas + trilhas operacionais por função: caixa/repositor/ASG/vigilante + comissão consulta espelha Domínio + escala viewer + mobile-first chão de loja · 7 tabelas + 5 RPCs + 20+ testes meta) + Spec C4 Partner Program (canal alt aquisição via contadores + 5 tiers Indicação→Platinum c/ 15-30% MRR recorrente + Partner Portal + clawback 6m + materiais comerciais + KPIs: 30% MRR via partners ano 2 · 7 tabelas + 6 RPCs) + Página `r2_people_aniversariantes.html` dedicada (3 abas: Lista c/ Hoje destaque + Calendar mensal heatmap + Marcos empresa pills coloridas 20/15/10/5/1 anos · persona Ricardo Silva Admin RH · filtros tipo/período/filial · ações Parabenizar/Lembrar/Celebrar)** |
+| 2.51 | Schema v16 + Spec M21 Varejo Multi-loja + Spec C4 Partner Program + Página Aniversariantes |
+| **2.52** | **Página HTML `r2_people_quadro_multiloja.html` materializa M21 (persona Carla Reis Coord ATP 5 lojas · live pulse 60s · 4 KPIs regional + alert strip crítico Inhambupe 1/3 caixas + tabela 5 lojas c/ health circles pulsantes + grid coverage por função tempo real + heatmap absenteísmo semana × loja 5 níveis cor) + Página HTML `r2_people_quadro_honra.html` materializa M21 cultural (banner gradient navy-purple-orange · 5 cards categoria · main winner Carla Reis 140px avatar destaque + 4 cat secundárias Igor/Ana Beatriz/Lucas/ATP-Atacado time · Hall of Fame 12 meses funcionário + 6 meses time · aba metodologia c/ fórmulas transparentes) + Página HTML `r2_people_partner_portal.html` materializa C4 standalone (persona Roberto Costa · Costa Contabilidade · tier Gold medal SVG · 29 clientes · R$ 18.420 MRR · 5 abas: Dashboard evolução 6m + Clientes c/ GPC/Labuta + Materiais 8 cards thumbs coloridos + Treinamentos · Pagamentos PIX) + Spec D10 Mobile-First (PWA web manifest + Service Worker estratégias cache + Web Push c/ VAPID + modo offline rascunho atestado + geolocation opt-in granular + métricas Lighthouse FCP < 1.5s 4G · push_subscriptions + delivery_log + geo_events · 18+ testes meta · roadmap Capacitor wrapper Apple Store + voz 1:1 + bottom nav)** |
 
 ---

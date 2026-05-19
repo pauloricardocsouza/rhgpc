@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPC · Quadro Multi-Loja · Gerente Regional</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="assets/r2-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#2E476F; --navy2:#1F3A6B; --dark:#1A2D4F;
+  --orange:#F58634; --red:#E82227; --purple:#6D28D9;
+  --green:#1E7B4B; --green2:#D4EDDF;
+  --danger:#C0392B; --danger2:#FDECEA;
+  --amber:#854F0B; --amber2:#FEF3E2;
+  --blue:#1F4FA0; --blue2:#E7EFFB;
+  --off:#F4F7FC; --gray1:#EEF2F8; --gray2:#DDE5F0; --gray3:#A8B5C8;
+  --txt:#1A2D4F; --txt2:#5A7090; --txt3:#8FA3BE;
+  --sidebar-w:240px; --topbar-h:56px;
+  --radius:10px;
+  --shadow-card:0 1px 3px rgba(26,45,79,.06), 0 4px 12px rgba(26,45,79,.04);
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%; overflow-x:hidden;}
+body{font-family:'Archivo',sans-serif; background:var(--off); color:var(--txt); font-size:13px; line-height:1.5;}
+.app{display:grid; grid-template-columns:var(--sidebar-w) 1fr; grid-template-rows:var(--topbar-h) 1fr; grid-template-areas:"sidebar topbar" "sidebar main"; height:100vh;}
+
+.sidebar{grid-area:sidebar; background:#fff; color:var(--txt); display:flex; flex-direction:column; border-right:1px solid var(--gray1); overflow:hidden; z-index:30;}
+.sidebar-brand{padding:20px 18px 18px; display:flex; flex-direction:column; align-items:center; gap:8px; border-bottom:1px solid var(--gray1);}
+.brand-logo{height:56px; width:auto; max-width:80%;}
+.brand-text{display:flex; flex-direction:column; align-items:center; line-height:1.1; gap:3px;}
+.brand-name{font-weight:700; font-size:13px;}
+.brand-sub{font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.18em; font-weight:600;}
+.sidebar-section{padding:10px 12px 4px; font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt3); font-weight:700;}
+.sidebar-nav{flex:1; overflow-y:auto; padding:8px 8px 14px;}
+.nav-item{display:flex; align-items:center; gap:10px; padding:7px 10px 7px 12px; color:var(--txt2); text-decoration:none; font-size:13px; font-weight:500; border-radius:6px; position:relative; margin:1px 0;}
+.nav-item:hover{background:var(--gray1); color:var(--txt);}
+.nav-item.active{background:var(--blue2); color:var(--navy); font-weight:600;}
+.nav-item.active::before{content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange); border-radius:2px;}
+.nav-item svg{width:16px; height:16px; flex-shrink:0; opacity:.85;}
+.sidebar-footer{padding:12px 18px; border-top:1px solid var(--gray1); display:flex; flex-direction:column; align-items:center; gap:6px;}
+.sidebar-r2-lbl{font-family:'JetBrains Mono',monospace; font-size:8.5px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:.14em;}
+.sidebar-r2-logo{height:22px; opacity:.75;}
+
+.topbar{grid-area:topbar; background:#fff; border-bottom:1px solid var(--gray1); display:flex; align-items:center; padding:0 22px; gap:18px;}
+.topbar-title{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--txt2); display:flex; align-items:center; gap:8px;}
+.topbar-title .sep{color:var(--txt3); font-size:14px;}
+.topbar-title .crumb{color:var(--txt); font-weight:700;}
+.live-pulse{display:inline-flex; align-items:center; gap:6px; font-size:11px; color:var(--green); font-weight:500;}
+.live-pulse::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.topbar-spacer{flex:1;}
+.user-chip{display:flex; align-items:center; gap:9px;}
+.user-avatar-tb{width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg, #F58634, #2E476F); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:12px;}
+.user-info{display:flex; flex-direction:column; line-height:1.1;}
+.user-name{font-size:12px; font-weight:500;}
+.user-role{font-size:10.5px; color:var(--txt2);}
+
+.main{grid-area:main; overflow-y:auto; padding:22px 28px 50px;}
+.page-header{margin-bottom:14px; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.page-eyebrow{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:.18em; margin-bottom:8px; font-weight:600;}
+.page-eyebrow .sep{color:var(--txt3); margin:0 6px;}
+.page-title{font-size:28px; font-weight:800; letter-spacing:-.02em; line-height:1.15;}
+.page-title em{font-style:italic; color:var(--orange);}
+.page-subtitle{margin-top:6px; color:var(--txt2); font-size:13px;}
+
+.btn-primary{background:var(--navy); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+.btn-secondary{background:#fff; color:var(--navy); border:1px solid var(--gray2); padding:9px 14px; border-radius:8px; font-size:12.5px; font-weight:500; cursor:pointer; font-family:inherit;}
+
+/* Hero · 4 KPIs agregados regional */
+.region-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:18px;}
+.region-card{background:#fff; padding:14px 16px; border-radius:11px; box-shadow:var(--shadow-card); position:relative; overflow:hidden;}
+.region-card::before{content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:var(--navy);}
+.region-card.warn::before{background:var(--amber);}
+.region-card.crit::before{background:var(--danger);}
+.region-card.green::before{background:var(--green);}
+.region-label{font-size:10.5px; color:var(--txt2); text-transform:uppercase; letter-spacing:.5px; font-weight:600;}
+.region-value{font-size:28px; font-weight:700; margin-top:6px; letter-spacing:-.6px; font-family:'JetBrains Mono', monospace;}
+.region-value.danger{color:var(--danger);}
+.region-trend{font-size:10.5px; color:var(--txt2); margin-top:4px;}
+
+/* Alert banner */
+.alert-strip{background:linear-gradient(90deg, var(--danger2), #fff 40%); border-left:3px solid var(--danger); padding:11px 16px; border-radius:0 8px 8px 0; margin-bottom:14px; display:flex; align-items:center; gap:12px;}
+.alert-strip-icon{width:32px; height:32px; border-radius:50%; background:var(--danger); color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;}
+.alert-strip-content{flex:1; font-size:12.5px;}
+.alert-strip-content strong{color:var(--danger);}
+
+/* Tabela de lojas · principal */
+.loja-table{background:#fff; border-radius:12px; box-shadow:var(--shadow-card); overflow:hidden; margin-bottom:14px;}
+.loja-table-head{display:grid; grid-template-columns:1.6fr 80px 80px 80px 80px 80px 50px 80px; gap:10px; padding:12px 16px; background:var(--off); font-family:'JetBrains Mono', monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.14em; color:var(--txt2); font-weight:700; border-bottom:1px solid var(--gray1);}
+.loja-row{display:grid; grid-template-columns:1.6fr 80px 80px 80px 80px 80px 50px 80px; gap:10px; padding:14px 16px; border-bottom:1px solid var(--gray1); align-items:center; cursor:pointer; transition:all .12s;}
+.loja-row:hover{background:var(--off);}
+.loja-row:last-child{border-bottom:none;}
+.loja-name{display:flex; align-items:center; gap:10px;}
+.loja-avatar{width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:11px; color:#fff; font-family:'JetBrains Mono', monospace;}
+.loja-info strong{font-size:13px; font-weight:600; display:block;}
+.loja-info .meta{font-size:10.5px; color:var(--txt2);}
+.loja-num{font-family:'JetBrains Mono', monospace; font-weight:700; text-align:right;}
+.loja-num .total{color:var(--txt2); font-size:10.5px; font-weight:500;}
+.loja-num.warn{color:var(--amber);}
+.loja-num.crit{color:var(--danger);}
+.loja-num.green{color:var(--green);}
+.loja-pending{text-align:center;}
+.loja-pending-pill{display:inline-block; padding:2px 9px; border-radius:11px; font-size:11px; font-weight:700; font-family:'JetBrains Mono', monospace;}
+.loja-pending-pill.zero{background:var(--green2); color:var(--green);}
+.loja-pending-pill.low{background:var(--blue2); color:var(--blue);}
+.loja-pending-pill.med{background:var(--amber2); color:var(--amber);}
+.loja-pending-pill.high{background:var(--danger2); color:var(--danger);}
+.health-circle{width:24px; height:24px; border-radius:50%; margin:0 auto;}
+.health-circle.green{background:var(--green); box-shadow:0 0 0 4px rgba(30,123,75,.18);}
+.health-circle.warn{background:var(--amber); box-shadow:0 0 0 4px rgba(245,131,52,.18);}
+.health-circle.crit{background:var(--danger); box-shadow:0 0 0 4px rgba(192,57,43,.18); animation:pulse 2s infinite;}
+.loja-action button{padding:6px 10px; font-size:11px; font-weight:600; border:1px solid var(--gray2); background:#fff; color:var(--navy); border-radius:6px; cursor:pointer; font-family:inherit;}
+.loja-action button:hover{background:var(--navy); color:#fff; border-color:var(--navy);}
+
+/* Função coverage · tempo real por loja */
+.coverage-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:10px;}
+.coverage-card{background:#fff; padding:14px; border-radius:11px; box-shadow:var(--shadow-card); border-top:3px solid var(--navy);}
+.coverage-card.warn{border-top-color:var(--amber);}
+.coverage-card.crit{border-top-color:var(--danger);}
+.coverage-name{font-size:12px; font-weight:700; margin-bottom:6px;}
+.coverage-time{font-size:10px; color:var(--txt3); font-family:'JetBrains Mono', monospace; margin-bottom:10px;}
+.coverage-fn{display:flex; justify-content:space-between; padding:5px 0; font-size:11.5px; border-bottom:1px dashed var(--gray1);}
+.coverage-fn:last-child{border-bottom:none;}
+.coverage-fn .fn-name{color:var(--txt2);}
+.coverage-fn .fn-ratio{font-family:'JetBrains Mono', monospace; font-weight:700;}
+.coverage-fn .fn-ratio.ok{color:var(--green);}
+.coverage-fn .fn-ratio.warn{color:var(--amber);}
+.coverage-fn .fn-ratio.crit{color:var(--danger);}
+
+/* Heatmap absenteismo */
+.heatmap-week{display:grid; grid-template-columns:140px repeat(7, 1fr); gap:4px; font-size:10.5px;}
+.heatmap-head{padding:5px; text-align:center; font-family:'JetBrains Mono', monospace; font-size:9px; text-transform:uppercase; letter-spacing:.2em; color:var(--txt3); font-weight:700;}
+.heatmap-row-lbl{padding:8px 10px; font-weight:600; font-size:11.5px;}
+.heatmap-cell{padding:8px 4px; text-align:center; border-radius:5px; font-size:10px; font-weight:700; font-family:'JetBrains Mono', monospace; cursor:pointer;}
+.heatmap-cell.l1{background:var(--green2); color:var(--green);}
+.heatmap-cell.l2{background:#FFE3CC; color:#9E5500;}
+.heatmap-cell.l3{background:var(--amber2); color:var(--amber);}
+.heatmap-cell.l4{background:var(--danger2); color:var(--danger);}
+.heatmap-cell.l5{background:var(--danger); color:#fff;}
+
+.card{background:#fff; border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow-card); margin-bottom:14px;}
+.card-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;}
+.card-title{font-size:14px; font-weight:600;}
+.card-sub{font-size:11px; color:var(--txt2); margin-top:2px;}
+
+@media (max-width:980px){
+  .region-grid{grid-template-columns:repeat(2, 1fr);}
+  .coverage-grid{grid-template-columns:1fr 1fr;}
+  .loja-table-head, .loja-row{grid-template-columns:1fr 60px 50px 60px;}
+  .loja-table-head > :nth-child(n+5), .loja-row > :nth-child(n+5){display:none;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img class="brand-logo" src="assets/gpc-color.png" alt="GPC">
+      <div class="brand-text">
+        <span class="brand-name">Gestão de Pessoas</span>
+        <span class="brand-sub">v.0.1</span>
+      </div>
+    </div>
+    <div class="sidebar-section">Gerente · regional</div>
+    <div class="sidebar-nav">
+      <a class="nav-item" href="r2_people_home.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>Início</a>
+      <a class="nav-item active" href="r2_people_quadro_multiloja.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21V12h6v9"/></svg>Minhas lojas (5)</a>
+      <a class="nav-item" href="r2_people_inbox_lider.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/></svg>Inbox</a>
+      <a class="nav-item" href="r2_people_quadro_honra.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15 8.5 22 9.3 17 14 18.2 21 12 17.8 5.8 21 7 14 2 9.3 9 8.5 12 2"/></svg>Quadro de Honra</a>
+      <a class="nav-item" href="r2_people_analytics.html"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analytics</a>
+    </div>
+    <div class="sidebar-footer">
+      <span class="sidebar-r2-lbl">Desenvolvido por</span>
+      <img class="sidebar-r2-logo" src="assets/r2-color.png" alt="R2">
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar-title"><span>Gerente</span><span class="sep">›</span><span>Operação</span><span class="sep">›</span><span class="crumb">Minhas lojas</span></div>
+    <span class="live-pulse">live · refresh 60s</span>
+    <div class="topbar-spacer"></div>
+    <div class="user-chip">
+      <div class="user-avatar-tb">CR</div>
+      <div class="user-info"><span class="user-name">Carla Reis</span><span class="user-role">Coord Logística · 5 lojas regional ATP</span></div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Operação <span class="sep">·</span> Multi-loja <span class="sep">·</span> Spec M21</div>
+        <h1 class="page-title">Minhas <em>lojas</em></h1>
+        <p class="page-subtitle">Visão consolidada das 5 lojas da regional Atacadão Pinto · drill-down por loja · ações em tempo real</p>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-secondary">📊 Comparar período</button>
+        <button class="btn-secondary">📥 Relatório PDF</button>
+        <button class="btn-primary">+ Cobertura emergencial</button>
+      </div>
+    </div>
+
+    <!-- Hero KPIs agregado regional -->
+    <div class="region-grid">
+      <div class="region-card green">
+        <div class="region-label">Headcount regional</div>
+        <div class="region-value">294</div>
+        <div class="region-trend">5 lojas · 78% do quadro GPC</div>
+      </div>
+      <div class="region-card warn">
+        <div class="region-label">Ativos agora · 14h12</div>
+        <div class="region-value">277<span style="font-size:14px; color:var(--txt2); font-weight:500; margin-left:4px;">/297</span></div>
+        <div class="region-trend">93.3% · escala prevê 297</div>
+      </div>
+      <div class="region-card crit">
+        <div class="region-label">Absenteísmo mês (mai)</div>
+        <div class="region-value danger">5.4%</div>
+        <div class="region-trend">▲ +1.8pp vs abril · meta &lt; 4%</div>
+      </div>
+      <div class="region-card warn">
+        <div class="region-label">Ações pendentes</div>
+        <div class="region-value">27</div>
+        <div class="region-trend">8 críticas · sua aprovação</div>
+      </div>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert-strip">
+      <div class="alert-strip-icon">🚨</div>
+      <div class="alert-strip-content">
+        <strong>Cestão Inhambupe · cobertura crítica agora</strong> · 1 caixa ativo de 3 previstos (escala 14-18h) · fila aumentando · NPS cliente caiu de 8 → 5 nas últimas 2h. Ação sugerida: chamar Lucas Barbosa (folguista do dia).
+      </div>
+      <button class="btn-primary">Acionar cobertura</button>
+    </div>
+
+    <!-- Tabela principal · 5 lojas -->
+    <div class="loja-table">
+      <div class="loja-table-head">
+        <div>Loja</div>
+        <div style="text-align:right;">Headcount</div>
+        <div style="text-align:right;">Ativos hoje</div>
+        <div style="text-align:right;">Absent. mês</div>
+        <div style="text-align:right;">Turnover 90d</div>
+        <div style="text-align:right;">eNPS</div>
+        <div style="text-align:center;">Health</div>
+        <div></div>
+      </div>
+
+      <div class="loja-row">
+        <div class="loja-name">
+          <div class="loja-avatar" style="background:linear-gradient(135deg,#1F4FA0,#2E476F);">C1</div>
+          <div class="loja-info"><strong>Cestão Loja 1</strong><div class="meta">Salvador · gerente: Marcelo Lima</div></div>
+        </div>
+        <div class="loja-num">91</div>
+        <div class="loja-num green">88 <span class="total">/91</span></div>
+        <div class="loja-num green">4.2%</div>
+        <div class="loja-num green">12%</div>
+        <div class="loja-num green">68</div>
+        <div><span class="health-circle green"></span></div>
+        <div class="loja-action"><button>Abrir →</button></div>
+      </div>
+
+      <div class="loja-row">
+        <div class="loja-name">
+          <div class="loja-avatar" style="background:linear-gradient(135deg,#F58634,#C0392B);">AV</div>
+          <div class="loja-info"><strong>ATP - Varejo</strong><div class="meta">Salvador · gerente: Roberto Almeida</div></div>
+        </div>
+        <div class="loja-num">78</div>
+        <div class="loja-num warn">72 <span class="total">/78</span></div>
+        <div class="loja-num warn">6.1%</div>
+        <div class="loja-num warn">18%</div>
+        <div class="loja-num warn">54</div>
+        <div><span class="health-circle warn"></span></div>
+        <div class="loja-action"><button>Abrir →</button></div>
+      </div>
+
+      <div class="loja-row">
+        <div class="loja-name">
+          <div class="loja-avatar" style="background:linear-gradient(135deg,#C0392B,#1A2D4F);">CI</div>
+          <div class="loja-info"><strong>Cestão Inhambupe</strong><div class="meta">Inhambupe · gerente: <strong style="color:var(--danger);">vago há 14d</strong></div></div>
+        </div>
+        <div class="loja-num">46</div>
+        <div class="loja-num crit">41 <span class="total">/46</span></div>
+        <div class="loja-num crit">8.4%</div>
+        <div class="loja-num crit">22%</div>
+        <div class="loja-num crit">42</div>
+        <div><span class="health-circle crit"></span></div>
+        <div class="loja-action"><button>Abrir →</button></div>
+      </div>
+
+      <div class="loja-row">
+        <div class="loja-name">
+          <div class="loja-avatar" style="background:linear-gradient(135deg,#1E7B4B,#14573A);">AA</div>
+          <div class="loja-info"><strong>ATP - Atacado</strong><div class="meta">Salvador · gerente: Helena Ribeiro</div></div>
+        </div>
+        <div class="loja-num">42</div>
+        <div class="loja-num green">41 <span class="total">/42</span></div>
+        <div class="loja-num green">2.8%</div>
+        <div class="loja-num green">8%</div>
+        <div class="loja-num green">72</div>
+        <div><span class="health-circle green"></span></div>
+        <div class="loja-action"><button>Abrir →</button></div>
+      </div>
+
+      <div class="loja-row">
+        <div class="loja-name">
+          <div class="loja-avatar" style="background:linear-gradient(135deg,#6D28D9,#2E476F);">CD</div>
+          <div class="loja-info"><strong>CD Logística</strong><div class="meta">Camaçari · gerente: Pedro Costa</div></div>
+        </div>
+        <div class="loja-num">37</div>
+        <div class="loja-num warn">35 <span class="total">/37</span></div>
+        <div class="loja-num warn">5.1%</div>
+        <div class="loja-num warn">14%</div>
+        <div class="loja-num green">62</div>
+        <div><span class="health-circle warn"></span></div>
+        <div class="loja-action"><button>Abrir →</button></div>
+      </div>
+    </div>
+
+    <!-- Cobertura por função tempo real -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">🔴 Cobertura por função · agora (14h12)</div>
+          <div class="card-sub">Quantos por função × escala prevista · clique loja para detalhe</div>
+        </div>
+      </div>
+      <div class="coverage-grid">
+        <div class="coverage-card">
+          <div class="coverage-name">Cestão L1</div>
+          <div class="coverage-time">14h-22h</div>
+          <div class="coverage-fn"><span class="fn-name">Caixa</span><span class="fn-ratio ok">8/8</span></div>
+          <div class="coverage-fn"><span class="fn-name">Repositor</span><span class="fn-ratio ok">12/12</span></div>
+          <div class="coverage-fn"><span class="fn-name">ASG</span><span class="fn-ratio ok">3/3</span></div>
+          <div class="coverage-fn"><span class="fn-name">Vigilante</span><span class="fn-ratio ok">2/2</span></div>
+        </div>
+        <div class="coverage-card warn">
+          <div class="coverage-name">ATP Varejo</div>
+          <div class="coverage-time">14h-22h</div>
+          <div class="coverage-fn"><span class="fn-name">Caixa</span><span class="fn-ratio warn">5/6</span></div>
+          <div class="coverage-fn"><span class="fn-name">Repositor</span><span class="fn-ratio ok">10/10</span></div>
+          <div class="coverage-fn"><span class="fn-name">ASG</span><span class="fn-ratio warn">1/2</span></div>
+          <div class="coverage-fn"><span class="fn-name">Vigilante</span><span class="fn-ratio ok">2/2</span></div>
+        </div>
+        <div class="coverage-card crit">
+          <div class="coverage-name">Inhambupe ⚠</div>
+          <div class="coverage-time">14h-18h</div>
+          <div class="coverage-fn"><span class="fn-name">Caixa</span><span class="fn-ratio crit">1/3</span></div>
+          <div class="coverage-fn"><span class="fn-name">Repositor</span><span class="fn-ratio warn">4/5</span></div>
+          <div class="coverage-fn"><span class="fn-name">ASG</span><span class="fn-ratio ok">2/2</span></div>
+          <div class="coverage-fn"><span class="fn-name">Vigilante</span><span class="fn-ratio ok">1/1</span></div>
+        </div>
+        <div class="coverage-card">
+          <div class="coverage-name">ATP Atacado</div>
+          <div class="coverage-time">7h-17h</div>
+          <div class="coverage-fn"><span class="fn-name">Operadora</span><span class="fn-ratio ok">14/14</span></div>
+          <div class="coverage-fn"><span class="fn-name">Recepc.</span><span class="fn-ratio ok">2/2</span></div>
+          <div class="coverage-fn"><span class="fn-name">ASG</span><span class="fn-ratio ok">1/1</span></div>
+        </div>
+        <div class="coverage-card warn">
+          <div class="coverage-name">CD Logística</div>
+          <div class="coverage-time">6h-14h / 14h-22h</div>
+          <div class="coverage-fn"><span class="fn-name">Operador emp.</span><span class="fn-ratio ok">8/8</span></div>
+          <div class="coverage-fn"><span class="fn-name">Conferente</span><span class="fn-ratio warn">5/6</span></div>
+          <div class="coverage-fn"><span class="fn-name">Motorista</span><span class="fn-ratio ok">4/4</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heatmap absenteismo · semana × loja -->
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">🌡️ Heatmap absenteísmo · maio/2026 por dia da semana</div>
+          <div class="card-sub">% de pessoas ausentes (atestado + falta + folga compensada)</div>
+        </div>
+      </div>
+      <div class="heatmap-week">
+        <div></div>
+        <div class="heatmap-head">Seg</div><div class="heatmap-head">Ter</div><div class="heatmap-head">Qua</div><div class="heatmap-head">Qui</div><div class="heatmap-head">Sex</div><div class="heatmap-head">Sáb</div><div class="heatmap-head">Dom</div>
+
+        <div class="heatmap-row-lbl">Cestão L1</div>
+        <div class="heatmap-cell l2">5.1%</div><div class="heatmap-cell l1">3.2%</div><div class="heatmap-cell l1">2.8%</div><div class="heatmap-cell l1">3.5%</div><div class="heatmap-cell l2">4.8%</div><div class="heatmap-cell l3">6.1%</div><div class="heatmap-cell l2">4.5%</div>
+
+        <div class="heatmap-row-lbl">ATP Varejo</div>
+        <div class="heatmap-cell l3">7.2%</div><div class="heatmap-cell l2">5.4%</div><div class="heatmap-cell l2">4.8%</div><div class="heatmap-cell l2">5.1%</div><div class="heatmap-cell l3">6.8%</div><div class="heatmap-cell l4">8.2%</div><div class="heatmap-cell l3">6.5%</div>
+
+        <div class="heatmap-row-lbl">Inhambupe</div>
+        <div class="heatmap-cell l5">12.1%</div><div class="heatmap-cell l4">8.7%</div><div class="heatmap-cell l3">7.1%</div><div class="heatmap-cell l4">8.4%</div><div class="heatmap-cell l4">9.2%</div><div class="heatmap-cell l5">11.4%</div><div class="heatmap-cell l4">8.9%</div>
+
+        <div class="heatmap-row-lbl">ATP Atacado</div>
+        <div class="heatmap-cell l1">3.1%</div><div class="heatmap-cell l1">2.4%</div><div class="heatmap-cell l1">2.1%</div><div class="heatmap-cell l1">2.5%</div><div class="heatmap-cell l1">3.4%</div><div class="heatmap-cell l1">3.0%</div><div class="heatmap-cell l1">2.8%</div>
+
+        <div class="heatmap-row-lbl">CD Logística</div>
+        <div class="heatmap-cell l3">6.4%</div><div class="heatmap-cell l2">5.1%</div><div class="heatmap-cell l2">4.7%</div><div class="heatmap-cell l2">5.4%</div><div class="heatmap-cell l3">6.2%</div><div class="heatmap-cell l3">5.8%</div><div class="heatmap-cell l1">2.4%</div>
+      </div>
+      <p style="font-size:11.5px; color:var(--txt2); margin-top:14px;">⚠ Inhambupe segunda-feira: 12% absent recorrente · efeito "ressaca" pós-fim de semana · investigar c/ gerente (vago).</p>
+    </div>
+  </main>
+</div>
+
+<script src="assets/r2-shell.js"></script>
+</body>
+</html>
